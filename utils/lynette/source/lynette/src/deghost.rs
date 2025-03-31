@@ -3,7 +3,7 @@ use proc_macro2::TokenStream;
 use quote::ToTokens;
 use std::path::PathBuf;
 use syn_verus::Token;
-use syn_verus::TraitItemMethod;
+use syn_verus::TraitItemFn;
 
 fn remove_ghost_local(local: &syn_verus::Local) -> Option<syn_verus::Local> {
     match local.ghost {
@@ -48,6 +48,8 @@ fn remove_ghost_expr(expr: &syn_verus::Expr, mode: &DeghostMode) -> Option<syn_v
         syn_verus::Expr::Closure(c) => remove_ghost_expr(&*c.body, mode).map(|new_body| {
             syn_verus::Expr::Closure(syn_verus::ExprClosure {
                 attrs: c.attrs.clone(),
+                lifetimes: c.lifetimes.clone(),
+                constness: c.constness.clone(),
                 asyncness: c.asyncness.clone(),
                 movability: c.movability.clone(),
                 capture: c.capture.clone(),
@@ -172,7 +174,10 @@ fn remove_ghost_expr(expr: &syn_verus::Expr, mode: &DeghostMode) -> Option<syn_v
         // veurs:
         syn_verus::Expr::Assert(a) => {
             fn annotated_assert(a: &syn_verus::Assert) -> bool {
-                a.attrs.iter().any(|attr| attr.tokens.to_string() == "(llm_do_not_change)")
+                // FIXME: syn_verus::Attribute has been changed to use `meta`` to hold the attribute,
+                //        which is incompatible with the current way of specifying the attribute.
+                //a.attrs.iter().any(|attr| attr.tokens.to_string() == "(llm_do_not_change)")
+                false
             }
 
             if mode.asserts || (mode.asserts_anno && annotated_assert(a)) {
@@ -207,9 +212,10 @@ fn remove_ghost_stmt(stmt: &syn_verus::Stmt, mode: &DeghostMode) -> Option<syn_v
             //     None => None
             // }
         }
-        syn_verus::Stmt::Expr(e) => remove_ghost_expr(e, mode).map(syn_verus::Stmt::Expr),
-        syn_verus::Stmt::Semi(e, _semi) => remove_ghost_expr(e, mode)
-            .map(|new_expr| syn_verus::Stmt::Semi(new_expr, _semi.clone())),
+        syn_verus::Stmt::Expr(e, t) => {
+            remove_ghost_expr(e, mode).map(|new_expr| syn_verus::Stmt::Expr(new_expr, t.clone()))
+        }
+        _ => Some(stmt.clone()),
     }
 }
 
@@ -267,50 +273,52 @@ fn remove_ghost_sig(
             }
             syn_verus::ReturnType::Default => syn_verus::ReturnType::Default,
         },
-        prover: sig.prover.clone(), // Removed
-        // TODO: This fix needs to be propagated to other places using `Specification`
-        requires: sig
-            .requires
-            .clone()
-            .map(|mut new_req| {
+        spec: syn_verus::SignatureSpec {
+            prover: None, // Removed
+            // XXX: There might be other places where `Punctuated` is clone, we need to apply
+            //      the same fix there to add the trailing punctuation if originally exists.
+            // XXX: Some fields are missing flags in `mode`, we should fix it in the future.
+            requires: sig.spec.requires.clone().map(|mut new_req| {
                 if !new_req.exprs.exprs.trailing_punct() {
                     new_req.exprs.exprs.push_punct(Default::default());
                 }
                 new_req
-            })
-            .filter(|_| mode.requires), // Removed
-        recommends: sig.recommends.clone().map(|mut new_rec| {
-            if !new_rec.exprs.exprs.trailing_punct() {
-                new_rec.exprs.exprs.push_punct(Default::default());
-            }
-            new_rec
-        }), // Removed
-        ensures: sig
-            .ensures
-            .clone()
-            .map(|mut new_ens| {
+            }).filter(|_| mode.requires), // Removed
+            recommends: sig.spec.recommends.clone().map(|mut new_rec| {
+                if !new_rec.exprs.exprs.trailing_punct() {
+                    new_rec.exprs.exprs.push_punct(Default::default());
+                }
+                new_rec
+            }).filter(|_| mode.spec), // Removed
+            ensures: sig.spec.ensures.clone().map(|mut new_ens| {
                 if !new_ens.exprs.exprs.trailing_punct() {
                     new_ens.exprs.exprs.push_punct(Default::default());
                 }
                 new_ens
-            })
-            .filter(|_| mode.ensures), // Removed
-        decreases: sig
-            .decreases
-            .clone()
-            .map(|mut new_dec| {
+            }).filter(|_| mode.ensures), // Removed
+            returns: sig.spec.returns.clone().map(|mut new_ret| {
+                if !new_ret.exprs.exprs.trailing_punct() {
+                    new_ret.exprs.exprs.push_punct(Default::default());
+                }
+                new_ret
+            }), // Removed
+            decreases: sig.spec.decreases.clone().map(|mut new_dec| {
                 if !new_dec.decreases.exprs.exprs.trailing_punct() {
                     new_dec.decreases.exprs.exprs.push_punct(Default::default());
                 }
                 new_dec
-            })
-            .filter(|_| mode.decreases), // Removed
-        invariants: sig.invariants.clone().filter(|_| mode.invariants), // Removed
+            }).filter(|_| mode.decreases), // Removed
+            invariants: sig.spec.invariants.clone().filter(|_| mode.invariants).filter(|_| mode.invariants), // Removed
+            unwind: None, // Removed
+
+        }
     })
 }
 
 fn is_verifier_attr(attr: &syn_verus::Attribute) -> bool {
-    attr.path.segments.len() > 0 && attr.path.segments[0].ident.to_string() == "verifier"
+    // FIXME:
+    //attr.path.segments.len() > 0 && attr.path.segments[0].ident.to_string() == "verifier"
+    false
 }
 
 fn remove_verifier_attr(attr: &Vec<syn_verus::Attribute>) -> Vec<syn_verus::Attribute> {
@@ -360,7 +368,7 @@ fn remove_ghost_impl(i: &syn_verus::ItemImpl, mode: &DeghostMode) -> syn_verus::
             .items
             .iter()
             .filter_map(|it| {
-                if let syn_verus::ImplItem::Method(func) = it {
+                if let syn_verus::ImplItem::Fn(func) = it {
                     remove_ghost_sig(&func.sig, mode).and_then(|new_sig| {
                         {
                             if matches!(
@@ -370,7 +378,7 @@ fn remove_ghost_impl(i: &syn_verus::ItemImpl, mode: &DeghostMode) -> syn_verus::
                                 Some(func.clone())
                             } else {
                                 remove_ghost_block(&func.block, mode).map(|new_block| {
-                                    syn_verus::ImplItemMethod {
+                                    syn_verus::ImplItemFn {
                                         attrs: func.attrs.clone(),
                                         vis: func.vis.clone(),
                                         defaultness: func.defaultness.clone(),
@@ -381,7 +389,7 @@ fn remove_ghost_impl(i: &syn_verus::ItemImpl, mode: &DeghostMode) -> syn_verus::
                                 })
                             }
                         }
-                        .and_then(|new_method| Some(syn_verus::ImplItem::Method(new_method)))
+                        .and_then(|new_method| Some(syn_verus::ImplItem::Fn(new_method)))
                     })
                 } else {
                     Some(it.clone())
@@ -402,6 +410,7 @@ fn remove_ghost_item(item: &syn_verus::Item, mode: &DeghostMode) -> Option<syn_v
             attrs: t.attrs.clone(),
             vis: t.vis.clone(),
             unsafety: t.unsafety.clone(),
+            restriction: t.restriction.clone(),
             auto_token: t.auto_token.clone(),
             trait_token: t.trait_token.clone(),
             ident: t.ident.clone(),
@@ -413,8 +422,8 @@ fn remove_ghost_item(item: &syn_verus::Item, mode: &DeghostMode) -> Option<syn_v
                 .items
                 .iter()
                 .filter_map(|i| match i {
-                    syn_verus::TraitItem::Method(func) => {
-                        Some(syn_verus::TraitItem::Method(TraitItemMethod {
+                    syn_verus::TraitItem::Fn(func) => {
+                        Some(syn_verus::TraitItem::Fn(TraitItemFn {
                             attrs: func.attrs.clone(),
                             sig: remove_ghost_sig(&func.sig, mode)?,
                             default: func.default.as_ref().map(|b| {
@@ -465,7 +474,7 @@ pub fn remove_ghost_from_file(file: &syn_verus::File, mode: &DeghostMode) -> syn
     new_file
 }
 
-fn remove_verus_macro(file: &syn_verus::File) -> syn_verus::File {
+pub fn remove_verus_macro(file: &syn_verus::File) -> syn_verus::File {
     let mut new_items: Vec<syn_verus::Item> = Vec::new();
 
     for item in &file.items {
@@ -487,7 +496,10 @@ fn remove_verus_macro(file: &syn_verus::File) -> syn_verus::File {
     new_file
 }
 
-fn merge_files(file: &syn_verus::File, verus_files: Vec<syn_verus::File>) -> syn_verus::File {
+pub fn deghost_merge_files(
+    file: &syn_verus::File,
+    verus_files: Vec<syn_verus::File>,
+) -> syn_verus::File {
     let mut new_items: Vec<syn_verus::Item> = Vec::new();
 
     for item in &file.items {
@@ -526,6 +538,6 @@ pub fn fextract_pure_rust(filepath: PathBuf, mode: &DeghostMode) -> Result<syn_v
 
         //println!("{}", fprint_file(&merge_files(&pure_file, verus_files.clone()), VFormatter::VerusFmt));
 
-        Ok(merge_files(&pure_file, verus_files))
+        Ok(deghost_merge_files(&pure_file, verus_files))
     })
 }

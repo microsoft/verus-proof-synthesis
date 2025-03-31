@@ -14,9 +14,6 @@ pub(super) fn merge_exprs(expr: &Expr, expr1: &Expr, expr2: &Expr, mode: &Deghos
         (Expr::Assign(a), Expr::Assign(a1), Expr::Assign(a2)) => {
             eq_or_conflict_3(a, a1, a2, "Assign conflict", || expr.clone())
         }
-        (Expr::AssignOp(a), Expr::AssignOp(a1), Expr::AssignOp(a2)) => {
-            eq_or_conflict_3(a, a1, a2, "AssignOp conflict", || expr.clone())
-        }
         (Expr::Async(a), Expr::Async(a1), Expr::Async(a2)) => {
             merge_blocks(&a.block.stmts, &a1.block.stmts, &a2.block.stmts, mode).map(|b| {
                 Expr::Async(syn_verus::ExprAsync {
@@ -42,9 +39,6 @@ pub(super) fn merge_exprs(expr: &Expr, expr1: &Expr, expr2: &Expr, mode: &Deghos
                 })
             })
         }
-        (Expr::Box(a), Expr::Box(a1), Expr::Box(a2)) => {
-            eq_or_conflict_3(a, a1, a2, "Box conflict", || expr.clone())
-        }
         (Expr::Break(a), Expr::Break(a1), Expr::Break(a2)) => {
             eq_or_conflict_3(a, a1, a2, "Break conflict", || expr.clone())
         }
@@ -60,18 +54,10 @@ pub(super) fn merge_exprs(expr: &Expr, expr1: &Expr, expr2: &Expr, mode: &Deghos
 
             merge_exprs(&a.body, &a1.body, &a2.body, mode).map(|b| {
                 Expr::Closure(syn_verus::ExprClosure {
-                    attrs: a1.attrs.clone(),
-                    movability: a1.movability.clone(),
-                    asyncness: a1.asyncness.clone(),
-                    capture: a1.capture.clone(),
-                    or1_token: a1.or1_token.clone(),
-                    inputs: a1.inputs.clone(),
-                    or2_token: a1.or2_token.clone(),
-                    output: a1.output.clone(),
                     requires: new_requires,
                     ensures: new_ensures,
-                    inner_attrs: a1.inner_attrs.clone(),
                     body: Box::new(b),
+                    ..a1.clone()
                 })
             })
         }
@@ -320,16 +306,6 @@ pub(super) fn merge_exprs(expr: &Expr, expr1: &Expr, expr2: &Expr, mode: &Deghos
                 paren_token: t1.paren_token.clone(),
                 elems: new_elems,
             }))
-        }
-        (Expr::Type(t), Expr::Type(t1), Expr::Type(t2)) => {
-            merge_exprs(&*t.expr, &*t1.expr, &*t2.expr, mode).map(|e| {
-                Expr::Type(syn_verus::ExprType {
-                    attrs: t1.attrs.clone(),
-                    expr: Box::new(e),
-                    colon_token: t1.colon_token.clone(),
-                    ty: t1.ty.clone(),
-                })
-            })
         }
         (Expr::Unary(u), Expr::Unary(u1), Expr::Unary(u2)) => {
             merge_exprs(&*u.expr, &*u1.expr, &*u2.expr, mode).map(|e| {

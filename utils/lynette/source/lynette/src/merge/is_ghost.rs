@@ -20,7 +20,7 @@ impl IsGhost for TraitItem {
     fn is_ghost(&self) -> bool {
         match self {
             TraitItem::Const(c) => c.mode != syn_verus::FnMode::Default,
-            TraitItem::Method(m) => m.sig.mode != syn_verus::FnMode::Default,
+            TraitItem::Fn(m) => m.sig.mode != syn_verus::FnMode::Default,
             TraitItem::Type(_) => false,
             _ => false,
         }
@@ -31,8 +31,7 @@ impl IsGhost for Stmt {
     fn is_ghost(&self) -> bool {
         match self {
             Stmt::Item(i) => i.is_ghost(),
-            Stmt::Expr(e) => e.is_ghost(),
-            Stmt::Semi(e, _) => e.is_ghost(),
+            Stmt::Expr(e, _) => e.is_ghost(),
             _ => false,
         }
     }
@@ -42,7 +41,7 @@ impl IsGhost for ImplItem {
     fn is_ghost(&self) -> bool {
         match self {
             ImplItem::Const(c) => c.mode != syn_verus::FnMode::Default,
-            ImplItem::Method(m) => m.sig.mode != syn_verus::FnMode::Default,
+            ImplItem::Fn(m) => m.sig.mode != syn_verus::FnMode::Default,
             ImplItem::Type(_) => false,
             _ => false,
         }

@@ -81,7 +81,7 @@ pub fn extract_functions_by_name(file: &syn_verus::File, names: &[String]) -> Ve
                 .items
                 .iter()
                 .filter_map(|i| {
-                    if let syn_verus::TraitItem::Method(m) = i {
+                    if let syn_verus::TraitItem::Fn(m) = i {
                         if m.default.is_some()
                             && names.contains(&format!(
                                 "{}::{}",
@@ -105,7 +105,7 @@ pub fn extract_functions_by_name(file: &syn_verus::File, names: &[String]) -> Ve
                 .items
                 .iter()
                 .filter_map(|i| {
-                    if let syn_verus::ImplItem::Method(m) = i {
+                    if let syn_verus::ImplItem::Fn(m) = i {
                         if names.contains(dbg!(&format!(
                             "{}::{}",
                             type_path_to_string(&ii.self_ty),
@@ -192,10 +192,10 @@ pub fn insert_function(
                     }
 
                     for item in t.items.iter_mut() {
-                        if let syn_verus::TraitItem::Method(mm) = item {
+                        if let syn_verus::TraitItem::Fn(mm) = item {
                             if mm.sig.ident == m.sig.ident {
                                 if replace {
-                                    *item = syn_verus::TraitItem::Method(m.clone());
+                                    *item = syn_verus::TraitItem::Fn(m.clone());
                                 } else {
                                     return Err(Error::Conflict(m.sig.ident.to_string()));
                                 }
@@ -225,10 +225,10 @@ pub fn insert_function(
                     }
 
                     for item in ii.items.iter_mut() {
-                        if let syn_verus::ImplItem::Method(mm) = item {
+                        if let syn_verus::ImplItem::Fn(mm) = item {
                             if mm.sig.ident == m.sig.ident {
                                 if replace {
-                                    *item = syn_verus::ImplItem::Method(m.clone());
+                                    *item = syn_verus::ImplItem::Fn(m.clone());
                                 } else {
                                     return Err(Error::Conflict(m.sig.ident.to_string()));
                                 }
@@ -245,7 +245,7 @@ pub fn insert_function(
                 // Adding new trait method is not allowed, but adding new struct method is allowed
                 if i.trait_.is_none() {
                     file.items.push(syn_verus::Item::Impl(syn_verus::ItemImpl {
-                        items: vec![syn_verus::ImplItem::Method(m)],
+                        items: vec![syn_verus::ImplItem::Fn(m)],
                         ..i
                     }));
 
@@ -287,11 +287,11 @@ pub fn ffind_all_functions(filepath: &PathBuf) -> Result<Vec<syn_verus::ItemFn>,
 fn detect_non_linear_assert_stmt(stmt: &syn_verus::Stmt) -> bool {
     match stmt {
         syn_verus::Stmt::Local(l) => {
-            l.init.as_ref().map_or(false, |(_, e)| detect_non_linear_assert_expr(e))
+            l.init.as_ref().map_or(false, |l| detect_non_linear_assert_expr(&l.expr))
         }
         syn_verus::Stmt::Item(_) => false,
-        syn_verus::Stmt::Expr(e) => detect_non_linear_assert_expr(e),
-        syn_verus::Stmt::Semi(e, _) => detect_non_linear_assert_expr(e),
+        syn_verus::Stmt::Expr(e, _) => detect_non_linear_assert_expr(e),
+        _ => false,
     }
 }
 
@@ -315,11 +315,6 @@ pub fn detect_non_linear_assert_expr(expr: &syn_verus::Expr) -> bool {
             detect_non_linear_assert_expr(a.right.as_ref())
                 || detect_non_linear_assert_expr(&a.left.as_ref())
         }
-        syn_verus::Expr::AssignOp(a) => {
-            // XXX: Can lhs be non-linear?
-            detect_non_linear_assert_expr(a.right.as_ref())
-                || detect_non_linear_assert_expr(&a.left.as_ref())
-        }
         syn_verus::Expr::Async(_) => {
             // XXX: Is it allowed in an assert?
             false
@@ -330,31 +325,31 @@ pub fn detect_non_linear_assert_expr(expr: &syn_verus::Expr) -> bool {
         }
         syn_verus::Expr::Binary(b) => {
             match b.op {
+                // XXX: All of the XxxEq ops are removed from syn_verus::BinOp. Need to confirm the effect.
                 syn_verus::BinOp::Mul(_) |
                 syn_verus::BinOp::Div(_) |
                 syn_verus::BinOp::Rem(_) |
-                syn_verus::BinOp::MulEq(_) |
-                syn_verus::BinOp::DivEq(_) |
-                syn_verus::BinOp::RemEq(_) |
+                // syn_verus::BinOp::MulEq(_) |
+                // syn_verus::BinOp::DivEq(_) |
+                // syn_verus::BinOp::RemEq(_) |
                 // XXX: Is bit ops non-linear?
                 syn_verus::BinOp::BitXor(_) |
                 syn_verus::BinOp::BitAnd(_) |
                 syn_verus::BinOp::BitOr(_) |
                 syn_verus::BinOp::Shl(_) |
                 syn_verus::BinOp::Shr(_) |
-                syn_verus::BinOp::BitXorEq(_) |
-                syn_verus::BinOp::BitAndEq(_) |
-                syn_verus::BinOp::BitOrEq(_) |
-                syn_verus::BinOp::ShlEq(_) |
-                syn_verus::BinOp::ShrEq(_) => {
-                    !(expr_only_lit(b.left.as_ref()) || expr_only_lit(b.right.as_ref()))
-                },
+                // syn_verus::BinOp::BitXorEq(_) |
+                // syn_verus::BinOp::BitAndEq(_) |
+                // syn_verus::BinOp::BitOrEq(_) |
+                // syn_verus::BinOp::ShlEq(_) |
+                // syn_verus::BinOp::ShrEq(_) => {
+                //     !(expr_only_lit(b.left.as_ref()) || expr_only_lit(b.right.as_ref()))
+                // },
                 _ => detect_non_linear_assert_expr(b.left.as_ref()) ||
                     detect_non_linear_assert_expr(b.right.as_ref())
             }
         }
         syn_verus::Expr::Block(b) => b.block.stmts.iter().any(|s| detect_non_linear_assert_stmt(s)),
-        syn_verus::Expr::Box(b) => detect_non_linear_assert_expr(b.expr.as_ref()),
         syn_verus::Expr::Break(_) => false,
         syn_verus::Expr::Call(c) => c.args.iter().any(|e| detect_non_linear_assert_expr(e)),
         syn_verus::Expr::Cast(c) => detect_non_linear_assert_expr(c.expr.as_ref()),
@@ -392,8 +387,8 @@ pub fn detect_non_linear_assert_expr(expr: &syn_verus::Expr) -> bool {
         syn_verus::Expr::Paren(p) => detect_non_linear_assert_expr(p.expr.as_ref()),
         syn_verus::Expr::Path(_) => false,
         syn_verus::Expr::Range(r) => {
-            r.from.as_ref().map_or(false, |e| detect_non_linear_assert_expr(e.as_ref()))
-                || r.to.as_ref().map_or(false, |e| detect_non_linear_assert_expr(e.as_ref()))
+            r.start.as_ref().map_or(false, |e| detect_non_linear_assert_expr(e.as_ref()))
+                || r.end.as_ref().map_or(false, |e| detect_non_linear_assert_expr(e.as_ref()))
         }
         syn_verus::Expr::Reference(r) => detect_non_linear_assert_expr(&r.expr.as_ref()),
         syn_verus::Expr::Repeat(r) => {
@@ -407,7 +402,6 @@ pub fn detect_non_linear_assert_expr(expr: &syn_verus::Expr) -> bool {
         syn_verus::Expr::Try(_) => false,
         syn_verus::Expr::TryBlock(_) => false,
         syn_verus::Expr::Tuple(t) => t.elems.iter().any(|e| detect_non_linear_assert_expr(e)),
-        syn_verus::Expr::Type(_) => false,
         syn_verus::Expr::Unary(u) => detect_non_linear_assert_expr(u.expr.as_ref()),
         syn_verus::Expr::Unsafe(_) => false,
         syn_verus::Expr::Verbatim(_) => false,
@@ -454,8 +448,8 @@ fn detect_non_linear_stmt(stmt: &syn_verus::Stmt) -> bool {
     match stmt {
         syn_verus::Stmt::Local(_) => false,
         syn_verus::Stmt::Item(_) => false,
-        syn_verus::Stmt::Expr(e) => detect_non_linear_expr(e), //detect_non_linear_expr(e),
-        syn_verus::Stmt::Semi(e, _) => detect_non_linear_expr(e),
+        syn_verus::Stmt::Expr(e, _) => detect_non_linear_expr(e), //detect_non_linear_expr(e),
+        _ => false,
     }
 }
 

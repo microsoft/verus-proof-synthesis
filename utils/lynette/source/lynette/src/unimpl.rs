@@ -14,15 +14,21 @@ pub const EXT_BODY_ATTR: Lazy<Attribute> = Lazy::new(|| Attribute {
     pound_token: syn_verus::token::Pound::default(),
     style: syn_verus::AttrStyle::Outer,
     bracket_token: syn_verus::token::Bracket::default(),
-    path: syn_verus::parse2::<syn_verus::Path>(EXT_BODY_ATTR_TOKEN.clone()).unwrap(),
-    tokens: proc_macro2::TokenStream::new(),
+    //path: syn_verus::parse2::<syn_verus::Path>(EXT_BODY_ATTR_TOKEN.clone()).unwrap(),
+    //tokens: proc_macro2::TokenStream::new(),
+    // FIXME: this is broken
+    meta: syn_verus::Meta::Path(syn_verus::Path {
+        leading_colon: None,
+        segments: syn_verus::punctuated::Punctuated::new(),
+    }),
 });
 
 const UNIMPLEMENTED_STR: &str = "unimplemented!()";
 const UNIMPLEMENTD_TOEKN: Lazy<proc_macro2::TokenStream> =
     Lazy::new(|| proc_macro2::TokenStream::from_str(UNIMPLEMENTED_STR).unwrap());
 const UNIMPLEMENTD_STMT: Lazy<syn_verus::Stmt> = Lazy::new(|| {
-    syn_verus::Stmt::Expr(syn_verus::parse2::<syn_verus::Expr>(UNIMPLEMENTD_TOEKN.clone()).unwrap())
+    // FIXME: this is broken
+    syn_verus::Stmt::Expr(syn_verus::parse2::<syn_verus::Expr>(UNIMPLEMENTD_TOEKN.clone()).unwrap(), None)
 });
 
 fn unimpl_block() -> syn_verus::Block {
@@ -70,7 +76,7 @@ fn unimpl_item(item: &Item, target: bool) -> Item {
                 .items
                 .iter()
                 .map(|i| match i {
-                    syn_verus::TraitItem::Method(m) => {
+                    syn_verus::TraitItem::Fn(m) => {
                         if sig_is_ghost(&m.sig)
                             || (!target && attrs_have_target(&m.attrs))
                             || attrs_have_ext_spec(&m.attrs)
@@ -82,7 +88,7 @@ fn unimpl_item(item: &Item, target: bool) -> Item {
                                     return i.clone();
                                 }
 
-                                syn_verus::TraitItem::Method(syn_verus::TraitItemMethod {
+                                syn_verus::TraitItem::Fn(syn_verus::TraitItemFn {
                                     attrs: add_ext_body_attr(&m.attrs),
                                     default: Some(unimpl_block()),
                                     ..m.clone()
@@ -103,7 +109,7 @@ fn unimpl_item(item: &Item, target: bool) -> Item {
                 .items
                 .iter()
                 .map(|i| match i {
-                    syn_verus::ImplItem::Method(m) => {
+                    syn_verus::ImplItem::Fn(m) => {
                         if method_is_ghost(m)
                             || (!target && method_is_target(m))
                             || method_is_ext_spec(m)
@@ -111,7 +117,7 @@ fn unimpl_item(item: &Item, target: bool) -> Item {
                         {
                             i.clone()
                         } else {
-                            syn_verus::ImplItem::Method(syn_verus::ImplItemMethod {
+                            syn_verus::ImplItem::Fn(syn_verus::ImplItemFn {
                                 attrs: add_ext_body_attr(&m.attrs),
                                 block: unimpl_block(),
                                 ..m.clone()
@@ -220,7 +226,7 @@ pub fn funimpl_file(
                         j,
                         |items| Item::Trait(syn_verus::ItemTrait { items, ..unimpl_t.clone() }),
                         |i| match i {
-                            syn_verus::TraitItem::Method(m) => {
+                            syn_verus::TraitItem::Fn(m) => {
                                 !(sig_is_ghost(&m.sig)
                                     || (!target && attrs_have_target(&m.attrs))
                                     || attrs_have_ext_spec(&m.attrs))
@@ -228,7 +234,7 @@ pub fn funimpl_file(
                             _ => false,
                         },
                         |i| match i {
-                            syn_verus::TraitItem::Method(m) => {
+                            syn_verus::TraitItem::Fn(m) => {
                                 format!("{}::{}", orig_t.ident.to_string(), m.sig.ident.to_string())
                             }
                             _ => String::new(),
@@ -242,7 +248,7 @@ pub fn funimpl_file(
                         j,
                         |items| Item::Impl(syn_verus::ItemImpl { items, ..unimpl_i.clone() }),
                         |i| match i {
-                            syn_verus::ImplItem::Method(m) => {
+                            syn_verus::ImplItem::Fn(m) => {
                                 !(method_is_ghost(m)
                                     || (!target && method_is_target(m))
                                     || method_is_ext_spec(m))
@@ -258,7 +264,7 @@ pub fn funimpl_file(
                             // When --verify-function specify a method name with ambiguity,
                             // verus verifies both.
                             // Thus we just keep the same behavior here for now.
-                            syn_verus::ImplItem::Method(m) => {
+                            syn_verus::ImplItem::Fn(m) => {
                                 format!(
                                     "{}::{}",
                                     type_path_to_string(&orig_i.self_ty),

@@ -22,6 +22,7 @@ use crate::merge::*;
 use crate::unimpl::*;
 use crate::utils::*;
 
+/// Parse a string of ranges in the format of a-b,c-d,e into a vector of ranges.
 fn parse_ranges(
     s: &str,
 ) -> Result<std::vec::Vec<RangeInclusive<usize>>, Box<dyn std::error::Error + Send + Sync>> {
@@ -51,7 +52,76 @@ struct GetCallsArgs {
         help = "Only returns function calls for the specified line(s).",
         long_help = "Only returns function calls for the specified line(s).
 The format is a comma separated list of ranges, e.g. 1-3,5,7-9.")]
-    line: Option<std::vec::Vec<RangeInclusive<usize>>>,
+    line: Option<Vec<RangeInclusive<usize>>>,
+}
+
+struct Loc {
+    line: usize,
+    column: usize,
+}
+
+impl Loc {
+    fn new(line: usize, column: usize) -> Self {
+        Self { line, column }
+    }
+}
+
+impl Clone for Loc {
+    fn clone(&self) -> Self {
+        Self { line: self.line, column: self.column }
+    }
+}
+
+impl std::fmt::Debug for Loc {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {})", self.line, self.column)
+    }
+}
+
+impl PartialEq for Loc {
+    fn eq(&self, other: &Self) -> bool {
+        self.line == other.line && self.column == other.column
+    }
+}
+
+impl Eq for Loc {}
+
+impl Ord for Loc {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        if self.line == other.line {
+            self.column.cmp(&other.column)
+        } else {
+            self.line.cmp(&other.line)
+        }
+    }
+}
+
+impl PartialOrd for Loc {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+/// Parse a string of spans in the format of a:b,c:d,e:f into a vector of spans.
+fn parse_locs(s: &str) -> Result<Vec<Loc>, Box<dyn std::error::Error + Send + Sync>> {
+    s.split(',')
+        .map(|part| {
+            part.split_once(':').ok_or_else(|| "Invalid format".into()).and_then(|(start, end)| {
+                let line = start.parse::<usize>().map_err(|_| "Invalid start".to_string())?;
+                let column = end.parse::<usize>().map_err(|_| "Invalid end".to_string())?;
+                Ok(Loc::new(line, column))
+            })
+        })
+        .collect()
+}
+
+#[derive(Args)]
+struct RemoveSpanArgs {
+    file: PathBuf,
+    #[clap(short, long, help = r#"
+A comma separated list of the start and end of the span in the format of (a: b) to remove."#,
+    value_parser = parse_locs)]
+    locs: Vec<Vec<Loc>>,
 }
 
 #[derive(Args)]
@@ -247,6 +317,25 @@ struct UnimplArgs {
     target: bool,
 }
 
+#[derive(Args)]
+struct GetGhostArgs {
+    file: PathBuf,
+    #[clap(
+        short,
+        long,
+        help = "Prints byte offsets instead of line/column numbers.",
+        default_value = "false"
+    )]
+    byte: bool,
+    #[clap(
+        short,
+        long,
+        help = "Prints line/column numbers instead of byte offsets.",
+        default_value = "true"
+    )]
+    loc: bool,
+}
+
 #[derive(Subcommand)]
 enum FunctionCommands {
     #[clap[about =
@@ -297,6 +386,17 @@ If there are conflicts in the non-merging part, <FILE1> is preferred.
 "#)]
     Merge(MergeArgs),
     Unimpl(UnimplArgs),
+    #[clap(
+        about = r#"Get all ghost code in a verus source code file. Returns a list of (type, LOC) of the expression.
+
+Currently we support ensures, requires, assert, invariant.
+
+The returned list is in the AST order.
+"#
+    )]
+    GetGhost(GetGhostArgs),
+    #[clap(about = "Remove ghost code of the given starting spans in a verus source code file.")]
+    RemoveGhost(RemoveSpanArgs),
 }
 
 #[derive(Subcommand)]
@@ -340,7 +440,6 @@ fn compare_files(args: &CompareArgs) -> Result<bool, Error> {
 
     fextract_pure_rust(f1, &mode).and_then(|result1| {
         fextract_pure_rust(f2, &mode).and_then(|result2| {
-
             if args.verbose {
                 println!("{}", fprint_file(&result1, Formatter::VerusFmt));
                 println!("{}", fprint_file(&result2, Formatter::VerusFmt));
@@ -560,25 +659,12 @@ fn main() {
                                     let sig = &f.sig;
                                     let new_sig = syn_verus::Signature {
                                         publish: syn_verus::Publish::Default,
-                                        constness: sig.constness.clone(),
-                                        asyncness: sig.asyncness.clone(),
-                                        unsafety: sig.unsafety.clone(),
-                                        abi: sig.abi.clone(),
-                                        broadcast: sig.broadcast.clone(),
-                                        mode: sig.mode.clone(),
-                                        fn_token: sig.fn_token.clone(),
-                                        ident: sig.ident.clone(),
-                                        generics: sig.generics.clone(),
-                                        paren_token: sig.paren_token.clone(),
-                                        inputs: sig.inputs.clone(),
-                                        variadic: sig.variadic.clone(),
-                                        output: sig.output.clone(),
-                                        prover: sig.prover.clone(),
-                                        requires: if !pre { sig.requires.clone() } else { None }, // Removed
-                                        recommends: sig.recommends.clone(),
-                                        ensures: if !post { sig.ensures.clone() } else { None }, // Removed
-                                        decreases: sig.decreases.clone(),
-                                        invariants: sig.invariants.clone(),
+                                        spec: syn_verus::SignatureSpec {
+                                            requires: if !pre { sig.spec.requires.clone() } else { None }, // Removed
+                                            ensures: if !post { sig.spec.ensures.clone() } else { None }, // Removed
+                                            ..sig.spec.clone()
+                                        },
+                                        ..sig.clone()
                                     };
 
                                     let new_fn = syn_verus::ItemFn {
@@ -717,20 +803,58 @@ fn main() {
                     let filepath = arg.file1;
                     let target = arg.target;
 
-                    funimpl_file(&filepath, target)
-                    .and_then(|f| {
-                        let ret: serde_json::Value = f
-                            .iter()
-                            .map(|(n, f)| json!({"name":n, "code": fprint_file(&f, Formatter::Mix)}))
-                            .collect();
+                    if false {
+                        funimpl_file(&filepath, target)
+                        .and_then(|f| {
+                            let ret: serde_json::Value = f
+                                .iter()
+                                .map(|(n, f)| json!({"name":n, "code": fprint_file(&f, Formatter::Mix)}))
+                                .collect();
 
-                        println!("{}", ret);
-                        Ok(())
-                    })
-                    .unwrap_or_else(|e| {
+                            println!("{}", ret);
+                            Ok(())
+                        })
+                        .unwrap_or_else(|e| {
+                            eprintln!("{}", e);
+                            process::exit(1);
+                        });
+                    } else {
+                        eprint!("Unimpl is broken now and waiting for fixes...");
+                    }
+                }
+                CodeCommands::GetGhost(arg) => {
+                    let filepath = &arg.file;
+
+                    let result = fget_ghosts(filepath).unwrap_or_else(|e| {
                         eprintln!("{}", e);
                         process::exit(1);
                     });
+
+                    if arg.byte {
+                        unimplemented!();
+                    } else {
+                        result.iter().for_each(|(t, loc)| {
+                            println!(
+                                "{}:(({}, {}), ({}, {}))",
+                                t,
+                                loc.start().line,
+                                loc.start().column,
+                                loc.end().line,
+                                loc.end().column
+                            );
+                        });
+                    }
+                }
+                CodeCommands::RemoveGhost(arg) => {
+                    let filepath = arg.file;
+                    // clap parses the argument as a Vec<Vec<Loc>> because it allows multiple --locs
+                    // We might find a better way to parse this in the future.
+                    // But for now, we just take the first element.
+                    let locs = &arg.locs[0];
+
+                    println!("{:?}", locs);
+
+                    unimplemented!();
                 }
             }
         }

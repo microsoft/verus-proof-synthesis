@@ -246,10 +246,10 @@ fn merge_trait_items(
         (TraitItem::Const(c), TraitItem::Const(c1), TraitItem::Const(c2)) => {
             eq_or_conflict_3(c, c1, c2, "Const conflict", || TraitItem::Const(c.clone()))
         }
-        (TraitItem::Method(m), TraitItem::Method(m1), TraitItem::Method(m2)) => {
+        (TraitItem::Fn(m), TraitItem::Fn(m1), TraitItem::Fn(m2)) => {
             match (&m.default, &m1.default, &m2.default) {
                 (Some(d), Some(d1), Some(d2)) => {
-                    Ok(TraitItem::Method(syn_verus::TraitItemMethod {
+                    Ok(TraitItem::Fn(syn_verus::TraitItemFn {
                         attrs: m1.attrs.clone(),
                         sig: merge_sigs(&m.sig, &m1.sig, &m2.sig, mode)?,
                         default: Some(merge_blocks(&d.stmts, &d1.stmts, &d2.stmts, mode)?),
@@ -257,7 +257,7 @@ fn merge_trait_items(
                     }))
                 }
                 (None, None, None) => {
-                    eq_or_conflict_3(m, m1, m2, "Method conflict", || TraitItem::Method(m.clone()))
+                    eq_or_conflict_3(m, m1, m2, "Method conflict", || TraitItem::Fn(m.clone()))
                 }
                 _ => {
                     return Err(Error::Conflict(String::from("Method default conflict")));
@@ -350,6 +350,7 @@ fn merge_traits(
         attrs: trait1.attrs.clone(),
         vis: trait1.vis.clone(),
         unsafety: trait1.unsafety.clone(),
+        restriction: trait1.restriction.clone(),
         auto_token: trait1.auto_token.clone(),
         trait_token: trait1.trait_token.clone(),
         ident: trait1.ident.clone(),
@@ -371,14 +372,11 @@ fn merge_stmts(stmt: &Stmt, stmt1: &Stmt, stmt2: &Stmt, mode: &DeghostMode) -> R
         (Stmt::Item(i), Stmt::Item(i1), Stmt::Item(i2)) => {
             merge_items(i, i1, i2, mode).map(|i| Stmt::Item(i))
         }
-        (Stmt::Expr(e), Stmt::Expr(e1), Stmt::Expr(e2)) => {
+        // XXX: Think about the correntness here - current syn_verus removes Stmt::Semi and merge it into Stmt::Expr
+        (Stmt::Expr(e, s), Stmt::Expr(e1, _), Stmt::Expr(e2, _)) => {
             // Expr used here cannot be ghost exprs(e.g. assert, assume),
             // but the sub-node can contain ghosts.
-            merge_exprs(e, e1, e2, mode).map(|e| Stmt::Expr(e))
-        }
-        (Stmt::Semi(e, semi), Stmt::Semi(e1, _), Stmt::Semi(e2, _)) => {
-            // Semi is similar to Expr, but it has a semi token
-            merge_exprs(e, e1, e2, mode).map(|e| Stmt::Semi(e, semi.clone()))
+            merge_exprs(e, e1, e2, mode).map(|e| Stmt::Expr(e, s.clone()))
         }
         _ => Err(Error::Conflict(String::from("Stmt type conflict"))),
     }
@@ -403,10 +401,13 @@ fn merge_sigs(
     mode: &DeghostMode,
 ) -> Result<syn_verus::Signature, Error> {
     Ok(syn_verus::Signature {
-        requires: merge_requires(&sig1.requires, &sig2.requires, mode)?,
-        ensures: merge_ensures(&sig1.ensures, &sig2.ensures, mode)?,
-        // recommends: sig1.recommends.clone(), // XXX: We haven't formally support merging recommends
-        // decreases: merge_decreases(&sig1.decreases, &sig2.decreases, mode)?,
+        spec: syn_verus::SignatureSpec {
+            requires: merge_requires(&sig1.spec.requires, &sig2.spec.requires, mode)?,
+            ensures: merge_ensures(&sig1.spec.ensures, &sig2.spec.ensures, mode)?,
+            // recommends: sig1.spec.recommends.clone(), // XXX: We haven't formally support merging recommends
+            // decreases: merge_decreases(&sig1.decreases, &sig2.decreases, mode)?,
+            ..sig1.spec.clone()
+        },
         ..sig1.clone()
     })
 }
@@ -421,9 +422,9 @@ fn merge_impl_items(
         (ImplItem::Const(c), ImplItem::Const(c1), ImplItem::Const(c2)) => {
             eq_or_conflict_3(c, c1, c2, "Const conflict", || ImplItem::Const(c.clone()))
         }
-        (ImplItem::Method(m), ImplItem::Method(m1), ImplItem::Method(m2)) => {
+        (ImplItem::Fn(m), ImplItem::Fn(m1), ImplItem::Fn(m2)) => {
             merge_blocks(&m.block.stmts, &m1.block.stmts, &m2.block.stmts, mode).and_then(|b| {
-                Ok(ImplItem::Method(syn_verus::ImplItemMethod {
+                Ok(ImplItem::Fn(syn_verus::ImplItemFn {
                     attrs: m1.attrs.clone(),
                     vis: m1.vis.clone(),
                     defaultness: m1.defaultness.clone(),
@@ -529,9 +530,6 @@ fn merge_items(
         }
         (Item::Macro(m), Item::Macro(m1), Item::Macro(m2)) => {
             eq_or_conflict_3(m, m1, m2, "Macro conflict", || item.clone())
-        }
-        (Item::Macro2(m), Item::Macro2(m1), Item::Macro2(m2)) => {
-            eq_or_conflict_3(m, m1, m2, "Macro2 conflict", || item.clone())
         }
         (Item::Mod(m), Item::Mod(m1), Item::Mod(m2)) => {
             eq_or_conflict_3(m, m1, m2, "Merging of mod is not supported yet", || item.clone())

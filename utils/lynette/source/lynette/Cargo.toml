@@ -18,9 +18,9 @@ once_cell = "1.8.0"
 git = "https://github.com/verus-lang/verus"
 subdirectory = "dependencies/syn"
 features = ["full", "extra-traits", "parsing"]
-rev = "f0662d3"
+rev = "892067f"
 
 [dependencies.prettyplease_verus]
 git = "https://github.com/verus-lang/verus"
 subdirectory = "dependencies/prettyplease"
-rev = "f0662d3"
+rev = "892067f"

@@ -333,8 +333,8 @@ pub enum FnMethod {
     Fn(syn_verus::ItemFn),
     // For Method and MethodDefault, we need to keep the Trait/Struct
     // information to get the qualified name of the method.
-    Method(syn_verus::ItemImpl, syn_verus::ImplItemMethod),
-    MethodDefault(syn_verus::ItemTrait, syn_verus::TraitItemMethod),
+    Method(syn_verus::ItemImpl, syn_verus::ImplItemFn),
+    MethodDefault(syn_verus::ItemTrait, syn_verus::TraitItemFn),
 }
 
 pub trait FnMethodExt {
@@ -448,14 +448,16 @@ pub fn update_verus_macros_files(
 static TARGET_IDENT: &str = "(llm4verus_target)";
 
 pub fn attrs_have_target(attrs: &Vec<syn_verus::Attribute>) -> bool {
-    attrs.iter().any(|attr| attr.tokens.to_string() == TARGET_IDENT)
+    // FIXME:
+    //attrs.iter().any(|attr| attr.tokens.to_string() == TARGET_IDENT)
+    false
 }
 
 pub fn func_is_target(f: &syn_verus::ItemFn) -> bool {
     attrs_have_target(&f.attrs)
 }
 
-pub fn method_is_target(m: &syn_verus::ImplItemMethod) -> bool {
+pub fn method_is_target(m: &syn_verus::ImplItemFn) -> bool {
     attrs_have_target(&m.attrs)
 }
 
@@ -470,24 +472,26 @@ pub fn func_is_ghost(f: &syn_verus::ItemFn) -> bool {
     sig_is_ghost(&f.sig)
 }
 
-pub fn method_is_ghost(m: &syn_verus::ImplItemMethod) -> bool {
+pub fn method_is_ghost(m: &syn_verus::ImplItemFn) -> bool {
     sig_is_ghost(&m.sig)
 }
 
 pub fn attrs_have_ext_spec(attrs: &Vec<syn_verus::Attribute>) -> bool {
-    attrs.iter().any(|attr| {
-        attr.path.segments.len() == 2
-            && attr.path.segments[0].ident.to_string() == "verifier"
-            && attr.path.segments[1].ident.to_string() == "external_fn_specification"
-            && attr.tokens.is_empty()
-    })
+    // FIXME
+    // attrs.iter().any(|attr| {
+    //     attr.path.segments.len() == 2
+    //         && attr.path.segments[0].ident.to_string() == "verifier"
+    //         && attr.path.segments[1].ident.to_string() == "external_fn_specification"
+    //         && attr.tokens.is_empty()
+    // })
+    false
 }
 
 pub fn func_is_ext_spec(f: &syn_verus::ItemFn) -> bool {
     attrs_have_ext_spec(&f.attrs)
 }
 
-pub fn method_is_ext_spec(m: &syn_verus::ImplItemMethod) -> bool {
+pub fn method_is_ext_spec(m: &syn_verus::ImplItemFn) -> bool {
     attrs_have_ext_spec(&m.attrs)
 }
 
