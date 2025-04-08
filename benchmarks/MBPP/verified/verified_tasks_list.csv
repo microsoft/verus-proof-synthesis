@@ -61,7 +61,7 @@
 629,Write a function in Rust to find even numbers from a list of numbers.
 644,Write a function in Rust to reverse an array upto a given position.
 728,"Write a function in Rust takes as input two lists [a_1,...,a_n] [b_1,...,b_n] and returns [a_1+b_1,...,a_n+b_n]."
-732,Write a function in Rust to check whether all the characters are same or not.
+732,Write a function in Rust to replace all occurrences of spaces commas or dots with a colon.
 733,Write a function in Rust to find the index of the first occurrence of a given number in a sorted array.
 741,Write a function in Rust to check whether all the characters are same or not.
 743,Write a method in Rust to rotate a given list by specified N number of items to the right direction.

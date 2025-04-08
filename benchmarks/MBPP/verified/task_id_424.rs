@@ -5,46 +5,40 @@ fn main() {
 
     assert_eq!(
         extract_rear_chars(&vec![
-            "Mers".chars().collect(),
-            "for".chars().collect(),
-            "Vers".chars().collect()
-        ])
-        .iter()
-        .collect::<String>(),
-        "srs"
+            "Mers".as_bytes().to_vec(),
+            "for".as_bytes().to_vec(),
+            "Vers".as_bytes().to_vec()
+        ]),
+        "srs".as_bytes().to_vec()
     );
     assert_eq!(
         extract_rear_chars(&vec![
-            "Avenge".chars().collect(),
-            "for".chars().collect(),
-            "People".chars().collect()
-        ])
-        .iter()
-        .collect::<String>(),
-        "ere"
+            "Avenge".as_bytes().to_vec(),
+            "for".as_bytes().to_vec(),
+            "People".as_bytes().to_vec()
+        ]),
+        "ere".as_bytes().to_vec()
     );
     assert_eq!(
         extract_rear_chars(&vec![
-            "Gotta".chars().collect(),
-            "get".chars().collect(),
-            "go".chars().collect()
-        ])
-        .iter()
-        .collect::<String>(),
-        "ato"
+            "Gotta".as_bytes().to_vec(),
+            "get".as_bytes().to_vec(),
+            "go".as_bytes().to_vec()
+        ]),
+        "ato".as_bytes().to_vec()
     );
 }
 
 verus! {
 
-fn extract_rear_chars(s: &Vec<Vec<char>>) -> (result: Vec<char>)
+fn extract_rear_chars(s: &Vec<Vec<u8>>) -> (result: Vec<u8>)
     requires
         forall|i: int| 0 <= i < s.len() ==> #[trigger] s[i].len() > 0,
     ensures
         s.len() == result.len(),
         forall|i: int| 0 <= i < s.len() ==> result[i] == #[trigger] s[i][s[i].len() - 1],
 {
-    let mut rear_chars: Vec<char> = Vec::with_capacity(s.len());
+    let mut rear_chars: Vec<u8> = Vec::with_capacity(s.len());
     let mut index = 0;
     while index < s.len()
         invariant

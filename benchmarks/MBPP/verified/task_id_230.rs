@@ -4,28 +4,22 @@ fn main() {
     // Write a function in Rust that takes in a string and character, replaces blank spaces in the string with the character, and returns the string.
 
     assert_eq!(
-        replace_blanks_with_chars(&("hello people".chars().collect()), '@')
-            .iter()
-            .collect::<String>(),
-        "hello@people"
+        replace_blanks_with_chars(b"hello people", b'@'),
+        b"hello@people"
     );
     assert_eq!(
-        replace_blanks_with_chars(&("python program language".chars().collect()), '$')
-            .iter()
-            .collect::<String>(),
-        "python$program$language"
+        replace_blanks_with_chars(b"python program language", b'$'),
+        b"python$program$language"
     );
     assert_eq!(
-        replace_blanks_with_chars(&("blank space".chars().collect()), '-')
-            .iter()
-            .collect::<String>(),
-        "blank-space"
+        replace_blanks_with_chars(b"blank space", b'-'),
+        b"blank-space"
     );
 }
 
 verus! {
 
-fn replace_blanks_with_chars(str1: &Vec<char>, ch: char) -> (result: Vec<char>)
+fn replace_blanks_with_chars(str1: &[u8], ch: u8) -> (result: Vec<u8>)
     ensures
         str1@.len() == result@.len(),
         forall|i: int|
@@ -35,20 +29,20 @@ fn replace_blanks_with_chars(str1: &Vec<char>, ch: char) -> (result: Vec<char>)
                 str1[i]
             }),
 {
-    let mut out_str: Vec<char> = Vec::with_capacity(str1.len());
+    let mut out_str: Vec<u8> = Vec::with_capacity(str1.len());
     let mut index = 0;
     while index < str1.len()
         invariant
             0 <= index <= str1.len(),
             out_str@.len() == index,
             forall|k: int|
-                0 <= k < index ==> out_str[k] == (if str1[k] == ' ' {
+                0 <= k < index ==> out_str[k] == (if str1[k] == 32 {  // 32 is ASCII Space as u8
                     ch
                 } else {
                     str1[k]
                 }),
     {
-        if (str1[index] == ' ') {
+        if (str1[index] == 32) {  // 32 is ASCII Space as u8
             out_str.push(ch);
         } else {
             out_str.push(str1[index]);

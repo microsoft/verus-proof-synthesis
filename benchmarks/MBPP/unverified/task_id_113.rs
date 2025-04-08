@@ -4,18 +4,18 @@ fn main() {}
 
 verus! {
 
-spec fn is_digit_spec(c: char) -> bool {
-    (c as u32) >= 48 && (c as u32) <= 57
+spec fn is_digit_spec(c: u8) -> bool {
+    c >= 48 && c <= 57
 }
 
-fn is_digit(c: char) -> (res: bool)
+fn is_digit(c: u8) -> (res: bool)
     ensures
         res == is_digit_spec(c),
 {
-    (c as u32) >= 48 && (c as u32) <= 57
+    c >= 48 && c <= 57
 }
 
-fn is_integer(text: &Vec<char>) -> (result: bool)
+fn is_integer(text: &[u8]) -> (result: bool)
     ensures
         result == (forall|i: int| 0 <= i < text.len() ==> (#[trigger] is_digit_spec(text[i]))),
 {

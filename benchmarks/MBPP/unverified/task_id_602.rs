@@ -4,7 +4,7 @@ fn main() {}
 
 verus! {
 
-pub open spec fn count_frequency_rcr(seq: Seq<char>, key: char) -> int
+pub open spec fn count_frequency_rcr(seq: Seq<u8>, key: u8) -> int
     decreases seq.len(),
 {
     if seq.len() == 0 {
@@ -18,7 +18,7 @@ pub open spec fn count_frequency_rcr(seq: Seq<char>, key: char) -> int
     }
 }
 
-fn count_frequency(arr: &Vec<char>, key: char) -> (frequency: usize)
+fn count_frequency(arr: &[u8], key: u8) -> (frequency: usize)
     ensures
         count_frequency_rcr(arr@, key) == frequency,
 {
@@ -33,11 +33,11 @@ fn count_frequency(arr: &Vec<char>, key: char) -> (frequency: usize)
     counter
 }
 
-fn first_repeated_char(str1: &Vec<char>) -> (repeated_char: Option<(usize, char)>)
+fn first_repeated_char(str1: &[u8]) -> (repeated_char: Option<(usize, u8)>)
     ensures
         if let Some((idx, rp_char)) = repeated_char {
             &&& str1@.take(idx as int) =~= str1@.take(idx as int).filter(
-                |x: char| count_frequency_rcr(str1@, x) <= 1,
+                |x: u8| count_frequency_rcr(str1@, x) <= 1,
             )
             &&& count_frequency_rcr(str1@, rp_char) > 1
         } else {

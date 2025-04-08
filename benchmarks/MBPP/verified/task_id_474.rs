@@ -3,29 +3,14 @@ use vstd::prelude::*;
 fn main() {
     // Write a function in Rust  to replace characters in a string.
 
-    assert_eq!(
-        replace_chars(&("polygon".chars().collect()), 'y', 'l')
-            .iter()
-            .collect::<String>(),
-        "pollgon"
-    );
-    assert_eq!(
-        replace_chars(&("character".chars().collect()), 'c', 'a')
-            .iter()
-            .collect::<String>(),
-        "aharaater"
-    );
-    assert_eq!(
-        replace_chars(&("python".chars().collect()), 'l', 'a')
-            .iter()
-            .collect::<String>(),
-        "python"
-    );
+    assert_eq!(replace_chars(b"polygon", b'y', b'l'), b"pollgon");
+    assert_eq!(replace_chars(b"character", b'c', b'a'), b"aharaater");
+    assert_eq!(replace_chars(b"python", b'l', b'a'), b"python");
 }
 
 verus! {
 
-fn replace_chars(str1: &Vec<char>, old_char: char, new_char: char) -> (result: Vec<char>)
+fn replace_chars(str1: &[u8], old_char: u8, new_char: u8) -> (result: Vec<u8>)
     ensures
         str1@.len() == result@.len(),
         forall|i: int|

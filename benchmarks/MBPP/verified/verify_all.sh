@@ -3,8 +3,9 @@
 ################################################################################################
 # This script verifies all *.rs files inside a directory using verus.
 #
-# To run this script, make sure verus is installed and available in the command line
+# To run this script, make sure verus and verusfmt are installed and available in the command line
 # To install verus, follow this: [https://github.com/verus-lang/verus/blob/main/INSTALL.md]
+# To install verusfmt follow this: [https://github.com/verus-lang/verusfmt]
 #
 # To chech verus installation: >> verus --version
 #
@@ -18,6 +19,8 @@ SEARCH_DIR="${1:-.}"
 find "$SEARCH_DIR" -type f -name "*.rs" | while read -r rs_file; do
   echo "[Start] verifing: $rs_file..."
   
+  # format the source first
+  verusfmt "$rs_file"
   # verify with Verus with --multiple-errors
   verus "$rs_file" --multiple-errors 20
   

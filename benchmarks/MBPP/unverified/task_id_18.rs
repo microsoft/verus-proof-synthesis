@@ -4,7 +4,7 @@ fn main() {}
 
 verus! {
 
-fn contains(str: &Vec<char>, key: char) -> (result: bool)
+fn contains(str: &[u8], key: u8) -> (result: bool)
     ensures
         result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
 {
@@ -18,7 +18,7 @@ fn contains(str: &Vec<char>, key: char) -> (result: bool)
     false
 }
 
-fn remove_chars(str1: &Vec<char>, str2: &Vec<char>) -> (result: Vec<char>)
+fn remove_chars(str1: &[u8], str2: &[u8]) -> (result: Vec<u8>)
     ensures
         forall|i: int|
             0 <= i < result.len() ==> (str1@.contains(#[trigger] result[i]) && !str2@.contains(

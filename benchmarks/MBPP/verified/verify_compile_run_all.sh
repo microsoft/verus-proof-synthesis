@@ -5,8 +5,9 @@
 # inside a directory using verus and runs the test cases.
 # It also removes all compiled files after test execution.
 #
-# To run this script, make sure verus is installed and available in the command line
+# To run this script, make sure verus and verusfmt are installed and available in the command line
 # To install verus, follow this: [https://github.com/verus-lang/verus/blob/main/INSTALL.md]
+# To install verusfmt follow this: [https://github.com/verus-lang/verusfmt]
 #
 # To chech verus installation, try: >> verus --version
 #
@@ -20,7 +21,10 @@ find "$SEARCH_DIR" -type f -name "*.rs" | while read -r rs_file; do
   echo "[Start] verifing and compiling: $rs_file..."
   
   base_name=$(basename "$rs_file" .rs)
-  # verify and compile with Verus 
+  
+  # format the source first
+  verusfmt "$rs_file"
+  # verify and compile with Verus
   verus "$rs_file" --compile --multiple-errors 20
 
   if [ $? -eq 0 ]; then

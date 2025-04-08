@@ -4,11 +4,11 @@ fn main() {}
 
 verus! {
 
-spec fn is_digit(c: char) -> bool {
-    (c as u8) >= 48 && (c as u8) <= 57
+spec fn is_digit(c: u8) -> bool {
+    (c >= 48 && c <= 57)
 }
 
-spec fn count_digits_recursively(seq: Seq<char>) -> int
+spec fn count_digits_recursively(seq: Seq<u8>) -> int
     decreases seq.len(),
 {
     if seq.len() == 0 {
@@ -22,15 +22,16 @@ spec fn count_digits_recursively(seq: Seq<char>) -> int
     }
 }
 
-fn count_digits(text: &Vec<char>) -> (count: usize)
+fn count_digits(text: &[u8]) -> (count: usize)
     ensures
         0 <= count <= text.len(),
         count_digits_recursively(text@) == count,
 {
     let mut count = 0;
     let mut index = 0;
+
     while index < text.len() {
-        if ((text[index] as u8) >= 48 && (text[index] as u8) <= 57) {
+        if (text[index] >= 48 && text[index] <= 57) {
             count += 1;
         }
         index += 1;

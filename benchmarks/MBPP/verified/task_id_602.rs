@@ -3,20 +3,14 @@ use vstd::prelude::*;
 fn main() {
     // Write a function in Rust to find the first repeated character in a given string.
 
-    assert_eq!(
-        first_repeated_char(&("abcabc".chars().collect())),
-        Some((0, 'a'))
-    );
-    assert_eq!(first_repeated_char(&("abc".chars().collect())), None);
-    assert_eq!(
-        first_repeated_char(&("123123".chars().collect())),
-        Some((0, '1'))
-    );
+    assert_eq!(first_repeated_char(b"abcabc"), Some((0, b'a')));
+    assert_eq!(first_repeated_char(b"abc"), None);
+    assert_eq!(first_repeated_char(b"123123"), Some((0, b'1')));
 }
 
 verus! {
 
-pub open spec fn count_frequency_rcr(seq: Seq<char>, key: char) -> int
+pub open spec fn count_frequency_rcr(seq: Seq<u8>, key: u8) -> int
     decreases seq.len(),
 {
     if seq.len() == 0 {
@@ -30,7 +24,7 @@ pub open spec fn count_frequency_rcr(seq: Seq<char>, key: char) -> int
     }
 }
 
-fn count_frequency(arr: &Vec<char>, key: char) -> (frequency: usize)
+fn count_frequency(arr: &[u8], key: u8) -> (frequency: usize)
     ensures
         count_frequency_rcr(arr@, key) == frequency,
 {
@@ -52,11 +46,11 @@ fn count_frequency(arr: &Vec<char>, key: char) -> (frequency: usize)
     counter
 }
 
-fn first_repeated_char(str1: &Vec<char>) -> (repeated_char: Option<(usize, char)>)
+fn first_repeated_char(str1: &[u8]) -> (repeated_char: Option<(usize, u8)>)
     ensures
         if let Some((idx, rp_char)) = repeated_char {
             &&& str1@.take(idx as int) =~= str1@.take(idx as int).filter(
-                |x: char| count_frequency_rcr(str1@, x) <= 1,
+                |x: u8| count_frequency_rcr(str1@, x) <= 1,
             )
             &&& count_frequency_rcr(str1@, rp_char) > 1
         } else {
@@ -65,15 +59,15 @@ fn first_repeated_char(str1: &Vec<char>) -> (repeated_char: Option<(usize, char)
         },
 {
     let input_len = str1.len();
-    assert(str1@.take(0int).filter(|x: char| count_frequency_rcr(str1@, x) > 1) == Seq::<
-        char,
+    assert(str1@.take(0int).filter(|x: u8| count_frequency_rcr(str1@, x) > 1) == Seq::<
+        u8,
     >::empty());
     let mut index = 0;
     while index < str1.len()
         invariant
             0 <= index <= str1.len(),
             str1@.take(index as int) =~= str1@.take(index as int).filter(
-                |x: char| count_frequency_rcr(str1@, x) <= 1,
+                |x: u8| count_frequency_rcr(str1@, x) <= 1,
             ),
     {
         if count_frequency(&str1, str1[index]) > 1 {

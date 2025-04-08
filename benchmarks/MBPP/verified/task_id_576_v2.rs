@@ -1,5 +1,4 @@
 /*This is a slightly simpler version of proof provided by Chris Hawblitzel*/
-
 use vstd::prelude::*;
 
 fn main() {
@@ -46,8 +45,8 @@ fn sub_array_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: b
 }
 
 spec fn is_subrange_at(main: Seq<i32>, sub: Seq<i32>, i: int) -> bool {
-    sub =~= main.subrange(i, i+sub.len())
-} 
+    sub =~= main.subrange(i, i + sub.len())
+}
 
 fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
     ensures
@@ -62,7 +61,7 @@ fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
         invariant
             sub.len() <= main.len(),
             0 <= index <= (main.len() - sub.len()) + 1,
-            forall |k:int| 0<= k < index ==> !is_subrange_at(main@, sub@, k),
+            forall|k: int| 0 <= k < index ==> !is_subrange_at(main@, sub@, k),
     {
         if (sub_array_at_index(&main, &sub, index)) {
             assert(is_subrange_at(main@, sub@, index as int));

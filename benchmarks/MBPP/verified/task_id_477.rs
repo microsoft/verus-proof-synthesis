@@ -3,37 +3,22 @@ use vstd::prelude::*;
 fn main() {
     // Write a function in Rust to convert the given string to lower case.
 
-    assert_eq!(
-        to_lowercase(&("InValid".chars().collect()))
-            .iter()
-            .collect::<String>(),
-        "invalid"
-    );
-    assert_eq!(
-        to_lowercase(&("TruE".chars().collect()))
-            .iter()
-            .collect::<String>(),
-        "true"
-    );
-    assert_eq!(
-        to_lowercase(&("SenTenCE".chars().collect()))
-            .iter()
-            .collect::<String>(),
-        "sentence"
-    );
+    assert_eq!(to_lowercase(b"InValid"), b"invalid");
+    assert_eq!(to_lowercase(b"TruE"), b"true");
+    assert_eq!(to_lowercase(b"SenTenCE"), b"sentence");
 }
 
 verus! {
 
-spec fn is_upper_case(c: char) -> bool {
-    c >= 'A' && c <= 'Z'
+spec fn is_upper_case(c: u8) -> bool {
+    c >= 65 && c <= 90
 }
 
-spec fn shift32_spec(c: char) -> char {
-    ((c as u8) + 32) as char
+spec fn shift32_spec(c: u8) -> u8 {
+    (c + 32) as u8
 }
 
-fn to_lowercase(str1: &Vec<char>) -> (result: Vec<char>)
+fn to_lowercase(str1: &[u8]) -> (result: Vec<u8>)
     ensures
         str1@.len() == result@.len(),
         forall|i: int|
@@ -43,7 +28,7 @@ fn to_lowercase(str1: &Vec<char>) -> (result: Vec<char>)
                 str1[i]
             }),
 {
-    let mut lower_case: Vec<char> = Vec::with_capacity(str1.len());
+    let mut lower_case: Vec<u8> = Vec::with_capacity(str1.len());
     let mut index = 0;
     while index < str1.len()
         invariant
@@ -56,8 +41,8 @@ fn to_lowercase(str1: &Vec<char>) -> (result: Vec<char>)
                     str1[i]
                 }),
     {
-        if (str1[index] >= 'A' && str1[index] <= 'Z') {
-            lower_case.push(((str1[index] as u8) + 32) as char);
+        if (str1[index] >= 65 && str1[index] <= 90) {
+            lower_case.push((str1[index] + 32) as u8);
 
         } else {
             lower_case.push(str1[index]);

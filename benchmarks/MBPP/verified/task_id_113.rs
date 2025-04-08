@@ -3,25 +3,25 @@ use vstd::prelude::*;
 fn main() {
     // Write a function in Rust to check if a string represents an integer or not.
 
-    assert!(!is_integer(&("python".chars().collect())));
-    assert!(is_integer(&("1".chars().collect())));
-    assert!(is_integer(&("123".chars().collect())));
+    assert!(!is_integer(b"python"));
+    assert!(is_integer(b"1"));
+    assert!(is_integer(b"123"));
 }
 
 verus! {
 
-spec fn is_digit_sepc(c: char) -> bool {
-    (c as u32) >= 48 && (c as u32) <= 57
+spec fn is_digit_sepc(c: u8) -> bool {
+    c >= 48 && c <= 57
 }
 
-fn is_digit(c: char) -> (res: bool)
+fn is_digit(c: u8) -> (res: bool)
     ensures
         res == is_digit_sepc(c),
 {
-    (c as u32) >= 48 && (c as u32) <= 57
+    c >= 48 && c <= 57
 }
 
-fn is_integer(text: &Vec<char>) -> (result: bool)
+fn is_integer(text: &[u8]) -> (result: bool)
     ensures
         result == (forall|i: int| 0 <= i < text.len() ==> (#[trigger] is_digit_sepc(text[i]))),
 {

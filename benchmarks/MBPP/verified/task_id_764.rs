@@ -3,19 +3,19 @@ use vstd::prelude::*;
 fn main() {
     // Write a function in Rust to count number of digits in a given string.
 
-    assert_eq!(count_digits(&("program2bedone".chars().collect())), 1);
-    assert_eq!(count_digits(&("3wonders".chars().collect())), 1);
-    assert_eq!(count_digits(&("123".chars().collect())), 3);
-    assert_eq!(count_digits(&("3wond-1ers2".chars().collect())), 3);
+    assert_eq!(count_digits(b"program2bedone"), 1);
+    assert_eq!(count_digits(b"3wonders"), 1);
+    assert_eq!(count_digits(b"123"), 3);
+    assert_eq!(count_digits(b"3wond-1ers2"), 3);
 }
 
 verus! {
 
-spec fn is_digit(c: char) -> bool {
-    (c as u8) >= 48 && (c as u8) <= 57
+spec fn is_digit(c: u8) -> bool {
+    (c >= 48 && c <= 57)
 }
 
-spec fn count_digits_recursively(seq: Seq<char>) -> int
+spec fn count_digits_recursively(seq: Seq<u8>) -> int
     decreases seq.len(),
 {
     if seq.len() == 0 {
@@ -29,21 +29,21 @@ spec fn count_digits_recursively(seq: Seq<char>) -> int
     }
 }
 
-fn count_digits(text: &Vec<char>) -> (count: usize)
+fn count_digits(text: &[u8]) -> (count: usize)
     ensures
         0 <= count <= text.len(),
         count_digits_recursively(text@) == count,
 {
     let mut count = 0;
-
     let mut index = 0;
+
     while index < text.len()
         invariant
             0 <= index <= text.len(),
             0 <= count <= index,
             count == count_digits_recursively(text@.subrange(0, index as int)),
     {
-        if ((text[index] as u8) >= 48 && (text[index] as u8) <= 57) {
+        if (text[index] >= 48 && text[index] <= 57) {
             count += 1;
         }
         index += 1;

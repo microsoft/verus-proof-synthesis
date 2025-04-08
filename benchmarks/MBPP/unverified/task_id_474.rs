@@ -4,7 +4,7 @@ fn main() {}
 
 verus! {
 
-fn replace_chars(str1: &Vec<char>, old_char: char, new_char: char) -> (result: Vec<char>)
+fn replace_chars(str1: &[u8], old_char: u8, new_char: u8) -> (result: Vec<u8>)
     ensures
         str1@.len() == result@.len(),
         forall|i: int|

@@ -3,14 +3,14 @@ use vstd::prelude::*;
 fn main() {
     // Write a function in Rust to check whether all the characters are same or not.
 
-    assert!(!all_characters_same(&("python".chars().collect())));
-    assert!(all_characters_same(&("aaa".chars().collect())));
-    assert!(!all_characters_same(&("data".chars().collect())));
+    assert!(!all_characters_same(b"python"));
+    assert!(all_characters_same(b"aaa"));
+    assert!(!all_characters_same(b"data"));
 }
 
 verus! {
 
-fn all_characters_same(char_arr: &Vec<char>) -> (result: bool)
+fn all_characters_same(char_arr: &[u8]) -> (result: bool)
     ensures
         result == (forall|i: int|
             1 <= i < char_arr@.len() ==> char_arr[0] == #[trigger] char_arr[i]),
