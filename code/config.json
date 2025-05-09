@@ -1,10 +1,11 @@
 {
+    "use_openai": false,
     "aoai_api_base": [
-	"<Your LLM API EndPoint>"
+        "<Your LLM API EndPoint>"
     ],
     "aoai_api_version": "<Your LLM model version>",
     "aoai_api_key": [
-	    "<Your LLM API Key>"
+        "<Your LLM API Key>"
     ],
     "aoai_max_retries": 5,
     "max_token": 2048,

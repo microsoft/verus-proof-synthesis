@@ -3,7 +3,7 @@
 
 
 import openai
-from openai import AzureOpenAI
+from openai import AzureOpenAI, OpenAI
 import time
 import random
 
@@ -13,8 +13,17 @@ class LLM:
         self.config = config
         self.logger = logger
         self.client = []
+        if config.use_openai:
+            for i in range(len(config.aoai_api_key)):
+                self.client.append(
+                    OpenAI(
+                        api_key=config.aoai_api_key[i],
+                        base_url=config.aoai_api_base[i],
+                        max_retries=config.aoai_max_retries,
+                    )
+                )
         # there may be no key and instead authentication is used
-        if len(config.aoai_api_key) == 0:
+        elif len(config.aoai_api_key) == 0:
             from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
             token_provider = get_bearer_token_provider(

@@ -1,0 +1,12 @@
+[project]
+name = "verus-proof-synthesis"
+version = "0.1.0"
+description = "Code for automated Verus proof synthesis."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "azure-identity>=1.22.0",
+    "numpy>=2.2.5",
+    "openai>=1.77.0",
+    "tomli>=2.2.1",
+]
