@@ -25,6 +25,8 @@ fn smallest_num(nums: &Vec<i32>) -> (min: i32)
             0 <= index <= nums.len(),
             forall|k: int| 0 <= k < index ==> min <= nums[k],
             exists|k: int| 0 <= k < index && min == nums[k],
+        decreases
+            nums.len() - index,
     {
         if nums[index] < min {
             min = nums[index];

@@ -21,6 +21,8 @@ fn is_product_even(arr: &Vec<u32>) -> (result: bool)
         invariant
             0 <= index <= arr.len(),
             forall|k: int| 0 <= k < index ==> !(is_even(#[trigger] arr[k])),
+        decreases
+            arr.len() - index,
     {
         if (arr[index] % 2 == 0) {
             return true;

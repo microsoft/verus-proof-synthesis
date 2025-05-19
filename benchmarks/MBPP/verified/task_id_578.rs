@@ -45,6 +45,8 @@ fn interleave(s1: &Vec<i32>, s2: &Vec<i32>, s3: &Vec<i32>) -> (res: Vec<i32>)
             forall|k: int|
                 0 <= k < index ==> (output_seq[3 * k] == s1[k] && output_seq[3 * k + 1] == s2[k]
                     && output_seq[3 * k + 2] == s3[k]),
+        decreases
+            s1.len() - index,
     {
         output_seq.push(s1[index]);
         output_seq.push(s2[index]);

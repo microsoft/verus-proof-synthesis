@@ -51,6 +51,8 @@ fn contains(str: &Vec<char>, key: char) -> (result: bool)
     while i < str.len()
         invariant
             forall|m: int| 0 <= m < i ==> (str[m] != key),
+        decreases
+            str.len() - i,
     {
         if (str[i] == key) {
             return true;
@@ -84,6 +86,8 @@ fn remove_chars(str1: &Vec<char>, str2: &Vec<char>) -> (result: Vec<char>)
                 0 <= k < index ==> (str2@.contains(#[trigger] str1[k]) || output_str@.contains(
                     #[trigger] str1[k],
                 )),
+        decreases
+            str1.len() - index,
     {
         if (!contains(str2, str1[index])) {
             proof {

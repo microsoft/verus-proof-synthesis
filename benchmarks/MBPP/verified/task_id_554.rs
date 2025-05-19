@@ -23,6 +23,8 @@ fn find_odd_numbers(arr: &Vec<u32>) -> (odd_numbers: Vec<u32>)
         invariant
             0 <= index <= arr.len(),
             odd_numbers@ == arr@.take(index as int).filter(|x: u32| x % 2 != 0),
+        decreases
+            arr.len() - index,
     {
         if (arr[index] % 2 != 0) {
             odd_numbers.push(arr[index]);

@@ -19,6 +19,8 @@ fn is_odd_at_odd_index(arr: &Vec<usize>) -> (result: bool)
         invariant
             0 <= index <= arr.len(),
             forall|i: int| 0 <= i < index ==> ((i % 2) == (arr[i] % 2)),
+        decreases
+            arr.len() - index,
     {
         if ((index % 2) != (arr[index] % 2)) {
             assert(((index as int) % 2) != (arr[index as int] % 2));

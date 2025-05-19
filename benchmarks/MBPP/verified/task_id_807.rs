@@ -27,6 +27,8 @@ fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
         invariant
             0 <= index <= arr.len(),
             arr@.take(index as int) =~= arr@.take(index as int).filter(|x: u32| x % 2 == 0),
+        decreases
+            arr.len() - index,
     {
         if (arr[index] % 2 != 0) {
             return Some(index);

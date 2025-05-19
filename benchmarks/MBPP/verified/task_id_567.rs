@@ -21,6 +21,8 @@ fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
         invariant
             0 <= index <= arr.len() - 1,
             forall|k: int, l: int| 0 <= k < l <= index ==> arr[k] <= arr[l],
+        decreases
+            arr.len() - 1 - index,
     {
         if arr[index] > arr[index + 1] {
             return false;

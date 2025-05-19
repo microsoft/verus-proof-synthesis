@@ -37,6 +37,8 @@ fn min_second_value_first(arr: &Vec<Vec<i32>>) -> (first_of_min_second: i32)
             forall|i: int| 0 <= i < arr.len() ==> #[trigger] arr[i].len() >= 2,
             forall|k: int|
                 0 <= k < index ==> (arr[min_second_index as int][1] <= #[trigger] arr[k][1]),
+        decreases
+            arr.len() - index,
     {
         assert(arr[index as int].len() > 0);
         assert(arr[min_second_index as int].len() > 0);

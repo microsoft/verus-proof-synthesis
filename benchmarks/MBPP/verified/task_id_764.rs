@@ -42,6 +42,8 @@ fn count_digits(text: &Vec<char>) -> (count: usize)
             0 <= index <= text.len(),
             0 <= count <= index,
             count == count_digits_recursively(text@.subrange(0, index as int)),
+        decreases
+            text.len() - index,
     {
         if ((text[index] as u8) >= 48 && (text[index] as u8) <= 57) {
             count += 1;

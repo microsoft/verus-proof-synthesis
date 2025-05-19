@@ -31,6 +31,8 @@ fn square_nums(nums: &Vec<i32>) -> (squared: Vec<i32>)
             forall|k: int|
                 0 <= k < nums.len() ==> (0 <= #[trigger] nums[k] * #[trigger] nums[k] < i32::MAX),
             forall|k: int| 0 <= k < index ==> (#[trigger] result[k] == nums[k] * nums[k]),
+        decreases
+            nums.len() - index,
     {
         result.push(nums[index] * nums[index]);
         index += 1

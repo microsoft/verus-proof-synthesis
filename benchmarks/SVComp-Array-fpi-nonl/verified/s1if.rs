@@ -16,6 +16,8 @@ pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
 		invariant
 			forall |k:int| 0<= k < i ==> a[k] == 1,
 			a.len() == N,
+		decreases
+			N - i,
 	{
 		a.set(i, 1);
 		i = i + 1;
@@ -29,6 +31,8 @@ pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
 			a.len() == N,
 			sum[0] == i,
 			sum.len() == 1,
+		decreases
+			N - i,
 	{
 		if (a[i] == 1) {
 			sum.set(0, sum[0] + a[i]);

@@ -33,6 +33,8 @@ fn prime_num(n: u64) -> (result: bool)
         invariant
             2 <= index <= n,
             forall|k: int| 2 <= k < index ==> !is_divisible(n as int, k),
+        decreases
+            n - index,
     {
         if ((n % index) == 0) {
             assert(is_divisible(n as int, index as int));

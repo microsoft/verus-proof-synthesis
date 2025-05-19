@@ -29,6 +29,8 @@ fn filter_odd_numbers(arr: &Vec<u32>) -> (odd_list: Vec<u32>)
         invariant
             0 <= index <= arr.len(),
             odd_list@ == arr@.take(index as int).filter(|x: u32| x % 2 != 0),
+        decreases
+            arr.len() - index,
     {
         if (arr[index] % 2 != 0) {
             odd_list.push(arr[index]);

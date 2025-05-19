@@ -23,6 +23,8 @@ fn find_negative_numbers(arr: &Vec<i32>) -> (negative_list: Vec<i32>)
         invariant
             0 <= index <= arr.len(),
             negative_list@ == arr@.take(index as int).filter(|x: i32| x < 0),
+        decreases
+            arr.len() - index,
     {
         if (arr[index] < 0) {
             negative_list.push(arr[index]);

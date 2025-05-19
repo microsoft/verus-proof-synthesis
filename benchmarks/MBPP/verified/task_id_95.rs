@@ -32,6 +32,8 @@ fn smallest_list_length(list: &Vec<Vec<i32>>) -> (min: usize)
             0 <= index <= list.len(),
             forall|k: int| 0 <= k < index ==> min <= #[trigger] list[k].len(),
             exists|k: int| 0 <= k < index && min == #[trigger] list[k].len(),
+        decreases
+            list.len() - index,
     {
         if (&list[index]).len() < min {
             min = (&list[index]).len();

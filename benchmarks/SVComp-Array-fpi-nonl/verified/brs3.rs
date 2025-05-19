@@ -16,6 +16,8 @@ pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
 		invariant
 			forall |k: int| 0<= k < i ==> a[k] == 3 || a[k] == 0,
 			a.len() == N,
+		decreases
+			N - i,
 	{
 		if (i % 3 == 0) {
 			a.set(i, 3);
@@ -35,6 +37,8 @@ pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
 			sum.len() == 1,
 			i>0 ==> sum[0] <= 3 * i,
 			N < 1000,
+		decreases
+			N - i,
 	{
 		if (i == 0) {
 			sum.set(0, 0);

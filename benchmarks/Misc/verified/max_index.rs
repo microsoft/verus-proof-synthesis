@@ -16,6 +16,8 @@ pub fn myfun1(x: &Vec<i32>) -> (max_index: usize)
             i <= x.len(),
             max_index < x.len(),
             forall|k: int| 0 <= k < i ==> x[max_index as int] >= x[k],
+        decreases
+            x.len() - i,
     {
         if x[i] > x[max_index] {
             max_index = i;

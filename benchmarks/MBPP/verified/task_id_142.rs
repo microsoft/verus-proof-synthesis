@@ -65,6 +65,8 @@ fn count_identical_position(arr1: &Vec<i32>, arr2: &Vec<i32>, arr3: &Vec<i32>) -
                 arr2@.subrange(0, index as int),
                 arr3@.subrange(0, index as int),
             ) == count,
+        decreases
+            arr1.len() - index,
     {
         if arr1[index] == arr2[index] && arr2[index] == arr3[index] {
             count += 1;

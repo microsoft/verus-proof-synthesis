@@ -24,6 +24,8 @@ fn contains_consecutive_numbers(arr: &Vec<i32>) -> (is_consecutive: bool)
             0 <= index <= arr.len() - 1,
             forall|k: int| 0 <= k < arr.len() ==> (0 <= #[trigger] arr[k] + 1 < i32::MAX),
             forall|k: int, l: int| (0 <= k < l <= index && l == k + 1) ==> (arr[k] + 1 == arr[l]),
+        decreases
+            arr.len() - 1 - index,
     {
         if (arr[index] + 1 != arr[index + 1]) {
             return false;

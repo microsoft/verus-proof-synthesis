@@ -71,6 +71,8 @@ ensures
         0 <= i <= nums@.len(),
         nums@.subrange(0, i  as int).to_set().ext_equal(res@.to_set()),
         res@.no_duplicates(),
+    decreases
+        nums.len() - i,
     {
         let mut found = false;
         let mut j = 0;

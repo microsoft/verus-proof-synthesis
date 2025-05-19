@@ -47,6 +47,8 @@ fn replace_blanks_with_chars(str1: &Vec<char>, ch: char) -> (result: Vec<char>)
                 } else {
                     str1[k]
                 }),
+        decreases
+            str1.len() - index, 
     {
         if (str1[index] == ' ') {
             out_str.push(ch);

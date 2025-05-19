@@ -45,6 +45,8 @@ fn count_uppercase(text: &Vec<char>) -> (count: u64)
             0 <= index <= text.len(),
             0 <= count <= index,
             count_uppercase_recursively(text@.subrange(0, index as int)) == count,
+        decreases
+            text.len() - index,
     {
         if ((text[index] as u32) >= 65 && (text[index] as u32) <= 90) {
             count += 1;

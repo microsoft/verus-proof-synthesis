@@ -22,6 +22,8 @@ fn has_only_one_distinct_element(arr: &Vec<i32>) -> (result: bool)
         invariant
             1 <= index <= arr.len(),
             forall|k: int| 0 <= k < index ==> arr[0] == #[trigger] arr[k],
+        decreases   
+            arr.len() - index,
     {
         if arr[0] != arr[index] {
             assert(exists|i: int| 1 <= i < arr@.len() && arr[0] != #[trigger] arr[i]);

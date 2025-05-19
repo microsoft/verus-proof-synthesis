@@ -42,6 +42,8 @@ fn rotate_right(list: &Vec<u32>, n: usize) -> (new_list: Vec<u32>)
         invariant
             split_index <= index <= list.len(),
             list@.subrange(split_index as int, index as int) =~= new_list@,
+        decreases
+            list.len() - index,
     {
         new_list.push(list[index]);
         index += 1;
@@ -54,6 +56,8 @@ fn rotate_right(list: &Vec<u32>, n: usize) -> (new_list: Vec<u32>)
             new_list@ =~= list@.subrange(split_index as int, list@.len() as int).add(
                 list@.subrange(0, index as int),
             ),
+        decreases
+            split_index - index,
     {
         new_list.push(list[index]);
         index += 1;

@@ -51,6 +51,8 @@ fn replace_with_colon(str1: &Vec<char>) -> (result: Vec<char>)
                 } else {
                     str1[k]
                 }),
+        decreases
+            str1.len() - index,
     {
         if ((str1[index] == ' ') || (str1[index] == ',') || (str1[index] == '.')) {
             result.push(':');

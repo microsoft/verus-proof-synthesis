@@ -37,6 +37,8 @@ fn count_true(arr: &Vec<bool>) -> (count: u64)
             0 <= index <= arr.len(),
             0 <= counter <= index,
             count_boolean(arr@.subrange(0, index as int)) == counter,
+        decreases 
+            arr.len() - index,
     {
         if (arr[index]) {
             counter += 1;
