@@ -34,6 +34,8 @@ ensures
             0 <= i <= xlen,
             x@.len() == xlen,  
             y@ == x@.take(i as int).filter(|k:u64| k%3 == 0),
+        decreases
+            xlen - i,
     { 
         if (x[i] % 3 == 0) {
             y.push(x[i]);

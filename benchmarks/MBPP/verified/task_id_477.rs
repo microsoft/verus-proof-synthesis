@@ -55,6 +55,8 @@ fn to_lowercase(str1: &Vec<char>) -> (result: Vec<char>)
                 } else {
                     str1[i]
                 }),
+        decreases
+            str1.len() - index,
     {
         if (str1[index] >= 'A' && str1[index] <= 'Z') {
             lower_case.push(((str1[index] as u8) + 32) as char);

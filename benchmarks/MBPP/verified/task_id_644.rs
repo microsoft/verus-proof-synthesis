@@ -26,6 +26,8 @@ fn reverse_to_k(list: &Vec<i32>, n: usize) -> (reversed_list: Vec<i32>)
             0 <= index <= n,
             reversed_list.len() == index,
             forall|k: int| 0 <= k < index ==> reversed_list[k] == list[n - 1 - k],
+        decreases
+            n - index,
     {
         reversed_list.push(list[n - 1 - index]);
         index += 1;
@@ -37,6 +39,8 @@ fn reverse_to_k(list: &Vec<i32>, n: usize) -> (reversed_list: Vec<i32>)
             reversed_list@ =~= list@.subrange(0, n as int).reverse().add(
                 list@.subrange(n as int, index as int),
             ),
+        decreases
+            list.len() - index,
     {
         reversed_list.push(list[index]);
         index += 1;

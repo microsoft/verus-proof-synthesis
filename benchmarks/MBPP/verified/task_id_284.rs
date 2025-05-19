@@ -19,6 +19,8 @@ fn all_elements_equals(arr: &Vec<i32>, element: i32) -> (result: bool)
         invariant
             0 <= index <= arr.len(),
             forall|k: int| 0 <= k < index ==> (arr[k] == element),
+        decreases
+            arr.len() - index,
     {
         if arr[index] != element {
             return false;

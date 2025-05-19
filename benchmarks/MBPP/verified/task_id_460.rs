@@ -28,6 +28,8 @@ fn get_first_elements(arr: &Vec<Vec<i32>>) -> (result: Vec<i32>)
             first_elem_arr.len() == index,
             forall|i: int| 0 <= i < arr.len() ==> #[trigger] arr[i].len() > 0,
             forall|k: int| 0 <= k < index ==> #[trigger] first_elem_arr[k] == #[trigger] arr[k][0],
+        decreases
+            arr.len() - index,
     {
         let seq = &arr[index];
         assert(seq.len() > 0);

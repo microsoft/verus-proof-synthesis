@@ -46,6 +46,8 @@ fn element_wise_division(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
                     <= u32::MAX),
             forall|k: int|
                 0 <= k < index ==> #[trigger] output_arr[k] == #[trigger] (arr1[k] / arr2[k]),
+        decreases
+            arr1.len() - index,
     {
         output_arr.push((arr1[index] / arr2[index]));
         index += 1;

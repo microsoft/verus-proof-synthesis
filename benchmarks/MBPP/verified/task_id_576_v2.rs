@@ -35,6 +35,8 @@ fn sub_array_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: b
             0 <= idx <= (main.len() - sub.len()),
             0 <= i <= sub.len(),
             forall|k: int| 0 <= k < i ==> main[idx + k] == sub[k],
+        decreases
+            sub.len() - i,
     {
         if (main[idx + i] != sub[i]) {
             return false;
@@ -63,6 +65,8 @@ fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
             sub.len() <= main.len(),
             0 <= index <= (main.len() - sub.len()) + 1,
             forall |k:int| 0<= k < index ==> !is_subrange_at(main@, sub@, k),
+        decreases
+            (main.len() - sub.len()) + 1 - index,
     {
         if (sub_array_at_index(&main, &sub, index)) {
             assert(is_subrange_at(main@, sub@, index as int));

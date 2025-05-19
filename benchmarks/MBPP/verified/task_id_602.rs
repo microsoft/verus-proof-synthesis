@@ -41,6 +41,8 @@ fn count_frequency(arr: &Vec<char>, key: char) -> (frequency: usize)
             0 <= index <= arr.len(),
             0 <= counter <= index,
             count_frequency_rcr(arr@.subrange(0, index as int), key) == counter,
+        decreases
+            arr.len() - index,
     {
         if (arr[index] == key) {
             counter += 1;
@@ -75,6 +77,8 @@ fn first_repeated_char(str1: &Vec<char>) -> (repeated_char: Option<(usize, char)
             str1@.take(index as int) =~= str1@.take(index as int).filter(
                 |x: char| count_frequency_rcr(str1@, x) <= 1,
             ),
+        decreases
+            str1.len() - index,
     {
         if count_frequency(&str1, str1[index]) > 1 {
             return Some((index, str1[index]));

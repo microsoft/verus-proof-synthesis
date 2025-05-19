@@ -13,6 +13,8 @@ pub fn myfun(a: &mut Vec<i32>, N: i32, m: i32)
 	while (i < N as usize)
 		invariant
 			a.len() == N,
+		decreases
+			N - i,
 	{
 		a.set(i, m);
 		i = i + 1;
@@ -23,6 +25,8 @@ pub fn myfun(a: &mut Vec<i32>, N: i32, m: i32)
 		invariant
 			forall |k:int| 0 <= k < i ==> a[k] <= N,
 			a.len() == N,
+		decreases
+			N - i,
 	{
 		if (a[i] < N) {
 			a.set(i, a[i]);

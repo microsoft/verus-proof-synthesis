@@ -19,6 +19,8 @@ fn contains_k(arr: &Vec<i32>, k: i32) -> (result: bool)
         invariant
             0 <= index <= arr.len(),
             forall|m: int| 0 <= m < index ==> (arr[m] != k),
+        decreases
+            arr.len() - index,
     {
         if (arr[index] == k) {
             return true;

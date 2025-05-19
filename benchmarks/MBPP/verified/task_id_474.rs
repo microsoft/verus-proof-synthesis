@@ -47,6 +47,8 @@ fn replace_chars(str1: &Vec<char>, old_char: char, new_char: char) -> (result: V
                 } else {
                     str1[k]
                 }),
+        decreases
+            str1.len() - index,
     {
         if str1[index] == old_char {
             result_str.push(new_char);

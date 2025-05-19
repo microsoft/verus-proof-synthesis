@@ -39,6 +39,8 @@ fn cube_element(nums: &Vec<i32>) -> (cubed: Vec<i32>)
                     * #[trigger] nums[k] <= i32::MAX),
             forall|k: int|
                 0 <= k < i ==> (#[trigger] cubed_array[k] == nums[k] * nums[k] * nums[k]),
+        decreases
+            nums.len() - i,
     {
         cubed_array.push(nums[i] * nums[i] * nums[i]);
         i += 1;

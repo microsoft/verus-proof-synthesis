@@ -35,6 +35,8 @@ fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
             0 <= index <= arr.len(),
             0 <= counter <= index,
             count_frequency_rcr(arr@.subrange(0, index as int), key) == counter,
+        decreases
+            arr.len() - index,
     {
         if (arr[index] == key) {
             counter += 1;
@@ -64,6 +66,8 @@ fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
             unique_arr@ == arr@.take(index as int).filter(
                 |x: i32| count_frequency_rcr(arr@, x) == 1,
             ),
+        decreases
+            arr.len() - index,
     {
         if count_frequency(&arr, arr[index]) == 1 {
             unique_arr.push(arr[index]);

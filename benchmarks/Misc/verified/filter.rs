@@ -17,6 +17,8 @@ ensures
             0 <= i <= xlen,
             x@.len() == xlen,  // always specify the length of vectors used in the loop
             y@ == x@.take(i as int).filter(|k:u64| k%3 == 0),//routine for filter
+        decreases
+            xlen - i,
     { 
         if (x[i] % 3 == 0) {
             y.push(x[i]);

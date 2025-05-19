@@ -55,6 +55,8 @@ fn to_uppercase(str1: &Vec<char>) -> (result: Vec<char>)
                 } else {
                     str1[i]
                 })),
+        decreases
+            str1.len() - index,
     {
         if (str1[index] >= 'a' && str1[index] <= 'z') {
             upper_case.push(((str1[index] as u8) - 32) as char);

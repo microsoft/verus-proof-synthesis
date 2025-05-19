@@ -20,6 +20,8 @@ ensures
         0 <= i <= nums@.len(),
     ensures
         0 <= i < nums@.len() ==> (#[trigger]nums@[i as int]) == target,
+    decreases
+        nums.len() - i,
     {
         if nums[i] == target {
             break;

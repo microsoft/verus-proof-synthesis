@@ -39,6 +39,8 @@ fn find_first_occurrence(arr: &Vec<i32>, target: i32) -> (index: Option<usize>)
     while index < arr.len()
         invariant
             forall|k: int| 0 <= k < index ==> arr[k] != target,
+        decreases
+            arr.len() - index,
     {
         if arr[index] == target {
             return Some(index);

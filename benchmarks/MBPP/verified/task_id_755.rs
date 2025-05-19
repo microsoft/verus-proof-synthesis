@@ -64,6 +64,8 @@ fn second_smallest(numbers: &Vec<i32>) -> (indices: (
             forall|k: int| 0 <= k < index ==> numbers[k] >= numbers[min_index as int],
             forall|k: int|
                 0 <= k < index && k != min_index ==> numbers[k] >= numbers[second_min_index as int],
+        decreases
+            numbers.len() - index,
     {
         if numbers[index] < numbers[min_index] {
             second_min_index = min_index;

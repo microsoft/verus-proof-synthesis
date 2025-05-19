@@ -34,6 +34,8 @@ fn remove_kth_element(list: &Vec<i32>, k: usize) -> (new_list: Vec<i32>)
             0 <= index <= k - 1,
             0 < k < list@.len(),
             new_list@ =~= list@.subrange(0, index as int),
+        decreases
+            k - 1 - index,
     {
         new_list.push(list[index]);
         index += 1;
@@ -45,6 +47,8 @@ fn remove_kth_element(list: &Vec<i32>, k: usize) -> (new_list: Vec<i32>)
             new_list@ =~= list@.subrange(0 as int, k - 1 as int).add(
                 list@.subrange(k as int, index as int),
             ),
+        decreases
+            list.len() - index,
     {
         new_list.push(list[index]);
         index += 1;

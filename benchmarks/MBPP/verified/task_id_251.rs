@@ -35,6 +35,8 @@ fn insert_before_each(arr: &Vec<i32>, elem: i32) -> (result: Vec<i32>)
             result@.len() == index * 2,
             forall|k: int| 0 <= k < index ==> #[trigger] result[2 * k] == elem,
             forall|k: int| 0 <= k < index ==> #[trigger] result[2 * k + 1] == arr[k],
+        decreases
+            arr.len() - index,
     {
         result.push(elem);
         result.push(arr[index]);

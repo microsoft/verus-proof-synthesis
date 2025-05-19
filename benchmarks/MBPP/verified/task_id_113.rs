@@ -30,6 +30,8 @@ fn is_integer(text: &Vec<char>) -> (result: bool)
         invariant
             0 <= index <= text.len(),
             forall|i: int| 0 <= i < index ==> (#[trigger] is_digit_sepc(text[i])),
+        decreases
+            text.len() - index,
     {
         if (!is_digit(text[index])) {
             return false;

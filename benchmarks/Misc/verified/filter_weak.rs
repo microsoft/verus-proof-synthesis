@@ -17,6 +17,8 @@ ensures
         invariant 
             x@.len() == xlen,  // always specify the length of vectors used in the loop
             forall |k:int| 0 <= k < y.len() ==> y[k] % 3 == 0 && x@.contains(y@[k]),
+        decreases
+            xlen - i,
     { 
         if (x[i] % 3 == 0) {
             y.push(x[i]);

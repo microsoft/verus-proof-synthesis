@@ -43,6 +43,8 @@ fn max_length_list(seq: &Vec<Vec<i32>>) -> (max_list: &Vec<i32>)
             0 <= index <= seq.len(),
             forall|k: int| 0 <= k < index ==> max_list.len() >= #[trigger] (seq[k]).len(),
             exists|k: int| 0 <= k < index && max_list@ =~= #[trigger] (seq[k]@),
+        decreases
+            seq.len() - index,
     {
         if ((seq[index]).len() > max_list.len()) {
             max_list = &seq[index];

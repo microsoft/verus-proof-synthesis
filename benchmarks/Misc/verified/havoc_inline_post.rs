@@ -19,6 +19,8 @@ pub fn havoc_inline_post(v: &mut Vec<u32>, a: u32, b: bool)
             forall |k:int| idx <= k < v.len() ==> v[k] == 1 + a,
             forall |k:int| 0 <= k < idx ==> v[k] == 1,
             10 < a < 20,
+        decreases
+            idx,
     {
         idx = idx - 1;
         v.set(idx, v[idx] + a);

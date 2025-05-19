@@ -15,6 +15,8 @@ pub fn remove_all_greater(v: Vec<i32>, e: i32) -> (result: Vec<i32>)
         invariant 
             forall |k:int| 0 <= k < result.len() ==> result[k] <= e && v@.contains(result[k]),
             forall |k:int| 0 <= k < i && v[k] <= e ==> result@.contains(v[k]),
+        decreases
+            vlen - i,
     {  
         if (v[i] <= e) {
             let ghost old_result = result;

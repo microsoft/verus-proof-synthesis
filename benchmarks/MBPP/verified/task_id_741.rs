@@ -23,6 +23,8 @@ fn all_characters_same(char_arr: &Vec<char>) -> (result: bool)
         invariant
             1 <= index <= char_arr.len(),
             forall|k: int| 0 <= k < index ==> char_arr[0] == #[trigger] char_arr[k],
+        decreases
+            char_arr.len() - index,
     {
         if char_arr[0] != char_arr[index] {
             assert(exists|i: int|

@@ -42,6 +42,8 @@ fn sum_negatives(arr: &Vec<i64>) -> (sum_neg: i128)
                     #[trigger] arr@.subrange(0, j),
                 )) <= 0),
             sum_negative_to(arr@.subrange(0, index as int)) == sum_neg,
+        decreases
+            arr.len() - index,
     {
         if (arr[index] < 0) {
             sum_neg = sum_neg + (arr[index] as i128);

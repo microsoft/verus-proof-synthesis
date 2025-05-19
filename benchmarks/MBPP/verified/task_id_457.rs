@@ -35,6 +35,8 @@ fn min_sublist(seq: &Vec<Vec<i32>>) -> (min_list: &Vec<i32>)
             0 <= index <= seq.len(),
             forall|k: int| 0 <= k < index ==> min_list.len() <= #[trigger] (seq[k]).len(),
             exists|k: int| 0 <= k < index && min_list@ =~= #[trigger] (seq[k]@),
+        decreases
+            seq.len() - index,
     {
         if ((seq[index]).len() < min_list.len()) {
             min_list = &seq[index];

@@ -36,6 +36,8 @@ fn bit_wise_xor(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
             output_arr.len() == index,
             forall|k: int|
                 0 <= k < index ==> output_arr[k] == #[trigger] arr1[k] ^ #[trigger] arr2[k],
+        decreases
+            arr1.len() - index,
     {
         output_arr.push((arr1[index] ^ arr2[index]));
         index += 1;

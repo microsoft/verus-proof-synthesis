@@ -26,6 +26,8 @@ fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result:
             forall|k: int| 0 <= k < i ==> main[idx + k] == sub[k],
             forall|k: int|
                 0 <= k < i ==> (main@.subrange(idx as int, (idx + k)) =~= sub@.subrange(0, k)),
+        decreases
+            sub.len() - i,
     {
         if (main[idx + i] != sub[i]) {
             assert(exists|k: int| 0 <= k < i ==> main[idx + k] != sub[k]);
@@ -59,6 +61,8 @@ fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
             forall|k: int, l: int|
                 (0 <= k < index) && l == k + sub.len() ==> (#[trigger] (main@.subrange(k, l))
                     != sub@),
+        decreases
+            (main.len() - sub.len()) + 1 - index,
     {
         if (is_sub_list_at_index(&main, &sub, index)) {
             return true;

@@ -19,6 +19,8 @@ fn is_greater(arr: &Vec<i32>, number: i32) -> (result: bool)
         invariant
             0 <= i <= arr.len(),
             forall|k: int| 0 <= k < i ==> number > arr[k],
+        decreases   
+            arr.len() - i,
     {
         if number <= arr[i] {
             return false;

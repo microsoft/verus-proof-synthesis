@@ -25,6 +25,8 @@ fn list_deep_clone(arr: &Vec<u64>) -> (copied: Vec<u64>)
             0 <= index <= arr.len(),
             copied_array.len() == index,
             forall|i: int| (0 <= i < index) ==> arr[i] == copied_array[i],
+        decreases
+            arr.len() - index,
     {
         copied_array.push(arr[index]);
         index += 1;

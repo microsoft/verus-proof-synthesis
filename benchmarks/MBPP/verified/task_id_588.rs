@@ -50,6 +50,8 @@ fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
             i32::MIN / 2 < max_val < i32::MAX / 2,
             max_val == max_rcur(arr@.subrange(0, index as int)),
             min_val == min_rcur(arr@.subrange(0, index as int)),
+        decreases
+            arr.len() - index,
     {
         if (arr[index] <= min_val) {
             min_val = arr[index];

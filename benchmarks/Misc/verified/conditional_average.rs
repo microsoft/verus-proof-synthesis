@@ -36,6 +36,8 @@ fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>
             (conds_1[i] && !conds_2[i] ==> avgs[i] == vals_1[i]) &&
             (!conds_1[i] && conds_2[i] ==> avgs[i] == vals_2[i])
         ),
+    decreases
+        common_len - k,
     {
         let mut new_avg: u64 = 0;
         if (conds_1[k]) {

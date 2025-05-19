@@ -28,6 +28,8 @@ fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
         invariant
             n <= index <= list.len(),
             list@.subrange(n as int, index as int) =~= new_list@,
+        decreases
+            list.len() - index,
     {
         new_list.push(list[index]);
         index += 1;
@@ -40,6 +42,8 @@ fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
             new_list@ =~= list@.subrange(n as int, list@.len() as int).add(
                 list@.subrange(0, index as int),
             ),
+        decreases
+            n - index,
     {
         new_list.push(list[index]);
         index += 1;

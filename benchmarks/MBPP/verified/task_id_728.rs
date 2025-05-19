@@ -34,6 +34,8 @@ fn add_list(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
                 (0 <= i < arr1.len()) ==> (i32::MIN <= #[trigger] (arr1[i] + arr2[i]) <= i32::MAX),
             forall|k: int|
                 0 <= k < index ==> #[trigger] output_arr[k] == #[trigger] (arr1[k] + arr2[k]),
+        decreases
+            arr1.len() - index,
     {
         output_arr.push((arr1[index] + arr2[index]));
         index += 1;

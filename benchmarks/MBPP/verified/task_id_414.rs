@@ -19,6 +19,8 @@ fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
         invariant
             0 <= i <= arr.len(),
             forall|m: int| 0 <= m < i ==> (arr[m] != key),
+        decreases
+            arr.len() - i,
     {
         if (arr[i] == key) {
             return true;
@@ -37,6 +39,8 @@ fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
         invariant
             0 <= index <= arr1.len(),
             forall|k: int| 0 <= k < index ==> !arr2@.contains(#[trigger] arr1[k]),
+        decreases
+            arr1.len() - index,
     {
         if (contains(arr2, arr1[index])) {
             return true;

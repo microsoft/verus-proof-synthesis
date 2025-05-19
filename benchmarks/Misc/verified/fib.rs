@@ -50,6 +50,8 @@ ensures
             2 <= i,
             fib@.len() == i, 
             i <= n,
+        decreases
+            n - i,
     {
         proof{
             fibo_is_monotonic(i as int, n as int);

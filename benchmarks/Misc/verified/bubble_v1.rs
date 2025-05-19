@@ -38,6 +38,8 @@ verus! {
                     forall|x: int, y: int| 0 <= x <= y <= i ==> x != j && y != j ==> nums[x] <= nums[y],
                     sorted_between(nums@, j as int, i + 1),
                     is_reorder_of(r, nums@, old(nums)@),
+                decreases
+                    j,
             {
                 if nums[j - 1] > nums[j] {
                     let temp = nums[j - 1];

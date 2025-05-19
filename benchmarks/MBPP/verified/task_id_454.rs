@@ -19,6 +19,8 @@ fn contains_z(text: &Vec<char>) -> (result: bool)
         invariant
             0 <= index <= text.len(),
             forall|k: int| 0 <= k < index ==> (text[k] != 'Z' && text[k] != 'z'),
+        decreases
+            text.len() - index,
     {
         if text[index] == 'Z' || text[index] == 'z' {
             return true;

@@ -28,6 +28,8 @@ fn max_difference(arr: &Vec<i32>) -> (diff: i32)
             min_val <= max_val,
             forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < #[trigger] arr[i] < i32::MAX / 2,
             forall|k: int| 0 <= k < index ==> min_val <= arr[k] && arr[k] <= max_val,
+        decreases
+            arr.len() - index,
     {
         if (arr[index] < min_val) {
             min_val = arr[index];

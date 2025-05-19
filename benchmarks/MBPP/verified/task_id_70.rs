@@ -27,6 +27,8 @@ fn all_sequence_equal_length(seq: &Vec<Vec<i32>>) -> (result: bool)
         invariant
             1 <= index <= seq.len(),
             forall|k: int| 0 <= k < index ==> (#[trigger] seq[k].len() == (&seq[0]).len()),
+        decreases
+            seq.len() - index,
     {
         if ((&seq[index]).len() != (&seq[0]).len()) {
             return false;

@@ -34,6 +34,8 @@ fn split_array(list: &Vec<i32>, l: usize) -> (new_list: (Vec<i32>, Vec<i32>))
             0 < l < list@.len(),
             0 <= index <= l,
             part1@ =~= list@.subrange(0, index as int),
+        decreases
+            l - index,
     {
         part1.push(list[index]);
         index += 1;
@@ -44,6 +46,8 @@ fn split_array(list: &Vec<i32>, l: usize) -> (new_list: (Vec<i32>, Vec<i32>))
         invariant
             l <= index <= list.len(),
             part2@ =~= list@.subrange(l as int, index as int),
+        decreases
+            list.len() - index,
     {
         part2.push(list[index]);
         index += 1;

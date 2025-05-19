@@ -16,6 +16,8 @@ ensures
             forall |k:int| 0 <= k < i ==> #[trigger] x[k] == old(x)[k] + 4,
             forall |k:int| i <= k < xlen ==> x[k] == old(x)[k],
             forall |k:int| 0 <= k < xlen ==> old(x)[k] <= 0x7FFF_FFFB,
+        decreases
+            xlen - i,
     { 
         x.set(i, x[i] + 4);  
         i = i + 1;
