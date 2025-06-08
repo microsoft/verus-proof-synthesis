@@ -85,7 +85,8 @@ class Verus:
 
 
 verus = Verus()
-
+import shutil
+verus.set_verus_path(shutil.which("verus"))
 
 class ErrorText:
     def __init__(self, text):
