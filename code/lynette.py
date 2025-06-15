@@ -48,7 +48,7 @@ class Lynette:
     def code_detect_nonlinear(self, file):
         return self.run(["code", "detect-nl", file])
 
-    def code_deghost(self, file, output_file, deghost_mode: str = Literal["raw", "unverified"], run_fmt: bool = True):
+    def code_deghost(self, file, output_file, deghost_mode: Literal["raw", "unverified"] = "raw", run_fmt: bool = True):
         LYNETTE_PATH = os.environ.get("LYNETTE_PATH")
         if not LYNETTE_PATH:
             raise EnvironmentError("LYNETTE_PATH environment variable is not set.")
