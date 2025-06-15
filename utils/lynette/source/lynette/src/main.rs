@@ -109,6 +109,8 @@ pub struct DeghostMode {
     decreases: bool,
     #[clap(long, help = "Compare assumes")]
     assumes: bool,
+    # [clap(long, help = "Compare signature output")]
+    sig_output: bool,
 }
 
 impl DeghostMode {
@@ -140,6 +142,7 @@ impl Default for DeghostMode {
             asserts_anno: false,
             decreases: false,
             assumes: false,
+            sig_output: false,
         }
     }
 }
@@ -235,6 +238,21 @@ struct MergeArgs {
     all: bool,
 }
 
+#[derive(Args)]  
+struct DeghostArgs {
+    /// Input Verus source code file
+    file: PathBuf,
+    # [clap(
+        short,
+        long,
+        help = "Deghost mode: 'raw' for raw code, 'unverified' for unverified code",
+        default_value = "raw"
+    )]
+    mode: String, // "raw", "unverified"
+    #[clap(short, long, help = "Output file path (prints to stdout if not specified)")]
+    output: Option<PathBuf>,
+}
+
 #[derive(Args)]
 struct UnimplArgs {
     file1: PathBuf,
@@ -297,6 +315,8 @@ If there are conflicts in the non-merging part, <FILE1> is preferred.
 "#)]
     Merge(MergeArgs),
     Unimpl(UnimplArgs),
+    #[clap(about = "Remove all proof annotations from Verus code to produce pure Rust code")]  
+    Deghost(DeghostArgs),
 }
 
 #[derive(Subcommand)]
@@ -694,6 +714,7 @@ fn main() {
                             asserts_anno: true,
                             decreases: true,
                             assumes: true,
+                            sig_output: true,
                         }
                     } else {
                         &arg.opts
@@ -731,6 +752,114 @@ fn main() {
                         eprintln!("{}", e);
                         process::exit(1);
                     });
+                }
+                CodeCommands::Deghost(args) => {  
+                    let filepath = args.file;
+                    let output_path = args.output;
+                    let mode_str = args.mode.as_str();
+
+                    // Configure DeghostMode based on the mode flag
+                    let deghost_mode = match mode_str {
+                        "unverified" => DeghostMode {
+                            requires: true,    // Keep all preconditions  
+                            ensures: true,     // Keep all postconditions  
+                            invariants: false,
+                            spec: false,
+                            asserts: false,
+                            asserts_anno: false,
+                            decreases: false,
+                            assumes: true,     // Keep all assumes
+                            sig_output: true,  // Keep signature output
+                        },  
+                        "raw" => DeghostMode {
+                            requires: false,
+                            ensures: false,
+                            invariants: false,
+                            spec: false,
+                            asserts: false,
+                            asserts_anno: false,
+                            decreases: false,
+                            assumes: false, 
+                            sig_output: false,
+                        },
+                        _ => {
+                            eprintln!("Invalid mode: {}. Use 'raw' or 'unverified'", mode_str);
+                            process::exit(1);
+                        }
+                    };
+
+                    // Read file as string  
+                    let code = match std::fs::read_to_string(&filepath) {
+                        Ok(content) => content,
+                        Err(e) => {
+                            eprintln!("Error reading file: {}", e);
+                            process::exit(1);
+                        }
+                    };
+
+                    // Extract verus! macro content manually using string processing
+                    let mut verus_start = code.find("verus! {");
+                    if verus_start.is_none() {
+                        // If not found, try to find "verus!{" without space
+                        verus_start = code.find("verus!{");
+                    }
+                    // let verus_end = code.rfind("} // verus!");
+                    // assuming the verus! macro is always at the end of the file
+                    let verus_end = code.rfind("}"); // assuming the last closing brace is the end of the verus! macro
+
+                    if let (Some(start), Some(end)) = (verus_start, verus_end) {  
+                        // Extract the content inside verus! { ... }  
+                        let verus_content = &code[start + 8..end]; // Skip "verus! {"  
+                        let non_verus_content = &code[..start];  
+
+                        // Parse only the verus content  
+                        match syn_verus::parse_str::<syn_verus::File>(verus_content) {  
+                            Ok(verus_file) => {
+                                let deghosted = remove_ghost_from_file(&verus_file, &deghost_mode);
+                                let deghosted_output = fprint_file(&deghosted, Formatter::VerusFmtNoMacro);
+
+                                // Combine non-verus content with deghosted verus content
+                                // Format output based on mode
+                                let final_output = match mode_str {
+                                    "raw" => {
+                                        // // Remove vstd import and verus macro wrapper
+                                        // let filtered_non_verus = non_verus_content
+                                        //     .lines()
+                                        //     .filter(|line| !line.trim().starts_with("use vstd::prelude::*;"))
+                                        //     .collect::<Vec<_>>()
+                                        //     .join("\n");
+
+                                        // Just output the deghosted content without verus wrapper
+                                        format!("{}\n{}", non_verus_content.trim(), deghosted_output)
+                                    },
+                                    "unverified" => {
+                                        // Keep the verus macro wrapper and imports
+                                        format!("{}verus! {{{}}}", non_verus_content, deghosted_output)
+                                    },
+                                    _ => unreachable!()
+                                };
+
+                                if let Some(out_path) = output_path {
+                                    match std::fs::write(&out_path, &final_output) {
+                                        Ok(_) => println!("Deghosted code written to: {}", out_path.display()),
+                                        Err(e) => {
+                                            eprintln!("Error writing to file: {}", e);
+                                            process::exit(1);
+                                        }
+                                    }
+                                } else {
+                                    println!("{}", final_output);
+                                }
+                            }
+                            Err(e) => {
+                                eprintln!("Error parsing verus content: {}", e);
+                                process::exit(1);
+                            }
+                        }
+                    } else {
+                        eprintln!("No verus! macro found in file");
+                        process::exit(1);
+                    }
                 }
             }
         }
