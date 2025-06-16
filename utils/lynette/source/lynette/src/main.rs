@@ -764,7 +764,7 @@ fn main() {
                             requires: true,    // Keep all preconditions  
                             ensures: true,     // Keep all postconditions  
                             invariants: false,
-                            spec: false,
+                            spec: true,     // Keep all spec functions
                             asserts: false,
                             asserts_anno: false,
                             decreases: false,
