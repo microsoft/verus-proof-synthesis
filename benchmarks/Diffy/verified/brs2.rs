@@ -39,7 +39,8 @@ pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
 		if (i == 0) {
 			sum.set(0, 0);
 		} else {
-			sum.set(0, sum[0] + a[i]);
+			let temp = sum[0];
+			sum.set(0, temp + a[i]);
 		}
 		i = i + 1;
 	}
