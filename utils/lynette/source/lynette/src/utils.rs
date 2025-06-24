@@ -160,9 +160,11 @@ pub fn fextract_verus_macro(
     })
 }
 
+#[derive(PartialEq)]
 pub enum Formatter {
     #[allow(dead_code)]
     VerusFmt,
+    VerusFmtNoMacro,
     RustFmt,
     Mix,
 }
@@ -180,6 +182,10 @@ pub fn format_token_stream(ts: &TokenStream, formatter: Formatter) -> String {
     let mut cmd = match formatter {
         Formatter::VerusFmt => {
             write!(tmp_file, "verus!{{{}}}", verus_s).expect("Failed to write to temp file");
+            Command::new("verusfmt")
+        }
+        Formatter::VerusFmtNoMacro => {
+            write!(tmp_file, "verus! {{{}}} // verus!", verus_s).expect("Failed to write to temp file");
             Command::new("verusfmt")
         }
         Formatter::RustFmt => {
@@ -210,7 +216,12 @@ pub fn format_token_stream(ts: &TokenStream, formatter: Formatter) -> String {
 
     tmp_file.close().expect("Failed to close temp file");
 
-    formatted_code
+    if formatter == Formatter::VerusFmtNoMacro {
+        // Remove the verus! macro from the formatted code
+        formatted_code.replace("verus! {", "").replace("} // verus!", "")
+    } else {
+        formatted_code
+    }
 }
 
 pub fn fprint_file(file: &syn_verus::File, formatter: Formatter) -> String {

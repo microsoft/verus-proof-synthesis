@@ -39,6 +39,17 @@ def split_code_by_func(code, oprefix, tofile=False):
             name = re.sub(r'.+fn ','',tmp)
             names.append(name)
 
+            # check if the function is empty
+            if line.strip().endswith("{}"):
+                intervalend.append(i)
+                if tofile == True:
+                    output_file = oprefix + "_{}_".format(findex) + name + "_.rs"                
+                    ofiles.append(output_file)
+                    with open(output_file, "w") as wf:
+                        wf.write(fcode)
+                findex += 1
+                continue
+
             #get function ending line number
             ident = len(line) - len(line.lstrip())
             j = i + 1
