@@ -822,15 +822,11 @@ fn main() {
                                 // Format output based on mode
                                 let final_output = match mode_str {
                                     "raw" => {
-                                        // // Remove vstd import and verus macro wrapper
-                                        // let filtered_non_verus = non_verus_content
-                                        //     .lines()
-                                        //     .filter(|line| !line.trim().starts_with("use vstd::prelude::*;"))
-                                        //     .collect::<Vec<_>>()
-                                        //     .join("\n");
+                                        // comment out the `use vstd::prelude::*;` import
+                                        let non_verus_content_no_import = non_verus_content.replace("use vstd::prelude::*;", "// use vstd::prelude::*;");
 
                                         // Just output the deghosted content without verus wrapper
-                                        format!("{}\n{}", non_verus_content.trim(), deghosted_output)
+                                        format!("{}\n{}", non_verus_content_no_import.trim(), deghosted_output)
                                     },
                                     "unverified" => {
                                         // Keep the verus macro wrapper and imports
