@@ -10,7 +10,7 @@
     "aoai_generation_model": "gpt-4o",
     "aoai_debug_model": "gpt-4o",
     "verus_path": "/home/appuser/verus/source/target-verus/release/verus",
-    "example_path": "/home/appuser/code/examples",
-    "lemma_path": "/home/appuser/code/lemmas",
-    "util_path": "/home/appuser/utils"
+    "example_path": "/home/appuser/verus-proof-synthesis/code/examples",
+    "lemma_path": "/home/appuser/verus-proof-synthesis/code/lemmas",
+    "util_path": "/home/appuser/verus-proof-synthesis/utils"
 }
