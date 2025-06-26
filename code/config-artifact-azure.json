@@ -1,0 +1,16 @@
+{
+    "use_openai": false,
+    "aoai_api_base": [
+        "https://verus-copilot.openai.azure.com/"
+    ],
+    "aoai_api_version": "2024-12-01-preview",
+    "aoai_api_key": [],
+    "aoai_max_retries": 5,
+    "max_token": 4096,
+    "aoai_generation_model": "gpt-4o",
+    "aoai_debug_model": "gpt-4o",
+    "verus_path": "/home/appuser/verus/source/target-verus/release/verus",
+    "example_path": "/home/appuser/code/examples",
+    "lemma_path": "/home/appuser/code/lemmas",
+    "util_path": "/home/appuser/utils"
+}
