@@ -176,9 +176,9 @@ def main():
         "--name", type=str, default="gpt4o-mbpp", help="Name of the experiment"
     )
     parser.add_argument(
-        "--config_file",
+        "--config-file",
         type=Path,
-        default=Path("config.json"),
+        default=Path("config-artifact-azure.json"),
         help="Configuration file for the experiment",
     )
     parser.add_argument('--disable-safe', action='store_true', help='Disable safe check for code')

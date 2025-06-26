@@ -44,9 +44,7 @@ USER appuser
 WORKDIR /home/appuser
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/home/appuser/.cargo/bin:${PATH}" 
-
-# Install Azure CLI
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+RUN cargo install verusfmt
 
 # Clone and build Verus
 WORKDIR /home/appuser
@@ -56,8 +54,7 @@ RUN git checkout 33269ac6a0ea33a08109eefe5016c1fdd0ce9fbd
 
 # Build Verus (following the proper Verus build process)
 WORKDIR /home/appuser/verus/source
-RUN bash -c "source /home/appuser/.cargo/env && source ../tools/activate && ./tools/get-z3.sh && vargo build --release"
-RUN cargo install verusfmt
+RUN bash -c "source ../tools/activate && ./tools/get-z3.sh && vargo build --release"
 
 # Set working directory back to app
 WORKDIR /home/appuser
@@ -70,6 +67,9 @@ RUN git checkout artifact
 ENV PATH="/home/appuser/venv/bin:/home/appuser/verus/source/target-verus/release:$PATH"
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
+
+# Install Azure CLI
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 # You can override this when running the container
 CMD ["/bin/bash"]
