@@ -2,6 +2,7 @@
 # Licensed under the MIT license.      #
 
 
+import os
 import openai
 from openai import AzureOpenAI, OpenAI
 import time
@@ -14,14 +15,24 @@ class LLM:
         self.logger = logger
         self.client = []
         if config.use_openai:
-            for i in range(len(config.aoai_api_key)):
+            if len(config.aoai_api_key) == 0:
+                self.logger.info("Using OpenAI API Key from environment variable")
                 self.client.append(
                     OpenAI(
-                        api_key=config.aoai_api_key[i],
-                        base_url=config.aoai_api_base[i],
+                        api_key=os.getenv("OPENAI_API_KEY"),
+                        base_url=config.aoai_api_base[0],
                         max_retries=config.aoai_max_retries,
                     )
                 )
+            else:
+                for i in range(len(config.aoai_api_key)):
+                    self.client.append(
+                        OpenAI(
+                            api_key=config.aoai_api_key[i],
+                            base_url=config.aoai_api_base[i],
+                            max_retries=config.aoai_max_retries,
+                        )
+                    )
         # there may be no key and instead authentication is used
         elif len(config.aoai_api_key) == 0:
             from azure.identity import DefaultAzureCredential, get_bearer_token_provider
