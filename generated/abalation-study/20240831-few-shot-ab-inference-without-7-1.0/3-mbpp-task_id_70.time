@@ -1,0 +1,29 @@
+2024-08-31 22:36:53 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:36:53 INFO: Running in generation mode
+2024-08-31 22:36:53 INFO: Repair steps: 0
+2024-08-31 22:36:53 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:36:53 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:36:53 INFO: Generating proof code
+2024-08-31 22:36:53 INFO: Temperature: 1.0
+2024-08-31 22:36:53 INFO: Direct inference attempt 0
+2024-08-31 22:36:56 INFO: Infer time: 2.9858181476593018s
+2024-08-31 22:36:56 INFO: Checking candidate 0-0
+2024-08-31 22:36:56 ERROR: Error: 'verified'
+2024-08-31 22:36:56 ERROR: Error: 'errors'
+2024-08-31 22:36:56 INFO: Checking candidate 0-1
+2024-08-31 22:36:57 ERROR: Error: 'verified'
+2024-08-31 22:36:57 ERROR: Error: 'errors'
+2024-08-31 22:36:57 INFO: Checking candidate 0-2
+2024-08-31 22:36:57 ERROR: Error: 'verified'
+2024-08-31 22:36:57 ERROR: Error: 'errors'
+2024-08-31 22:36:57 INFO: Checking candidate 0-3
+2024-08-31 22:36:57 INFO: Checking candidate 0-4
+2024-08-31 22:36:58 ERROR: Error: 'verified'
+2024-08-31 22:36:58 ERROR: Error: 'errors'
+2024-08-31 22:36:58 INFO: Regenerate...
+2024-08-31 22:36:58 INFO: Direct inference attempt 1
+2024-08-31 22:37:01 INFO: Infer time: 3.3892290592193604s
+2024-08-31 22:37:01 INFO: Checking candidate 1-0
+2024-08-31 22:37:01 INFO: Verus has succeeded.
+2024-08-31 22:37:01 INFO: Verus succeeded!!
+2024-08-31 22:37:02 INFO: finished!

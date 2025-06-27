@@ -1,0 +1,61 @@
+2024-09-02 18:56:25 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 18:56:25 INFO: Running in generation mode
+2024-09-02 18:56:25 INFO: Repair steps: 0
+2024-09-02 18:56:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 18:56:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 18:56:25 INFO: Generating proof code
+2024-09-02 18:56:25 INFO: Temperature: 1.0
+2024-09-02 18:56:25 WARNING: Disabled ranking
+2024-09-02 18:56:25 INFO: Direct inference attempt 0
+2024-09-02 18:56:29 INFO: Infer time: 3.830798625946045s
+2024-09-02 18:56:29 INFO: Checking candidate 0-0
+2024-09-02 18:56:29 INFO: Checking candidate 0-1
+2024-09-02 18:56:30 INFO: 0-1.rs in code pool
+2024-09-02 18:56:30 INFO: 0-1.rs is now the best proof candidate
+2024-09-02 18:56:30 INFO: Working on merge-0.rs
+2024-09-02 18:56:34 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:56:34 INFO: Running houdini on merge-0.rs
+2024-09-02 18:56:35 WARNING: Non-linear arithmetic detected.
+2024-09-02 18:56:35 WARNING:             forall|i: int|
+                0 <= i < index ==> # [trigger] output_arr[i] == # [trigger] (arr1[i] * arr2[i]),
+2024-09-02 18:56:35 INFO: refining with constantrefine_inference
+2024-09-02 18:56:39 INFO: Infer time: 3.7952358722686768s
+2024-09-02 18:56:39 INFO: Verus has succeeded.
+2024-09-02 18:56:39 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_multiplication(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    ensures
+        result.len() == arr1.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] * arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            forall|i: int|
+                0 <= i < index ==> # [trigger] output_arr[i] == # [trigger] (arr1[i] * arr2[i]),
+            index <= arr1.len(),
+            output_arr.len() == index,
+            arr1.len() == arr2.len(),
+            forall|i: int|
+                (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    {
+        output_arr.push((arr1[index] * arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 18:56:44 INFO: Verus succeeded with refinement!!
+2024-09-02 18:56:44 INFO: finished!

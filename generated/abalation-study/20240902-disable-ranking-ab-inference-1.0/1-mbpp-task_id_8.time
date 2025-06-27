@@ -1,0 +1,76 @@
+2024-09-02 19:00:43 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:00:43 INFO: Running in generation mode
+2024-09-02 19:00:43 INFO: Repair steps: 0
+2024-09-02 19:00:43 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:00:43 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:00:43 INFO: Generating proof code
+2024-09-02 19:00:43 INFO: Temperature: 1.0
+2024-09-02 19:00:43 WARNING: Disabled ranking
+2024-09-02 19:00:43 INFO: Direct inference attempt 0
+2024-09-02 19:00:43 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 23.000000 seconds
+2024-09-02 19:01:11 INFO: Infer time: 28.307194709777832s
+2024-09-02 19:01:11 INFO: Checking candidate 0-0
+2024-09-02 19:01:12 INFO: Checking candidate 0-1
+2024-09-02 19:01:12 INFO: Checking candidate 0-2
+2024-09-02 19:01:13 INFO: Checking candidate 0-3
+2024-09-02 19:01:13 INFO: Checking candidate 0-4
+2024-09-02 19:01:13 INFO: Regenerate...
+2024-09-02 19:01:13 INFO: Direct inference attempt 1
+2024-09-02 19:01:13 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-02 19:01:27 INFO: Infer time: 13.153317213058472s
+2024-09-02 19:01:27 INFO: Checking candidate 1-0
+2024-09-02 19:01:27 INFO: Checking candidate 1-1
+2024-09-02 19:01:27 INFO: 1-1.rs in code pool
+2024-09-02 19:01:27 INFO: 1-1.rs is now the best proof candidate
+2024-09-02 19:01:27 INFO: Regenerate...
+2024-09-02 19:01:27 INFO: Direct inference attempt 2
+2024-09-02 19:01:27 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-02 19:01:33 INFO: Infer time: 5.179316997528076s
+2024-09-02 19:01:33 INFO: Checking candidate 2-0
+2024-09-02 19:01:33 INFO: Checking candidate 2-1
+2024-09-02 19:01:33 INFO: Checking candidate 2-2
+2024-09-02 19:01:34 INFO: Checking candidate 2-3
+2024-09-02 19:01:34 INFO: Checking candidate 2-4
+2024-09-02 19:01:34 INFO: Regenerate...
+2024-09-02 19:01:34 INFO: Working on merge-0.rs
+2024-09-02 19:01:39 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:01:39 INFO: Running houdini on merge-0.rs
+2024-09-02 19:01:40 WARNING: Non-linear arithmetic detected.
+2024-09-02 19:01:40 WARNING:             forall|k: int| 0 <= k < index ==> result[k] == nums[k] * nums[k],
+2024-09-02 19:01:40 INFO: refining with constantrefine_inference
+2024-09-02 19:01:43 INFO: Infer time: 3.2328174114227295s
+2024-09-02 19:01:43 INFO: Verus has succeeded.
+2024-09-02 19:01:43 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn square_nums(nums: &Vec<i32>) -> (squared: Vec<i32>)
+    requires
+        forall|k: int|
+            0 <= k < nums.len() ==> (0 <= # [trigger] nums[k] * # [trigger] nums[k] < i32::MAX),
+    ensures
+        nums.len() == squared.len(),
+        forall|k: int| 0 <= k < nums.len() ==> (# [trigger] squared[k] == nums[k] * nums[k]),
+{
+    let mut result: Vec<i32> = Vec::new();
+    let mut index = 0;
+    while index < nums.len()
+        invariant
+            forall|k: int| 0 <= k < index ==> result[k] == nums[k] * nums[k],
+            index <= nums.len(),
+            result.len() == index,
+            // Copied precondition invariant
+            forall|k: int|
+                0 <= k < nums.len() ==> (0 <= # [trigger] nums[k] * # [trigger] nums[k] < i32::MAX),
+    {
+        result.push(nums[index] * nums[index]);
+        index += 1
+    }
+    result
+}
+
+} // verus!
+
+2024-09-02 19:01:48 INFO: Verus succeeded with refinement!!
+2024-09-02 19:01:48 INFO: finished!

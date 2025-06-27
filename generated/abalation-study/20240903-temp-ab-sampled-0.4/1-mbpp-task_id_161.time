@@ -1,0 +1,1238 @@
+2024-09-03 19:23:36 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 19:23:36 INFO: Running in generation mode
+2024-09-03 19:23:36 INFO: Repair steps: 10
+2024-09-03 19:23:37 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:23:37 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:23:37 INFO: Generating proof code
+2024-09-03 19:23:37 INFO: Temperature: 0.4
+2024-09-03 19:23:37 INFO: Direct inference attempt 0
+2024-09-03 19:23:44 INFO: Infer time: 7.783674955368042s
+2024-09-03 19:23:44 INFO: Checking candidate 0-0
+2024-09-03 19:23:48 INFO: Checking candidate 0-1
+2024-09-03 19:23:48 INFO: 0-1.rs in code pool
+2024-09-03 19:23:48 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 19:23:48 INFO: Checking candidate 0-2
+2024-09-03 19:23:48 INFO: Checking candidate 0-3
+2024-09-03 19:23:48 INFO: Checking candidate 0-4
+2024-09-03 19:23:49 INFO: Working on merge-0.rs
+2024-09-03 19:24:01 INFO: Merged code is better.
+2024-09-03 19:24:01 INFO: Running houdini on merge-0.rs
+2024-09-03 19:24:09 INFO: refining with constantrefine_inference
+2024-09-03 19:24:18 INFO: Infer time: 8.474283218383789s
+2024-09-03 19:24:18 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            i < str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            index <= arr1.len(),
+            output_str.len() <= index,
+            index < arr1.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-03 19:24:19 INFO: New refined code is worse
+2024-09-03 19:24:19 INFO: refining with arraylen_inference
+2024-09-03 19:24:26 INFO: Infer time: 7.662314176559448s
+2024-09-03 19:24:27 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            index <= arr1.len(),
+            output_str.len() <= index,
+            arr1.len() == arr1.len(),
+            arr2.len() == arr2.len(),
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-03 19:24:27 INFO: New refined code is a good repair
+2024-09-03 19:24:27 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            index <= arr1.len(),
+            output_str.len() <= index,
+            arr1.len() == arr1.len(),
+            arr2.len() == arr2.len(),
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-03 19:24:27 INFO: refining with arrayrefine_inference
+2024-09-03 19:24:34 INFO: Infer time: 7.2286376953125s
+2024-09-03 19:24:34 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-03 19:24:35 INFO: New refined code is a good repair
+2024-09-03 19:24:35 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-03 19:24:35 INFO: refining with condlooprefine_inference
+2024-09-03 19:24:47 INFO: Infer time: 11.734628915786743s
+2024-09-03 19:24:47 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-03 19:24:53 INFO: Refinement did not change the code
+2024-09-03 19:24:53 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:24:53 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:24:53 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-09-03 19:24:53 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:25:01 INFO: Infer time: 8.240947723388672s
+2024-09-03 19:25:01 INFO: Here is the quick fix output
+2024-09-03 19:25:06 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:25:14 INFO: Infer time: 8.27605938911438s
+2024-09-03 19:25:14 INFO: repair-1-0 file generated
+2024-09-03 19:25:14 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:25:15 INFO: repair-1-1 file generated
+2024-09-03 19:25:15 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:25:15 INFO: repair-1-2 file generated
+2024-09-03 19:25:15 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:25:16 INFO: Step 2: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:25:16 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:25:16 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 3.000000 seconds
+2024-09-03 19:25:26 INFO: Infer time: 10.773755073547363s
+2024-09-03 19:25:26 INFO: Here is the quick fix output
+2024-09-03 19:25:27 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:25:27 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-03 19:25:40 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 14.000000 seconds
+2024-09-03 19:25:54 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 12.000000 seconds
+2024-09-03 19:26:18 INFO: Infer time: 51.08252501487732s
+2024-09-03 19:26:18 INFO: repair-2-0 file generated
+2024-09-03 19:26:18 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:19 INFO: repair-2-1 file generated
+2024-09-03 19:26:19 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:19 INFO: repair-2-2 file generated
+2024-09-03 19:26:19 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:20 INFO: repair-2-3 file generated
+2024-09-03 19:26:20 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:20 INFO: repair-2-4 file generated
+2024-09-03 19:26:20 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:20 INFO: Step 3: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:26:20 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:28 INFO: Infer time: 7.314546585083008s
+2024-09-03 19:26:28 INFO: Here is the quick fix output
+2024-09-03 19:26:28 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:26:40 INFO: Infer time: 11.425091981887817s
+2024-09-03 19:26:40 INFO: repair-3-0 file generated
+2024-09-03 19:26:40 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:40 INFO: repair-3-1 file generated
+2024-09-03 19:26:40 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:41 INFO: repair-3-2 file generated
+2024-09-03 19:26:41 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:41 INFO: repair-3-3 file generated
+2024-09-03 19:26:41 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:42 INFO: repair-3-4 file generated
+2024-09-03 19:26:42 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:42 INFO: Step 4: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:26:42 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:26:51 INFO: Infer time: 8.78790545463562s
+2024-09-03 19:26:51 INFO: Here is the quick fix output
+2024-09-03 19:26:51 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:26:51 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-03 19:27:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-03 19:27:21 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 8.000000 seconds
+2024-09-03 19:27:39 INFO: Infer time: 47.821417808532715s
+2024-09-03 19:27:44 INFO: repair-4-0 file generated
+2024-09-03 19:27:44 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:27:44 INFO: repair-4-1 file generated
+2024-09-03 19:27:44 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:27:45 INFO: repair-4-2 file generated
+2024-09-03 19:27:45 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:27:45 INFO: repair-4-3 file generated
+2024-09-03 19:27:45 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:27:46 INFO: repair-4-4 file generated
+2024-09-03 19:27:46 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:27:46 INFO: Step 5: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:27:46 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:27:57 INFO: Infer time: 10.428170204162598s
+2024-09-03 19:27:57 INFO: Here is the quick fix output
+Start repair
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> (exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key),
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-03 19:27:57 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:27:57 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 18.000000 seconds
+2024-09-03 19:28:27 INFO: Infer time: 29.6968834400177s
+2024-09-03 19:28:27 INFO: repair-5-0 file generated
+2024-09-03 19:28:27 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:28:27 INFO: repair-5-1 file generated
+2024-09-03 19:28:27 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:28:28 INFO: repair-5-2 file generated
+2024-09-03 19:28:28 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:28:28 INFO: repair-5-3 file generated
+2024-09-03 19:28:28 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:28:29 INFO: repair-5-4 file generated
+2024-09-03 19:28:29 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:28:29 INFO: Step 6: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:28:29 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:28:29 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-03 19:28:40 INFO: Infer time: 10.671408653259277s
+2024-09-03 19:28:40 INFO: Here is the quick fix output
+2024-09-03 19:28:47 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:28:56 INFO: Infer time: 9.08248257637024s
+2024-09-03 19:29:00 INFO: repair-6-0 file generated
+2024-09-03 19:29:00 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:01 INFO: repair-6-1 file generated
+2024-09-03 19:29:01 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:01 INFO: repair-6-2 file generated
+2024-09-03 19:29:01 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:02 INFO: repair-6-3 file generated
+2024-09-03 19:29:02 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:02 INFO: repair-6-4 file generated
+2024-09-03 19:29:02 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:03 INFO: Error line deleted. Proof updated to be repair-7-remove-InvFailFront
+2024-09-03 19:29:03 INFO: Step 7: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:29:03 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:03 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-03 19:29:25 INFO: Infer time: 21.703466415405273s
+2024-09-03 19:29:25 INFO: Here is the quick fix output
+2024-09-03 19:29:25 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:29:25 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 6.000000 seconds
+2024-09-03 19:29:42 INFO: Infer time: 16.717247009277344s
+2024-09-03 19:29:42 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 19:29:46 ERROR: Error in comparing code changes: 
+2024-09-03 19:29:46 INFO: repair-7-0 file generated
+2024-09-03 19:29:46 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 19:29:46 WARNING: The repair is not safe.
+2024-09-03 19:29:54 INFO: repair-7-1 file generated
+2024-09-03 19:29:54 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:55 INFO: repair-7-2 file generated
+2024-09-03 19:29:55 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:55 INFO: repair-7-3 file generated
+2024-09-03 19:29:55 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:56 INFO: repair-7-4 file generated
+2024-09-03 19:29:56 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:29:56 INFO: Step 8: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:29:56 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:03 INFO: Infer time: 6.957932233810425s
+2024-09-03 19:30:03 INFO: Here is the quick fix output
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+Warning: a non type error is passed to debug_type_error
+2024-09-03 19:30:03 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:30:04 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-03 19:30:25 INFO: Infer time: 21.97972846031189s
+2024-09-03 19:30:26 INFO: repair-8-0 file generated
+2024-09-03 19:30:26 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:26 INFO: repair-8-1 file generated
+2024-09-03 19:30:26 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:27 INFO: repair-8-2 file generated
+2024-09-03 19:30:27 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:27 INFO: repair-8-3 file generated
+2024-09-03 19:30:27 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:28 INFO: repair-8-4 file generated
+2024-09-03 19:30:28 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:28 INFO: Step 9: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:30:28 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:36 INFO: Infer time: 7.471449613571167s
+2024-09-03 19:30:36 INFO: Here is the quick fix output
+2024-09-03 19:30:36 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:30:46 INFO: Infer time: 9.517733335494995s
+2024-09-03 19:30:46 INFO: repair-9-0 file generated
+2024-09-03 19:30:46 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:46 INFO: repair-9-1 file generated
+2024-09-03 19:30:46 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:47 INFO: repair-9-2 file generated
+2024-09-03 19:30:47 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:47 INFO: repair-9-3 file generated
+2024-09-03 19:30:47 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:48 INFO: repair-9-4 file generated
+2024-09-03 19:30:48 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:48 INFO: Step 10: VerusErrorType.InvFailFront with num=5.
+2024-09-03 19:30:48 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:30:48 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 9.000000 seconds
+2024-09-03 19:30:58 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 20.000000 seconds
+2024-09-03 19:31:26 INFO: Infer time: 37.41586661338806s
+2024-09-03 19:31:26 INFO: Here is the quick fix output
+2024-09-03 19:31:26 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:31:26 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 11.000000 seconds
+2024-09-03 19:31:48 INFO: Infer time: 21.834040641784668s
+2024-09-03 19:31:50 INFO: repair-10-0 file generated
+2024-09-03 19:31:50 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:31:51 INFO: repair-10-1 file generated
+2024-09-03 19:31:51 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:31:51 INFO: repair-10-2 file generated
+2024-09-03 19:31:51 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:31:52 INFO: repair-10-3 file generated
+2024-09-03 19:31:52 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:31:52 INFO: repair-10-4 file generated
+2024-09-03 19:31:52 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-03 19:31:53 INFO: Original code is better
+2024-09-03 19:31:53 INFO: finished!
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i > 0 ==> exists|j: int|
+                0 <= j < i && str[j] == key <==> exists|j: int| 0 <= j < str.len() && str[j] == key,
+            i <= str.len(),
+            str.len() == str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            forall|k: int| 0 <= k < arr1.len() ==> arr1@.contains(# [trigger] arr1[k]), // arr1 is never changed in the loop
+            forall|k: int| 0 <= k < arr2.len() ==> arr2@.contains(# [trigger] arr2[k]), // arr2 is never changed in the loop
+            index <= arr1.len(),
+            output_str.len() <= index,
+            output_str.len() == output_str.len(),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+

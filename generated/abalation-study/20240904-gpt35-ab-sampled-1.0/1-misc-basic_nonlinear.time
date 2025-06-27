@@ -1,0 +1,251 @@
+2024-09-04 15:00:52 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 15:00:52 INFO: Running in generation mode
+2024-09-04 15:00:52 INFO: Repair steps: 10
+2024-09-04 15:00:52 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:00:52 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:00:52 INFO: Generating proof code
+2024-09-04 15:00:52 INFO: Temperature: 1.0
+2024-09-04 15:00:52 INFO: Direct inference attempt 0
+2024-09-04 15:00:54 INFO: Infer time: 1.4463696479797363s
+2024-09-04 15:00:54 INFO: Checking candidate 0-0
+2024-09-04 15:00:54 INFO: 0-0.rs in code pool
+2024-09-04 15:00:54 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 15:00:54 INFO: Checking candidate 0-1
+2024-09-04 15:00:54 INFO: 0-1.rs in code pool
+2024-09-04 15:00:54 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 15:00:54 INFO: Checking candidate 0-2
+2024-09-04 15:00:54 ERROR: Error in comparing code changes: 
+2024-09-04 15:00:54 INFO: Checking candidate 0-3
+2024-09-04 15:00:55 INFO: 0-3.rs in code pool
+2024-09-04 15:00:55 INFO: 0-3.rs is now the best proof candidate
+2024-09-04 15:00:55 INFO: Checking candidate 0-4
+2024-09-04 15:00:55 INFO: 0-4.rs in code pool
+2024-09-04 15:00:55 INFO: 0-4.rs is now the best proof candidate
+2024-09-04 15:00:55 INFO: Regenerate...
+2024-09-04 15:00:55 INFO: Direct inference attempt 1
+2024-09-04 15:00:56 INFO: Infer time: 0.916954517364502s
+2024-09-04 15:00:56 INFO: Checking candidate 1-0
+2024-09-04 15:00:56 ERROR: Error in comparing code changes: 
+2024-09-04 15:00:56 INFO: Checking candidate 1-1
+2024-09-04 15:00:56 INFO: 1-1.rs in code pool
+2024-09-04 15:00:56 INFO: 1-1.rs is now the best proof candidate
+2024-09-04 15:00:56 INFO: Regenerate...
+2024-09-04 15:00:56 INFO: Direct inference attempt 2
+2024-09-04 15:00:57 INFO: Infer time: 0.7969024181365967s
+2024-09-04 15:00:57 INFO: Checking candidate 2-0
+2024-09-04 15:00:57 INFO: 2-0.rs in code pool
+2024-09-04 15:00:57 INFO: 2-0.rs is now the best proof candidate
+2024-09-04 15:00:57 INFO: Working on merge-0.rs
+2024-09-04 15:01:02 INFO: Merged code is better.
+2024-09-04 15:01:02 INFO: Running houdini on merge-0.rs
+2024-09-04 15:01:02 INFO: Working on merge-1.rs
+2024-09-04 15:01:03 INFO: Merged code is better.
+2024-09-04 15:01:03 INFO: Running houdini on merge-1.rs
+2024-09-04 15:01:03 INFO: Working on merge-2.rs
+2024-09-04 15:01:03 INFO: Merged code is better.
+2024-09-04 15:01:03 INFO: Running houdini on merge-2.rs
+2024-09-04 15:01:03 INFO: Working on merge-3.rs
+2024-09-04 15:01:04 INFO: Merged code is better.
+2024-09-04 15:01:04 INFO: Running houdini on merge-3.rs
+2024-09-04 15:01:04 INFO: Working on merge-4.rs
+2024-09-04 15:01:04 INFO: Merged code is better.
+2024-09-04 15:01:04 INFO: Running houdini on merge-4.rs
+2024-09-04 15:01:05 INFO: Working on merge-5.rs
+2024-09-04 15:01:05 INFO: Merged code is better.
+2024-09-04 15:01:05 INFO: Running houdini on merge-5.rs
+2024-09-04 15:01:05 INFO: refining with constantrefine_inference
+2024-09-04 15:01:07 INFO: Infer time: 1.234187126159668s
+2024-09-04 15:01:07 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    loop assigns x, y, result;
+    invariant
+        x <= 0xffff,
+        y <= 0xffff;
+}
+} // verus!
+
+2024-09-04 15:01:11 ERROR: Error in comparing code changes: 
+2024-09-04 15:01:11 INFO: Unsafe code change
+2024-09-04 15:01:11 INFO: Refinement did not change the code
+2024-09-04 15:01:11 INFO: refining with arraylen_inference
+2024-09-04 15:01:12 INFO: Infer time: 0.866619348526001s
+2024-09-04 15:01:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+}
+
+invariant {
+    // No loops in the function
+}
+
+} // verus!
+
+2024-09-04 15:01:12 ERROR: Error in comparing code changes: 
+2024-09-04 15:01:12 INFO: Unsafe code change
+2024-09-04 15:01:12 INFO: Refinement did not change the code
+2024-09-04 15:01:12 INFO: refining with arrayrefine_inference
+2024-09-04 15:01:13 INFO: Infer time: 1.0587983131408691s
+2024-09-04 15:01:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    // The array x is not modified in this loop because there are no x.set() operations.
+}
+
+} // verus!
+
+2024-09-04 15:01:13 INFO: New refined code is a good repair
+2024-09-04 15:01:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    // The array x is not modified in this loop because there are no x.set() operations.
+}
+
+} // verus!
+
+2024-09-04 15:01:13 INFO: refining with condlooprefine_inference
+2024-09-04 15:01:14 INFO: Infer time: 0.5511951446533203s
+2024-09-04 15:01:14 INFO: The given code does not contain any loops, so no refinements to loop invariants are required. If you'd like, I can assist you with any other code or provide guidance on another topic.
+2024-09-04 15:01:14 ERROR: Error in comparing code changes: 
+2024-09-04 15:01:14 INFO: Unsafe code change
+2024-09-04 15:01:14 INFO: Refinement did not change the code
+2024-09-04 15:01:14 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:01:14 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:01:14 INFO: Step 1: VerusErrorType.PostCondFail with num=3.
+2024-09-04 15:01:14 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:01:16 INFO: Infer time: 1.6551432609558105s
+2024-09-04 15:01:16 INFO: repair-1-0 file generated
+2024-09-04 15:01:16 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:01:16 INFO: Step 1: VerusErrorType.PostCondFail is fixed. Proof updated 1-0.
+2024-09-04 15:01:16 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:01:16 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:01:16 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:01:16 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:01:18 INFO: Infer time: 1.5679616928100586s
+2024-09-04 15:01:18 INFO: repair-2-0 file generated
+2024-09-04 15:01:18 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:01:18 INFO: repair-2-1 file generated
+2024-09-04 15:01:18 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:01:19 INFO: repair-2-2 file generated
+2024-09-04 15:01:19 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:01:19 INFO: Step 3: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:01:19 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:01:19 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:01:19 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:01:19 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 15:02:21 INFO: Infer time: 61.85593104362488s
+2024-09-04 15:02:21 INFO: repair-3-0 file generated
+2024-09-04 15:02:21 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:22 INFO: repair-3-1 file generated
+2024-09-04 15:02:22 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:22 INFO: Step 3: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 15:02:22 INFO: Step 4: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:02:22 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:22 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:02:22 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:02:23 INFO: Infer time: 1.38309645652771s
+2024-09-04 15:02:24 INFO: repair-4-0 file generated
+2024-09-04 15:02:24 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:24 INFO: repair-4-1 file generated
+2024-09-04 15:02:24 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:24 INFO: repair-4-2 file generated
+2024-09-04 15:02:24 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:25 INFO: Step 5: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:02:25 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:02:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:02:26 INFO: Infer time: 1.5066351890563965s
+2024-09-04 15:02:26 INFO: repair-5-0 file generated
+2024-09-04 15:02:26 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:27 INFO: Step 5: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 15:02:27 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:02:27 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:27 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:02:27 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:02:28 INFO: Infer time: 1.6546046733856201s
+2024-09-04 15:02:29 INFO: repair-6-0 file generated
+2024-09-04 15:02:29 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:29 INFO: repair-6-1 file generated
+2024-09-04 15:02:29 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:29 INFO: repair-6-2 file generated
+2024-09-04 15:02:29 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:30 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:02:30 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:30 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:02:30 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:02:31 INFO: Infer time: 1.609095811843872s
+2024-09-04 15:02:32 INFO: repair-7-0 file generated
+2024-09-04 15:02:32 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:32 INFO: Step 7: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 15:02:32 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:02:32 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:32 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:02:32 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:02:33 INFO: Infer time: 1.343256950378418s
+2024-09-04 15:02:33 INFO: repair-8-0 file generated
+2024-09-04 15:02:33 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:34 INFO: repair-8-1 file generated
+2024-09-04 15:02:34 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:34 INFO: repair-8-2 file generated
+2024-09-04 15:02:34 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:35 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:02:35 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:35 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:02:35 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:02:38 INFO: Infer time: 3.544398546218872s
+2024-09-04 15:02:38 INFO: repair-9-0 file generated
+2024-09-04 15:02:38 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:39 INFO: repair-9-1 file generated
+2024-09-04 15:02:39 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:39 INFO: Step 9: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 15:02:39 INFO: Step 10: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:02:39 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:02:39 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:02:39 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:02:39 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 15:03:41 INFO: Infer time: 62.30890417098999s
+2024-09-04 15:03:42 INFO: repair-10-0 file generated
+2024-09-04 15:03:42 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:03:42 INFO: repair-10-1 file generated
+2024-09-04 15:03:42 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:03:43 INFO: repair-10-2 file generated
+2024-09-04 15:03:43 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:03:43 INFO: Original code is better
+2024-09-04 15:03:43 INFO: finished!
+Start repair

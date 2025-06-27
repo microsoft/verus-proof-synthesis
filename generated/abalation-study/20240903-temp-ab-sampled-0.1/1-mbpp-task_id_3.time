@@ -1,0 +1,226 @@
+2024-09-03 16:59:33 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 16:59:33 INFO: Running in generation mode
+2024-09-03 16:59:33 INFO: Repair steps: 10
+2024-09-03 16:59:34 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 16:59:34 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 16:59:34 INFO: Generating proof code
+2024-09-03 16:59:34 INFO: Temperature: 0.1
+2024-09-03 16:59:34 INFO: Direct inference attempt 0
+2024-09-03 16:59:38 INFO: Infer time: 4.623692035675049s
+2024-09-03 16:59:38 INFO: Checking candidate 0-0
+2024-09-03 16:59:39 INFO: 0-0.rs in code pool
+2024-09-03 16:59:39 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 16:59:39 INFO: Checking candidate 0-1
+2024-09-03 16:59:39 INFO: 0-1.rs in code pool
+2024-09-03 16:59:39 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 16:59:39 INFO: Checking candidate 0-2
+2024-09-03 16:59:39 INFO: 0-2.rs in code pool
+2024-09-03 16:59:39 INFO: Checking candidate 0-3
+2024-09-03 16:59:40 INFO: 0-3.rs in code pool
+2024-09-03 16:59:40 INFO: Working on merge-0.rs
+2024-09-03 16:59:44 INFO: Merged code is better.
+2024-09-03 16:59:44 INFO: Running houdini on merge-0.rs
+2024-09-03 16:59:44 INFO: Working on merge-1.rs
+2024-09-03 16:59:44 INFO: Merged code is better.
+2024-09-03 16:59:44 INFO: Running houdini on merge-1.rs
+2024-09-03 16:59:45 INFO: Working on merge-2.rs
+2024-09-03 16:59:45 INFO: Running houdini on merge-2.rs
+2024-09-03 16:59:46 INFO: Working on merge-3.rs
+2024-09-03 16:59:46 INFO: Running houdini on merge-3.rs
+2024-09-03 16:59:47 INFO: refining with constantrefine_inference
+2024-09-03 16:59:52 INFO: Infer time: 4.829552888870239s
+2024-09-03 16:59:52 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn is_divisible(n: int, divisor: int) -> bool {
+    (n % divisor) == 0
+}
+
+fn is_non_prime(n: u64) -> (result: bool)
+    requires
+        n >= 2,
+    ensures
+        result == (exists|k: int| 2 <= k < n && is_divisible(n as int, k)),
+{
+    if n <= 1 {
+        return true;
+    }
+    let mut index = 2;
+    while index < n
+        invariant
+            2 <= index <= n,
+            forall|k: int| 2 <= k < index ==> !is_divisible(n as int, k),
+            n >= 2,
+    {
+        if ((n % index) == 0) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-09-03 16:59:56 INFO: New refined code is a good repair
+2024-09-03 16:59:56 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn is_divisible(n: int, divisor: int) -> bool {
+    (n % divisor) == 0
+}
+
+fn is_non_prime(n: u64) -> (result: bool)
+    requires
+        n >= 2,
+    ensures
+        result == (exists|k: int| 2 <= k < n && is_divisible(n as int, k)),
+{
+    if n <= 1 {
+        return true;
+    }
+    let mut index = 2;
+    while index < n
+        invariant
+            2 <= index <= n,
+            forall|k: int| 2 <= k < index ==> !is_divisible(n as int, k),
+            n >= 2,
+    {
+        if ((n % index) == 0) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-09-03 16:59:56 INFO: refining with arraylen_inference
+2024-09-03 16:59:59 INFO: Infer time: 2.9304733276367188s
+2024-09-03 16:59:59 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn is_divisible(n: int, divisor: int) -> bool {
+    (n % divisor) == 0
+}
+
+fn is_non_prime(n: u64) -> (result: bool)
+    requires
+        n >= 2,
+    ensures
+        result == (exists|k: int| 2 <= k < n && is_divisible(n as int, k)),
+{
+    if n <= 1 {
+        return true;
+    }
+    let mut index = 2;
+    while index < n
+        invariant
+            2 <= index <= n,
+            forall|k: int| 2 <= k < index ==> !is_divisible(n as int, k),
+            n >= 2,
+    {
+        if ((n % index) == 0) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-09-03 16:59:59 INFO: Refinement did not change the code
+2024-09-03 16:59:59 INFO: refining with arrayrefine_inference
+2024-09-03 17:00:02 INFO: Infer time: 3.0216636657714844s
+2024-09-03 17:00:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn is_divisible(n: int, divisor: int) -> bool {
+    (n % divisor) == 0
+}
+
+fn is_non_prime(n: u64) -> (result: bool)
+    requires
+        n >= 2,
+    ensures
+        result == (exists|k: int| 2 <= k < n && is_divisible(n as int, k)),
+{
+    if n <= 1 {
+        return true;
+    }
+    let mut index = 2;
+    while index < n
+        invariant
+            2 <= index <= n,
+            forall|k: int| 2 <= k < index ==> !is_divisible(n as int, k),
+            n >= 2,
+    {
+        if ((n % index) == 0) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-09-03 17:00:03 INFO: Refinement did not change the code
+2024-09-03 17:00:03 INFO: refining with condlooprefine_inference
+2024-09-03 17:00:05 INFO: Infer time: 2.7695345878601074s
+2024-09-03 17:00:05 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn is_divisible(n: int, divisor: int) -> bool {
+    (n % divisor) == 0
+}
+
+fn is_non_prime(n: u64) -> (result: bool)
+    requires
+        n >= 2,
+    ensures
+        result == (exists|k: int| 2 <= k < n && is_divisible(n as int, k)),
+{
+    if n <= 1 {
+        return true;
+    }
+    let mut index = 2;
+    while index < n
+        invariant
+            2 <= index <= n,
+            forall|k: int| 2 <= k < index ==> !is_divisible(n as int, k),
+            n >= 2,
+            index > 2 ==> forall|k: int| 2 <= k < index ==> !is_divisible(n as int, k),
+    {
+        if ((n % index) == 0) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+2024-09-03 17:00:06 INFO: New refined code under condloop is not better
+2024-09-03 17:00:06 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:00:06 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:00:06 INFO: Step 1: VerusErrorType.PostCondFail with num=3.
+2024-09-03 17:00:06 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 1, Verus Errors: 1
+2024-09-03 17:00:10 INFO: Infer time: 3.7125892639160156s
+2024-09-03 17:00:10 INFO: repair-1-0 file generated
+2024-09-03 17:00:10 INFO: Compilation Error: False, Verified: 2, Errors: 0, Verus Errors: 0
+2024-09-03 17:00:10 INFO: All errors are fixed within 1 steps!!!
+2024-09-03 17:00:10 INFO: Verus succeeded after repair!!
+2024-09-03 17:00:10 INFO: finished!
+Start repair

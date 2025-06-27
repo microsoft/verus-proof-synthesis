@@ -1,0 +1,32 @@
+2024-09-02 17:46:55 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:46:55 INFO: Running in generation mode
+2024-09-02 17:46:55 INFO: Repair steps: 0
+2024-09-02 17:46:55 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:46:55 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:46:55 INFO: Generating proof code
+2024-09-02 17:46:55 INFO: Temperature: 1.0
+2024-09-02 17:46:55 INFO: Generate with uniform refinement mode
+2024-09-02 17:46:55 INFO: Direct inference attempt 0
+2024-09-02 17:46:55 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:47:00 INFO: Infer time: 4.729675054550171s
+2024-09-02 17:47:00 INFO: Checking candidate 0-0
+2024-09-02 17:47:00 INFO: Checking candidate 0-1
+2024-09-02 17:47:00 INFO: Checking candidate 0-2
+2024-09-02 17:47:01 INFO: 0-2.rs in code pool
+2024-09-02 17:47:01 INFO: 0-2.rs is now the best proof candidate
+2024-09-02 17:47:01 INFO: Checking candidate 0-3
+2024-09-02 17:47:01 INFO: 0-3.rs in code pool
+2024-09-02 17:47:01 INFO: 0-3.rs is now the best proof candidate
+2024-09-02 17:47:01 INFO: Checking candidate 0-4
+2024-09-02 17:47:01 ERROR: Error: 'verified'
+2024-09-02 17:47:01 ERROR: Error: 'errors'
+2024-09-02 17:47:01 INFO: Working on merge-0.rs
+2024-09-02 17:47:06 INFO: Running houdini on merge-0.rs
+2024-09-02 17:47:06 INFO: Working on merge-1.rs
+2024-09-02 17:47:07 INFO: Merged code is better.
+2024-09-02 17:47:07 INFO: Running houdini on merge-1.rs
+2024-09-02 17:47:07 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:47:07 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:47:08 INFO: Original code is better
+2024-09-02 17:47:12 INFO: finished!
+Start repair

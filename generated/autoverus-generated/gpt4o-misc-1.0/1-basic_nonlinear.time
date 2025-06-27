@@ -1,0 +1,164 @@
+2024-08-30 15:59:16 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 15:59:16 INFO: Running in generation mode
+2024-08-30 15:59:16 INFO: Repair steps: 10
+2024-08-30 15:59:16 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 15:59:16 INFO: Generating proof code
+2024-08-30 15:59:16 INFO: Temperature: 1.0
+2024-08-30 15:59:16 INFO: Direct inference attempt 0
+2024-08-30 15:59:19 INFO: Infer time: 2.5982048511505127s
+2024-08-30 15:59:19 INFO: Checking candidate 0-0
+2024-08-30 15:59:19 ERROR: Error: 'verified'
+2024-08-30 15:59:19 ERROR: Error: 'errors'
+2024-08-30 15:59:19 INFO: Checking candidate 0-1
+2024-08-30 15:59:20 ERROR: Error: 'verified'
+2024-08-30 15:59:20 ERROR: Error: 'errors'
+2024-08-30 15:59:20 INFO: Checking candidate 0-2
+2024-08-30 15:59:20 INFO: 0-2.rs in code pool
+2024-08-30 15:59:20 INFO: 0-2.rs is now the best proof candidate
+2024-08-30 15:59:20 INFO: Checking candidate 0-3
+2024-08-30 15:59:20 INFO: Checking candidate 0-4
+2024-08-30 15:59:21 ERROR: Error: 'verified'
+2024-08-30 15:59:21 ERROR: Error: 'errors'
+2024-08-30 15:59:21 INFO: Working on merge-0.rs
+2024-08-30 15:59:25 INFO: Merged code is better.
+2024-08-30 15:59:25 INFO: Running houdini on merge-0.rs
+2024-08-30 15:59:26 WARNING: Non-linear arithmetic detected.
+2024-08-30 15:59:26 WARNING:     assert((x as u64) * (y as u64) <= 0xffff * 0xffff);
+2024-08-30 15:59:26 WARNING:     assert((x as u64) * (y as u64) <= 0x100000000);
+2024-08-30 15:59:26 INFO: refining with constantrefine_inference
+2024-08-30 15:59:28 INFO: Infer time: 1.7864437103271484s
+2024-08-30 15:59:28 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    assert((x as u64) * (y as u64) <= 0xffff * 0xffff);
+    assert((x as u64) * (y as u64) <= 0x100000000);
+
+    while some_condition {
+        invariant
+            x <= 0xffff,
+            y <= 0xffff,
+    }
+}
+
+} // verus!
+
+2024-08-30 15:59:32 ERROR: Error in comparing code changes: 
+2024-08-30 15:59:32 INFO: Unsafe code change
+2024-08-30 15:59:32 INFO: Refinement did not change the code
+2024-08-30 15:59:32 INFO: refining with arraylen_inference
+2024-08-30 15:59:34 INFO: Infer time: 1.910505771636963s
+2024-08-30 15:59:34 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    assert((x as u64) * (y as u64) <= 0xffff * 0xffff);
+    assert((x as u64) * (y as u64) <= 0x100000000);
+}
+
+} // verus!
+
+2024-08-30 15:59:35 INFO: New refined code is a good repair
+2024-08-30 15:59:35 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    assert((x as u64) * (y as u64) <= 0xffff * 0xffff);
+    assert((x as u64) * (y as u64) <= 0x100000000);
+}
+
+} // verus!
+
+2024-08-30 15:59:35 INFO: refining with arrayrefine_inference
+2024-08-30 15:59:36 INFO: Infer time: 1.2031099796295166s
+2024-08-30 15:59:36 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    assert((x as u64) * (y as u64) <= 0xffff * 0xffff);
+    assert((x as u64) * (y as u64) <= 0x100000000);
+}
+
+} // verus!
+
+2024-08-30 15:59:36 INFO: Refinement did not change the code
+2024-08-30 15:59:36 INFO: refining with condlooprefine_inference
+2024-08-30 15:59:38 INFO: Infer time: 2.321096420288086s
+2024-08-30 15:59:38 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    assert((x as u64) * (y as u64) <= 0xffff * 0xffff);
+    assert((x as u64) * (y as u64) <= 0x100000000);
+}
+
+} // verus!
+
+2024-08-30 15:59:39 INFO: Refinement did not change the code
+2024-08-30 15:59:39 INFO: refining with nonlinear_inference
+2024-08-30 15:59:40 INFO: Infer time: 1.8248932361602783s
+2024-08-30 15:59:41 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    assert((x as u64) * (y as u64) <= 0xffff * 0xffff) by (nonlinear_arith)
+        requires
+            x <= 0xffff,
+            y <= 0xffff,
+            {};
+    assert((x as u64) * (y as u64) <= 0x100000000) by (nonlinear_arith)
+        requires
+            (0xffff * 0xffff) as u64 <= 0x100000000,
+            {};
+}
+
+} // verus!
+2024-08-30 15:59:41 INFO: Verus succeeded with refinement and Houdini!
+2024-08-30 15:59:41 INFO: finished!

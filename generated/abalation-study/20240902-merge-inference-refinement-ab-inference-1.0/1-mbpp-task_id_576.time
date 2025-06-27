@@ -1,0 +1,68 @@
+2024-09-02 17:27:55 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:27:55 INFO: Running in generation mode
+2024-09-02 17:27:55 INFO: Repair steps: 0
+2024-09-02 17:27:55 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:27:55 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:27:55 INFO: Generating proof code
+2024-09-02 17:27:55 INFO: Temperature: 1.0
+2024-09-02 17:27:55 INFO: Generate with uniform refinement mode
+2024-09-02 17:27:55 INFO: Direct inference attempt 0
+2024-09-02 17:27:55 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:27:55 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 7.000000 seconds
+2024-09-02 17:28:09 INFO: Infer time: 14.281065464019775s
+2024-09-02 17:28:09 INFO: Checking candidate 0-0
+2024-09-02 17:28:09 ERROR: Error: 'verified'
+2024-09-02 17:28:09 ERROR: Error: 'errors'
+2024-09-02 17:28:10 INFO: Checking candidate 0-1
+2024-09-02 17:28:10 INFO: Checking candidate 0-2
+2024-09-02 17:28:10 ERROR: Error: 'verified'
+2024-09-02 17:28:10 ERROR: Error: 'errors'
+2024-09-02 17:28:10 INFO: Checking candidate 0-3
+2024-09-02 17:28:10 ERROR: Error: 'verified'
+2024-09-02 17:28:10 ERROR: Error: 'errors'
+2024-09-02 17:28:10 INFO: Checking candidate 0-4
+2024-09-02 17:28:10 INFO: Regenerate...
+2024-09-02 17:28:10 INFO: Direct inference attempt 1
+2024-09-02 17:28:10 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:28:11 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 8.000000 seconds
+2024-09-02 17:28:25 INFO: Infer time: 14.959521532058716s
+2024-09-02 17:28:25 INFO: Checking candidate 1-0
+2024-09-02 17:28:26 ERROR: Error: 'verified'
+2024-09-02 17:28:26 ERROR: Error: 'errors'
+2024-09-02 17:28:26 INFO: Checking candidate 1-1
+2024-09-02 17:28:26 INFO: Checking candidate 1-2
+2024-09-02 17:28:26 ERROR: Error: 'verified'
+2024-09-02 17:28:26 ERROR: Error: 'errors'
+2024-09-02 17:28:26 INFO: Checking candidate 1-3
+2024-09-02 17:28:27 ERROR: Error: 'verified'
+2024-09-02 17:28:27 ERROR: Error: 'errors'
+2024-09-02 17:28:27 INFO: Checking candidate 1-4
+2024-09-02 17:28:27 ERROR: Error: 'verified'
+2024-09-02 17:28:27 ERROR: Error: 'errors'
+2024-09-02 17:28:27 INFO: Regenerate...
+2024-09-02 17:28:27 INFO: Direct inference attempt 2
+2024-09-02 17:28:27 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:28:27 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-02 17:28:45 INFO: Infer time: 17.60973334312439s
+2024-09-02 17:28:45 INFO: Checking candidate 2-0
+2024-09-02 17:28:45 ERROR: Error: 'verified'
+2024-09-02 17:28:45 ERROR: Error: 'errors'
+2024-09-02 17:28:45 INFO: Checking candidate 2-1
+2024-09-02 17:28:45 ERROR: Error: 'verified'
+2024-09-02 17:28:45 ERROR: Error: 'errors'
+2024-09-02 17:28:45 INFO: Checking candidate 2-2
+2024-09-02 17:28:45 ERROR: Error: 'verified'
+2024-09-02 17:28:45 ERROR: Error: 'errors'
+2024-09-02 17:28:45 INFO: Checking candidate 2-3
+2024-09-02 17:28:46 ERROR: Error: 'verified'
+2024-09-02 17:28:46 ERROR: Error: 'errors'
+2024-09-02 17:28:46 INFO: Checking candidate 2-4
+2024-09-02 17:28:46 ERROR: Error: 'verified'
+2024-09-02 17:28:46 ERROR: Error: 'errors'
+2024-09-02 17:28:46 INFO: Regenerate...
+2024-09-02 17:28:46 ERROR: No valid code found!
+2024-09-02 17:28:46 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:28:46 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:28:47 INFO: Original code is better
+2024-09-02 17:28:47 INFO: finished!
+Start repair

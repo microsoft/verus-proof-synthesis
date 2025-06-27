@@ -1,0 +1,370 @@
+2024-09-03 20:02:37 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 20:02:37 INFO: Running in generation mode
+2024-09-03 20:02:37 INFO: Repair steps: 10
+2024-09-03 20:02:37 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:02:37 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:02:37 INFO: Generating proof code
+2024-09-03 20:02:37 INFO: Temperature: 0.4
+2024-09-03 20:02:37 INFO: Direct inference attempt 0
+2024-09-03 20:02:40 INFO: Infer time: 2.9466514587402344s
+2024-09-03 20:02:40 INFO: Checking candidate 0-0
+2024-09-03 20:02:40 INFO: 0-0.rs in code pool
+2024-09-03 20:02:40 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 20:02:40 INFO: Checking candidate 0-1
+2024-09-03 20:02:40 INFO: Checking candidate 0-2
+2024-09-03 20:02:41 ERROR: Error: 'verified'
+2024-09-03 20:02:41 ERROR: Error: 'errors'
+2024-09-03 20:02:41 INFO: Checking candidate 0-3
+2024-09-03 20:02:41 INFO: 0-3.rs in code pool
+2024-09-03 20:02:41 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 20:02:41 INFO: Checking candidate 0-4
+2024-09-03 20:02:41 ERROR: Error: 'verified'
+2024-09-03 20:02:41 ERROR: Error: 'errors'
+2024-09-03 20:02:41 INFO: Working on merge-0.rs
+2024-09-03 20:02:54 INFO: Merged code is better.
+2024-09-03 20:02:54 INFO: Running houdini on merge-0.rs
+2024-09-03 20:02:55 INFO: Working on merge-1.rs
+2024-09-03 20:03:12 INFO: Merged code is better.
+2024-09-03 20:03:12 INFO: Running houdini on merge-1.rs
+2024-09-03 20:03:20 INFO: refining with constantrefine_inference
+2024-09-03 20:03:22 INFO: Infer time: 1.7543246746063232s
+2024-09-03 20:03:22 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    while some_condition {
+        invariant x <= 0xffff,
+        invariant y <= 0xffff,
+        // other invariants
+    }
+}
+
+} // verus!
+
+2024-09-03 20:03:24 ERROR: Error in comparing code changes: 
+2024-09-03 20:03:24 INFO: Unsafe code change
+2024-09-03 20:03:24 INFO: Refinement did not change the code
+2024-09-03 20:03:24 INFO: refining with arraylen_inference
+2024-09-03 20:03:26 INFO: Infer time: 1.5175466537475586s
+2024-09-03 20:03:26 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    // No loops in this function, no arrays to add invariants for.
+}
+
+} // verus!
+
+2024-09-03 20:03:33 INFO: New refined code is a good repair
+2024-09-03 20:03:33 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    // No loops in this function, no arrays to add invariants for.
+}
+
+} // verus!
+
+2024-09-03 20:03:33 INFO: refining with arrayrefine_inference
+2024-09-03 20:03:35 INFO: Infer time: 1.461381435394287s
+2024-09-03 20:03:35 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    // No loops in this function, no arrays to add invariants for.
+}
+
+} // verus!
+
+2024-09-03 20:03:41 INFO: Refinement did not change the code
+2024-09-03 20:03:41 INFO: refining with condlooprefine_inference
+2024-09-03 20:03:45 INFO: Infer time: 3.33673357963562s
+2024-09-03 20:03:45 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    // No loops in this function, no arrays to add invariants for.
+}
+
+} // verus!
+
+2024-09-03 20:03:45 INFO: Refinement did not change the code
+2024-09-03 20:03:45 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:03:45 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:03:45 INFO: Step 1: VerusErrorType.PostCondFail with num=3.
+2024-09-03 20:03:45 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:03:47 INFO: Infer time: 2.09434175491333s
+2024-09-03 20:03:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:03:47 INFO: repair-1-0 file generated
+2024-09-03 20:03:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:03:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:03:47 INFO: repair-1-1 file generated
+2024-09-03 20:03:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:03:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:03:47 INFO: repair-1-2 file generated
+2024-09-03 20:03:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:03:48 INFO: Step 2: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:03:48 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:03:50 INFO: Infer time: 2.683363676071167s
+2024-09-03 20:03:50 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:03:50 INFO: repair-2-0 file generated
+2024-09-03 20:03:50 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:03:50 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:03:51 INFO: repair-2-1 file generated
+2024-09-03 20:03:51 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:03:51 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:03:51 INFO: repair-2-2 file generated
+2024-09-03 20:03:51 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:03:51 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:03:51 INFO: repair-2-3 file generated
+2024-09-03 20:03:51 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:03:51 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:03:51 INFO: repair-2-4 file generated
+2024-09-03 20:03:51 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:03:51 INFO: Step 3: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:03:51 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:03:53 INFO: Infer time: 2.202454090118408s
+2024-09-03 20:03:53 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:00 INFO: repair-3-0 file generated
+2024-09-03 20:04:00 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:01 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:09 INFO: repair-3-1 file generated
+2024-09-03 20:04:09 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:09 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:09 INFO: repair-3-2 file generated
+2024-09-03 20:04:09 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:09 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:09 INFO: repair-3-3 file generated
+2024-09-03 20:04:09 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:09 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:10 INFO: repair-3-4 file generated
+2024-09-03 20:04:10 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:10 INFO: Step 4: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:04:10 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:04:10 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 33.000000 seconds
+2024-09-03 20:04:43 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 5.000000 seconds
+2024-09-03 20:04:51 INFO: Infer time: 41.14436316490173s
+2024-09-03 20:04:51 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:54 INFO: repair-4-0 file generated
+2024-09-03 20:04:54 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:54 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:54 INFO: repair-4-1 file generated
+2024-09-03 20:04:54 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:54 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:54 INFO: repair-4-2 file generated
+2024-09-03 20:04:54 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:54 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:54 INFO: repair-4-3 file generated
+2024-09-03 20:04:54 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:54 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:04:54 INFO: repair-4-4 file generated
+2024-09-03 20:04:54 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:04:54 INFO: Step 5: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:04:54 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:04:56 INFO: Infer time: 1.9585838317871094s
+2024-09-03 20:04:56 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:03 INFO: repair-5-0 file generated
+2024-09-03 20:05:03 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:03 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:12 INFO: repair-5-1 file generated
+2024-09-03 20:05:12 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:12 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:20 INFO: repair-5-2 file generated
+2024-09-03 20:05:20 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:21 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:21 INFO: repair-5-3 file generated
+2024-09-03 20:05:21 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:21 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:21 INFO: repair-5-4 file generated
+2024-09-03 20:05:21 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:21 INFO: Step 6: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:05:21 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:05:21 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-03 20:05:34 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 8.000000 seconds
+2024-09-03 20:05:45 INFO: Infer time: 23.706669569015503s
+2024-09-03 20:05:45 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:45 INFO: repair-6-0 file generated
+2024-09-03 20:05:45 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:45 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:45 INFO: repair-6-1 file generated
+2024-09-03 20:05:45 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:45 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:45 INFO: repair-6-2 file generated
+2024-09-03 20:05:45 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:45 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:45 INFO: repair-6-3 file generated
+2024-09-03 20:05:45 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:45 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:05:45 INFO: repair-6-4 file generated
+2024-09-03 20:05:45 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:05:46 INFO: Error line deleted. Proof updated to be repair-7-remove-PostCondFail
+2024-09-03 20:05:46 INFO: Step 7: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:05:46 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:05:46 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 9.000000 seconds
+2024-09-03 20:05:57 INFO: Infer time: 10.991172075271606s
+2024-09-03 20:05:57 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:01 INFO: repair-7-0 file generated
+2024-09-03 20:06:01 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:01 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:01 INFO: repair-7-1 file generated
+2024-09-03 20:06:01 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:01 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:01 INFO: repair-7-2 file generated
+2024-09-03 20:06:01 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:01 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:01 INFO: repair-7-3 file generated
+2024-09-03 20:06:01 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:01 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:01 INFO: repair-7-4 file generated
+2024-09-03 20:06:01 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:02 INFO: Step 8: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:06:02 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:06:02 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 30.000000 seconds
+2024-09-03 20:06:32 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 11.000000 seconds
+2024-09-03 20:06:46 INFO: Infer time: 44.31569194793701s
+2024-09-03 20:06:46 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:46 INFO: repair-8-0 file generated
+2024-09-03 20:06:46 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:46 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:46 INFO: repair-8-1 file generated
+2024-09-03 20:06:46 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:46 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:46 INFO: repair-8-2 file generated
+2024-09-03 20:06:46 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:46 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:46 INFO: repair-8-3 file generated
+2024-09-03 20:06:46 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:46 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:06:47 INFO: repair-8-4 file generated
+2024-09-03 20:06:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:06:47 INFO: Step 9: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:06:47 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:06:47 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 9.000000 seconds
+2024-09-03 20:06:56 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-03 20:07:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 35.000000 seconds
+2024-09-03 20:07:47 INFO: Infer time: 59.77964735031128s
+2024-09-03 20:07:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:47 INFO: repair-9-0 file generated
+2024-09-03 20:07:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:47 INFO: repair-9-1 file generated
+2024-09-03 20:07:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:47 INFO: repair-9-2 file generated
+2024-09-03 20:07:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:47 INFO: repair-9-3 file generated
+2024-09-03 20:07:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:47 INFO: repair-9-4 file generated
+2024-09-03 20:07:47 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:47 INFO: Step 10: VerusErrorType.PostCondFail with num=5.
+2024-09-03 20:07:47 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 20:07:47 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 8.000000 seconds
+2024-09-03 20:07:58 INFO: Infer time: 10.449212312698364s
+2024-09-03 20:07:58 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:58 INFO: repair-10-0 file generated
+2024-09-03 20:07:58 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:58 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:58 INFO: repair-10-1 file generated
+2024-09-03 20:07:58 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:58 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:58 INFO: repair-10-2 file generated
+2024-09-03 20:07:58 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:58 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:58 INFO: repair-10-3 file generated
+2024-09-03 20:07:58 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:58 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 20:07:59 INFO: repair-10-4 file generated
+2024-09-03 20:07:59 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 20:07:59 INFO: Original code is better
+2024-09-03 20:07:59 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

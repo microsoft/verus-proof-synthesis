@@ -1,0 +1,342 @@
+2024-09-03 18:55:46 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 18:55:46 INFO: Running in generation mode
+2024-09-03 18:55:46 INFO: Repair steps: 10
+2024-09-03 18:55:47 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 18:55:47 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 18:55:47 INFO: Generating proof code
+2024-09-03 18:55:47 INFO: Temperature: 1.0
+2024-09-03 18:55:47 INFO: Direct inference attempt 0
+2024-09-03 18:56:24 INFO: Infer time: 37.61993670463562s
+2024-09-03 18:56:24 INFO: Checking candidate 0-0
+2024-09-03 18:56:25 INFO: 0-0.rs in code pool
+2024-09-03 18:56:25 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 18:56:25 INFO: Checking candidate 0-1
+2024-09-03 18:56:25 INFO: 0-1.rs in code pool
+2024-09-03 18:56:25 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 18:56:25 INFO: Checking candidate 0-2
+2024-09-03 18:56:26 INFO: 0-2.rs in code pool
+2024-09-03 18:56:26 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 18:56:26 INFO: Checking candidate 0-3
+2024-09-03 18:56:26 INFO: 0-3.rs in code pool
+2024-09-03 18:56:26 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 18:56:26 INFO: Working on merge-0.rs
+2024-09-03 18:56:31 INFO: Merged code is better.
+2024-09-03 18:56:31 INFO: Running houdini on merge-0.rs
+2024-09-03 18:56:32 INFO: Working on merge-1.rs
+2024-09-03 18:56:39 ERROR: Error in merging code at step 1: Error in merging invariants:    Blocking waiting for file lock on build directory
+   Compiling unicode-ident v1.0.12
+   Compiling proc-macro2 v1.0.85
+   Compiling libc v0.2.155
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-query v1.1.0
+   Compiling anstyle v1.0.7
+   Compiling syn_verus v1.0.95 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/syn)
+   Compiling rustix v0.38.34
+   Compiling colorchoice v1.0.1
+   Compiling serde v1.0.203
+   Compiling is_terminal_polyfill v1.70.0
+   Compiling linux-raw-sys v0.4.14
+   Compiling heck v0.5.0
+   Compiling strsim v0.11.1
+   Compiling clap_lex v0.7.1
+   Compiling serde_json v1.0.117
+   Compiling bitflags v2.5.0
+   Compiling syn v1.0.109
+   Compiling prettyplease_verus v0.1.15 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/prettyplease)
+   Compiling lazy_static v1.4.0
+   Compiling ryu v1.0.18
+   Compiling cfg-if v1.0.0
+   Compiling fastrand v2.1.0
+   Compiling anstyle-parse v0.2.4
+   Compiling itoa v1.0.11
+   Compiling once_cell v1.19.0
+   Compiling anstream v0.6.14
+   Compiling clap_builder v4.5.7
+   Compiling quote v1.0.36
+   Compiling is-terminal v0.4.12
+   Compiling colored v1.9.4
+   Compiling syn v2.0.66
+   Compiling tempfile v3.10.1
+   Compiling clap_derive v4.5.5
+   Compiling clap v4.5.7
+   Compiling lynette v0.0.0 (/home/XXXX/verus-copilot-review/utils/lynette/source/lynette)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.41s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origun1h8tmi.rs /tmp/merge_new_inv3k718tk5.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-03 18:56:39 INFO: Working on merge-2.rs
+2024-09-03 18:56:47 ERROR: Error in merging code at step 2: Error in merging invariants:    Blocking waiting for file lock on build directory
+   Compiling unicode-ident v1.0.12
+   Compiling proc-macro2 v1.0.85
+   Compiling utf8parse v0.2.2
+   Compiling libc v0.2.155
+   Compiling anstyle-query v1.1.0
+   Compiling rustix v0.38.34
+   Compiling is_terminal_polyfill v1.70.0
+   Compiling colorchoice v1.0.1
+   Compiling anstyle v1.0.7
+   Compiling serde v1.0.203
+   Compiling syn_verus v1.0.95 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/syn)
+   Compiling prettyplease_verus v0.1.15 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/prettyplease)
+   Compiling linux-raw-sys v0.4.14
+   Compiling bitflags v2.5.0
+   Compiling serde_json v1.0.117
+   Compiling clap_lex v0.7.1
+   Compiling heck v0.5.0
+   Compiling syn v1.0.109
+   Compiling strsim v0.11.1
+   Compiling lazy_static v1.4.0
+   Compiling cfg-if v1.0.0
+   Compiling ryu v1.0.18
+   Compiling fastrand v2.1.0
+   Compiling anstyle-parse v0.2.4
+   Compiling itoa v1.0.11
+   Compiling once_cell v1.19.0
+   Compiling anstream v0.6.14
+   Compiling clap_builder v4.5.7
+   Compiling quote v1.0.36
+   Compiling is-terminal v0.4.12
+   Compiling colored v1.9.4
+   Compiling syn v2.0.66
+   Compiling tempfile v3.10.1
+   Compiling clap_derive v4.5.5
+   Compiling clap v4.5.7
+   Compiling lynette v0.0.0 (/home/XXXX/verus-copilot-review/utils/lynette/source/lynette)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.20s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_orig7507cfpa.rs /tmp/merge_new_inv47pyeopx.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-03 18:56:47 INFO: Working on merge-3.rs
+2024-09-03 18:56:56 ERROR: Error in merging code at step 3: Error in merging invariants:    Blocking waiting for file lock on build directory
+   Compiling unicode-ident v1.0.12
+   Compiling proc-macro2 v1.0.85
+   Compiling utf8parse v0.2.2
+   Compiling libc v0.2.155
+   Compiling serde v1.0.203
+   Compiling anstyle-query v1.1.0
+   Compiling colorchoice v1.0.1
+   Compiling is_terminal_polyfill v1.70.0
+   Compiling anstyle v1.0.7
+   Compiling syn_verus v1.0.95 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/syn)
+   Compiling rustix v0.38.34
+   Compiling strsim v0.11.1
+   Compiling clap_lex v0.7.1
+   Compiling linux-raw-sys v0.4.14
+   Compiling prettyplease_verus v0.1.15 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/prettyplease)
+   Compiling serde_json v1.0.117
+   Compiling syn v1.0.109
+   Compiling heck v0.5.0
+   Compiling bitflags v2.5.0
+   Compiling lazy_static v1.4.0
+   Compiling fastrand v2.1.0
+   Compiling cfg-if v1.0.0
+   Compiling itoa v1.0.11
+   Compiling anstyle-parse v0.2.4
+   Compiling ryu v1.0.18
+   Compiling once_cell v1.19.0
+   Compiling anstream v0.6.14
+   Compiling clap_builder v4.5.7
+   Compiling quote v1.0.36
+   Compiling syn v2.0.66
+   Compiling is-terminal v0.4.12
+   Compiling colored v1.9.4
+   Compiling tempfile v3.10.1
+   Compiling clap_derive v4.5.5
+   Compiling clap v4.5.7
+   Compiling lynette v0.0.0 (/home/XXXX/verus-copilot-review/utils/lynette/source/lynette)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.39s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_orig0vngr0jd.rs /tmp/merge_new_inv3nj5k8mz.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-03 18:57:04 INFO: refining with constantrefine_inference
+2024-09-03 18:57:56 INFO: Infer time: 51.645955324172974s
+2024-09-03 18:57:56 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 18:57:56 INFO: New refined code is a good repair
+2024-09-03 18:57:56 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 18:57:56 INFO: refining with arraylen_inference
+2024-09-03 18:58:29 INFO: Infer time: 32.5768027305603s
+2024-09-03 18:58:29 INFO: Verus has succeeded.
+2024-09-03 18:58:29 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            vals_1.len() == common_len,
+            vals_2.len() == common_len,
+            conds_1.len() == common_len,
+            conds_2.len() == common_len,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 18:58:37 INFO: Verus succeeded with refinement!!
+2024-09-03 18:58:45 INFO: finished!

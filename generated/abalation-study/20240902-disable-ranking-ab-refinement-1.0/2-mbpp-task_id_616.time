@@ -1,0 +1,57 @@
+2024-09-02 19:39:46 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:39:46 INFO: Running in generation mode
+2024-09-02 19:39:46 INFO: Repair steps: 0
+2024-09-02 19:39:46 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:39:46 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:39:46 INFO: Generating proof code
+2024-09-02 19:39:46 INFO: Temperature: 1.0
+2024-09-02 19:39:46 WARNING: Disabled ranking
+2024-09-02 19:39:46 INFO: Direct inference attempt 0
+2024-09-02 19:39:50 INFO: Infer time: 4.030179262161255s
+2024-09-02 19:39:50 INFO: Checking candidate 0-0
+2024-09-02 19:39:50 INFO: 0-0.rs in code pool
+2024-09-02 19:39:50 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:39:50 INFO: Working on merge-0.rs
+2024-09-02 19:39:55 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:39:55 INFO: Running houdini on merge-0.rs
+2024-09-02 19:39:56 WARNING: Non-linear arithmetic detected.
+2024-09-02 19:39:56 WARNING:             forall|i: int| 0 <= i < index ==> output_arr[i] == arr1[i] % arr2[i],
+2024-09-02 19:39:56 INFO: refining with constantrefine_inference
+2024-09-02 19:39:59 INFO: Infer time: 3.296759843826294s
+2024-09-02 19:39:59 INFO: Verus has succeeded.
+2024-09-02 19:39:59 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_module(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] % arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] % arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int| 0 <= i < index ==> output_arr[i] == arr1[i] % arr2[i],
+            index <= arr1.len(),
+            output_arr.len() == index,
+            arr1.len() == arr2.len(), // Added invariant
+            forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0, // Added invariant
+    {
+        output_arr.push((arr1[index] % arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 19:40:04 INFO: Verus succeeded with refinement!!
+2024-09-02 19:40:04 INFO: finished!

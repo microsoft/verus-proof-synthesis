@@ -1,0 +1,51 @@
+2024-09-10 17:09:33 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-10 17:09:33 INFO: Running in generation mode
+2024-09-10 17:09:33 INFO: Repair steps: 10
+2024-09-10 17:09:33 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-10 17:09:33 WARNING: Generation initialized with repair_uniform: True
+2024-09-10 17:09:33 INFO: Generating proof code
+2024-09-10 17:09:33 INFO: Temperature: 1.0
+2024-09-10 17:09:33 INFO: Generate with direct repair mode
+2024-09-10 17:09:34 WARNING: All-in-one repair is used!!!
+2024-09-10 17:09:34 WARNING: Loop isolation is not found in the code. Inserting loop isolation.
+2024-09-10 17:09:34 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-10 17:09:34 WARNING: Generation initialized with repair_uniform: False
+2024-09-10 17:09:34 INFO: Step 1
+2024-09-10 17:09:34 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-10 17:09:34 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-10 17:09:47 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 19.000000 seconds
+2024-09-10 17:10:07 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-10 17:10:17 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 6.000000 seconds
+2024-09-10 17:10:23 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 20.000000 seconds
+2024-09-10 17:10:54 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-10 17:11:10 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-10 17:11:24 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 5.000000 seconds
+2024-09-10 17:11:29 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 15.000000 seconds
+2024-09-10 17:11:44 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 5.000000 seconds
+2024-09-10 17:12:00 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-10 17:12:10 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 14.000000 seconds
+2024-09-10 17:12:24 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 6.000000 seconds
+2024-09-10 17:12:31 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 14.000000 seconds
+2024-09-10 17:12:45 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 5.000000 seconds
+2024-09-10 17:13:00 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-10 17:13:11 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-10 17:13:27 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 6.000000 seconds
+2024-09-10 17:13:33 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-10 17:13:47 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 7.000000 seconds
+2024-09-10 17:14:04 INFO: Infer time: 269.99373054504395s
+2024-09-10 17:14:04 ERROR: Error: 'verified'
+2024-09-10 17:14:04 ERROR: Error: 'errors'
+2024-09-10 17:14:04 INFO: repair-1-0 file generated
+2024-09-10 17:14:04 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-10 17:14:04 WARNING: The repair is not safe.
+2024-09-10 17:14:04 ERROR: Error: 'verified'
+2024-09-10 17:14:04 ERROR: Error: 'errors'
+2024-09-10 17:14:04 INFO: repair-1-1 file generated
+2024-09-10 17:14:04 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-10 17:14:04 WARNING: The repair is not safe.
+2024-09-10 17:14:04 INFO: All errors are fixed within 1 steps!!!
+2024-09-10 17:14:05 INFO: Verus succeeded after repair!!
+2024-09-10 17:14:05 INFO: finished!
+Rate Limit Error
+Rate Limit Error
+Rate Limit Error

@@ -1,0 +1,20 @@
+2024-08-31 21:45:25 WARNING: Phase 1 examples: ['3', '7']
+2024-08-31 21:45:25 INFO: Running in generation mode
+2024-08-31 21:45:25 INFO: Repair steps: 0
+2024-08-31 21:45:25 WARNING: Generation initialized with phase1_examples: ['3', '7']
+2024-08-31 21:45:25 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:45:25 INFO: Generating proof code
+2024-08-31 21:45:25 INFO: Temperature: 1.0
+2024-08-31 21:45:25 INFO: Direct inference attempt 0
+2024-08-31 21:45:25 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 22.000000 seconds
+2024-08-31 21:45:51 INFO: Infer time: 25.318365335464478s
+2024-08-31 21:45:51 INFO: Checking candidate 0-0
+2024-08-31 21:45:51 ERROR: Error: 'verified'
+2024-08-31 21:45:51 ERROR: Error: 'errors'
+2024-08-31 21:45:51 INFO: Checking candidate 0-1
+2024-08-31 21:45:51 ERROR: Error: 'verified'
+2024-08-31 21:45:51 ERROR: Error: 'errors'
+2024-08-31 21:45:51 INFO: Checking candidate 0-2
+2024-08-31 21:45:51 INFO: Verus has succeeded.
+2024-08-31 21:45:51 INFO: Verus succeeded!!
+2024-08-31 21:45:52 INFO: finished!

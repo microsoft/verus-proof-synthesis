@@ -1,0 +1,146 @@
+2024-09-03 20:09:31 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 20:09:31 INFO: Running in generation mode
+2024-09-03 20:09:31 INFO: Repair steps: 10
+2024-09-03 20:09:32 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:09:32 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:09:32 INFO: Generating proof code
+2024-09-03 20:09:32 INFO: Temperature: 0.4
+2024-09-03 20:09:32 INFO: Direct inference attempt 0
+2024-09-03 20:09:36 INFO: Infer time: 3.8769004344940186s
+2024-09-03 20:09:36 INFO: Checking candidate 0-0
+2024-09-03 20:09:40 INFO: 0-0.rs in code pool
+2024-09-03 20:09:40 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 20:09:40 INFO: Checking candidate 0-1
+2024-09-03 20:09:41 INFO: 0-1.rs in code pool
+2024-09-03 20:09:41 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 20:09:41 INFO: Checking candidate 0-2
+2024-09-03 20:09:41 INFO: 0-2.rs in code pool
+2024-09-03 20:09:41 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 20:09:41 INFO: Checking candidate 0-3
+2024-09-03 20:09:42 INFO: 0-3.rs in code pool
+2024-09-03 20:09:42 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 20:09:42 INFO: Working on merge-0.rs
+2024-09-03 20:09:46 INFO: Merged code is better.
+2024-09-03 20:09:46 INFO: Running houdini on merge-0.rs
+2024-09-03 20:09:46 INFO: Working on merge-1.rs
+2024-09-03 20:09:47 INFO: Merged code is better.
+2024-09-03 20:09:47 INFO: Running houdini on merge-1.rs
+2024-09-03 20:09:47 INFO: Working on merge-2.rs
+2024-09-03 20:09:48 INFO: Merged code is better.
+2024-09-03 20:09:48 INFO: Running houdini on merge-2.rs
+2024-09-03 20:09:48 INFO: Working on merge-3.rs
+2024-09-03 20:09:48 INFO: Merged code is better.
+2024-09-03 20:09:48 INFO: Running houdini on merge-3.rs
+2024-09-03 20:09:57 INFO: refining with constantrefine_inference
+2024-09-03 20:10:01 INFO: Infer time: 3.7880239486694336s
+2024-09-03 20:10:01 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun1(x: &Vec<u64>) -> (res: u64)
+    requires
+        x.len() >= 1,
+    ensures
+        forall|i: int| 0 <= i < x.len() ==> res >= x[i],
+        exists|i: int| 0 <= i < x.len() && res == x[i],
+{
+    let mut max_value = x[0];
+    let mut i: usize = 1;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            1 <= i <= xlen,
+            1 <= xlen,
+            exists|j: int| 0 <= j < i && max_value == x[j],
+            forall|j: int| 0 <= j < i ==> max_value >= x[j],
+            i <= xlen,
+            x.len() >= 1,
+            x.len() >= 1, // Repeated invariant
+    {
+        if x[i] > max_value {
+            max_value = x[i];
+        }
+        i = i + 1;
+    }
+    max_value
+}
+
+} // verus!
+
+2024-09-03 20:10:02 INFO: New refined code is a good repair
+2024-09-03 20:10:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun1(x: &Vec<u64>) -> (res: u64)
+    requires
+        x.len() >= 1,
+    ensures
+        forall|i: int| 0 <= i < x.len() ==> res >= x[i],
+        exists|i: int| 0 <= i < x.len() && res == x[i],
+{
+    let mut max_value = x[0];
+    let mut i: usize = 1;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            1 <= i <= xlen,
+            1 <= xlen,
+            exists|j: int| 0 <= j < i && max_value == x[j],
+            forall|j: int| 0 <= j < i ==> max_value >= x[j],
+            i <= xlen,
+            x.len() >= 1,
+            x.len() >= 1, // Repeated invariant
+    {
+        if x[i] > max_value {
+            max_value = x[i];
+        }
+        i = i + 1;
+    }
+    max_value
+}
+
+} // verus!
+
+2024-09-03 20:10:02 INFO: refining with arraylen_inference
+2024-09-03 20:10:05 INFO: Infer time: 2.919163942337036s
+2024-09-03 20:10:05 INFO: Verus has succeeded.
+2024-09-03 20:10:05 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun1(x: &Vec<u64>) -> (res: u64)
+    requires
+        x.len() >= 1,
+    ensures
+        forall|i: int| 0 <= i < x.len() ==> res >= x[i],
+        exists|i: int| 0 <= i < x.len() && res == x[i],
+{
+    let mut max_value = x[0];
+    let mut i: usize = 1;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            1 <= i <= xlen,
+            1 <= xlen,
+            exists|j: int| 0 <= j < i && max_value == x[j],
+            forall|j: int| 0 <= j < i ==> max_value >= x[j],
+            i <= xlen,
+            x.len() >= 1,
+            x.len() == xlen,
+    {
+        if x[i] > max_value {
+            max_value = x[i];
+        }
+        i = i + 1;
+    }
+    max_value
+}
+
+} // verus!
+
+2024-09-03 20:10:05 INFO: Verus succeeded with refinement!!
+2024-09-03 20:10:06 INFO: finished!

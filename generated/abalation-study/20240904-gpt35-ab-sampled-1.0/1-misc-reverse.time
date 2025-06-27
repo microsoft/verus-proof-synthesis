@@ -1,0 +1,470 @@
+2024-09-04 15:08:54 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 15:08:54 INFO: Running in generation mode
+2024-09-04 15:08:54 INFO: Repair steps: 10
+2024-09-04 15:08:54 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:08:54 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:08:54 INFO: Generating proof code
+2024-09-04 15:08:54 INFO: Temperature: 1.0
+2024-09-04 15:08:54 INFO: Direct inference attempt 0
+2024-09-04 15:08:57 INFO: Infer time: 2.644362449645996s
+2024-09-04 15:08:57 INFO: Checking candidate 0-0
+2024-09-04 15:08:57 INFO: 0-0.rs in code pool
+2024-09-04 15:08:57 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 15:08:57 INFO: Checking candidate 0-1
+2024-09-04 15:08:58 INFO: 0-1.rs in code pool
+2024-09-04 15:08:58 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 15:08:58 INFO: Checking candidate 0-2
+2024-09-04 15:08:58 INFO: 0-2.rs in code pool
+2024-09-04 15:08:58 INFO: 0-2.rs is now the best proof candidate
+2024-09-04 15:08:58 INFO: Checking candidate 0-3
+2024-09-04 15:08:59 INFO: 0-3.rs in code pool
+2024-09-04 15:08:59 INFO: 0-3.rs is now the best proof candidate
+2024-09-04 15:08:59 INFO: Working on merge-0.rs
+2024-09-04 15:09:03 INFO: Merged code is better.
+2024-09-04 15:09:03 INFO: Running houdini on merge-0.rs
+2024-09-04 15:09:04 INFO: Working on merge-1.rs
+2024-09-04 15:09:04 INFO: Running houdini on merge-1.rs
+2024-09-04 15:09:05 INFO: Working on merge-2.rs
+2024-09-04 15:09:06 INFO: Running houdini on merge-2.rs
+2024-09-04 15:09:06 INFO: Working on merge-3.rs
+2024-09-04 15:09:07 INFO: Merged code is better.
+2024-09-04 15:09:07 INFO: Running houdini on merge-3.rs
+2024-09-04 15:09:08 INFO: refining with constantrefine_inference
+2024-09-04 15:09:10 INFO: Infer time: 2.85310959815979s
+2024-09-04 15:09:11 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+            forall|i: int|
+                length as usize / 2 <= i < old(v).len() as usize ==> v[i] == old(v)[old(
+                    v,
+                ).len() as usize - i - 1],
+            forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+            n <= length / 2,
+            v.len() == old(v).len(),
+            // Loop invariant from function precondition:
+            forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-04 15:09:15 INFO: New refined code is a good repair
+2024-09-04 15:09:15 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+            forall|i: int|
+                length as usize / 2 <= i < old(v).len() as usize ==> v[i] == old(v)[old(
+                    v,
+                ).len() as usize - i - 1],
+            forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+            n <= length / 2,
+            v.len() == old(v).len(),
+            // Loop invariant from function precondition:
+            forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-04 15:09:15 INFO: refining with arraylen_inference
+2024-09-04 15:09:18 INFO: Infer time: 2.128760576248169s
+2024-09-04 15:09:18 INFO: 
+    invariant
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+        forall|i: int| length as usize / 2 <= i < old(v).len() as usize ==> v[i] == old(v)[old(v).len() as usize - i - 1],
+        forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+        n <= length / 2,
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1];
+
+2024-09-04 15:09:18 ERROR: Error in comparing code changes: 
+2024-09-04 15:09:18 INFO: Unsafe code change
+2024-09-04 15:09:18 INFO: Refinement did not change the code
+2024-09-04 15:09:18 INFO: refining with arrayrefine_inference
+2024-09-04 15:09:20 INFO: Infer time: 2.6221420764923096s
+2024-09-04 15:09:20 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+            forall|i: int|
+                length as usize / 2 <= i < old(v).len() as usize ==> v[i] == old(v)[old(
+                    v,
+                ).len() as usize - i - 1],
+            forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+            n <= length / 2,
+            v.len() == old(v).len(),
+            // Loop invariant from function precondition:
+            forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        // The array v is modified through v.set() in this loop, so the loop invariant remains unchanged
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-04 15:09:21 INFO: New refined code is a good repair
+2024-09-04 15:09:21 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+            forall|i: int|
+                length as usize / 2 <= i < old(v).len() as usize ==> v[i] == old(v)[old(
+                    v,
+                ).len() as usize - i - 1],
+            forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+            n <= length / 2,
+            v.len() == old(v).len(),
+            // Loop invariant from function precondition:
+            forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        // The array v is modified through v.set() in this loop, so the loop invariant remains unchanged
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-04 15:09:21 INFO: refining with condlooprefine_inference
+2024-09-04 15:09:25 INFO: Infer time: 4.144307851791382s
+2024-09-04 15:09:25 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+            forall|i: int|
+                length as usize / 2 <= i < old(v).len() as usize ==> v[i] == old(v)[old(
+                    v,
+                ).len() as usize - i - 1],
+            forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+            n <= length / 2,
+            v.len() == old(v).len(),
+            // Loop invariant from function precondition:
+            forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+            n > 0 ==> v[n-1] == old(v)[length - n],
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        // The array v is modified through v.set() in this loop, so the loop invariant remains unchanged
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-04 15:09:26 INFO: New refined code under condloop is not better
+2024-09-04 15:09:26 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:09:26 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:09:26 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-09-04 15:09:26 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:09:27 INFO: Infer time: 1.3850672245025635s
+2024-09-04 15:09:27 INFO: Here is the quick fix output
+2024-09-04 15:09:28 ERROR: Error in comparing code changes: 
+2024-09-04 15:09:28 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 15:09:32 INFO: Infer time: 3.98166561126709s
+2024-09-04 15:09:32 INFO: repair-1-0 file generated
+2024-09-04 15:09:32 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:09:32 INFO: repair-1-1 file generated
+2024-09-04 15:09:32 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:09:33 INFO: repair-1-2 file generated
+2024-09-04 15:09:33 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:09:33 INFO: Step 2: VerusErrorType.InvFailFront with num=5.
+2024-09-04 15:09:33 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:09:37 INFO: Infer time: 3.5328502655029297s
+2024-09-04 15:09:37 INFO: Here is the quick fix output
+2024-09-04 15:09:37 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-04 15:09:42 INFO: Infer time: 4.4606547355651855s
+2024-09-04 15:09:42 INFO: repair-2-0 file generated
+2024-09-04 15:09:42 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:09:42 INFO: Step 2: VerusErrorType.InvFailFront is fixed based on finer-grained check.
+2024-09-04 15:09:42 INFO: Step 3: VerusErrorType.InvFailFront with num=3.
+2024-09-04 15:09:42 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:09:45 INFO: Infer time: 3.2640209197998047s
+2024-09-04 15:09:45 INFO: Here is the quick fix output
+2024-09-04 15:09:46 ERROR: Error in comparing code changes: 
+2024-09-04 15:09:46 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 15:09:46 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 15:10:50 INFO: Infer time: 64.41739439964294s
+2024-09-04 15:10:50 INFO: repair-3-0 file generated
+2024-09-04 15:10:50 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 15:10:51 INFO: repair-3-1 file generated
+2024-09-04 15:10:51 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:10:51 INFO: repair-3-2 file generated
+2024-09-04 15:10:51 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:10:52 INFO: Step 4: VerusErrorType.InvFailFront with num=5.
+2024-09-04 15:10:52 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:10:55 INFO: Infer time: 2.9685306549072266s
+2024-09-04 15:10:55 INFO: Here is the quick fix output
+2024-09-04 15:10:55 ERROR: Error in comparing code changes: 
+2024-09-04 15:10:55 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 15:11:00 INFO: Infer time: 5.16677713394165s
+2024-09-04 15:11:00 INFO: repair-4-0 file generated
+2024-09-04 15:11:00 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:11:00 INFO: Step 4: VerusErrorType.InvFailFront is fixed based on finer-grained check.
+2024-09-04 15:11:01 INFO: Step 5: VerusErrorType.InvFailFront with num=3.
+2024-09-04 15:11:01 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:11:02 INFO: Infer time: 1.2139101028442383s
+2024-09-04 15:11:02 INFO: Here is the quick fix output
+2024-09-04 15:11:02 ERROR: Error in comparing code changes: 
+2024-09-04 15:11:02 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 15:11:07 INFO: Infer time: 5.112494468688965s
+2024-09-04 15:11:07 INFO: repair-5-0 file generated
+2024-09-04 15:11:07 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:11:08 INFO: repair-5-1 file generated
+2024-09-04 15:11:08 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:11:09 INFO: repair-5-2 file generated
+2024-09-04 15:11:09 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:11:09 INFO: Step 6: VerusErrorType.InvFailFront with num=5.
+2024-09-04 15:11:09 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:11:13 INFO: Infer time: 4.369388580322266s
+2024-09-04 15:11:13 INFO: Here is the quick fix output
+2024-09-04 15:11:14 ERROR: Error in comparing code changes: 
+2024-09-04 15:11:14 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 15:11:19 INFO: Infer time: 5.045818090438843s
+2024-09-04 15:11:19 INFO: repair-6-0 file generated
+2024-09-04 15:11:19 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:11:19 INFO: Step 6: VerusErrorType.InvFailFront is fixed based on finer-grained check.
+2024-09-04 15:11:19 INFO: Step 7: VerusErrorType.InvFailFront with num=3.
+2024-09-04 15:11:19 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:11:19 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 15:12:21 INFO: Infer time: 61.58579063415527s
+2024-09-04 15:12:21 INFO: Here is the quick fix output
+2024-09-04 15:12:21 ERROR: Error in comparing code changes: 
+2024-09-04 15:12:21 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 15:12:25 INFO: Infer time: 4.223135709762573s
+2024-09-04 15:12:25 INFO: repair-7-0 file generated
+2024-09-04 15:12:25 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:12:26 INFO: repair-7-1 file generated
+2024-09-04 15:12:26 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:26 INFO: Step 7: VerusErrorType.InvFailFront is fixed. Proof updated 7-1.
+2024-09-04 15:12:26 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:12:26 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:26 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:12:26 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:12:33 INFO: Infer time: 6.3363425731658936s
+2024-09-04 15:12:33 INFO: repair-8-0 file generated
+2024-09-04 15:12:33 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:34 INFO: repair-8-1 file generated
+2024-09-04 15:12:34 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:34 INFO: repair-8-2 file generated
+2024-09-04 15:12:34 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:35 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:12:35 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:35 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:12:35 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:12:42 INFO: Infer time: 6.672597885131836s
+2024-09-04 15:12:42 INFO: repair-9-0 file generated
+2024-09-04 15:12:42 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:43 INFO: repair-9-1 file generated
+2024-09-04 15:12:43 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:43 INFO: repair-9-2 file generated
+2024-09-04 15:12:43 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:44 INFO: repair-9-3 file generated
+2024-09-04 15:12:44 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:45 INFO: repair-9-4 file generated
+2024-09-04 15:12:45 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:45 INFO: Step 10: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:12:45 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:45 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:12:45 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:12:50 INFO: Infer time: 5.3561012744903564s
+2024-09-04 15:12:51 INFO: repair-10-0 file generated
+2024-09-04 15:12:51 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:51 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:12:51 ERROR: Error in comparing code changes: 
+2024-09-04 15:12:51 INFO: repair-10-1 file generated
+2024-09-04 15:12:51 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:12:51 WARNING: The repair is not safe.
+2024-09-04 15:12:52 INFO: repair-10-2 file generated
+2024-09-04 15:12:52 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 15:12:52 INFO: repair-10-3 file generated
+2024-09-04 15:12:52 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:53 INFO: repair-10-4 file generated
+2024-09-04 15:12:53 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-04 15:12:54 INFO: Step 10: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 15:12:55 INFO: Original code is better
+2024-09-04 15:12:55 INFO: finished!
+Start repair
+
+    invariant
+        forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+        forall|i: int|
+            n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+        n <= length / 2,
+        v.len() == old(v).len(),
+        // Loop invariant from function precondition:
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+            forall|i: int|
+                n < length / 2 ==> v[i] == old(v)[old(v).len() - i - 1],
+            forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+            n <= length / 2,
+            v.len() == old(v).len(),
+            // Loop invariant from function precondition:
+            forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        // The array v is modified through v.set() in this loop, so the loop invariant remains unchanged
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+
+            forall|i: int|
+                n <= i < old(v).len() - n ==> v[i] == old(v)[i]
+
+
+while n < length / 2
+    invariant
+        forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+        forall|i: int|
+            length as usize / 2 <= i < old(v).len() as usize ==> v[i] == old(v)[old(
+                v,
+            ).len() as usize - i - 1],
+        forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+        n <= length / 2,
+        v.len() == old(v).len(),
+        // Loop invariant from function precondition:
+        n >= 0 ==> forall|i: int| length as usize / 2 <= i < old(v).len() as usize  ==> v[i] == old(v)[old(v).len() as usize - i - 1],
+{
+    // loop body
+}
+
+
+            // Loop invariant update based on the loop index n
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+            forall|i: int|
+                length as usize / 2 <= i < n ==> v[i] == old(v)[old(
+                    v,
+                ).len() as usize - i - 1],
+            forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+            n <= length / 2,
+            v.len() == old(v).len(),
+
+
+            forall|i: int|
+                n <= i < length - n ==> v[i] == old(v)[i],
+
+
+while n < length / 2
+    invariant
+        forall|i: int| 0 <= i < n ==> v[i] == old(v)[old(v).len() - i - 1],
+        forall|i: int| n <= i < length / 2 ==> v[i] == old(v)[old(v).len() as usize - i - 1],
+        forall|i: int| n <= i < old(v).len() - n ==> v[i] == old(v)[i],
+        n <= length / 2,
+        v.len() == old(v).len(),
+
+Warning: a non type error is passed to debug_type_error

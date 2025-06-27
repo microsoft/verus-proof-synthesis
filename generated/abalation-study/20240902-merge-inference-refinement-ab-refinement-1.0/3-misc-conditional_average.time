@@ -1,0 +1,15 @@
+2024-09-02 17:55:58 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:55:58 INFO: Running in generation mode
+2024-09-02 17:55:58 INFO: Repair steps: 0
+2024-09-02 17:55:59 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:55:59 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:55:59 INFO: Generating proof code
+2024-09-02 17:55:59 INFO: Temperature: 1.0
+2024-09-02 17:55:59 INFO: Generate with uniform refinement mode
+2024-09-02 17:55:59 INFO: Direct inference attempt 0
+2024-09-02 17:55:59 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:56:07 INFO: Infer time: 8.791430950164795s
+2024-09-02 17:56:07 INFO: Checking candidate 0-0
+2024-09-02 17:56:08 INFO: Verus has succeeded.
+2024-09-02 17:56:08 INFO: Verus succeeded!!
+2024-09-02 17:56:08 INFO: finished!

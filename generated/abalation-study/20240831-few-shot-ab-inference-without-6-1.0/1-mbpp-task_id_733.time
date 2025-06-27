@@ -1,0 +1,13 @@
+2024-08-31 21:45:09 WARNING: Phase 1 examples: ['3', '7']
+2024-08-31 21:45:09 INFO: Running in generation mode
+2024-08-31 21:45:09 INFO: Repair steps: 0
+2024-08-31 21:45:09 WARNING: Generation initialized with phase1_examples: ['3', '7']
+2024-08-31 21:45:09 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:45:09 INFO: Generating proof code
+2024-08-31 21:45:09 INFO: Temperature: 1.0
+2024-08-31 21:45:09 INFO: Direct inference attempt 0
+2024-08-31 21:45:13 INFO: Infer time: 4.145122766494751s
+2024-08-31 21:45:13 INFO: Checking candidate 0-0
+2024-08-31 21:45:13 INFO: Verus has succeeded.
+2024-08-31 21:45:13 INFO: Verus succeeded!!
+2024-08-31 21:45:14 INFO: finished!

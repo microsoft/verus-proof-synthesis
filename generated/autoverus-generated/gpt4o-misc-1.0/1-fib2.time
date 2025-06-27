@@ -1,0 +1,638 @@
+2024-08-30 16:08:11 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 16:08:11 INFO: Running in generation mode
+2024-08-30 16:08:11 INFO: Repair steps: 10
+2024-08-30 16:08:11 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:08:11 INFO: Generating proof code
+2024-08-30 16:08:11 INFO: Temperature: 1.0
+2024-08-30 16:08:11 INFO: Direct inference attempt 0
+2024-08-30 16:08:16 INFO: Infer time: 4.605423212051392s
+2024-08-30 16:08:16 INFO: Checking candidate 0-0
+2024-08-30 16:08:17 INFO: 0-0.rs in code pool
+2024-08-30 16:08:17 INFO: 0-0.rs is now the best proof candidate
+2024-08-30 16:08:17 INFO: Checking candidate 0-1
+2024-08-30 16:08:17 INFO: 0-1.rs in code pool
+2024-08-30 16:08:17 INFO: 0-1.rs is now the best proof candidate
+2024-08-30 16:08:17 INFO: Checking candidate 0-2
+2024-08-30 16:08:17 INFO: Checking candidate 0-3
+2024-08-30 16:08:17 INFO: 0-3.rs in code pool
+2024-08-30 16:08:17 INFO: 0-3.rs is now the best proof candidate
+2024-08-30 16:08:17 INFO: Checking candidate 0-4
+2024-08-30 16:08:18 INFO: 0-4.rs in code pool
+2024-08-30 16:08:18 INFO: Regenerate...
+2024-08-30 16:08:18 INFO: Direct inference attempt 1
+2024-08-30 16:08:22 INFO: Infer time: 3.7921864986419678s
+2024-08-30 16:08:22 INFO: Checking candidate 1-0
+2024-08-30 16:08:22 INFO: 1-0.rs in code pool
+2024-08-30 16:08:22 INFO: 1-0.rs is now the best proof candidate
+2024-08-30 16:08:22 INFO: Working on merge-0.rs
+2024-08-30 16:08:27 INFO: Running houdini on merge-0.rs
+2024-08-30 16:08:27 INFO: Working on merge-1.rs
+2024-08-30 16:08:28 INFO: Running houdini on merge-1.rs
+2024-08-30 16:08:28 INFO: Working on merge-2.rs
+2024-08-30 16:08:29 INFO: Running houdini on merge-2.rs
+2024-08-30 16:08:30 INFO: Working on merge-3.rs
+2024-08-30 16:08:30 INFO: Running houdini on merge-3.rs
+2024-08-30 16:08:31 INFO: Working on merge-4.rs
+2024-08-30 16:08:31 INFO: Merged code is better.
+2024-08-30 16:08:31 INFO: Running houdini on merge-4.rs
+2024-08-30 16:08:32 INFO: refining with constantrefine_inference
+2024-08-30 16:08:37 INFO: Infer time: 4.1629111766815186s
+2024-08-30 16:08:37 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            i < n, // added bound from pre-condition
+            2 <= i <= n,
+            fib@.len() == i,
+            forall|j: int| 2 <= j < i ==> fib@.index(j) == fibo(j),
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:08:41 INFO: New refined code is worse
+2024-08-30 16:08:41 INFO: refining with arraylen_inference
+2024-08-30 16:08:45 INFO: Infer time: 3.524423837661743s
+2024-08-30 16:08:45 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            2 <= i <= n,
+            fib@.len() == i,
+            forall|j: int| 2 <= j < i ==> fib@.index(j) == fibo(j),
+            fib.len() == i,
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:08:46 INFO: New refined code is a good repair
+2024-08-30 16:08:46 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            2 <= i <= n,
+            fib@.len() == i,
+            forall|j: int| 2 <= j < i ==> fib@.index(j) == fibo(j),
+            fib.len() == i,
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:08:46 INFO: refining with arrayrefine_inference
+2024-08-30 16:08:52 INFO: Infer time: 6.271911382675171s
+2024-08-30 16:08:52 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            // The invariant already covers fib, so there is no need to change it
+            2 <= i <= n,
+            fib@.len() == i,
+            forall|j: int| 2 <= j < i ==> fib@.index(j) == fibo(j),
+            fib.len() == i,
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:08:53 INFO: New refined code is a good repair
+2024-08-30 16:08:53 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            // The invariant already covers fib, so there is no need to change it
+            2 <= i <= n,
+            fib@.len() == i,
+            forall|j: int| 2 <= j < i ==> fib@.index(j) == fibo(j),
+            fib.len() == i,
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:08:53 INFO: refining with condlooprefine_inference
+2024-08-30 16:08:57 INFO: Infer time: 4.190084218978882s
+2024-08-30 16:08:57 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            2 <= i <= n,
+            fib@.len() == i,
+            i > 2 ==> forall|j: int| 2 <= j < i ==> fib@.index(j) == fibo(j),
+            fib.len() == i,
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:08:57 INFO: New refined code under condloop is not better
+2024-08-30 16:08:57 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:08:58 INFO: Step 1: VerusErrorType.ArithmeticFlow with num=3.
+2024-08-30 16:08:58 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:09:09 INFO: Infer time: 11.831632852554321s
+2024-08-30 16:09:09 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:10 ERROR: Error in comparing code changes: 
+2024-08-30 16:09:10 INFO: repair-1-0 file generated
+2024-08-30 16:09:10 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:10 WARNING: The repair is not safe.
+2024-08-30 16:09:10 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:10 ERROR: Error in comparing code changes: 
+2024-08-30 16:09:10 INFO: repair-1-1 file generated
+2024-08-30 16:09:10 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:10 WARNING: The repair is not safe.
+2024-08-30 16:09:10 ERROR: Error: 'verified'
+2024-08-30 16:09:10 ERROR: Error: 'errors'
+2024-08-30 16:09:10 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:10 ERROR: Error: 'verified'
+2024-08-30 16:09:10 ERROR: Error: 'errors'
+2024-08-30 16:09:10 INFO: repair-1-2 file generated
+2024-08-30 16:09:10 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:10 INFO: Step 2: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:09:10 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:09:20 INFO: Infer time: 9.225422859191895s
+2024-08-30 16:09:20 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:20 INFO: repair-2-0 file generated
+2024-08-30 16:09:20 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-08-30 16:09:20 WARNING: The repair is not safe.
+2024-08-30 16:09:20 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:20 ERROR: Error in comparing code changes: 
+2024-08-30 16:09:20 INFO: repair-2-1 file generated
+2024-08-30 16:09:20 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:20 WARNING: The repair is not safe.
+2024-08-30 16:09:20 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:20 ERROR: Error in comparing code changes: 
+2024-08-30 16:09:20 INFO: repair-2-2 file generated
+2024-08-30 16:09:20 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:20 WARNING: The repair is not safe.
+2024-08-30 16:09:20 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:20 ERROR: Error in comparing code changes: 
+2024-08-30 16:09:20 INFO: repair-2-3 file generated
+2024-08-30 16:09:20 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:20 WARNING: The repair is not safe.
+2024-08-30 16:09:20 ERROR: Error: 'verified'
+2024-08-30 16:09:20 ERROR: Error: 'errors'
+2024-08-30 16:09:20 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:21 ERROR: Error: 'verified'
+2024-08-30 16:09:21 ERROR: Error: 'errors'
+2024-08-30 16:09:21 INFO: repair-2-4 file generated
+2024-08-30 16:09:21 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:21 INFO: Step 3: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:09:21 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:09:33 INFO: Infer time: 11.957901000976562s
+2024-08-30 16:09:33 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:33 INFO: repair-3-0 file generated
+2024-08-30 16:09:33 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:33 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:34 INFO: repair-3-1 file generated
+2024-08-30 16:09:34 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:34 ERROR: Error: 'verified'
+2024-08-30 16:09:34 ERROR: Error: 'errors'
+2024-08-30 16:09:34 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:34 ERROR: Error: 'verified'
+2024-08-30 16:09:34 ERROR: Error: 'errors'
+2024-08-30 16:09:34 INFO: repair-3-2 file generated
+2024-08-30 16:09:34 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:34 ERROR: Error: 'verified'
+2024-08-30 16:09:34 ERROR: Error: 'errors'
+2024-08-30 16:09:34 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:35 ERROR: Error: 'verified'
+2024-08-30 16:09:35 ERROR: Error: 'errors'
+2024-08-30 16:09:35 INFO: repair-3-3 file generated
+2024-08-30 16:09:35 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:35 ERROR: Error: 'verified'
+2024-08-30 16:09:35 ERROR: Error: 'errors'
+2024-08-30 16:09:35 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:35 ERROR: Error: 'verified'
+2024-08-30 16:09:35 ERROR: Error: 'errors'
+2024-08-30 16:09:35 INFO: repair-3-4 file generated
+2024-08-30 16:09:35 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:35 WARNING: The repair is not safe.
+2024-08-30 16:09:35 INFO: Step 4: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:09:35 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:09:48 INFO: Infer time: 12.621233224868774s
+2024-08-30 16:09:48 INFO: repair-4-0 file generated
+2024-08-30 16:09:48 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 5
+2024-08-30 16:09:49 ERROR: Error: 'verified'
+2024-08-30 16:09:49 ERROR: Error: 'errors'
+2024-08-30 16:09:49 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:49 ERROR: Error: 'verified'
+2024-08-30 16:09:49 ERROR: Error: 'errors'
+2024-08-30 16:09:49 INFO: repair-4-1 file generated
+2024-08-30 16:09:49 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:49 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:49 ERROR: Error in comparing code changes: 
+2024-08-30 16:09:49 INFO: repair-4-2 file generated
+2024-08-30 16:09:49 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:49 WARNING: The repair is not safe.
+2024-08-30 16:09:49 INFO: repair-4-3 file generated
+2024-08-30 16:09:49 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-08-30 16:09:50 ERROR: Error: 'verified'
+2024-08-30 16:09:50 ERROR: Error: 'errors'
+2024-08-30 16:09:50 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:09:50 ERROR: Error: 'verified'
+2024-08-30 16:09:50 ERROR: Error: 'errors'
+2024-08-30 16:09:50 INFO: repair-4-4 file generated
+2024-08-30 16:09:50 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:09:50 INFO: Step 5: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:09:50 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:10:00 INFO: Infer time: 10.116507530212402s
+2024-08-30 16:10:00 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-08-30 16:10:01 INFO: repair-5-0 file generated
+2024-08-30 16:10:01 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-08-30 16:10:01 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:01 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:01 INFO: repair-5-1 file generated
+2024-08-30 16:10:01 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:01 WARNING: The repair is not safe.
+2024-08-30 16:10:01 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-08-30 16:10:02 INFO: repair-5-2 file generated
+2024-08-30 16:10:02 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-08-30 16:10:02 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:02 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:02 INFO: repair-5-3 file generated
+2024-08-30 16:10:02 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:02 WARNING: The repair is not safe.
+2024-08-30 16:10:02 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:02 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:02 INFO: repair-5-4 file generated
+2024-08-30 16:10:02 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:02 WARNING: The repair is not safe.
+2024-08-30 16:10:02 INFO: Step 6: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:10:02 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:10:14 INFO: Infer time: 11.205130100250244s
+2024-08-30 16:10:14 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:14 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:14 INFO: repair-6-0 file generated
+2024-08-30 16:10:14 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:14 WARNING: The repair is not safe.
+2024-08-30 16:10:14 INFO: repair-6-1 file generated
+2024-08-30 16:10:14 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 5
+2024-08-30 16:10:14 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:14 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:14 INFO: repair-6-2 file generated
+2024-08-30 16:10:14 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:14 WARNING: The repair is not safe.
+2024-08-30 16:10:14 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:14 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:14 INFO: repair-6-3 file generated
+2024-08-30 16:10:14 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:14 WARNING: The repair is not safe.
+2024-08-30 16:10:15 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-08-30 16:10:15 INFO: repair-6-4 file generated
+2024-08-30 16:10:15 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:15 WARNING: The repair is not safe.
+2024-08-30 16:10:15 INFO: Error line deleted. Proof updated to be repair-7-remove-ArithmeticFlow
+2024-08-30 16:10:15 INFO: Step 7: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:10:15 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:10:26 INFO: Infer time: 10.75143551826477s
+2024-08-30 16:10:26 ERROR: Error: 'verified'
+2024-08-30 16:10:26 ERROR: Error: 'errors'
+2024-08-30 16:10:26 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:26 ERROR: Error: 'verified'
+2024-08-30 16:10:26 ERROR: Error: 'errors'
+2024-08-30 16:10:26 INFO: repair-7-0 file generated
+2024-08-30 16:10:26 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:26 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:27 INFO: repair-7-1 file generated
+2024-08-30 16:10:27 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:27 WARNING: The repair is not safe.
+2024-08-30 16:10:27 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:27 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:27 INFO: repair-7-2 file generated
+2024-08-30 16:10:27 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:27 WARNING: The repair is not safe.
+2024-08-30 16:10:27 INFO: repair-7-3 file generated
+2024-08-30 16:10:27 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-08-30 16:10:27 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-08-30 16:10:28 INFO: repair-7-4 file generated
+2024-08-30 16:10:28 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 5
+2024-08-30 16:10:28 INFO: Step 8: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:10:28 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:10:40 INFO: Infer time: 12.002782344818115s
+2024-08-30 16:10:40 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:41 INFO: repair-8-0 file generated
+2024-08-30 16:10:41 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:41 WARNING: The repair is not safe.
+2024-08-30 16:10:41 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:41 INFO: repair-8-1 file generated
+2024-08-30 16:10:41 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-08-30 16:10:41 WARNING: The repair is not safe.
+2024-08-30 16:10:41 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:41 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:41 INFO: repair-8-2 file generated
+2024-08-30 16:10:41 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:41 WARNING: The repair is not safe.
+2024-08-30 16:10:41 ERROR: Error: 'verified'
+2024-08-30 16:10:41 ERROR: Error: 'errors'
+2024-08-30 16:10:41 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:41 ERROR: Error: 'verified'
+2024-08-30 16:10:41 ERROR: Error: 'errors'
+2024-08-30 16:10:41 INFO: repair-8-3 file generated
+2024-08-30 16:10:41 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:41 WARNING: The repair is not safe.
+2024-08-30 16:10:41 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:41 ERROR: Error in comparing code changes: 
+2024-08-30 16:10:41 INFO: repair-8-4 file generated
+2024-08-30 16:10:41 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:41 WARNING: The repair is not safe.
+2024-08-30 16:10:42 INFO: Step 9: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:10:42 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:10:53 INFO: Infer time: 11.718337774276733s
+2024-08-30 16:10:53 ERROR: Error: 'verified'
+2024-08-30 16:10:53 ERROR: Error: 'errors'
+2024-08-30 16:10:53 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:10:54 ERROR: Error: 'verified'
+2024-08-30 16:10:54 ERROR: Error: 'errors'
+2024-08-30 16:10:54 INFO: repair-9-0 file generated
+2024-08-30 16:10:54 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:10:54 INFO: repair-9-1 file generated
+2024-08-30 16:10:54 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-08-30 16:10:55 INFO: repair-9-2 file generated
+2024-08-30 16:10:55 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 3
+2024-08-30 16:10:55 INFO: Step 9: VerusErrorType.ArithmeticFlow is partially fixed. Proof updated 9-2.
+2024-08-30 16:10:55 INFO: Step 10: VerusErrorType.ArithmeticFlow with num=5.
+2024-08-30 16:10:55 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 3
+2024-08-30 16:11:05 INFO: Infer time: 10.314960956573486s
+2024-08-30 16:11:05 INFO: repair-10-0 file generated
+2024-08-30 16:11:05 INFO: Compilation Error: False, Verified: 1, Errors: 3, Verus Errors: 5
+2024-08-30 16:11:06 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:11:06 INFO: repair-10-1 file generated
+2024-08-30 16:11:06 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:11:06 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:11:06 ERROR: Error in comparing code changes: 
+2024-08-30 16:11:06 INFO: repair-10-2 file generated
+2024-08-30 16:11:06 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:11:06 WARNING: The repair is not safe.
+2024-08-30 16:11:06 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:11:06 ERROR: Error in comparing code changes: 
+2024-08-30 16:11:06 INFO: repair-10-3 file generated
+2024-08-30 16:11:06 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:11:06 WARNING: The repair is not safe.
+2024-08-30 16:11:06 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:11:07 ERROR: Error in comparing code changes: 
+2024-08-30 16:11:07 INFO: repair-10-4 file generated
+2024-08-30 16:11:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:11:07 WARNING: The repair is not safe.
+2024-08-30 16:11:07 ERROR: Error: 'NoneType' object is not subscriptable
+2024-08-30 16:11:07 ERROR: Error: 'NoneType' object is not subscriptable
+2024-08-30 16:11:07 INFO: Original code is better
+2024-08-30 16:11:07 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

@@ -1,0 +1,38 @@
+2024-08-30 17:03:58 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 17:03:58 INFO: Running in generation mode
+2024-08-30 17:03:58 INFO: Repair steps: 10
+2024-08-30 17:03:58 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 17:03:58 INFO: Generating proof code
+2024-08-30 17:03:58 INFO: Temperature: 1.0
+2024-08-30 17:03:58 INFO: Direct inference attempt 0
+2024-08-30 17:04:04 INFO: Infer time: 5.58549165725708s
+2024-08-30 17:04:04 INFO: Checking candidate 0-0
+2024-08-30 17:04:04 ERROR: Error: 'verified'
+2024-08-30 17:04:04 ERROR: Error: 'errors'
+2024-08-30 17:04:04 INFO: Checking candidate 0-1
+2024-08-30 17:04:04 ERROR: Error: 'verified'
+2024-08-30 17:04:04 ERROR: Error: 'errors'
+2024-08-30 17:04:05 INFO: Checking candidate 0-2
+2024-08-30 17:04:05 ERROR: Error: 'verified'
+2024-08-30 17:04:05 ERROR: Error: 'errors'
+2024-08-30 17:04:05 INFO: Checking candidate 0-3
+2024-08-30 17:04:05 INFO: Checking candidate 0-4
+2024-08-30 17:04:05 ERROR: Error in comparing code changes: 
+2024-08-30 17:04:05 INFO: Regenerate...
+2024-08-30 17:04:05 INFO: Direct inference attempt 1
+2024-08-30 17:04:11 INFO: Infer time: 5.309072971343994s
+2024-08-30 17:04:11 INFO: Checking candidate 1-0
+2024-08-30 17:04:11 INFO: Checking candidate 1-1
+2024-08-30 17:04:12 INFO: 1-1.rs in code pool
+2024-08-30 17:04:12 INFO: 1-1.rs is now the best proof candidate
+2024-08-30 17:04:12 INFO: Checking candidate 1-2
+2024-08-30 17:04:12 INFO: 1-2.rs in code pool
+2024-08-30 17:04:12 INFO: 1-2.rs is now the best proof candidate
+2024-08-30 17:04:12 INFO: Checking candidate 1-3
+2024-08-30 17:04:13 INFO: 1-3.rs in code pool
+2024-08-30 17:04:13 INFO: Checking candidate 1-4
+2024-08-30 17:04:13 INFO: Working on merge-0.rs
+2024-08-30 17:04:18 INFO: Merged code is better.
+2024-08-30 17:04:18 INFO: Running houdini on merge-0.rs
+2024-08-30 17:04:18 INFO: Merged code with hdn is correct.
+2024-08-30 17:04:23 INFO: finished!

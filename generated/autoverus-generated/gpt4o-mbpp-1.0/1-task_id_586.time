@@ -1,0 +1,1253 @@
+2024-08-29 22:47:48 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-29 22:47:48 INFO: Running in generation mode
+2024-08-29 22:47:48 INFO: Repair steps: 10
+2024-08-29 22:47:49 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 22:47:49 INFO: Generating proof code
+2024-08-29 22:47:49 INFO: Temperature: 1.0
+2024-08-29 22:47:49 INFO: Direct inference attempt 0
+2024-08-29 22:47:49 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:48:49 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:49:50 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:50:50 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:51:54 INFO: Infer time: 245.12322807312012s
+2024-08-29 22:51:54 INFO: Checking candidate 0-0
+2024-08-29 22:51:54 INFO: 0-0.rs in code pool
+2024-08-29 22:51:54 INFO: 0-0.rs is now the best proof candidate
+2024-08-29 22:51:54 INFO: Checking candidate 0-1
+2024-08-29 22:51:55 INFO: 0-1.rs in code pool
+2024-08-29 22:51:55 INFO: Checking candidate 0-2
+2024-08-29 22:51:55 INFO: 0-2.rs in code pool
+2024-08-29 22:51:55 INFO: Checking candidate 0-3
+2024-08-29 22:51:56 INFO: 0-3.rs in code pool
+2024-08-29 22:51:56 INFO: 0-3.rs is now the best proof candidate
+2024-08-29 22:51:56 INFO: Working on merge-0.rs
+2024-08-29 22:52:00 INFO: Running houdini on merge-0.rs
+2024-08-29 22:52:01 INFO: Working on merge-1.rs
+2024-08-29 22:52:01 INFO: Running houdini on merge-1.rs
+2024-08-29 22:52:02 INFO: Working on merge-2.rs
+2024-08-29 22:52:02 INFO: Merged code is better.
+2024-08-29 22:52:02 INFO: Running houdini on merge-2.rs
+2024-08-29 22:52:02 INFO: Working on merge-3.rs
+2024-08-29 22:52:03 INFO: Running houdini on merge-3.rs
+2024-08-29 22:52:04 INFO: refining with constantrefine_inference
+2024-08-29 22:52:04 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:53:04 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:54:08 INFO: Infer time: 124.1934175491333s
+2024-08-29 22:54:08 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            new_list.len() == (list.len() - n + index),
+            new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-29 22:54:08 INFO: New refined code is a good repair
+2024-08-29 22:54:08 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            new_list.len() == (list.len() - n + index),
+            new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-29 22:54:08 INFO: refining with arraylen_inference
+2024-08-29 22:54:12 INFO: Infer time: 3.233137607574463s
+2024-08-29 22:54:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-29 22:54:12 INFO: New refined code is a good repair
+2024-08-29 22:54:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-29 22:54:12 INFO: refining with arrayrefine_inference
+2024-08-29 22:54:12 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:55:13 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:56:28 INFO: Infer time: 135.38704299926758s
+2024-08-29 22:56:28 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-29 22:56:28 INFO: New refined code is a good repair
+2024-08-29 22:56:28 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-29 22:56:28 INFO: refining with condlooprefine_inference
+2024-08-29 22:56:28 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:57:29 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:58:34 INFO: Infer time: 125.55025148391724s
+2024-08-29 22:58:34 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            index > n ==> new_list@ == list@.subrange(n as int, index as int),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            index > 0 ==> new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-29 22:58:34 INFO: New refined code under condloop is not better
+2024-08-29 22:58:34 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 22:58:35 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-08-29 22:58:35 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-08-29 22:58:35 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 22:59:35 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:00:40 INFO: Infer time: 125.51841568946838s
+2024-08-29 23:00:40 INFO: Here is the quick fix output
+2024-08-29 23:00:40 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-29 23:00:47 INFO: Infer time: 6.624981164932251s
+2024-08-29 23:00:47 INFO: repair-1-0 file generated
+2024-08-29 23:00:47 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:00:48 INFO: Step 1: VerusErrorType.InvFailFront is fixed. Proof updated 1-0.
+2024-08-29 23:00:48 INFO: Step 2: VerusErrorType.InvFailFront with num=3.
+2024-08-29 23:00:48 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:00:48 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:01:48 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:02:54 INFO: Infer time: 125.89570260047913s
+2024-08-29 23:02:54 INFO: Here is the quick fix output
+2024-08-29 23:02:54 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-29 23:03:00 INFO: Infer time: 5.994093418121338s
+2024-08-29 23:03:00 INFO: repair-2-0 file generated
+2024-08-29 23:03:00 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:03:01 INFO: repair-2-1 file generated
+2024-08-29 23:03:01 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:03:01 INFO: repair-2-2 file generated
+2024-08-29 23:03:01 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:03:01 INFO: Step 3: VerusErrorType.InvFailFront with num=5.
+2024-08-29 23:03:01 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:03:01 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:04:02 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:05:08 INFO: Infer time: 126.63537240028381s
+2024-08-29 23:05:08 INFO: Here is the quick fix output
+2024-08-29 23:05:08 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-29 23:05:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:06:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:07:15 INFO: Infer time: 127.16029977798462s
+2024-08-29 23:07:16 INFO: repair-3-0 file generated
+2024-08-29 23:07:16 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:07:16 INFO: repair-3-1 file generated
+2024-08-29 23:07:16 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:07:17 INFO: repair-3-2 file generated
+2024-08-29 23:07:17 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-08-29 23:07:17 INFO: Step 3: VerusErrorType.InvFailFront is partially fixed. Proof updated 3-2.
+2024-08-29 23:07:17 INFO: Step 4: VerusErrorType.InvFailFront with num=5.
+2024-08-29 23:07:17 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-08-29 23:07:17 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:08:18 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:09:24 INFO: Infer time: 126.75149297714233s
+2024-08-29 23:09:24 INFO: Here is the quick fix output
+2024-08-29 23:09:25 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-29 23:09:32 INFO: Infer time: 7.557366371154785s
+2024-08-29 23:09:32 INFO: repair-4-0 file generated
+2024-08-29 23:09:32 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-08-29 23:09:33 INFO: repair-4-1 file generated
+2024-08-29 23:09:33 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-08-29 23:09:34 INFO: repair-4-2 file generated
+2024-08-29 23:09:34 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-08-29 23:09:35 INFO: repair-4-3 file generated
+2024-08-29 23:09:35 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:09:35 INFO: repair-4-4 file generated
+2024-08-29 23:09:35 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:09:36 INFO: Step 4: VerusErrorType.InvFailFront is fixed. Proof updated 4-4.
+2024-08-29 23:09:36 INFO: Step 5: VerusErrorType.AssertFail with num=3.
+2024-08-29 23:09:36 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 23:09:36 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 23:09:36 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:10:36 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:11:36 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:12:37 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:13:48 INFO: Infer time: 252.37210845947266s
+2024-08-29 23:13:48 INFO: subrange lemma fix
+2024-08-29 23:13:48 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:14:49 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:15:57 INFO: Infer time: 129.14371490478516s
+Start repair
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            index > n ==> new_list@ == list@.subrange(n as int, index as int),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            index > 0 ==> new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(list@.len() > 0);
+        assert(0 < n < list@.len());
+        assert(0 <= n < list.len());
+        assert(index <= list.len());
+        assert(list.len() == list.len());
+        assert(new_list.len() == index - n);
+        assert(new_list@ == list@.subrange(n as int, index as int));
+        assert(forall |k: int| 0 <= k < list.len() ==> list[k] == list[k]);
+    } // Added by AI
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            index > 0 ==> new_list@ == list@.subrange(n as int, list.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            // No modification to the array 'list' in this loop
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(list@.len() > 0);
+        assert(0 < n < list@.len());
+        assert(0 <= n < list.len());
+        assert(index <= list.len());
+        assert(list.len() == list.len());
+        assert(new_list.len() == index - n);
+        assert(new_list@ == list@.subrange(n as int, index as int));
+        assert(forall |k: int| 0 <= k < list.len() ==> list[k] == list[k]);
+    }
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            index > 0 ==> new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, index as int)),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(list@.len() > 0);
+        assert(0 < n < list@.len());
+        assert(0 <= n < list.len());
+        assert(index <= list.len());
+        assert(list.len() == list.len());
+        assert(new_list.len() == index - n);
+        assert(new_list@ == list@.subrange(n as int, index as int));
+        assert(forall |k: int| 0 <= k < list.len() ==> list[k] == list[k]);
+    }
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            index > 0 ==> new_list@ == list@.subrange(n as int, list.len() as int).add(list@.subrange(0, index as int)),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            assert(index > 0 ==> new_list@ == list@.subrange(n as int, list.len() as int).add(list@.subrange(0, index as int)));
+        }
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-29 23:15:58 INFO: repair-5-0 file generated
+2024-08-29 23:15:58 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-08-29 23:15:58 INFO: Step 5: VerusErrorType.AssertFail is partially fixed. Proof updated 5-0.
+2024-08-29 23:15:58 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-08-29 23:15:58 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-08-29 23:15:58 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 23:15:59 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:16:59 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:18:07 INFO: Infer time: 128.96778440475464s
+2024-08-29 23:18:07 INFO: subrange lemma fix
+2024-08-29 23:18:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:19:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:20:20 INFO: Infer time: 132.2769696712494s
+2024-08-29 23:20:20 INFO: repair-6-0 file generated
+2024-08-29 23:20:20 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-08-29 23:20:21 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-08-29 23:20:21 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-08-29 23:20:21 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 23:20:21 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:21:21 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:22:30 INFO: Infer time: 129.60900044441223s
+2024-08-29 23:22:30 INFO: subrange lemma fix
+2024-08-29 23:22:31 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:23:31 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:24:40 INFO: Infer time: 129.14114713668823s
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(list@.len() > 0);
+        assert(0 < n < list@.len());
+        assert(0 <= n < list.len());
+        assert(index <= list.len());
+        assert(list.len() == list.len());
+        assert(new_list.len() == index - n);
+        assert(new_list@ == list@.subrange(n as int, index as int));
+        assert(forall |k: int| 0 <= k < list.len() ==> list[k] == list[k]);
+    }
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(list@, n as int, index as int);
+        }
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            assert(list@.len() > 0);
+            assert(new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, index as int))); // Added by AI
+            lemma_seq_subrange_all(list@); // Invocation added here
+            lemma_seq_subrange_ascend(list@, 0, index as int);
+        }
+    }
+    new_list
+}
+
+}
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(list@.len() > 0);
+        assert(0 < n < list@.len());
+        assert(0 <= n < list.len());
+        assert(index <= list.len());
+        assert(list.len() == list.len());
+        assert(new_list.len() == index - n);
+        assert(new_list@ == list@.subrange(n as int, index as int));
+        assert(forall |k: int| 0 <= k < list.len() ==> list[k] == list[k]);
+    }
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(list@, n as int, index as int);
+        }
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            assert(list@.len() > 0);
+            lemma_seq_subrange_all(list@); // Invocation added here
+            lemma_seq_subrange_ascend(list@, 0, index as int); // Invocation added here
+            assert(new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, index as int))); // Added by AI
+        }
+    }
+    new_list
+}
+
+}
+
+2024-08-29 23:24:40 INFO: repair-7-0 file generated
+2024-08-29 23:24:40 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-08-29 23:24:41 INFO: Step 8: VerusErrorType.AssertFail with num=5.
+2024-08-29 23:24:41 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-08-29 23:24:41 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 23:24:41 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:25:41 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:26:41 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:27:42 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:28:51 INFO: Infer time: 249.98235487937927s
+2024-08-29 23:28:51 INFO: subrange lemma fix
+2024-08-29 23:28:51 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:29:51 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 23:31:01 INFO: Infer time: 130.47862076759338s
+2024-08-29 23:31:02 INFO: repair-8-0 file generated
+2024-08-29 23:31:02 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-29 23:31:02 INFO: Step 8: VerusErrorType.AssertFail is fixed. Proof updated 8-0.
+2024-08-29 23:31:02 INFO: Step 9: VerusErrorType.InvFailEnd with num=3.
+2024-08-29 23:31:02 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-29 23:31:11 INFO: Infer time: 9.232011556625366s
+2024-08-29 23:31:12 INFO: repair-9-0 file generated
+2024-08-29 23:31:12 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-29 23:31:12 INFO: Step 9: VerusErrorType.InvFailEnd is fixed. Proof updated 9-0.
+2024-08-29 23:31:12 INFO: Step 10: VerusErrorType.PostCondFail with num=3.
+2024-08-29 23:31:12 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-29 23:31:24 INFO: Infer time: 11.491815328598022s
+2024-08-29 23:31:24 INFO: repair-10-0 file generated
+2024-08-29 23:31:24 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-29 23:31:24 INFO: Step 10: VerusErrorType.PostCondFail is fixed. Proof updated 10-0.
+2024-08-29 23:31:25 INFO: Original code is better
+2024-08-29 23:31:25 INFO: finished!
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(list@.len() > 0);
+        assert(0 < n < list@.len());
+        assert(0 <= n < list.len());
+        assert(index <= list.len());
+        assert(list.len() == list.len());
+        assert(new_list.len() == index - n);
+        assert(new_list@ == list@.subrange(n as int, index as int));
+        assert(forall |k: int| 0 <= k < list.len() ==> list[k] == list[k]);
+    }
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(list@, n as int, index as int);
+        }
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            assert(list@.len() > 0);
+            lemma_seq_subrange_all(list@);
+            lemma_seq_subrange_ascend(list@, 0, index as int);
+            assert(new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, index as int))); // Added by AI
+        }
+    }
+    new_list
+}
+
+}
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(list@.len() > 0);
+        assert(0 < n < list@.len());
+        assert(0 <= n < list.len());
+        assert(index <= list.len());
+        assert(list.len() == list.len());
+        assert(new_list.len() == index - n);
+        assert(new_list@ == list@.subrange(n as int, index as int));
+        assert(forall |k: int| 0 <= k < list.len() ==> list[k] == list[k]);
+    }
+    while index < list.len()
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= list.len(),
+            list.len() == list.len(),
+            new_list.len() == index - n,
+            new_list@ == list@.subrange(n as int, index as int),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(list@, n as int, index as int);
+        }
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            list@.len() > 0,
+            0 < n < list@.len(),
+            0 <= n < list.len(),
+            index <= n,
+            list.len() == list.len(),
+            new_list.len() == (list.len() - n + index),
+            forall |k: int| 0 <= k < list.len() ==> list[k] == list[k],
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            lemma_seq_subrange_all(list@);
+            lemma_seq_subrange_ascend(list@, 0, index as int);
+        }
+    }
+    proof {
+        lemma_seq_subrange_all(list@);
+    }
+    new_list
+}
+
+}
+

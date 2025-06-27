@@ -1,0 +1,121 @@
+2024-08-31 22:04:12 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:04:12 INFO: Running in generation mode
+2024-08-31 22:04:12 INFO: Repair steps: 0
+2024-08-31 22:04:12 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:04:12 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:04:12 INFO: Generating proof code
+2024-08-31 22:04:12 INFO: Temperature: 1.0
+2024-08-31 22:04:12 INFO: Direct inference attempt 0
+2024-08-31 22:04:22 INFO: Infer time: 9.833234548568726s
+2024-08-31 22:04:22 INFO: Checking candidate 0-0
+2024-08-31 22:04:23 INFO: 0-0.rs in code pool
+2024-08-31 22:04:23 INFO: 0-0.rs is now the best proof candidate
+2024-08-31 22:04:23 INFO: Checking candidate 0-1
+2024-08-31 22:04:23 INFO: Checking candidate 0-2
+2024-08-31 22:04:24 INFO: 0-2.rs in code pool
+2024-08-31 22:04:24 INFO: 0-2.rs is now the best proof candidate
+2024-08-31 22:04:24 INFO: Checking candidate 0-3
+2024-08-31 22:04:25 INFO: 0-3.rs in code pool
+2024-08-31 22:04:25 INFO: Checking candidate 0-4
+2024-08-31 22:04:26 INFO: 0-4.rs in code pool
+2024-08-31 22:04:26 INFO: 0-4.rs is now the best proof candidate
+2024-08-31 22:04:26 INFO: Working on merge-0.rs
+2024-08-31 22:04:30 INFO: Merged code is better.
+2024-08-31 22:04:30 INFO: Running houdini on merge-0.rs
+2024-08-31 22:04:31 INFO: Working on merge-1.rs
+2024-08-31 22:04:32 INFO: Running houdini on merge-1.rs
+2024-08-31 22:04:33 INFO: Working on merge-2.rs
+2024-08-31 22:04:33 INFO: Running houdini on merge-2.rs
+2024-08-31 22:04:34 INFO: Working on merge-3.rs
+2024-08-31 22:04:34 INFO: Merged code is better.
+2024-08-31 22:04:34 INFO: Running houdini on merge-3.rs
+2024-08-31 22:04:35 INFO: refining with constantrefine_inference
+2024-08-31 22:04:43 INFO: Infer time: 7.147751331329346s
+2024-08-31 22:04:43 INFO: Verus has succeeded.
+2024-08-31 22:04:43 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, b: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(b).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] <= 2 * N,
+{
+    let mut i: usize = 0;
+    sum.set(0, 0);
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            b.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j as int] == 1,
+            forall|j: int| 0 <= j < i as int ==> a[j] == 1,
+            i <= N as usize,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            b.len() == N,
+            forall|j: int| 0 <= j < i ==> b[j as int] == 1,
+            forall|j: int| 0 <= j < i as int ==> b[j] == 1,
+            i <= N as usize,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        b.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            b.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j as int] == 1,
+            forall|j: int| 0 <= j < N ==> a[j] == 1,
+            i <= N as usize,
+            sum.len() == 1,
+            sum[0] <= i as i32,
+            sum[0] >= 0,
+            N > 0,
+            N < 1000,
+    {
+        sum.set(0, sum[0] + a[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            b.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j as int] == 1,
+            forall|j: int| 0 <= j < N ==> b[j as int] == 1,
+            forall|j: int| 0 <= j < N ==> b[j] == 1,
+            i <= N as usize,
+            sum.len() == 1,
+            sum[0] <= N + i as i32,
+            sum[0] >= 0,
+            N > 0,
+            N < 1000,
+    {
+        sum.set(0, sum[0] + b[i]);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 22:04:47 INFO: Verus succeeded with refinement!!
+2024-08-31 22:04:48 INFO: finished!

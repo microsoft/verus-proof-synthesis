@@ -1,0 +1,100 @@
+2024-09-02 19:29:31 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:29:31 INFO: Running in generation mode
+2024-09-02 19:29:31 INFO: Repair steps: 0
+2024-09-02 19:29:31 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:29:31 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:29:31 INFO: Generating proof code
+2024-09-02 19:29:31 INFO: Temperature: 1.0
+2024-09-02 19:29:31 WARNING: Disabled ranking
+2024-09-02 19:29:31 INFO: Direct inference attempt 0
+2024-09-02 19:29:31 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-02 19:29:37 INFO: Infer time: 5.871409893035889s
+2024-09-02 19:29:37 INFO: Checking candidate 0-0
+2024-09-02 19:29:37 INFO: 0-0.rs in code pool
+2024-09-02 19:29:37 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:29:37 INFO: Working on merge-0.rs
+2024-09-02 19:29:42 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:29:42 INFO: Running houdini on merge-0.rs
+2024-09-02 19:29:43 INFO: refining with constantrefine_inference
+2024-09-02 19:29:48 INFO: Infer time: 5.083724737167358s
+2024-09-02 19:29:48 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn interleave(s1: &Vec<i32>, s2: &Vec<i32>, s3: &Vec<i32>) -> (res: Vec<i32>)
+    requires
+        s1@.len() == s2@.len() && s2@.len() == s3@.len(),
+        0 <= (s1@.len() * 3) <= i32::MAX,
+    ensures
+        res@.len() == s1@.len() * 3,
+        forall|i: int|
+            0 <= i < s1@.len() ==> (res[3 * i] == s1[i] && res[3 * i + 1] == s2[i] && res[3 * i + 2]
+                == s3[i]),
+{
+    let new_seq_len = s1.len() * 3;
+    let mut output_seq = Vec::with_capacity(new_seq_len);
+    let mut index = 0;
+    while index < s1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (output_seq[3 * i] == s1[i] && output_seq[3 * i + 1] == s2[i]
+                    && output_seq[3 * i + 2] == s3[i]),
+            index <= s1.len(),
+            output_seq.len() == index * 3,
+            0 <= (s1@.len() * 3) <= i32::MAX,
+    {
+        output_seq.push(s1[index]);
+        output_seq.push(s2[index]);
+        output_seq.push(s3[index]);
+        index += 1;
+    }
+    output_seq
+}
+
+} // verus!
+
+2024-09-02 19:29:53 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:29:53 INFO: refining with arraylen_inference
+2024-09-02 19:29:57 INFO: Infer time: 4.386754512786865s
+2024-09-02 19:29:57 INFO: Verus has succeeded.
+2024-09-02 19:29:57 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn interleave(s1: &Vec<i32>, s2: &Vec<i32>, s3: &Vec<i32>) -> (res: Vec<i32>)
+    requires
+        s1@.len() == s2@.len() && s2@.len() == s3@.len(),
+        0 <= (s1@.len() * 3) <= i32::MAX,
+    ensures
+        res@.len() == s1@.len() * 3,
+        forall|i: int|
+            0 <= i < s1@.len() ==> (res[3 * i] == s1[i] && res[3 * i + 1] == s2[i] && res[3 * i + 2]
+                == s3[i]),
+{
+    let new_seq_len = s1.len() * 3;
+    let mut output_seq = Vec::with_capacity(new_seq_len);
+    let mut index = 0;
+    while index < s1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (output_seq[3 * i] == s1[i] && output_seq[3 * i + 1] == s2[i]
+                    && output_seq[3 * i + 2] == s3[i]),
+            index <= s1.len(),
+            output_seq.len() == index * 3,
+            s1.len() == s2.len(),
+            s2.len() == s3.len(),
+    {
+        output_seq.push(s1[index]);
+        output_seq.push(s2[index]);
+        output_seq.push(s3[index]);
+        index += 1;
+    }
+    output_seq
+}
+
+} // verus!
+
+2024-09-02 19:29:57 INFO: Verus succeeded with refinement!!
+2024-09-02 19:29:58 INFO: finished!

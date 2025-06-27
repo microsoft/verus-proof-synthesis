@@ -1,0 +1,33 @@
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+    #[verifier::loop_isolation(false)]
+    fn remove_odds(arr: &Vec<u32>) -> (even_list: Vec<u32>)
+        ensures
+            even_list@ == arr@.filter(|x: u32| x % 2 == 0),
+    {
+        let mut even_list: Vec<u32> = Vec::new();
+        let input_len = arr.len();
+        let mut index = 0;
+        while index < arr.len()
+            invariant
+                even_list.len() <= index,
+                index <= arr.len(),
+                arr.len() == input_len,
+                even_list.len() <= input_len,
+        {
+            if (arr[index] % 2 == 0) {
+                even_list.push(arr[index]);
+            }
+            index += 1;
+        }
+        proof {
+        }
+        even_list
+    }
+}
+
+
+// Score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1

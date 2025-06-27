@@ -1,0 +1,274 @@
+2024-09-03 22:28:23 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 22:28:23 INFO: Running in generation mode
+2024-09-03 22:28:23 INFO: Repair steps: 10
+2024-09-03 22:28:23 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 22:28:23 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 22:28:23 INFO: Generating proof code
+2024-09-03 22:28:23 INFO: Temperature: 0.7
+2024-09-03 22:28:23 INFO: Direct inference attempt 0
+2024-09-03 22:28:29 INFO: Infer time: 6.225633859634399s
+2024-09-03 22:28:29 INFO: Checking candidate 0-0
+2024-09-03 22:28:29 INFO: 0-0.rs in code pool
+2024-09-03 22:28:29 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 22:28:29 INFO: Checking candidate 0-1
+2024-09-03 22:28:30 INFO: Checking candidate 0-2
+2024-09-03 22:28:30 INFO: Checking candidate 0-3
+2024-09-03 22:28:30 INFO: Checking candidate 0-4
+2024-09-03 22:28:30 ERROR: Error: 'verified'
+2024-09-03 22:28:30 ERROR: Error: 'errors'
+2024-09-03 22:28:30 INFO: Working on merge-0.rs
+2024-09-03 22:28:35 INFO: Merged code is better.
+2024-09-03 22:28:35 INFO: Running houdini on merge-0.rs
+2024-09-03 22:28:35 INFO: refining with constantrefine_inference
+2024-09-03 22:28:43 INFO: Infer time: 7.4346723556518555s
+2024-09-03 22:28:43 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+    ensures
+        sum[0] == 0,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        a.set(i, i % 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            (0 < i ==> sum[0] == 0) || (i == 0 ==> sum[0] == 0),
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < N ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 22:28:48 INFO: New refined code is a good repair
+2024-09-03 22:28:48 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+    ensures
+        sum[0] == 0,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        a.set(i, i % 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            (0 < i ==> sum[0] == 0) || (i == 0 ==> sum[0] == 0),
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < N ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 22:28:48 INFO: refining with arraylen_inference
+2024-09-03 22:28:53 INFO: Infer time: 5.223283529281616s
+2024-09-03 22:28:53 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+    ensures
+        sum[0] == 0,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        a.set(i, i % 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            (0 < i ==> sum[0] == 0) || (i == 0 ==> sum[0] == 0),
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < N ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 22:28:53 INFO: Refinement did not change the code
+2024-09-03 22:28:53 INFO: refining with arrayrefine_inference
+2024-09-03 22:28:58 INFO: Infer time: 5.067982912063599s
+2024-09-03 22:28:58 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+    ensures
+        sum[0] == 0,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        a.set(i, i % 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            (0 < i ==> sum[0] == 0) || (i == 0 ==> sum[0] == 0),
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < N ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 22:28:58 INFO: Refinement did not change the code
+2024-09-03 22:28:58 INFO: refining with condlooprefine_inference
+2024-09-03 22:29:05 INFO: Infer time: 6.8540427684783936s
+2024-09-03 22:29:05 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+    ensures
+        sum[0] == 0,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+    {
+        a.set(i, i % 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < N ==> a[k] == k % 1,
+            i <= N,
+            sum.len() == 1,
+            i == 0 ==> sum[0] == 0,
+            i > 0 ==> sum[0] == 0,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 22:29:06 INFO: Verus succeeded with refinement and Houdini!
+2024-09-03 22:29:06 INFO: finished!

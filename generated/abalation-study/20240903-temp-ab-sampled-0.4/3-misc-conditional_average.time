@@ -1,0 +1,467 @@
+2024-09-03 21:23:42 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 21:23:42 INFO: Running in generation mode
+2024-09-03 21:23:42 INFO: Repair steps: 10
+2024-09-03 21:23:43 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 21:23:43 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 21:23:43 INFO: Generating proof code
+2024-09-03 21:23:43 INFO: Temperature: 0.4
+2024-09-03 21:23:43 INFO: Direct inference attempt 0
+2024-09-03 21:23:43 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-03 21:24:05 INFO: Infer time: 22.123820781707764s
+2024-09-03 21:24:05 INFO: Checking candidate 0-0
+2024-09-03 21:24:06 INFO: 0-0.rs in code pool
+2024-09-03 21:24:06 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 21:24:06 INFO: Checking candidate 0-1
+2024-09-03 21:24:06 INFO: 0-1.rs in code pool
+2024-09-03 21:24:06 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 21:24:06 INFO: Checking candidate 0-2
+2024-09-03 21:24:07 INFO: 0-2.rs in code pool
+2024-09-03 21:24:07 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 21:24:07 INFO: Checking candidate 0-3
+2024-09-03 21:24:07 INFO: 0-3.rs in code pool
+2024-09-03 21:24:07 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 21:24:07 INFO: Working on merge-0.rs
+2024-09-03 21:24:20 INFO: Merged code is better.
+2024-09-03 21:24:20 INFO: Running houdini on merge-0.rs
+2024-09-03 21:24:21 INFO: Working on merge-1.rs
+2024-09-03 21:24:29 ERROR: Error in merging code at step 1: Error in merging invariants:    Blocking waiting for file lock on build directory
+   Compiling unicode-ident v1.0.12
+   Compiling proc-macro2 v1.0.85
+   Compiling libc v0.2.155
+   Compiling utf8parse v0.2.2
+   Compiling rustix v0.38.34
+   Compiling is_terminal_polyfill v1.70.0
+   Compiling anstyle v1.0.7
+   Compiling syn_verus v1.0.95 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/syn)
+   Compiling colorchoice v1.0.1
+   Compiling anstyle-query v1.1.0
+   Compiling serde v1.0.203
+   Compiling prettyplease_verus v0.1.15 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/prettyplease)
+   Compiling linux-raw-sys v0.4.14
+   Compiling bitflags v2.5.0
+   Compiling heck v0.5.0
+   Compiling clap_lex v0.7.1
+   Compiling serde_json v1.0.117
+   Compiling syn v1.0.109
+   Compiling strsim v0.11.1
+   Compiling ryu v1.0.18
+   Compiling itoa v1.0.11
+   Compiling cfg-if v1.0.0
+   Compiling lazy_static v1.4.0
+   Compiling fastrand v2.1.0
+   Compiling anstyle-parse v0.2.4
+   Compiling once_cell v1.19.0
+   Compiling anstream v0.6.14
+   Compiling clap_builder v4.5.7
+   Compiling quote v1.0.36
+   Compiling syn v2.0.66
+   Compiling is-terminal v0.4.12
+   Compiling colored v1.9.4
+   Compiling tempfile v3.10.1
+   Compiling clap_derive v4.5.5
+   Compiling clap v4.5.7
+   Compiling lynette v0.0.0 (/home/XXXX/verus-copilot-review/utils/lynette/source/lynette)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.10s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_orig9tsq7zkj.rs /tmp/merge_new_invlgv3p9ne.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-03 21:24:29 INFO: Working on merge-2.rs
+2024-09-03 21:24:29 ERROR: Error in merging code at step 2: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_orig6kbmixu2.rs /tmp/merge_new_invm7mp2di0.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-03 21:24:29 INFO: Working on merge-3.rs
+2024-09-03 21:24:29 ERROR: Error in merging code at step 3: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origzk72hlrl.rs /tmp/merge_new_invgrveqevg.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-03 21:24:29 INFO: refining with constantrefine_inference
+2024-09-03 21:24:41 INFO: Infer time: 11.825067043304443s
+2024-09-03 21:24:41 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            vals_1.len() == conds_1.len(),
+            vals_1.len() == conds_2.len(),
+            vals_1.len() == vals_2.len(),
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 21:24:42 INFO: New refined code is a good repair
+2024-09-03 21:24:42 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            vals_1.len() == conds_1.len(),
+            vals_1.len() == conds_2.len(),
+            vals_1.len() == vals_2.len(),
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 21:24:42 INFO: refining with arraylen_inference
+2024-09-03 21:24:52 INFO: Infer time: 9.619076251983643s
+2024-09-03 21:24:52 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            vals_1.len() == conds_1.len(),
+            vals_1.len() == conds_2.len(),
+            vals_1.len() == vals_2.len(),
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 21:24:52 INFO: Refinement did not change the code
+2024-09-03 21:24:52 INFO: refining with arrayrefine_inference
+2024-09-03 21:25:01 INFO: Infer time: 9.50737190246582s
+2024-09-03 21:25:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            vals_1.len() == conds_1.len(),
+            vals_1.len() == conds_2.len(),
+            vals_1.len() == vals_2.len(),
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000, // vals_1 is not modified in the loop
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000, // vals_2 is not modified in the loop
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 21:25:02 INFO: New refined code is a good repair
+2024-09-03 21:25:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            vals_1.len() == conds_1.len(),
+            vals_1.len() == conds_2.len(),
+            vals_1.len() == vals_2.len(),
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000, // vals_1 is not modified in the loop
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000, // vals_2 is not modified in the loop
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 21:25:02 INFO: refining with condlooprefine_inference
+2024-09-03 21:25:16 INFO: Infer time: 14.204396724700928s
+2024-09-03 21:25:17 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            k > 0 ==> (forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx]))),
+            k <= common_len,
+            vals_1.len() == conds_1.len(),
+            vals_1.len() == conds_2.len(),
+            vals_1.len() == vals_2.len(),
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000, // vals_1 is not modified in the loop
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000, // vals_2 is not modified in the loop
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 21:25:17 INFO: New refined code under condloop is not better
+2024-09-03 21:25:17 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 21:25:17 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 21:25:17 INFO: All errors are fixed within 0 steps!!!
+2024-09-03 21:25:17 INFO: Verus succeeded after repair!!
+2024-09-03 21:25:18 INFO: finished!
+Start repair

@@ -1,0 +1,255 @@
+2024-09-02 18:54:17 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 18:54:17 INFO: Running in generation mode
+2024-09-02 18:54:17 INFO: Repair steps: 0
+2024-09-02 18:54:18 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 18:54:18 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 18:54:18 INFO: Generating proof code
+2024-09-02 18:54:18 INFO: Temperature: 1.0
+2024-09-02 18:54:18 WARNING: Disabled ranking
+2024-09-02 18:54:18 INFO: Direct inference attempt 0
+2024-09-02 18:54:23 INFO: Infer time: 5.522429466247559s
+2024-09-02 18:54:23 INFO: Checking candidate 0-0
+2024-09-02 18:54:23 INFO: Checking candidate 0-1
+2024-09-02 18:54:23 INFO: Checking candidate 0-2
+2024-09-02 18:54:24 INFO: 0-2.rs in code pool
+2024-09-02 18:54:24 INFO: 0-2.rs is now the best proof candidate
+2024-09-02 18:54:24 INFO: Working on merge-0.rs
+2024-09-02 18:54:28 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:54:28 INFO: Running houdini on merge-0.rs
+2024-09-02 18:54:29 INFO: refining with constantrefine_inference
+2024-09-02 18:54:35 INFO: Infer time: 5.332199573516846s
+2024-09-02 18:54:35 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> arr[j] == key,
+            i <= arr.len(),
+            key > ...,
+            key < ...,
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn intersection(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int, j: int| 0 <= i < j < result.len() ==> result[i] != result[j],
+{
+    let mut output_arr = Vec::new();
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|a: int, b: int| 0 <= a < b < output_arr.len() ==> output_arr[a] != output_arr[b],
+            forall|i: int|
+                0 <= i < output_arr.len() ==> (arr1@.contains(# [trigger] output_arr[i])
+                    && arr2@.contains(# [trigger] output_arr[i])),
+            index <= arr1.len(),
+            ... > ...,
+            ... < ...,
+    {
+        if (contains(arr2, arr1[index]) && !contains(&output_arr, arr1[index])) {
+            output_arr.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 18:54:39 ERROR: Error in comparing code changes: 
+2024-09-02 18:54:39 INFO: Unsafe code change
+2024-09-02 18:54:39 INFO: Refinement did not change the code
+2024-09-02 18:54:39 INFO: refining with arraylen_inference
+2024-09-02 18:54:44 INFO: Infer time: 4.91938853263855s
+2024-09-02 18:54:44 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> arr[j] == key,
+            i <= arr.len(),
+            arr.len() == old(arr.len()), // Invariant specifying the length of arr
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn intersection(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int, j: int| 0 <= i < j < result.len() ==> result[i] != result[j],
+{
+    let mut output_arr = Vec::new();
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|a: int, b: int| 0 <= a < b < output_arr.len() ==> output_arr[a] != output_arr[b],
+            forall|i: int|
+                0 <= i < output_arr.len() ==> (arr1@.contains(# [trigger] output_arr[i])
+                    && arr2@.contains(# [trigger] output_arr[i])),
+            index <= arr1.len(),
+            arr1.len() == old(arr1.len()), // Invariant specifying the length of arr1
+            arr2.len() == old(arr2.len()), // Invariant specifying the length of arr2
+            output_arr.len() == old(output_arr.len()), // Invariant specifying the length of output_arr
+    {
+        if (contains(arr2, arr1[index]) && !contains(&output_arr, arr1[index])) {
+            output_arr.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 18:54:44 ERROR: Error: 'verified'
+2024-09-02 18:54:44 ERROR: Error: 'errors'
+2024-09-02 18:54:44 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:54:44 INFO: refining with arrayrefine_inference
+2024-09-02 18:54:48 INFO: Infer time: 4.08260178565979s
+2024-09-02 18:54:49 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> arr[j] == key,
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn intersection(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int, j: int| 0 <= i < j < result.len() ==> result[i] != result[j],
+{
+    let mut output_arr = Vec::new();
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|a: int, b: int| 0 <= a < b < output_arr.len() ==> output_arr[a] != output_arr[b],
+            forall|i: int|
+                0 <= i < output_arr.len() ==> (arr1@.contains(# [trigger] output_arr[i])
+                    && arr2@.contains(# [trigger] output_arr[i])),
+            // arr1 is never modified in this loop
+            forall|k: int| 0<= k < arr1.len() ==> arr1@.get(k).is_some(),
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index]) && !contains(&output_arr, arr1[index])) {
+            output_arr.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 18:54:49 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:54:49 INFO: refining with condlooprefine_inference
+2024-09-02 18:54:55 INFO: Infer time: 6.031605958938599s
+2024-09-02 18:54:55 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> arr[j] == key,
+            i <= arr.len(),
+            i > 0 ==> exists|j: int| 0 <= j < i ==> arr[j] == key,
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn intersection(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int, j: int| 0 <= i < j < result.len() ==> result[i] != result[j],
+{
+    let mut output_arr = Vec::new();
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|a: int, b: int| 0 <= a < b < output_arr.len() ==> output_arr[a] != output_arr[b],
+            forall|i: int|
+                0 <= i < output_arr.len() ==> (arr1@.contains(# [trigger] output_arr[i])
+                    && arr2@.contains(# [trigger] output_arr[i])),
+            index <= arr1.len(),
+            index > 0 ==> 
+                (forall|a: int, b: int| 0 <= a < b < output_arr.len() ==> output_arr[a] != output_arr[b] &&
+                forall|i: int| 0 <= i < output_arr.len() ==> (arr1@.contains(# [trigger] output_arr[i]) 
+                    && arr2@.contains(# [trigger] output_arr[i]))),
+    {
+        if (contains(arr2, arr1[index]) && !contains(&output_arr, arr1[index])) {
+            output_arr.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 18:54:56 INFO: New refined code under condloop is not better
+2024-09-02 18:54:56 INFO: Houdini code is better
+2024-09-02 18:54:56 INFO: finished!

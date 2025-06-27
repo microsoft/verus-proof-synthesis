@@ -1,0 +1,91 @@
+2024-08-31 22:29:50 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:29:50 INFO: Running in generation mode
+2024-08-31 22:29:50 INFO: Repair steps: 0
+2024-08-31 22:29:50 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:29:50 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:29:50 INFO: Generating proof code
+2024-08-31 22:29:50 INFO: Temperature: 1.0
+2024-08-31 22:29:50 INFO: Direct inference attempt 0
+2024-08-31 22:29:56 INFO: Infer time: 5.1817402839660645s
+2024-08-31 22:29:56 INFO: Checking candidate 0-0
+2024-08-31 22:29:56 INFO: Checking candidate 0-1
+2024-08-31 22:29:56 INFO: Checking candidate 0-2
+2024-08-31 22:29:56 INFO: Checking candidate 0-3
+2024-08-31 22:29:56 INFO: Checking candidate 0-4
+2024-08-31 22:29:57 INFO: Regenerate...
+2024-08-31 22:29:57 INFO: Direct inference attempt 1
+2024-08-31 22:30:02 INFO: Infer time: 5.217865467071533s
+2024-08-31 22:30:02 INFO: Checking candidate 1-0
+2024-08-31 22:30:02 INFO: Checking candidate 1-1
+2024-08-31 22:30:02 INFO: Checking candidate 1-2
+2024-08-31 22:30:02 INFO: Checking candidate 1-3
+2024-08-31 22:30:02 INFO: Checking candidate 1-4
+2024-08-31 22:30:02 INFO: Regenerate...
+2024-08-31 22:30:02 INFO: Direct inference attempt 2
+2024-08-31 22:30:03 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-08-31 22:30:09 INFO: Infer time: 6.542695999145508s
+2024-08-31 22:30:09 INFO: Checking candidate 2-0
+2024-08-31 22:30:09 INFO: Checking candidate 2-1
+2024-08-31 22:30:09 INFO: Checking candidate 2-2
+2024-08-31 22:30:09 INFO: Checking candidate 2-3
+2024-08-31 22:30:10 INFO: Checking candidate 2-4
+2024-08-31 22:30:10 INFO: Regenerate...
+2024-08-31 22:30:10 ERROR: No valid code found!
+2024-08-31 22:30:14 INFO: refining with constantrefine_inference
+2024-08-31 22:30:19 INFO: Infer time: 5.194689750671387s
+2024-08-31 22:30:20 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            0 <= i <= arr.len(),
+            forall|j: int| 0 <= j < i ==> arr[j] != key,
+            i < arr.len(),
+    {
+        if arr[i] == key {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn intersection(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(#[trigger] result[i]) && arr2@.contains(
+                #[trigger] result[i],
+            )),
+        forall|i: int, j: int| 0 <= i < j < result.len() ==> result[i] != result[j],
+{
+    let mut output_arr = Vec::new();
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            output_arr@.len() <= arr1.len(),
+            forall|i: int|(0 <= i < output_arr@.len()) ==> (arr1@.contains(#[trigger] output_arr@.index(i)) && arr2@.contains(#[trigger] output_arr@.index(i))),
+            forall|i: int, j: int|(0 <= i < j < output_arr@.len()) ==> output_arr@.index(i) != output_arr@.index(j),
+            index < arr1.len(),
+    {
+        if contains(arr2, arr1[index]) && !contains(&output_arr, arr1[index]) {
+            output_arr.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-08-31 22:30:24 INFO: Verus succeeded with refinement and Houdini!
+2024-08-31 22:30:25 INFO: finished!

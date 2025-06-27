@@ -1,0 +1,296 @@
+2024-09-03 17:25:00 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 17:25:00 INFO: Running in generation mode
+2024-09-03 17:25:00 INFO: Repair steps: 10
+2024-09-03 17:25:01 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:25:01 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:25:01 INFO: Generating proof code
+2024-09-03 17:25:01 INFO: Temperature: 0.1
+2024-09-03 17:25:01 INFO: Direct inference attempt 0
+2024-09-03 17:25:01 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 5.000000 seconds
+2024-09-03 17:25:09 INFO: Infer time: 8.849354028701782s
+2024-09-03 17:25:09 INFO: Checking candidate 0-0
+2024-09-03 17:25:10 ERROR: Error: 'verified'
+2024-09-03 17:25:10 ERROR: Error: 'errors'
+2024-09-03 17:25:10 INFO: Checking candidate 0-1
+2024-09-03 17:25:10 ERROR: Error: 'verified'
+2024-09-03 17:25:10 ERROR: Error: 'errors'
+2024-09-03 17:25:10 INFO: Checking candidate 0-2
+2024-09-03 17:25:10 INFO: 0-2.rs in code pool
+2024-09-03 17:25:10 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 17:25:10 INFO: Checking candidate 0-3
+2024-09-03 17:25:11 INFO: 0-3.rs in code pool
+2024-09-03 17:25:11 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 17:25:11 INFO: Checking candidate 0-4
+2024-09-03 17:25:11 INFO: 0-4.rs in code pool
+2024-09-03 17:25:11 INFO: 0-4.rs is now the best proof candidate
+2024-09-03 17:25:11 INFO: Working on merge-0.rs
+2024-09-03 17:25:24 INFO: Merged code is better.
+2024-09-03 17:25:24 INFO: Running houdini on merge-0.rs
+2024-09-03 17:25:25 INFO: Working on merge-1.rs
+2024-09-03 17:25:41 INFO: Merged code is better.
+2024-09-03 17:25:41 INFO: Running houdini on merge-1.rs
+2024-09-03 17:25:42 INFO: Working on merge-2.rs
+2024-09-03 17:25:58 INFO: Merged code is better.
+2024-09-03 17:25:58 INFO: Running houdini on merge-2.rs
+2024-09-03 17:26:06 INFO: refining with constantrefine_inference
+2024-09-03 17:26:08 INFO: Infer time: 1.497162103652954s
+2024-09-03 17:26:08 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    while some_condition {
+        invariant x <= 0xffff,
+        invariant y <= 0xffff,
+        // other invariants
+    }
+}
+
+} // verus!
+
+2024-09-03 17:26:11 ERROR: Error in comparing code changes: 
+2024-09-03 17:26:11 INFO: Unsafe code change
+2024-09-03 17:26:11 INFO: Refinement did not change the code
+2024-09-03 17:26:11 INFO: refining with arraylen_inference
+2024-09-03 17:26:12 INFO: Infer time: 1.090174913406372s
+2024-09-03 17:26:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+}
+
+} // verus!
+
+2024-09-03 17:26:12 INFO: New refined code is a good repair
+2024-09-03 17:26:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+}
+
+} // verus!
+
+2024-09-03 17:26:12 INFO: refining with arrayrefine_inference
+2024-09-03 17:26:13 INFO: Infer time: 1.154904842376709s
+2024-09-03 17:26:14 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+}
+
+} // verus!
+
+2024-09-03 17:26:14 INFO: Refinement did not change the code
+2024-09-03 17:26:14 INFO: refining with condlooprefine_inference
+2024-09-03 17:26:15 INFO: Infer time: 1.5194478034973145s
+2024-09-03 17:26:15 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+}
+
+} // verus!
+
+2024-09-03 17:26:15 INFO: Refinement did not change the code
+2024-09-03 17:26:15 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:26:15 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:26:16 INFO: Step 1: VerusErrorType.PostCondFail with num=3.
+2024-09-03 17:26:16 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:18 INFO: Infer time: 2.419480085372925s
+2024-09-03 17:26:25 INFO: repair-1-0 file generated
+2024-09-03 17:26:25 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:25 INFO: Step 1: VerusErrorType.PostCondFail is fixed. Proof updated 1-0.
+2024-09-03 17:26:25 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-09-03 17:26:25 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:26:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:26:28 INFO: Infer time: 2.649883985519409s
+2024-09-03 17:26:33 INFO: repair-2-0 file generated
+2024-09-03 17:26:33 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:42 INFO: repair-2-1 file generated
+2024-09-03 17:26:42 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:50 INFO: repair-2-2 file generated
+2024-09-03 17:26:50 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:51 INFO: Step 3: VerusErrorType.AssertFail with num=5.
+2024-09-03 17:26:51 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:51 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:26:51 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:26:54 INFO: Infer time: 3.0906693935394287s
+2024-09-03 17:26:59 INFO: repair-3-0 file generated
+2024-09-03 17:26:59 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:59 INFO: Step 3: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 17:26:59 INFO: Step 4: VerusErrorType.AssertFail with num=3.
+2024-09-03 17:26:59 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:26:59 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:26:59 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:27:02 INFO: Infer time: 2.7747886180877686s
+2024-09-03 17:27:07 INFO: repair-4-0 file generated
+2024-09-03 17:27:07 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:16 INFO: repair-4-1 file generated
+2024-09-03 17:27:16 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:24 INFO: repair-4-2 file generated
+2024-09-03 17:27:24 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:25 INFO: Step 5: VerusErrorType.AssertFail with num=5.
+2024-09-03 17:27:25 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:27:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:27:28 INFO: Infer time: 2.8415350914001465s
+2024-09-03 17:27:32 INFO: repair-5-0 file generated
+2024-09-03 17:27:32 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:33 INFO: Step 5: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 17:27:33 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-09-03 17:27:33 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:33 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:27:33 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:27:36 INFO: Infer time: 2.822467803955078s
+2024-09-03 17:27:41 INFO: repair-6-0 file generated
+2024-09-03 17:27:41 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:41 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:27:49 ERROR: Error in comparing code changes: 
+2024-09-03 17:27:49 INFO: repair-6-1 file generated
+2024-09-03 17:27:49 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:27:49 WARNING: The repair is not safe.
+2024-09-03 17:27:58 INFO: repair-6-2 file generated
+2024-09-03 17:27:58 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:59 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-09-03 17:27:59 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:27:59 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:27:59 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:28:01 INFO: Infer time: 2.5672261714935303s
+2024-09-03 17:28:01 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:07 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:07 INFO: repair-7-0 file generated
+2024-09-03 17:28:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:07 WARNING: The repair is not safe.
+2024-09-03 17:28:07 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:15 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:15 INFO: repair-7-1 file generated
+2024-09-03 17:28:15 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:15 WARNING: The repair is not safe.
+2024-09-03 17:28:15 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:24 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:24 INFO: repair-7-2 file generated
+2024-09-03 17:28:24 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:24 WARNING: The repair is not safe.
+2024-09-03 17:28:24 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:32 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:32 INFO: repair-7-3 file generated
+2024-09-03 17:28:32 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:32 WARNING: The repair is not safe.
+2024-09-03 17:28:32 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:32 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:32 INFO: repair-7-4 file generated
+2024-09-03 17:28:32 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:32 WARNING: The repair is not safe.
+2024-09-03 17:28:32 INFO: Step 8: VerusErrorType.AssertFail with num=5.
+2024-09-03 17:28:32 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:28:32 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:28:32 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:28:36 INFO: Infer time: 3.8381600379943848s
+2024-09-03 17:28:37 INFO: repair-8-0 file generated
+2024-09-03 17:28:37 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:28:37 INFO: repair-8-1 file generated
+2024-09-03 17:28:37 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:28:38 INFO: repair-8-2 file generated
+2024-09-03 17:28:38 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:28:38 INFO: repair-8-3 file generated
+2024-09-03 17:28:38 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:28:39 INFO: repair-8-4 file generated
+2024-09-03 17:28:39 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:28:39 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-03 17:28:39 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:28:39 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:28:39 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:28:43 INFO: Infer time: 3.5706427097320557s
+2024-09-03 17:28:43 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:43 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:43 INFO: repair-9-0 file generated
+2024-09-03 17:28:43 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:43 WARNING: The repair is not safe.
+2024-09-03 17:28:43 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:43 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:43 INFO: repair-9-1 file generated
+2024-09-03 17:28:43 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:43 WARNING: The repair is not safe.
+2024-09-03 17:28:43 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:43 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:43 INFO: repair-9-2 file generated
+2024-09-03 17:28:43 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:43 WARNING: The repair is not safe.
+2024-09-03 17:28:43 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:43 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:43 INFO: repair-9-3 file generated
+2024-09-03 17:28:43 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:43 WARNING: The repair is not safe.
+2024-09-03 17:28:43 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:28:43 ERROR: Error in comparing code changes: 
+2024-09-03 17:28:43 INFO: repair-9-4 file generated
+2024-09-03 17:28:43 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:28:43 WARNING: The repair is not safe.
+2024-09-03 17:28:43 INFO: Step 10: VerusErrorType.AssertFail (failed last 4 time) with num=5.
+2024-09-03 17:28:43 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:28:44 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-03 17:29:02 INFO: Infer time: 18.18470335006714s
+2024-09-03 17:29:02 INFO: repair-10-0 file generated
+2024-09-03 17:29:02 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:29:02 INFO: repair-10-1 file generated
+2024-09-03 17:29:02 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:29:03 INFO: repair-10-2 file generated
+2024-09-03 17:29:03 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:29:03 INFO: repair-10-3 file generated
+2024-09-03 17:29:03 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:29:04 INFO: repair-10-4 file generated
+2024-09-03 17:29:04 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-03 17:29:05 INFO: Original code is better
+2024-09-03 17:29:05 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

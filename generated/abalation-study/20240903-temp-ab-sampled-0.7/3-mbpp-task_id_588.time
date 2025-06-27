@@ -1,0 +1,610 @@
+2024-09-03 23:16:12 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 23:16:12 INFO: Running in generation mode
+2024-09-03 23:16:12 INFO: Repair steps: 10
+2024-09-03 23:16:13 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:16:13 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:16:13 INFO: Generating proof code
+2024-09-03 23:16:13 INFO: Temperature: 0.7
+2024-09-03 23:16:13 INFO: Direct inference attempt 0
+2024-09-03 23:16:20 INFO: Infer time: 7.652436017990112s
+2024-09-03 23:16:20 INFO: Checking candidate 0-0
+2024-09-03 23:16:21 INFO: Checking candidate 0-1
+2024-09-03 23:16:21 INFO: 0-1.rs in code pool
+2024-09-03 23:16:21 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 23:16:21 INFO: Checking candidate 0-2
+2024-09-03 23:16:21 INFO: Checking candidate 0-3
+2024-09-03 23:16:22 INFO: Checking candidate 0-4
+2024-09-03 23:16:22 INFO: 0-4.rs in code pool
+2024-09-03 23:16:22 INFO: 0-4.rs is now the best proof candidate
+2024-09-03 23:16:22 INFO: Regenerate...
+2024-09-03 23:16:22 INFO: Direct inference attempt 1
+2024-09-03 23:16:30 INFO: Infer time: 7.385683298110962s
+2024-09-03 23:16:30 INFO: Checking candidate 1-0
+2024-09-03 23:16:30 INFO: Checking candidate 1-1
+2024-09-03 23:16:31 INFO: 1-1.rs in code pool
+2024-09-03 23:16:31 INFO: 1-1.rs is now the best proof candidate
+2024-09-03 23:16:31 INFO: Checking candidate 1-2
+2024-09-03 23:16:31 INFO: Checking candidate 1-3
+2024-09-03 23:16:31 INFO: 1-3.rs in code pool
+2024-09-03 23:16:31 INFO: 1-3.rs is now the best proof candidate
+2024-09-03 23:16:31 INFO: Working on merge-0.rs
+2024-09-03 23:16:36 INFO: Running houdini on merge-0.rs
+2024-09-03 23:16:37 INFO: Working on merge-1.rs
+2024-09-03 23:16:37 INFO: Running houdini on merge-1.rs
+2024-09-03 23:16:38 INFO: Working on merge-2.rs
+2024-09-03 23:16:39 INFO: Running houdini on merge-2.rs
+2024-09-03 23:16:40 INFO: Working on merge-3.rs
+2024-09-03 23:16:40 INFO: Merged code is better.
+2024-09-03 23:16:40 INFO: Running houdini on merge-3.rs
+2024-09-03 23:16:41 INFO: refining with constantrefine_inference
+2024-09-03 23:16:57 INFO: Infer time: 16.16934561729431s
+2024-09-03 23:16:57 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= arr.len(),
+            exists|i: int| 0 <= i < index && max_val == arr[i],
+            exists|i: int| 0 <= i < index && min_val == arr[i],
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            index <= arr.len(),
+            min_val <= max_val,
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 23:17:02 INFO: New refined code is a good repair
+2024-09-03 23:17:02 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= arr.len(),
+            exists|i: int| 0 <= i < index && max_val == arr[i],
+            exists|i: int| 0 <= i < index && min_val == arr[i],
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            index <= arr.len(),
+            min_val <= max_val,
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 23:17:02 INFO: refining with arraylen_inference
+2024-09-03 23:17:10 INFO: Infer time: 7.9918906688690186s
+2024-09-03 23:17:10 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= arr.len(),
+            exists|i: int| 0 <= i < index && max_val == arr[i],
+            exists|i: int| 0 <= i < index && min_val == arr[i],
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            index <= arr.len(),
+            min_val <= max_val,
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            arr.len() == arr.len(), // Loop invariant specifying array length
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 23:17:11 INFO: New refined code is a good repair
+2024-09-03 23:17:11 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= arr.len(),
+            exists|i: int| 0 <= i < index && max_val == arr[i],
+            exists|i: int| 0 <= i < index && min_val == arr[i],
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            index <= arr.len(),
+            min_val <= max_val,
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            arr.len() == arr.len(), // Loop invariant specifying array length
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 23:17:11 INFO: refining with arrayrefine_inference
+2024-09-03 23:17:22 INFO: Infer time: 11.580995798110962s
+2024-09-03 23:17:22 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= arr.len(),
+            exists|i: int| 0 <= i < index && max_val == arr[i],
+            exists|i: int| 0 <= i < index && min_val == arr[i],
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            index <= arr.len(),
+            min_val <= max_val,
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2, // Invariant covers every element in the array
+            arr.len() == arr.len(), // Loop invariant specifying array length
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 23:17:23 INFO: New refined code is a good repair
+2024-09-03 23:17:23 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= arr.len(),
+            exists|i: int| 0 <= i < index && max_val == arr[i],
+            exists|i: int| 0 <= i < index && min_val == arr[i],
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            index <= arr.len(),
+            min_val <= max_val,
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2, // Invariant covers every element in the array
+            arr.len() == arr.len(), // Loop invariant specifying array length
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 23:17:23 INFO: refining with condlooprefine_inference
+2024-09-03 23:17:34 INFO: Infer time: 11.203473329544067s
+2024-09-03 23:17:34 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < #[trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= arr.len(),
+            exists|i: int| 0 <= i < index && max_val == arr[i],
+            exists|i: int| 0 <= i < index && min_val == arr[i],
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < #[trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            index <= arr.len(),
+            min_val <= max_val,
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < #[trigger] arr[i] < i32::MAX / 2, // Invariant covers every element in the array
+            arr.len() == arr.len(), // Loop invariant specifying array length
+            index > 1 ==> exists|i: int| 0 <= i < index-1 && max_val == arr[i], // Special handling for the first iteration
+            index > 1 ==> exists|i: int| 0 <= i < index-1 && min_val == arr[i], // Special handling for the first iteration
+            index > 1 ==> forall|i: int| 0 <= i < index-1 ==> max_val >= arr[i], // Special handling for the first iteration
+            index > 1 ==> forall|i: int| 0 <= i < index-1 ==> min_val <= arr[i], // Special handling for the first iteration
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 23:17:35 INFO: New refined code under condloop is not better
+2024-09-03 23:17:35 INFO: Step 1: VerusErrorType.PostCondFail with num=3.
+2024-09-03 23:17:35 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-09-03 23:17:43 INFO: Infer time: 8.007464408874512s
+2024-09-03 23:17:43 INFO: repair-1-0 file generated
+2024-09-03 23:17:43 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 23:17:44 INFO: repair-1-1 file generated
+2024-09-03 23:17:44 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:17:45 INFO: Step 1: VerusErrorType.PostCondFail is fixed. Proof updated 1-1.
+2024-09-03 23:17:45 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:17:45 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:17:45 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:17:45 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:17:54 INFO: Infer time: 9.137866735458374s
+2024-09-03 23:17:54 INFO: repair-2-0 file generated
+2024-09-03 23:17:54 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 2
+2024-09-03 23:17:54 WARNING: The repair is not safe.
+2024-09-03 23:17:54 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:17:55 INFO: repair-2-1 file generated
+2024-09-03 23:17:55 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 23:17:55 INFO: repair-2-2 file generated
+2024-09-03 23:17:55 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:17:56 INFO: Step 3: VerusErrorType.AssertFail with num=5.
+2024-09-03 23:17:56 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:17:56 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:17:56 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:18:07 INFO: Infer time: 11.116302251815796s
+2024-09-03 23:18:07 INFO: repair-3-0 file generated
+2024-09-03 23:18:07 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:18:08 INFO: Step 3: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 23:18:08 INFO: Step 4: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:18:08 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:18:08 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:18:08 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:18:19 INFO: Infer time: 11.391679048538208s
+2024-09-03 23:18:20 INFO: repair-4-0 file generated
+2024-09-03 23:18:20 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:18:20 INFO: repair-4-1 file generated
+2024-09-03 23:18:20 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:18:21 INFO: repair-4-2 file generated
+2024-09-03 23:18:21 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:18:22 INFO: Step 5: VerusErrorType.AssertFail with num=5.
+2024-09-03 23:18:22 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-09-03 23:18:22 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:18:22 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:18:22 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 14.000000 seconds
+2024-09-03 23:18:58 INFO: Infer time: 36.78391885757446s
+2024-09-03 23:18:59 INFO: repair-5-0 file generated
+2024-09-03 23:18:59 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 23:18:59 INFO: Step 5: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 23:18:59 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:18:59 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 23:18:59 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:18:59 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:19:10 INFO: Infer time: 10.811100482940674s
+2024-09-03 23:19:10 ERROR: Error: 'verified'
+2024-09-03 23:19:10 ERROR: Error: 'errors'
+2024-09-03 23:19:10 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 23:19:10 ERROR: Error: 'verified'
+2024-09-03 23:19:10 ERROR: Error: 'errors'
+2024-09-03 23:19:10 INFO: repair-6-0 file generated
+2024-09-03 23:19:10 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 23:19:11 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 23:19:11 INFO: repair-6-1 file generated
+2024-09-03 23:19:11 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 23:19:11 INFO: repair-6-2 file generated
+2024-09-03 23:19:11 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 23:19:12 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-09-03 23:19:12 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 23:19:12 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:19:12 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:19:25 INFO: Infer time: 13.3576500415802s
+2024-09-03 23:19:25 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:19:26 INFO: repair-7-0 file generated
+2024-09-03 23:19:26 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 23:19:26 INFO: Step 7: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 23:19:27 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:19:27 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 23:19:27 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:19:27 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:19:36 INFO: Infer time: 9.489923238754272s
+2024-09-03 23:19:36 INFO: repair-8-0 file generated
+2024-09-03 23:19:36 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 5
+2024-09-03 23:19:37 INFO: repair-8-1 file generated
+2024-09-03 23:19:37 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 5
+2024-09-03 23:19:38 INFO: repair-8-2 file generated
+2024-09-03 23:19:38 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 5
+2024-09-03 23:19:38 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-03 23:19:38 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 23:19:38 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:19:38 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:19:53 INFO: Infer time: 14.893550872802734s
+2024-09-03 23:19:54 INFO: repair-9-0 file generated
+2024-09-03 23:19:54 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 5
+2024-09-03 23:19:54 INFO: Step 9: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 23:19:54 INFO: Step 10: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:19:54 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 5
+2024-09-03 23:19:54 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:19:54 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:19:54 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 5.000000 seconds
+2024-09-03 23:20:11 INFO: Infer time: 16.685317754745483s
+2024-09-03 23:20:11 INFO: repair-10-0 file generated
+2024-09-03 23:20:11 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 5
+2024-09-03 23:20:12 ERROR: Error: 'verified'
+2024-09-03 23:20:12 ERROR: Error: 'errors'
+2024-09-03 23:20:12 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 23:20:12 ERROR: Error: 'verified'
+2024-09-03 23:20:12 ERROR: Error: 'errors'
+2024-09-03 23:20:12 INFO: repair-10-1 file generated
+2024-09-03 23:20:12 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 23:20:13 INFO: repair-10-2 file generated
+2024-09-03 23:20:13 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 5
+2024-09-03 23:20:14 INFO: Houdini code is better
+2024-09-03 23:20:15 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

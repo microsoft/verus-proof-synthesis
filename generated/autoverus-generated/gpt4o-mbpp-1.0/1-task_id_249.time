@@ -1,0 +1,39 @@
+2024-08-29 18:22:03 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-29 18:22:03 INFO: Running in generation mode
+2024-08-29 18:22:03 INFO: Repair steps: 10
+2024-08-29 18:22:04 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 18:22:04 INFO: Generating proof code
+2024-08-29 18:22:04 INFO: Temperature: 1.0
+2024-08-29 18:22:04 INFO: Direct inference attempt 0
+2024-08-29 18:22:04 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 18:23:04 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 18:24:12 INFO: Infer time: 127.81867933273315s
+2024-08-29 18:24:12 INFO: Checking candidate 0-0
+2024-08-29 18:24:12 INFO: Checking candidate 0-1
+2024-08-29 18:24:12 INFO: Checking candidate 0-2
+2024-08-29 18:24:12 INFO: Checking candidate 0-3
+2024-08-29 18:24:12 INFO: Checking candidate 0-4
+2024-08-29 18:24:12 INFO: Regenerate...
+2024-08-29 18:24:12 INFO: Direct inference attempt 1
+2024-08-29 18:24:12 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 18:25:13 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 18:26:19 INFO: Infer time: 126.39603972434998s
+2024-08-29 18:26:19 INFO: Checking candidate 1-0
+2024-08-29 18:26:19 INFO: Checking candidate 1-1
+2024-08-29 18:26:19 ERROR: Error in comparing code changes: 
+2024-08-29 18:26:19 INFO: Checking candidate 1-2
+2024-08-29 18:26:19 INFO: Checking candidate 1-3
+2024-08-29 18:26:19 INFO: Checking candidate 1-4
+2024-08-29 18:26:20 INFO: 1-4.rs in code pool
+2024-08-29 18:26:20 INFO: 1-4.rs is now the best proof candidate
+2024-08-29 18:26:20 INFO: Regenerate...
+2024-08-29 18:26:20 INFO: Direct inference attempt 2
+2024-08-29 18:26:20 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 18:27:20 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 18:28:30 INFO: Infer time: 129.8428750038147s
+2024-08-29 18:28:30 INFO: Checking candidate 2-0
+2024-08-29 18:28:30 INFO: 2-0.rs in code pool
+2024-08-29 18:28:30 INFO: Checking candidate 2-1
+2024-08-29 18:28:30 INFO: Verus has succeeded.
+2024-08-29 18:28:31 INFO: Verus succeeded!!
+2024-08-29 18:28:31 INFO: finished!

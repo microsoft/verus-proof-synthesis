@@ -1,0 +1,286 @@
+2024-09-04 14:50:16 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 14:50:16 INFO: Running in generation mode
+2024-09-04 14:50:16 INFO: Repair steps: 10
+2024-09-04 14:50:16 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:50:16 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:50:16 INFO: Generating proof code
+2024-09-04 14:50:16 INFO: Temperature: 1.0
+2024-09-04 14:50:16 INFO: Direct inference attempt 0
+2024-09-04 14:50:22 INFO: Infer time: 6.01595401763916s
+2024-09-04 14:50:22 INFO: Checking candidate 0-0
+2024-09-04 14:50:23 ERROR: Error: 'verified'
+2024-09-04 14:50:23 ERROR: Error: 'errors'
+2024-09-04 14:50:23 INFO: Checking candidate 0-1
+2024-09-04 14:50:23 ERROR: Error: 'verified'
+2024-09-04 14:50:23 ERROR: Error: 'errors'
+2024-09-04 14:50:23 INFO: Checking candidate 0-2
+2024-09-04 14:50:23 ERROR: Error: 'verified'
+2024-09-04 14:50:23 ERROR: Error: 'errors'
+2024-09-04 14:50:23 INFO: Checking candidate 0-3
+2024-09-04 14:50:23 ERROR: Error: 'verified'
+2024-09-04 14:50:23 ERROR: Error: 'errors'
+2024-09-04 14:50:24 INFO: Checking candidate 0-4
+2024-09-04 14:50:24 INFO: Regenerate...
+2024-09-04 14:50:24 INFO: Direct inference attempt 1
+2024-09-04 14:50:34 INFO: Infer time: 9.720231771469116s
+2024-09-04 14:50:34 INFO: Checking candidate 1-0
+2024-09-04 14:50:34 INFO: Checking candidate 1-1
+2024-09-04 14:50:34 INFO: 1-1.rs in code pool
+2024-09-04 14:50:34 INFO: 1-1.rs is now the best proof candidate
+2024-09-04 14:50:34 INFO: Checking candidate 1-2
+2024-09-04 14:50:34 ERROR: Error in comparing code changes: 
+2024-09-04 14:50:34 INFO: Checking candidate 1-3
+2024-09-04 14:50:35 INFO: 1-3.rs in code pool
+2024-09-04 14:50:35 INFO: Checking candidate 1-4
+2024-09-04 14:50:35 INFO: Regenerate...
+2024-09-04 14:50:35 INFO: Direct inference attempt 2
+2024-09-04 14:50:39 INFO: Infer time: 4.3208534717559814s
+2024-09-04 14:50:39 INFO: Checking candidate 2-0
+2024-09-04 14:50:39 ERROR: Error in comparing code changes: 
+2024-09-04 14:50:39 INFO: Checking candidate 2-1
+2024-09-04 14:50:40 INFO: 2-1.rs in code pool
+2024-09-04 14:50:40 INFO: 2-1.rs is now the best proof candidate
+2024-09-04 14:50:40 INFO: Checking candidate 2-2
+2024-09-04 14:50:40 ERROR: Error in comparing code changes: 
+2024-09-04 14:50:40 INFO: Checking candidate 2-3
+2024-09-04 14:50:40 ERROR: Error in comparing code changes: 
+2024-09-04 14:50:40 INFO: Checking candidate 2-4
+2024-09-04 14:50:41 INFO: 2-4.rs in code pool
+2024-09-04 14:50:41 INFO: 2-4.rs is now the best proof candidate
+2024-09-04 14:50:41 INFO: Regenerate...
+2024-09-04 14:50:41 INFO: Working on merge-0.rs
+2024-09-04 14:50:45 INFO: Merged code is better.
+2024-09-04 14:50:45 INFO: Running houdini on merge-0.rs
+2024-09-04 14:50:46 INFO: Working on merge-1.rs
+2024-09-04 14:50:46 INFO: Running houdini on merge-1.rs
+2024-09-04 14:50:47 INFO: Working on merge-2.rs
+2024-09-04 14:50:47 INFO: Merged code is better.
+2024-09-04 14:50:47 INFO: Running houdini on merge-2.rs
+2024-09-04 14:50:48 INFO: Working on merge-3.rs
+2024-09-04 14:50:49 INFO: Merged code is better.
+2024-09-04 14:50:49 INFO: Running houdini on merge-3.rs
+2024-09-04 14:50:50 INFO: refining with constantrefine_inference
+2024-09-04 14:50:54 INFO: Infer time: 4.54768443107605s
+2024-09-04 14:50:54 INFO: 
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall |i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            forall |i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall |i: int| 0 <= i < index ==> arr[i] <= max_val,
+            forall |i: int| 0 <= i < index ==> arr[i] >= min_val,
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+2024-09-04 14:50:58 INFO: Unsafe code change
+2024-09-04 14:50:58 INFO: Refinement did not change the code
+2024-09-04 14:50:58 INFO: refining with arraylen_inference
+2024-09-04 14:50:59 INFO: Infer time: 0.6268854141235352s
+2024-09-04 14:50:59 INFO: 
+invariant
+    0 <= index <= arr.len(),
+    forall|i: int| 0 <= i < index ==> arr[i] <= max_val,
+    forall|i: int| 0 <= i < index ==> arr[i] >= min_val,
+    arr.len() == arr.len()
+
+2024-09-04 14:50:59 ERROR: Error in comparing code changes: 
+2024-09-04 14:50:59 INFO: Unsafe code change
+2024-09-04 14:50:59 INFO: Refinement did not change the code
+2024-09-04 14:50:59 INFO: refining with arrayrefine_inference
+2024-09-04 14:51:00 INFO: Infer time: 0.6710834503173828s
+2024-09-04 14:51:00 INFO: 
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            forall|i: int| 0 <= i < index ==> arr[i] <= max_val,
+            forall|i: int| 0 <= i < index ==> arr[i] >= min_val,
+            // The array arr is never modified inside the loop.
+
+2024-09-04 14:51:00 ERROR: Error in comparing code changes: 
+2024-09-04 14:51:00 INFO: Unsafe code change
+2024-09-04 14:51:00 INFO: Refinement did not change the code
+2024-09-04 14:51:00 INFO: refining with condlooprefine_inference
+2024-09-04 14:51:05 INFO: Infer time: 5.146687746047974s
+2024-09-04 14:51:05 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            forall|i: int| 0 <= i < index ==> arr[i] <= max_val,
+            forall|i: int| 0 <= i < index ==> arr[i] >= min_val,
+            index > 0 ==> max_val == max_rcur(arr@[( 0..index ) as int]),
+            index > 0 ==> min_val == min_rcur(arr@[0..index]),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+
+2024-09-04 14:51:06 INFO: New refined code under condloop is not better
+2024-09-04 14:51:06 INFO: Step 1: VerusErrorType.ArithmeticFlow with num=3.
+2024-09-04 14:51:06 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:10 INFO: Infer time: 4.726092338562012s
+2024-09-04 14:51:11 INFO: repair-1-0 file generated
+2024-09-04 14:51:11 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:11 INFO: Step 1: VerusErrorType.ArithmeticFlow is fixed. Proof updated 1-0.
+2024-09-04 14:51:11 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-09-04 14:51:11 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:11 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:51:11 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:51:16 INFO: Infer time: 5.2587668895721436s
+2024-09-04 14:51:17 INFO: repair-2-0 file generated
+2024-09-04 14:51:17 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:17 INFO: Step 2: VerusErrorType.AssertFail is fixed. Proof updated 2-0.
+2024-09-04 14:51:17 INFO: Step 3: VerusErrorType.InvFailEnd with num=3.
+2024-09-04 14:51:17 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:24 INFO: Infer time: 6.375041484832764s
+2024-09-04 14:51:24 INFO: repair-3-0 file generated
+2024-09-04 14:51:24 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:24 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 14:51:25 ERROR: Error in comparing code changes: 
+2024-09-04 14:51:25 INFO: repair-3-1 file generated
+2024-09-04 14:51:25 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 14:51:25 WARNING: The repair is not safe.
+2024-09-04 14:51:25 INFO: repair-3-2 file generated
+2024-09-04 14:51:25 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:26 INFO: Step 4: VerusErrorType.InvFailEnd with num=5.
+2024-09-04 14:51:26 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:30 INFO: Infer time: 4.589350461959839s
+2024-09-04 14:51:30 INFO: repair-4-0 file generated
+2024-09-04 14:51:30 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:31 INFO: Step 4: VerusErrorType.InvFailEnd is fixed based on finer-grained check.
+2024-09-04 14:51:31 INFO: Step 5: VerusErrorType.InvFailEnd with num=3.
+2024-09-04 14:51:31 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:35 INFO: Infer time: 4.2305121421813965s
+2024-09-04 14:51:36 INFO: repair-5-0 file generated
+2024-09-04 14:51:36 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:36 INFO: Step 5: VerusErrorType.InvFailEnd is fixed. Proof updated 5-0.
+2024-09-04 14:51:36 INFO: Step 6: VerusErrorType.ArithmeticFlow with num=3.
+2024-09-04 14:51:36 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:43 INFO: Infer time: 7.196935415267944s
+2024-09-04 14:51:43 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 14:51:43 ERROR: Error in comparing code changes: 
+2024-09-04 14:51:43 INFO: repair-6-0 file generated
+2024-09-04 14:51:43 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 14:51:43 WARNING: The repair is not safe.
+2024-09-04 14:51:44 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 14:51:44 INFO: repair-6-1 file generated
+2024-09-04 14:51:44 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 4
+2024-09-04 14:51:44 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 14:51:44 INFO: repair-6-2 file generated
+2024-09-04 14:51:44 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-04 14:51:45 INFO: Step 7: VerusErrorType.ArithmeticFlow with num=5.
+2024-09-04 14:51:45 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-04 14:51:53 INFO: Infer time: 8.41555905342102s
+2024-09-04 14:51:53 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 14:51:54 INFO: repair-7-0 file generated
+2024-09-04 14:51:54 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 12
+2024-09-04 14:51:54 INFO: repair-7-1 file generated
+2024-09-04 14:51:54 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-04 14:51:55 INFO: repair-7-2 file generated
+2024-09-04 14:51:55 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 5
+2024-09-04 14:51:55 INFO: Step 7: VerusErrorType.ArithmeticFlow is fixed. Proof updated 7-2.
+2024-09-04 14:51:55 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-09-04 14:51:55 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 5
+2024-09-04 14:51:55 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:51:55 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:51:55 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 14:53:04 INFO: Infer time: 68.68881821632385s
+2024-09-04 14:53:04 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 14:53:04 INFO: repair-8-0 file generated
+2024-09-04 14:53:04 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 14:53:04 WARNING: The repair is not safe.
+2024-09-04 14:53:04 INFO: repair-8-1 file generated
+2024-09-04 14:53:04 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 4
+2024-09-04 14:53:04 WARNING: The repair is not safe.
+2024-09-04 14:53:04 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 14:53:05 INFO: repair-8-2 file generated
+2024-09-04 14:53:05 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 4
+2024-09-04 14:53:05 WARNING: The repair is not safe.
+2024-09-04 14:53:05 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-04 14:53:05 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 5
+2024-09-04 14:53:05 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:53:05 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:53:14 INFO: Infer time: 9.40160584449768s
+2024-09-04 14:53:14 INFO: repair-9-0 file generated
+2024-09-04 14:53:14 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 4
+2024-09-04 14:53:15 INFO: Step 9: VerusErrorType.AssertFail is fixed. Proof updated 9-0.
+2024-09-04 14:53:15 INFO: Step 10: VerusErrorType.InvFailEnd with num=3.
+2024-09-04 14:53:15 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 4
+2024-09-04 14:53:24 INFO: Infer time: 9.249951839447021s
+2024-09-04 14:53:25 INFO: repair-10-0 file generated
+2024-09-04 14:53:25 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 4
+2024-09-04 14:53:25 INFO: repair-10-1 file generated
+2024-09-04 14:53:25 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 4
+2024-09-04 14:53:26 INFO: repair-10-2 file generated
+2024-09-04 14:53:26 INFO: Compilation Error: False, Verified: 2, Errors: 4, Verus Errors: 7
+2024-09-04 14:53:26 WARNING: The repair is not safe.
+2024-09-04 14:53:27 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-04 14:53:27 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-04 14:53:27 INFO: Original code is better
+2024-09-04 14:53:27 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

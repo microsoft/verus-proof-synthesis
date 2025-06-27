@@ -1,0 +1,445 @@
+2024-09-02 18:46:15 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 18:46:15 INFO: Running in generation mode
+2024-09-02 18:46:15 INFO: Repair steps: 0
+2024-09-02 18:46:15 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 18:46:15 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 18:46:15 INFO: Generating proof code
+2024-09-02 18:46:15 INFO: Temperature: 1.0
+2024-09-02 18:46:15 WARNING: Disabled ranking
+2024-09-02 18:46:15 INFO: Direct inference attempt 0
+2024-09-02 18:46:25 INFO: Infer time: 9.582542181015015s
+2024-09-02 18:46:25 INFO: Checking candidate 0-0
+2024-09-02 18:46:25 INFO: Checking candidate 0-1
+2024-09-02 18:46:25 ERROR: Error: 'verified'
+2024-09-02 18:46:25 ERROR: Error: 'errors'
+2024-09-02 18:46:26 INFO: Checking candidate 0-2
+2024-09-02 18:46:26 INFO: 0-2.rs in code pool
+2024-09-02 18:46:26 INFO: 0-2.rs is now the best proof candidate
+2024-09-02 18:46:26 INFO: Working on merge-0.rs
+2024-09-02 18:46:31 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:46:31 INFO: Running houdini on merge-0.rs
+2024-09-02 18:46:32 INFO: refining with constantrefine_inference
+2024-09-02 18:46:41 INFO: Infer time: 9.336708545684814s
+2024-09-02 18:46:41 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, b: &mut Vec<i32>, c: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(b).len() == N,
+        old(c).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] <= 3 * N,
+{
+    let mut i: usize = 0;
+    sum.set(0, 0);
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == 1,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> b[j] == 1,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        b.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> c[j] == 1,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        c.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= N,
+            N > 0,
+            N < 1000,
+    {
+        sum.set(0, sum[0] + a[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= 2 * N,
+            N > 0,
+            N < 1000,
+    {
+        sum.set(0, sum[0] + b[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= 3 * N,
+            N > 0,
+            N < 1000,
+    {
+        sum.set(0, sum[0] + c[i]);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:46:46 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:46:46 INFO: refining with arraylen_inference
+2024-09-02 18:46:53 INFO: Infer time: 6.458977699279785s
+2024-09-02 18:46:53 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, b: &mut Vec<i32>, c: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(b).len() == N,
+        old(c).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] <= 3 * N,
+{
+    let mut i: usize = 0;
+    sum.set(0, 0);
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == 1,
+            sum.len() == 1,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> b[j] == 1,
+            sum.len() == 1,
+    {
+        b.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> c[j] == 1,
+            sum.len() == 1,
+    {
+        c.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= N,
+    {
+        sum.set(0, sum[0] + a[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= 2 * N,
+    {
+        sum.set(0, sum[0] + b[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= 3 * N,
+    {
+        sum.set(0, sum[0] + c[i]);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:46:54 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:46:54 INFO: refining with arrayrefine_inference
+2024-09-02 18:47:02 INFO: Infer time: 7.982966661453247s
+2024-09-02 18:47:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, b: &mut Vec<i32>, c: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(b).len() == N,
+        old(c).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] <= 3 * N,
+{
+    let mut i: usize = 0;
+    sum.set(0, 0);
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == 1,
+            sum.len() == 1,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> b[j] == 1,
+            sum.len() == 1,
+    {
+        b.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            forall|j: int| 0 <= j < i ==> c[j] == 1,
+            sum.len() == 1,
+    {
+        c.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            forall|k: int| 0 <= k < a.len() ==> a[k] == 1, // a is not modified in this loop
+            sum[0] <= N,
+    {
+        sum.set(0, sum[0] + a[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            forall|k: int| 0 <= k < b.len() ==> b[k] == 1, // b is not modified in this loop
+            sum[0] <= 2 * N,
+    {
+        sum.set(0, sum[0] + b[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            forall|k: int| 0 <= k < c.len() ==> c[k] == 1, // c is not modified in this loop
+            sum[0] <= 3 * N,
+    {
+        sum.set(0, sum[0] + c[i]);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:47:02 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:47:02 INFO: refining with condlooprefine_inference
+2024-09-02 18:47:10 INFO: Infer time: 7.755831956863403s
+2024-09-02 18:47:10 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, b: &mut Vec<i32>, c: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(b).len() == N,
+        old(c).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] <= 3 * N,
+{
+    let mut i: usize = 0;
+    sum.set(0, 0);
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            i > 0 ==> forall|j: int| 0 <= j < i ==> a[j] == 1,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            i > 0 ==> forall|j: int| 0 <= j < i ==> b[j] == 1,
+    {
+        b.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            i > 0 ==> forall|j: int| 0 <= j < i ==> c[j] == 1,
+    {
+        c.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= N,
+    {
+        sum.set(0, sum[0] + a[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= 2 * N,
+    {
+        sum.set(0, sum[0] + b[i]);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            b.len() == N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] <= 3 * N,
+    {
+        sum.set(0, sum[0] + c[i]);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:47:11 INFO: New refined code under condloop is not better
+2024-09-02 18:47:12 INFO: Original code is better
+2024-09-02 18:47:12 INFO: finished!

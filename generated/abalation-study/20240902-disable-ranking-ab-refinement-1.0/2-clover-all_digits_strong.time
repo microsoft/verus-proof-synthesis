@@ -1,0 +1,110 @@
+2024-09-02 19:32:32 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:32:32 INFO: Running in generation mode
+2024-09-02 19:32:32 INFO: Repair steps: 0
+2024-09-02 19:32:32 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:32:32 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:32:32 INFO: Generating proof code
+2024-09-02 19:32:32 INFO: Temperature: 1.0
+2024-09-02 19:32:32 WARNING: Disabled ranking
+2024-09-02 19:32:32 INFO: Direct inference attempt 0
+2024-09-02 19:32:37 INFO: Infer time: 5.363648176193237s
+2024-09-02 19:32:37 INFO: Checking candidate 0-0
+2024-09-02 19:32:38 ERROR: Error: 'verified'
+2024-09-02 19:32:38 ERROR: Error: 'errors'
+2024-09-02 19:32:38 INFO: Checking candidate 0-1
+2024-09-02 19:32:38 ERROR: Error: 'verified'
+2024-09-02 19:32:38 ERROR: Error: 'errors'
+2024-09-02 19:32:38 INFO: Checking candidate 0-2
+2024-09-02 19:32:38 ERROR: Error: 'verified'
+2024-09-02 19:32:38 ERROR: Error: 'errors'
+2024-09-02 19:32:38 INFO: Checking candidate 0-3
+2024-09-02 19:32:39 ERROR: Error: 'verified'
+2024-09-02 19:32:39 ERROR: Error: 'errors'
+2024-09-02 19:32:39 INFO: Checking candidate 0-4
+2024-09-02 19:32:39 ERROR: Error: 'verified'
+2024-09-02 19:32:39 ERROR: Error: 'errors'
+2024-09-02 19:32:39 INFO: Regenerate...
+2024-09-02 19:32:39 INFO: Direct inference attempt 1
+2024-09-02 19:32:44 INFO: Infer time: 5.253283739089966s
+2024-09-02 19:32:44 INFO: Checking candidate 1-0
+2024-09-02 19:32:44 INFO: Checking candidate 1-1
+2024-09-02 19:32:45 ERROR: Error: 'verified'
+2024-09-02 19:32:45 ERROR: Error: 'errors'
+2024-09-02 19:32:45 INFO: Checking candidate 1-2
+2024-09-02 19:32:45 ERROR: Error: 'verified'
+2024-09-02 19:32:45 ERROR: Error: 'errors'
+2024-09-02 19:32:45 INFO: Checking candidate 1-3
+2024-09-02 19:32:45 ERROR: Error: 'verified'
+2024-09-02 19:32:45 ERROR: Error: 'errors'
+2024-09-02 19:32:45 INFO: Checking candidate 1-4
+2024-09-02 19:32:45 ERROR: Error: 'verified'
+2024-09-02 19:32:45 ERROR: Error: 'errors'
+2024-09-02 19:32:45 INFO: Regenerate...
+2024-09-02 19:32:45 INFO: Direct inference attempt 2
+2024-09-02 19:32:46 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-02 19:32:59 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 12.000000 seconds
+2024-09-02 19:33:16 INFO: Infer time: 30.70997142791748s
+2024-09-02 19:33:16 INFO: Checking candidate 2-0
+2024-09-02 19:33:16 ERROR: Error: 'verified'
+2024-09-02 19:33:16 ERROR: Error: 'errors'
+2024-09-02 19:33:16 INFO: Checking candidate 2-1
+2024-09-02 19:33:17 ERROR: Error: 'verified'
+2024-09-02 19:33:17 ERROR: Error: 'errors'
+2024-09-02 19:33:17 INFO: Checking candidate 2-2
+2024-09-02 19:33:17 INFO: Checking candidate 2-3
+2024-09-02 19:33:17 ERROR: Error: 'verified'
+2024-09-02 19:33:17 ERROR: Error: 'errors'
+2024-09-02 19:33:17 INFO: Checking candidate 2-4
+2024-09-02 19:33:18 ERROR: Error: 'verified'
+2024-09-02 19:33:18 ERROR: Error: 'errors'
+2024-09-02 19:33:18 INFO: Regenerate...
+2024-09-02 19:33:18 ERROR: No valid code found!
+2024-09-02 19:33:22 INFO: refining with constantrefine_inference
+2024-09-02 19:33:26 INFO: Infer time: 4.445300340652466s
+2024-09-02 19:33:27 INFO: Verus has succeeded.
+2024-09-02 19:33:27 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+verus! {
+
+spec fn is_ascii_digit_spec(c: char) -> bool {
+    c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7'
+        || c == '8' || c == '9'
+}
+
+fn is_ascii_digit(c: char) -> (r: bool)
+    ensures
+        r == is_ascii_digit_spec(c),
+{
+    c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7'
+        || c == '8' || c == '9'
+}
+
+spec fn all_digits_spec(s: Seq<char>) -> bool {
+    forall|i: nat| #![auto] i < s.len() ==> is_ascii_digit_spec(s[i as int])
+}
+
+fn all_digits(s: String) -> (result: bool)
+    requires
+        s.is_ascii(),
+    ensures
+        all_digits_spec(s@) == result,
+{
+    let mut result = true;
+    let mut i = 0;
+    while i < s.as_str().unicode_len()
+        invariant
+            s.is_ascii(),
+    {
+        if !is_ascii_digit(s.as_str().get_char(i)) {
+            return false;
+        }
+    }
+    true
+}
+
+} // verus!
+
+2024-09-02 19:33:31 INFO: Verus succeeded with refinement!!
+2024-09-02 19:33:31 INFO: finished!

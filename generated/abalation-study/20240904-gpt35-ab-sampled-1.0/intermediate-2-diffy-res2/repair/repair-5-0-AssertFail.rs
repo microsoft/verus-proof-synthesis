@@ -1,0 +1,52 @@
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+pub fn myfun(a: &mut Vec<i32>, b: &mut Vec<i32>, c: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(b).len() == N,
+        old(c).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] <= 3 * N,
+{
+    sum.set(0, 0);
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            i <= N as usize,
+            sum[0] <= 3 * N,
+            N > 0,
+            old(a).len() == N,
+            old(b).len() == N,
+            old(c).len() == N,
+            old(sum).len() == 1,
+            N < 1000,
+            i < a.len(),
+            i < N as usize, // Added by AI, for assertion fail
+        {
+        a.set(i, 1);
+        i = i + 1;
+        proof {
+            assert(i < a.len());
+        }
+    }
+    // ... (similar changes in other while loops)
+}
+
+} // verus!
+
+
+//             assert(i < a.len());
+//   assertion failed: i < a.len()
+
+// Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+// Safe: False

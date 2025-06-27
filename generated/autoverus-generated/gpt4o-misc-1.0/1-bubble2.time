@@ -1,0 +1,582 @@
+2024-08-30 15:59:46 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 15:59:46 INFO: Running in generation mode
+2024-08-30 15:59:46 INFO: Repair steps: 10
+2024-08-30 15:59:47 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 15:59:47 INFO: Generating proof code
+2024-08-30 15:59:47 INFO: Temperature: 1.0
+2024-08-30 15:59:47 INFO: Direct inference attempt 0
+2024-08-30 15:59:55 INFO: Infer time: 8.29518175125122s
+2024-08-30 15:59:55 INFO: Checking candidate 0-0
+2024-08-30 15:59:55 ERROR: Error: 'verified'
+2024-08-30 15:59:55 ERROR: Error: 'errors'
+2024-08-30 15:59:55 INFO: Checking candidate 0-1
+2024-08-30 15:59:56 INFO: Checking candidate 0-2
+2024-08-30 15:59:57 INFO: 0-2.rs in code pool
+2024-08-30 15:59:57 INFO: 0-2.rs is now the best proof candidate
+2024-08-30 15:59:57 INFO: Checking candidate 0-3
+2024-08-30 15:59:57 ERROR: Error: 'verified'
+2024-08-30 15:59:57 ERROR: Error: 'errors'
+2024-08-30 15:59:57 INFO: Checking candidate 0-4
+2024-08-30 15:59:58 INFO: 0-4.rs in code pool
+2024-08-30 15:59:58 INFO: 0-4.rs is now the best proof candidate
+2024-08-30 15:59:58 INFO: Working on merge-0.rs
+2024-08-30 16:00:02 INFO: Running houdini on merge-0.rs
+2024-08-30 16:00:04 INFO: Working on merge-1.rs
+2024-08-30 16:00:04 INFO: Merged code is better.
+2024-08-30 16:00:04 INFO: Running houdini on merge-1.rs
+2024-08-30 16:00:06 INFO: refining with constantrefine_inference
+2024-08-30 16:00:13 INFO: Infer time: 7.022127151489258s
+2024-08-30 16:00:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= # [trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        return ;
+    }
+    for i in 1..n {
+        let mut j = i;
+        while j != 0
+            invariant
+                0 <= j <= i < n,
+                exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+                forall|k: int| 1 <= k <= i ==> sorted_between(nums@, 0, k),
+                nums.len() == n,
+                1 <= i < n,
+        {
+            if nums[j - 1] > nums[j] {
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            j -= 1;
+        }
+    }
+}
+
+} // verus!
+
+2024-08-30 16:00:18 INFO: New refined code is a good repair
+2024-08-30 16:00:18 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= # [trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        return ;
+    }
+    for i in 1..n {
+        let mut j = i;
+        while j != 0
+            invariant
+                0 <= j <= i < n,
+                exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+                forall|k: int| 1 <= k <= i ==> sorted_between(nums@, 0, k),
+                nums.len() == n,
+                1 <= i < n,
+        {
+            if nums[j - 1] > nums[j] {
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            j -= 1;
+        }
+    }
+}
+
+} // verus!
+
+2024-08-30 16:00:18 INFO: refining with arraylen_inference
+2024-08-30 16:00:25 INFO: Infer time: 6.280927419662476s
+2024-08-30 16:00:25 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= # [trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        return ;
+    }
+    for i in 1..n {
+        let mut j = i;
+        while j != 0
+            invariant
+                0 <= j <= i < n,
+                exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+                forall|k: int| 1 <= k <= i ==> sorted_between(nums@, 0, k),
+                nums.len() == n,
+                1 <= i < n,
+                nums.len() == n,
+        {
+            if nums[j - 1] > nums[j] {
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            j -= 1;
+        }
+    }
+}
+
+} // verus!
+
+2024-08-30 16:00:26 INFO: New refined code is a good repair
+2024-08-30 16:00:26 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= # [trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        return ;
+    }
+    for i in 1..n {
+        let mut j = i;
+        while j != 0
+            invariant
+                0 <= j <= i < n,
+                exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+                forall|k: int| 1 <= k <= i ==> sorted_between(nums@, 0, k),
+                nums.len() == n,
+                1 <= i < n,
+                nums.len() == n,
+        {
+            if nums[j - 1] > nums[j] {
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            j -= 1;
+        }
+    }
+}
+
+} // verus!
+
+2024-08-30 16:00:26 INFO: refining with arrayrefine_inference
+2024-08-30 16:00:31 INFO: Infer time: 5.126833438873291s
+2024-08-30 16:00:31 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= # [trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        return ;
+    }
+    for i in 1..n {
+        let mut j = i;
+        while j != 0
+            invariant
+                0 <= j <= i < n,
+                exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+                forall|k: int| 1 <= k <= i ==> sorted_between(nums@, 0, k),
+                nums.len() == n,
+                1 <= i < n,
+                nums.len() == n,
+        {
+            if nums[j - 1] > nums[j] {
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            j -= 1;
+        }
+    }
+}
+
+} // verus!
+
+2024-08-30 16:00:31 INFO: Refinement did not change the code
+2024-08-30 16:00:31 INFO: refining with condlooprefine_inference
+2024-08-30 16:00:37 INFO: Infer time: 5.067877292633057s
+2024-08-30 16:00:37 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= # [trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        return ;
+    }
+    for i in 1..n {
+        let mut j = i;
+        while j != 0
+            invariant
+                0 <= j <= i < n,
+                exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+                (1 <= j ==> forall|k: int| 1 <= k <= i ==> sorted_between(nums@, 0, k)),
+                nums.len() == n,
+                1 <= i < n,
+                nums.len() == n,
+        {
+            if nums[j - 1] > nums[j] {
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            j -= 1;
+        }
+    }
+}
+
+} // verus!
+
+2024-08-30 16:00:38 INFO: New refined code under condloop is not better
+2024-08-30 16:00:38 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:00:38 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-08-30 16:00:38 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 9
+2024-08-30 16:00:43 INFO: Infer time: 4.676207542419434s
+2024-08-30 16:00:43 INFO: Here is the quick fix output
+2024-08-30 16:00:44 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 16:00:56 INFO: Infer time: 12.461381196975708s
+2024-08-30 16:00:57 INFO: repair-1-0 file generated
+2024-08-30 16:00:57 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 10
+2024-08-30 16:00:58 INFO: repair-1-1 file generated
+2024-08-30 16:00:58 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 10
+2024-08-30 16:00:59 INFO: repair-1-2 file generated
+2024-08-30 16:00:59 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 10
+2024-08-30 16:01:00 INFO: Step 2: VerusErrorType.InvFailFront with num=5.
+2024-08-30 16:01:00 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 9
+2024-08-30 16:01:05 INFO: Infer time: 5.624252080917358s
+2024-08-30 16:01:05 INFO: Here is the quick fix output
+2024-08-30 16:01:06 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 16:01:13 INFO: Infer time: 7.3453123569488525s
+2024-08-30 16:01:14 INFO: repair-2-0 file generated
+2024-08-30 16:01:14 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 5
+2024-08-30 16:01:14 INFO: Step 2: VerusErrorType.InvFailFront is fixed. Proof updated 2-0.
+2024-08-30 16:01:15 INFO: Step 3: VerusErrorType.InvFailFront with num=3.
+2024-08-30 16:01:15 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 5
+2024-08-30 16:01:24 INFO: Infer time: 9.312208414077759s
+2024-08-30 16:01:24 INFO: repair-3-0 file generated
+2024-08-30 16:01:24 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-08-30 16:01:25 INFO: Step 3: VerusErrorType.InvFailFront is fixed. Proof updated 3-0.
+2024-08-30 16:01:25 INFO: Step 4: VerusErrorType.AssertFail with num=3.
+2024-08-30 16:01:25 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-08-30 16:01:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:01:34 INFO: Infer time: 8.205234050750732s
+2024-08-30 16:01:34 INFO: repair-4-0 file generated
+2024-08-30 16:01:34 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:01:36 INFO: Step 4: VerusErrorType.AssertFail is partially fixed. Proof updated 4-0.
+2024-08-30 16:01:36 INFO: Step 5: VerusErrorType.AssertFail with num=3.
+2024-08-30 16:01:36 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:01:36 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:01:36 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 8.000000 seconds
+2024-08-30 16:01:54 INFO: Infer time: 17.63273310661316s
+2024-08-30 16:01:54 INFO: repair-5-0 file generated
+2024-08-30 16:01:54 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:01:56 INFO: repair-5-1 file generated
+2024-08-30 16:01:56 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:01:58 INFO: Step 5: VerusErrorType.AssertFail is fixed. Proof updated 5-1.
+2024-08-30 16:01:58 INFO: Step 6: VerusErrorType.InvFailFront with num=3.
+2024-08-30 16:01:58 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:02:07 INFO: Infer time: 8.992849826812744s
+2024-08-30 16:02:07 INFO: Here is the quick fix output
+2024-08-30 16:02:08 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 16:02:20 INFO: Infer time: 11.898666620254517s
+2024-08-30 16:02:21 INFO: repair-6-0 file generated
+2024-08-30 16:02:21 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:02:22 INFO: Step 6: VerusErrorType.InvFailFront is fixed. Proof updated 6-0.
+2024-08-30 16:02:22 INFO: Step 7: VerusErrorType.InvFailEnd with num=3.
+2024-08-30 16:02:22 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:02:32 INFO: Infer time: 9.938026905059814s
+2024-08-30 16:02:33 INFO: repair-7-0 file generated
+2024-08-30 16:02:33 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:02:35 INFO: repair-7-1 file generated
+2024-08-30 16:02:35 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:02:36 INFO: repair-7-2 file generated
+2024-08-30 16:02:36 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:02:38 INFO: Step 8: VerusErrorType.InvFailEnd with num=5.
+2024-08-30 16:02:38 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:02:50 INFO: Infer time: 12.508544921875s
+2024-08-30 16:02:51 INFO: repair-8-0 file generated
+2024-08-30 16:02:51 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:02:52 INFO: Step 8: VerusErrorType.InvFailEnd is fixed based on finer-grained check.
+2024-08-30 16:02:52 INFO: Step 9: VerusErrorType.InvFailEnd with num=3.
+2024-08-30 16:02:52 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:03:02 INFO: Infer time: 10.11266541481018s
+2024-08-30 16:03:03 INFO: repair-9-0 file generated
+2024-08-30 16:03:03 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-08-30 16:03:05 INFO: repair-9-1 file generated
+2024-08-30 16:03:05 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:03:06 INFO: repair-9-2 file generated
+2024-08-30 16:03:06 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:03:08 INFO: Step 10: VerusErrorType.InvFailEnd with num=5.
+2024-08-30 16:03:08 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:03:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-08-30 16:03:19 INFO: Infer time: 10.763256072998047s
+2024-08-30 16:03:19 INFO: repair-10-0 file generated
+2024-08-30 16:03:19 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 16:03:21 INFO: Step 10: VerusErrorType.InvFailEnd is fixed based on finer-grained check.
+2024-08-30 16:03:22 INFO: Houdini code is better
+2024-08-30 16:03:23 INFO: finished!
+Start repair
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= # [trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        return ;
+    }
+    for i in 1..n {
+        let mut j = i;
+        while j != 0
+            invariant
+                0 <= j <= i < n,
+                j > 0 ==> exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+                forall|k: int| 1 <= k <= i ==> sorted_between(nums@, 0, k),
+                nums.len() == n,
+                1 <= i < n,
+                nums.len() == n,
+        {
+            if nums[j - 1] > nums[j] {
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            j -= 1;
+        }
+    }
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= # [trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        return ;
+    }
+    for i in 1..n {
+        let mut j = i;
+        while j != 0
+            invariant
+                0 <= j <= i < n,
+                i > 1 ==> exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+                forall|k: int| 1 <= k <= i ==> sorted_between(nums@, 0, k),
+                nums.len() == n,
+                1 <= i < n,
+                nums.len() == n,
+        {
+            if nums[j - 1] > nums[j] {
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            j -= 1;
+        }
+    }
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+    forall|i: int, j: int| from <= i < j < to ==> a[i] <= a[j]
+}
+
+spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+    &&& r.len() == s.len()
+    &&& forall|i: int| 0 <= i < r.len() ==> 0 <= #[trigger] r[i] < r.len()
+    &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+    &&& p =~= r.map_values(|i: int| s[i])
+}
+
+fn test1(nums: &mut Vec<u32>)
+    ensures
+        sorted_between(nums@, 0, nums@.len() as int),
+        exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+{
+    let n = nums.len();
+    if n == 0 {
+        proof {
+            let r = Seq::new(0, |i: int| i);
+            assert(is_reorder_of(r, nums@, nums@));
+        }
+        return;
+    }
+    let ghost mut r = Seq::new(nums@.len(), |i: int| i); // Initialized reorder sequence
+    proof {
+        assert(is_reorder_of(r, nums@, nums@)); // Validating reorder sequence
+    }
+    for i in 1..n
+    invariant
+        sorted_between(nums@, 0, i as int),
+        exists|r: Seq<int>| i > 1 ==> is_reorder_of(r, nums@, old(nums)@),
+        nums.len() == n, // Keeping length invariant
+    {
+        let mut j = i;
+        while j != 0
+        invariant
+            0 <= j <= i < n,
+            n == nums.len(),
+            sorted_between(nums@, 0, j as int),
+            sorted_between(nums@, j as int, i as int + 1),
+            i > 1 ==> is_reorder_of(r, nums@, old(nums)@), // Added invariant to keep r valid
+            exists|r: Seq<int>| j > 0 ==> is_reorder_of(r, nums@, old(nums)@),
+        {
+            if nums[j - 1] > nums[j] {
+                proof {
+                    let r1 = choose |r: Seq<int>| is_reorder_of(r, nums@, old(nums)@);
+                    r = r.update(j as int - 1, r[j as int]).update(j as int, r[j as int - 1]); // Update reorder sequence
+                    assert(is_reorder_of(r, nums@.update(j as int - 1, nums@[j as int]).update(j as int, nums@[j as int - 1]), old(nums)@));
+                }
+                let temp = nums[j - 1];
+                nums.set(j - 1, nums[j]);
+                nums.set(j, temp);
+            }
+            proof {
+                assert(j > 0 ==> is_reorder_of(r, nums@, old(nums)@)); // Validating r after potential swap
+                assert(exists|r: Seq<int>| j > 0 ==> is_reorder_of(r, nums@, old(nums)@)); // Added check to validate reorder sequence after each swap
+            }
+            j -= 1;
+        }
+    }
+}
+}
+

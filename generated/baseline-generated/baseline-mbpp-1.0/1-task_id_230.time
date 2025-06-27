@@ -1,0 +1,12 @@
+2024-09-05 00:22:58 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-05 00:22:58 INFO: Running in generation mode
+2024-09-05 00:22:58 INFO: Repair steps: 10
+2024-09-05 00:22:58 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-05 00:22:58 WARNING: Generation initialized with repair_uniform: False
+2024-09-05 00:22:58 INFO: Generating proof code with baseline
+2024-09-05 00:22:58 INFO: Temperature: 1.0
+2024-09-05 00:22:58 INFO: Generate with baseline mode
+2024-09-05 00:22:58 INFO: Direct inference with baseline attempt 0
+2024-09-05 00:22:58 INFO: Direct Full Inference ...
+2024-09-05 00:23:06 INFO: Infer time: 8.549284934997559s
+2024-09-05 00:23:07 INFO: finished!

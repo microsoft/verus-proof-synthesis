@@ -1,0 +1,125 @@
+2024-09-02 19:40:04 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:40:04 INFO: Running in generation mode
+2024-09-02 19:40:04 INFO: Repair steps: 0
+2024-09-02 19:40:04 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:40:04 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:40:04 INFO: Generating proof code
+2024-09-02 19:40:04 INFO: Temperature: 1.0
+2024-09-02 19:40:04 WARNING: Disabled ranking
+2024-09-02 19:40:04 INFO: Direct inference attempt 0
+2024-09-02 19:40:06 INFO: Infer time: 2.18172550201416s
+2024-09-02 19:40:06 INFO: Checking candidate 0-0
+2024-09-02 19:40:07 INFO: 0-0.rs in code pool
+2024-09-02 19:40:07 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:40:07 INFO: Working on merge-0.rs
+2024-09-02 19:40:11 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:40:11 INFO: Running houdini on merge-0.rs
+2024-09-02 19:40:12 INFO: refining with constantrefine_inference
+2024-09-02 19:40:13 INFO: Infer time: 1.372319221496582s
+2024-09-02 19:40:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    while true
+        invariant
+            x <= 0xffff,
+            y <= 0xffff,
+    {
+        // loop body
+        break;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:40:18 ERROR: Error: 'verified'
+2024-09-02 19:40:18 ERROR: Error: 'errors'
+2024-09-02 19:40:18 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:40:18 INFO: refining with arraylen_inference
+2024-09-02 19:40:19 INFO: Infer time: 1.0351767539978027s
+2024-09-02 19:40:19 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+    // no loop to add invariants to
+}
+
+} // verus!
+
+2024-09-02 19:40:19 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:40:19 INFO: refining with arrayrefine_inference
+2024-09-02 19:40:20 INFO: Infer time: 0.8034763336181641s
+2024-09-02 19:40:20 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+proof fn bound_check(x: u32, y: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+    ensures
+        x * y <= 0x100000000,
+{
+}
+
+} // verus!
+
+2024-09-02 19:40:20 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:40:20 INFO: refining with condlooprefine_inference
+2024-09-02 19:40:25 INFO: Infer time: 4.865351676940918s
+2024-09-02 19:40:25 INFO: Remaining type errors are unfixable.
+2024-09-02 19:40:25 INFO:             product += x as u64 * y as u64;
+2024-09-02 19:40:25 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus!{
+
+proof fn bounding_example(x: u32, y: u32, n: u32)
+    requires
+        x <= 0xffff,
+        y <= 0xffff,
+        0 < n < 10000,
+    ensures
+        x * y <= 0x100000000,
+{
+    let mut i: u32 = 0;
+    let mut product: u64 = 0;
+
+    while i < n
+        invariant
+            x <= 0xffff,
+            y <= 0xffff,
+            i <= n,
+            product <= 0x100000000,
+            i > 0 ==> product == i as u64 * x as u64 * y as u64,
+    {
+        if i == 0 {
+            product = x as u64 * y as u64;
+        } else {
+            product += x as u64 * y as u64;
+        }
+        i += 1;
+    }
+}
+}
+
+2024-09-02 19:40:25 INFO: New refined code under condloop is not better
+2024-09-02 19:40:26 INFO: Original code is better
+2024-09-02 19:40:26 INFO: finished!

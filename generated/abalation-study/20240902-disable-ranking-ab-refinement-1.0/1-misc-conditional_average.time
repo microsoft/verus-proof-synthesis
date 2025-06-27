@@ -1,0 +1,85 @@
+2024-09-02 19:31:44 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:31:44 INFO: Running in generation mode
+2024-09-02 19:31:44 INFO: Repair steps: 0
+2024-09-02 19:31:44 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:31:44 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:31:44 INFO: Generating proof code
+2024-09-02 19:31:44 INFO: Temperature: 1.0
+2024-09-02 19:31:44 WARNING: Disabled ranking
+2024-09-02 19:31:44 INFO: Direct inference attempt 0
+2024-09-02 19:31:52 INFO: Infer time: 7.614704847335815s
+2024-09-02 19:31:52 INFO: Checking candidate 0-0
+2024-09-02 19:31:52 INFO: 0-0.rs in code pool
+2024-09-02 19:31:52 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:31:52 INFO: Working on merge-0.rs
+2024-09-02 19:31:57 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:31:57 INFO: Running houdini on merge-0.rs
+2024-09-02 19:31:57 INFO: refining with constantrefine_inference
+2024-09-02 19:32:05 INFO: Infer time: 7.396206378936768s
+2024-09-02 19:32:05 INFO: Verus has succeeded.
+2024-09-02 19:32:05 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            conds_1.len() == common_len,
+            conds_2.len() == common_len,
+            forall|idx: int|
+                0 <= idx < k ==> (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx]),
+            forall|idx: int|
+                0 <= idx < k ==> (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]),
+            forall|idx: int|
+                0 <= idx < k ==> (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2),
+            k <= common_len,
+            vals_1.len() == common_len,
+            vals_2.len() == common_len,
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:32:09 INFO: Verus succeeded with refinement!!
+2024-09-02 19:32:10 INFO: finished!

@@ -1,0 +1,15 @@
+2024-09-10 17:01:25 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-10 17:01:25 INFO: Running in generation mode
+2024-09-10 17:01:25 INFO: Repair steps: 10
+2024-09-10 17:01:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-10 17:01:25 WARNING: Generation initialized with repair_uniform: True
+2024-09-10 17:01:25 INFO: Generating proof code
+2024-09-10 17:01:25 INFO: Temperature: 1.0
+2024-09-10 17:01:25 INFO: Generate with direct repair mode
+2024-09-10 17:01:25 WARNING: All-in-one repair is used!!!
+2024-09-10 17:01:25 WARNING: Loop isolation is not found in the code. Inserting loop isolation.
+2024-09-10 17:01:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-10 17:01:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-10 17:01:25 INFO: All errors are fixed within 0 steps!!!
+2024-09-10 17:01:26 INFO: Verus succeeded after repair!!
+2024-09-10 17:01:26 INFO: finished!

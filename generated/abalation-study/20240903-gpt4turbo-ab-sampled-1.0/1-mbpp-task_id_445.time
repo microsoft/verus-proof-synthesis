@@ -1,0 +1,72 @@
+2024-09-03 17:26:11 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 17:26:11 INFO: Running in generation mode
+2024-09-03 17:26:11 INFO: Repair steps: 10
+2024-09-03 17:26:11 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:26:11 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:26:11 INFO: Generating proof code
+2024-09-03 17:26:11 INFO: Temperature: 1.0
+2024-09-03 17:26:11 INFO: Direct inference attempt 0
+2024-09-03 17:26:46 INFO: Infer time: 34.739417552948s
+2024-09-03 17:26:46 INFO: Checking candidate 0-0
+2024-09-03 17:26:50 INFO: 0-0.rs in code pool
+2024-09-03 17:26:50 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 17:26:50 INFO: Checking candidate 0-1
+2024-09-03 17:26:59 INFO: 0-1.rs in code pool
+2024-09-03 17:26:59 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 17:26:59 INFO: Checking candidate 0-2
+2024-09-03 17:27:07 INFO: 0-2.rs in code pool
+2024-09-03 17:27:07 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 17:27:07 INFO: Checking candidate 0-3
+2024-09-03 17:27:16 INFO: 0-3.rs in code pool
+2024-09-03 17:27:16 INFO: Working on merge-0.rs
+2024-09-03 17:27:29 INFO: Running houdini on merge-0.rs
+2024-09-03 17:27:29 INFO: Working on merge-1.rs
+2024-09-03 17:27:45 INFO: Running houdini on merge-1.rs
+2024-09-03 17:27:46 INFO: Working on merge-2.rs
+2024-09-03 17:28:03 INFO: Merged code is better.
+2024-09-03 17:28:03 INFO: Running houdini on merge-2.rs
+2024-09-03 17:28:03 INFO: Working on merge-3.rs
+2024-09-03 17:28:19 INFO: Running houdini on merge-3.rs
+2024-09-03 17:28:28 WARNING: Non-linear arithmetic detected.
+2024-09-03 17:28:28 WARNING:             forall|j: int|
+                0 <= j < index ==> # [trigger] output_arr[j] == # [trigger] (arr1[j] * arr2[j]),
+2024-09-03 17:28:28 INFO: refining with constantrefine_inference
+2024-09-03 17:29:06 INFO: Infer time: 38.351557970047s
+2024-09-03 17:29:06 INFO: Verus has succeeded.
+2024-09-03 17:29:06 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_multiplication(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    ensures
+        result.len() == arr1.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] * arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            forall|j: int|
+                0 <= j < index ==> # [trigger] output_arr[j] == # [trigger] (arr1[j] * arr2[j]),
+            index <= arr1.len(),
+            output_arr.len() == index,
+            forall|i: int|
+                (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    {
+        output_arr.push((arr1[index] * arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-03 17:29:07 INFO: Verus succeeded with refinement!!
+2024-09-03 17:29:07 INFO: finished!

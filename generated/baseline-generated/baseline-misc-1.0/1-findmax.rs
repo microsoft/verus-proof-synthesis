@@ -1,0 +1,35 @@
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+fn find_max(nums: Vec<i32>) -> (ret:i32)
+requires
+    nums.len() > 0,
+ensures
+    forall |i: int| 0 <= i < nums@.len() ==> nums@[i] <= ret,
+    exists |i: int| 0 <= i < nums@.len() ==> nums@[i] == ret,
+{
+    let mut max = nums[0];
+    let mut i = 1;
+
+    while i < nums.len()
+    invariant
+        1 <= i <= nums.len(),
+        exists |j: int| 0 <= j < i && nums[j] == max,
+        forall |k: int| 0 <= k < i ==> nums[k] <= max,
+        nums@.len() == nums.len(),
+    {
+        if nums[i] > max {
+            max = nums[i];
+        }
+        assert(forall |k: int| 0 <= k < i ==> nums[k] <= max);
+        i += 1;
+    }
+    assert(forall |k: int| 0 <= k < i ==> nums[k] <= max);
+    assert(exists |j: int| 0 <= j < i && nums[j] == max);
+    max
+}
+}
+// Score: (2, 0)
+// Safe: True

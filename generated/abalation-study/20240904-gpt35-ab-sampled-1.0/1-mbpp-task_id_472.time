@@ -1,0 +1,113 @@
+2024-09-04 14:45:00 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 14:45:00 INFO: Running in generation mode
+2024-09-04 14:45:00 INFO: Repair steps: 10
+2024-09-04 14:45:00 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:45:00 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:45:00 INFO: Generating proof code
+2024-09-04 14:45:00 INFO: Temperature: 1.0
+2024-09-04 14:45:00 INFO: Direct inference attempt 0
+2024-09-04 14:45:04 INFO: Infer time: 3.8175766468048096s
+2024-09-04 14:45:04 INFO: Checking candidate 0-0
+2024-09-04 14:45:04 INFO: 0-0.rs in code pool
+2024-09-04 14:45:04 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 14:45:04 INFO: Checking candidate 0-1
+2024-09-04 14:45:04 INFO: Checking candidate 0-2
+2024-09-04 14:45:04 ERROR: Error: 'verified'
+2024-09-04 14:45:04 ERROR: Error: 'errors'
+2024-09-04 14:45:04 INFO: Checking candidate 0-3
+2024-09-04 14:45:05 INFO: Checking candidate 0-4
+2024-09-04 14:45:05 ERROR: Error: 'verified'
+2024-09-04 14:45:05 ERROR: Error: 'errors'
+2024-09-04 14:45:05 INFO: Working on merge-0.rs
+2024-09-04 14:45:09 INFO: Merged code is better.
+2024-09-04 14:45:09 INFO: Running houdini on merge-0.rs
+2024-09-04 14:45:10 INFO: refining with constantrefine_inference
+2024-09-04 14:45:13 INFO: Infer time: 2.321150541305542s
+2024-09-04 14:45:13 INFO: 
+fn contains_consecutive_numbers(arr: &Vec<i32>) -> (is_consecutive: bool)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> (0 <= # [trigger] arr[i] + 1 < i32::MAX),
+    ensures
+        is_consecutive == (forall|i: int, j: int|
+            0 <= i < j < arr.len() && j == i + 1 ==> (arr[i] + 1 == arr[j])),
+{
+    let mut index = 0;
+    while (index < arr.len() - 1)
+        invariant
+            0 <= index < arr.len(),
+            forall|i: int, j: int| 0 <= i < j <= index && j == i + 1 ==> arr[i] + 1 == arr[j],
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> (0 <= # [trigger] arr[i] + 1 < i32::MAX),
+    {
+        if (arr[index] + 1 != arr[index + 1]) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+2024-09-04 14:45:17 INFO: Unsafe code change
+2024-09-04 14:45:17 INFO: Refinement did not change the code
+2024-09-04 14:45:17 INFO: refining with arraylen_inference
+2024-09-04 14:45:18 INFO: Infer time: 0.597299337387085s
+2024-09-04 14:45:18 INFO: 
+        invariant
+            arr.len() > 0,
+            index <= arr.len(),
+            forall|i: int, j: int| 0 <= i < j <= index && j == i + 1 ==> arr[i] + 1 == arr[j],
+
+2024-09-04 14:45:18 ERROR: Error in comparing code changes: 
+2024-09-04 14:45:18 INFO: Unsafe code change
+2024-09-04 14:45:18 INFO: Refinement did not change the code
+2024-09-04 14:45:18 INFO: refining with arrayrefine_inference
+2024-09-04 14:45:19 INFO: Infer time: 1.0758941173553467s
+2024-09-04 14:45:19 INFO: 
+        forall|i: int| 0 <= i < arr.len() ==> (0 <= # [trigger] arr[i] + 1 < i32::MAX),
+        // The array arr is not modified within the loop, so the loop invariant holds for all elements of the array.
+    invariant
+        0 <= index < arr.len(),
+        forall|i: int| 0 <= i < index ==> arr[i] + 1 == arr[i + 1],
+
+2024-09-04 14:45:19 ERROR: Error in comparing code changes: 
+2024-09-04 14:45:19 INFO: Unsafe code change
+2024-09-04 14:45:19 INFO: Refinement did not change the code
+2024-09-04 14:45:19 INFO: refining with condlooprefine_inference
+2024-09-04 14:45:21 INFO: Infer time: 2.145820140838623s
+2024-09-04 14:45:21 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains_consecutive_numbers(arr: &Vec<i32>) -> (is_consecutive: bool)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> (0 <= # [trigger] arr[i] + 1 < i32::MAX),
+    ensures
+        is_consecutive == (forall|i: int, j: int|
+            0 <= i < j < arr.len() && j == i + 1 ==> (arr[i] + 1 == arr[j])),
+{
+    let mut index = 0;
+    while (index < arr.len() - 1)
+        invariant
+            0 <= index < arr.len(),
+            index > 0 ==> forall|i: int, j: int| 0 <= i < j <= index && j == i + 1 ==> arr[i] + 1 == arr[j],
+    {
+        if (arr[index] + 1 != arr[index + 1]) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-09-04 14:45:22 INFO: New refined code under condloop is not better
+2024-09-04 14:45:22 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:45:22 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:45:22 INFO: All errors are fixed within 0 steps!!!
+2024-09-04 14:45:22 INFO: Verus succeeded after repair!!
+2024-09-04 14:45:22 INFO: finished!
+Start repair

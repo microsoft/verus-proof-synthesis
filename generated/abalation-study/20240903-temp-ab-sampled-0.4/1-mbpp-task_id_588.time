@@ -1,0 +1,644 @@
+2024-09-03 19:48:37 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 19:48:37 INFO: Running in generation mode
+2024-09-03 19:48:37 INFO: Repair steps: 10
+2024-09-03 19:48:37 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:48:37 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:48:37 INFO: Generating proof code
+2024-09-03 19:48:37 INFO: Temperature: 0.4
+2024-09-03 19:48:37 INFO: Direct inference attempt 0
+2024-09-03 19:48:38 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 9.000000 seconds
+2024-09-03 19:48:53 INFO: Infer time: 15.686760663986206s
+2024-09-03 19:48:53 INFO: Checking candidate 0-0
+2024-09-03 19:48:58 INFO: 0-0.rs in code pool
+2024-09-03 19:48:58 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 19:48:58 INFO: Checking candidate 0-1
+2024-09-03 19:48:58 ERROR: Error: 'verified'
+2024-09-03 19:48:58 ERROR: Error: 'errors'
+2024-09-03 19:48:58 INFO: Checking candidate 0-2
+2024-09-03 19:48:59 INFO: 0-2.rs in code pool
+2024-09-03 19:48:59 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 19:48:59 INFO: Checking candidate 0-3
+2024-09-03 19:48:59 INFO: 0-3.rs in code pool
+2024-09-03 19:48:59 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 19:48:59 INFO: Checking candidate 0-4
+2024-09-03 19:48:59 ERROR: Error: 'verified'
+2024-09-03 19:48:59 ERROR: Error: 'errors'
+2024-09-03 19:48:59 INFO: Working on merge-0.rs
+2024-09-03 19:49:13 INFO: Merged code is better.
+2024-09-03 19:49:13 INFO: Running houdini on merge-0.rs
+2024-09-03 19:49:14 INFO: Working on merge-1.rs
+2024-09-03 19:49:30 INFO: Merged code is better.
+2024-09-03 19:49:30 INFO: Running houdini on merge-1.rs
+2024-09-03 19:49:31 INFO: Working on merge-2.rs
+2024-09-03 19:49:47 INFO: Merged code is better.
+2024-09-03 19:49:47 INFO: Running houdini on merge-2.rs
+2024-09-03 19:49:48 INFO: refining with constantrefine_inference
+2024-09-03 19:49:57 INFO: Infer time: 9.45732069015503s
+2024-09-03 19:49:58 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            i32::MIN / 2 < max_val < i32::MAX / 2,
+            i32::MIN / 2 < min_val < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 19:50:03 INFO: New refined code is a good repair
+2024-09-03 19:50:03 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            i32::MIN / 2 < max_val < i32::MAX / 2,
+            i32::MIN / 2 < min_val < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 19:50:03 INFO: refining with arraylen_inference
+2024-09-03 19:50:12 INFO: Infer time: 9.087352514266968s
+2024-09-03 19:50:12 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            arr.len() == arr.len(), // Loop invariant specifying the length of the array
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            i32::MIN / 2 < max_val < i32::MAX / 2,
+            i32::MIN / 2 < min_val < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 19:50:16 INFO: New refined code is a good repair
+2024-09-03 19:50:16 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            arr.len() == arr.len(), // Loop invariant specifying the length of the array
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            i32::MIN / 2 < max_val < i32::MAX / 2,
+            i32::MIN / 2 < min_val < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 19:50:16 INFO: refining with arrayrefine_inference
+2024-09-03 19:50:28 INFO: Infer time: 11.492792129516602s
+2024-09-03 19:50:28 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            arr.len() == arr.len(), // Loop invariant specifying the length of the array
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < arr.len() ==> max_val >= arr[i], // Modified invariant to cover every element
+            forall|i: int| 0 <= i < arr.len() ==> min_val <= arr[i], // Modified invariant to cover every element
+            i32::MIN / 2 < max_val < i32::MAX / 2,
+            i32::MIN / 2 < min_val < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 19:50:28 INFO: New refined code is a good repair
+2024-09-03 19:50:28 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            arr.len() == arr.len(), // Loop invariant specifying the length of the array
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < arr.len() ==> max_val >= arr[i], // Modified invariant to cover every element
+            forall|i: int| 0 <= i < arr.len() ==> min_val <= arr[i], // Modified invariant to cover every element
+            i32::MIN / 2 < max_val < i32::MAX / 2,
+            i32::MIN / 2 < min_val < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 19:50:28 INFO: refining with condlooprefine_inference
+2024-09-03 19:50:37 INFO: Infer time: 8.835922479629517s
+2024-09-03 19:50:37 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            arr.len() == arr.len(), // Loop invariant specifying the length of the array
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < arr.len() ==> max_val >= arr[i], // Modified invariant to cover every element
+            forall|i: int| 0 <= i < arr.len() ==> min_val <= arr[i], // Modified invariant to cover every element
+            i32::MIN / 2 < max_val < i32::MAX / 2,
+            i32::MIN / 2 < min_val < i32::MAX / 2,
+            index > 1 ==> max_val == max_rcur(arr@.subrange(0, index as int)),
+            index > 1 ==> min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 19:50:38 INFO: New refined code under condloop is not better
+2024-09-03 19:50:38 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-09-03 19:50:38 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 5
+2024-09-03 19:50:51 INFO: Infer time: 12.894761562347412s
+2024-09-03 19:50:52 INFO: repair-1-0 file generated
+2024-09-03 19:50:52 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 19:50:52 INFO: Step 1: VerusErrorType.InvFailFront is fixed. Proof updated 1-0.
+2024-09-03 19:50:52 INFO: Step 2: VerusErrorType.InvFailEnd with num=3.
+2024-09-03 19:50:52 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 19:51:01 INFO: Infer time: 9.233025312423706s
+2024-09-03 19:51:02 INFO: repair-2-0 file generated
+2024-09-03 19:51:02 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 19:51:02 INFO: Step 2: VerusErrorType.InvFailEnd is fixed. Proof updated 2-0.
+2024-09-03 19:51:02 INFO: Step 3: VerusErrorType.AssertFail with num=3.
+2024-09-03 19:51:02 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 3
+2024-09-03 19:51:02 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:51:02 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:51:17 INFO: Infer time: 14.225878715515137s
+2024-09-03 19:51:17 INFO: subrange lemma fix
+2024-09-03 19:51:31 INFO: Infer time: 13.825817346572876s
+2024-09-03 19:51:31 INFO: Verus has succeeded.
+2024-09-03 19:51:34 INFO: repair-3-0 file generated
+2024-09-03 19:51:34 INFO: Compilation Error: False, Verified: 5, Errors: 0, Verus Errors: 0
+2024-09-03 19:51:34 INFO: All errors are fixed within 3 steps!!!
+2024-09-03 19:51:34 INFO: Verus succeeded after repair!!
+2024-09-03 19:51:34 INFO: finished!
+Start repair
+
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            arr.len() == arr.len(), // Loop invariant specifying the length of the array
+            forall|i: int| 0 <= i < index ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i], // Modified invariant to cover processed elements
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i], // Modified invariant to cover processed elements
+            i32::MIN / 2 < max_val < i32::MAX / 2,
+            i32::MIN / 2 < min_val < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(arr@, 0, ( index ) as int);
+            assert(min_val == min_rcur(arr@.subrange(0, index as int)));
+        }
+    }
+    proof {
+        lemma_seq_subrange_all(arr@);
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+

@@ -1,0 +1,140 @@
+2024-09-02 19:13:52 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:13:52 INFO: Running in generation mode
+2024-09-02 19:13:52 INFO: Repair steps: 0
+2024-09-02 19:13:52 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:13:52 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:13:52 INFO: Generating proof code
+2024-09-02 19:13:52 INFO: Temperature: 1.0
+2024-09-02 19:13:52 WARNING: Disabled ranking
+2024-09-02 19:13:52 INFO: Direct inference attempt 0
+2024-09-02 19:13:56 INFO: Infer time: 3.916645050048828s
+2024-09-02 19:13:56 INFO: Checking candidate 0-0
+2024-09-02 19:13:57 INFO: 0-0.rs in code pool
+2024-09-02 19:13:57 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:13:57 INFO: Working on merge-0.rs
+2024-09-02 19:14:01 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:14:01 INFO: Running houdini on merge-0.rs
+2024-09-02 19:14:03 INFO: refining with constantrefine_inference
+2024-09-02 19:14:06 INFO: Infer time: 3.086613893508911s
+2024-09-02 19:14:06 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            y@ =~= x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+            old(y).len() == 0,
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:14:11 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:14:11 INFO: refining with arraylen_inference
+2024-09-02 19:14:13 INFO: Infer time: 2.360414743423462s
+2024-09-02 19:14:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            x.len() == xlen,
+            y@ =~= x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:14:14 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:14:14 INFO: refining with arrayrefine_inference
+2024-09-02 19:14:19 INFO: Infer time: 5.035428762435913s
+2024-09-02 19:14:19 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            y@ =~= x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+            forall |k: int| 0 <= k < x.len() ==> x[k] == x@[k], // x array is never modified in the loop
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:14:20 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:14:20 INFO: refining with condlooprefine_inference
+2024-09-02 19:14:22 INFO: Infer time: 2.0483334064483643s
+2024-09-02 19:14:22 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            y@ =~= x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+            i > 0 ==> y.len() <= xlen,
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+2024-09-02 19:14:23 INFO: New refined code under condloop is not better
+2024-09-02 19:14:23 INFO: Houdini code is better
+2024-09-02 19:14:24 INFO: finished!

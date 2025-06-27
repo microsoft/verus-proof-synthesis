@@ -1,0 +1,37 @@
+2024-09-02 17:48:15 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:48:15 INFO: Running in generation mode
+2024-09-02 17:48:15 INFO: Repair steps: 0
+2024-09-02 17:48:15 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:48:15 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:48:15 INFO: Generating proof code
+2024-09-02 17:48:15 INFO: Temperature: 1.0
+2024-09-02 17:48:15 INFO: Generate with uniform refinement mode
+2024-09-02 17:48:15 INFO: Direct inference attempt 0
+2024-09-02 17:48:15 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:48:20 INFO: Infer time: 4.889740705490112s
+2024-09-02 17:48:20 INFO: Checking candidate 0-0
+2024-09-02 17:48:20 ERROR: Error in comparing code changes: 
+2024-09-02 17:48:20 INFO: Checking candidate 0-1
+2024-09-02 17:48:21 INFO: 0-1.rs in code pool
+2024-09-02 17:48:21 INFO: 0-1.rs is now the best proof candidate
+2024-09-02 17:48:21 INFO: Checking candidate 0-2
+2024-09-02 17:48:21 INFO: 0-2.rs in code pool
+2024-09-02 17:48:21 INFO: 0-2.rs is now the best proof candidate
+2024-09-02 17:48:21 INFO: Checking candidate 0-3
+2024-09-02 17:48:22 INFO: 0-3.rs in code pool
+2024-09-02 17:48:22 INFO: 0-3.rs is now the best proof candidate
+2024-09-02 17:48:22 INFO: Checking candidate 0-4
+2024-09-02 17:48:22 INFO: 0-4.rs in code pool
+2024-09-02 17:48:22 INFO: 0-4.rs is now the best proof candidate
+2024-09-02 17:48:22 INFO: Regenerate...
+2024-09-02 17:48:22 INFO: Direct inference attempt 1
+2024-09-02 17:48:22 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:48:28 INFO: Infer time: 6.255167722702026s
+2024-09-02 17:48:28 INFO: Checking candidate 1-0
+2024-09-02 17:48:29 INFO: Checking candidate 1-1
+2024-09-02 17:48:29 INFO: 1-1.rs in code pool
+2024-09-02 17:48:29 INFO: 1-1.rs is now the best proof candidate
+2024-09-02 17:48:29 INFO: Working on merge-0.rs
+2024-09-02 17:48:33 INFO: Running houdini on merge-0.rs
+2024-09-02 17:48:34 INFO: Merged code with hdn is correct.
+2024-09-02 17:48:38 INFO: finished!

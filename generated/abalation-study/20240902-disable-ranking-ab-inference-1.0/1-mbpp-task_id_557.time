@@ -1,0 +1,18 @@
+2024-09-02 18:57:36 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 18:57:36 INFO: Running in generation mode
+2024-09-02 18:57:36 INFO: Repair steps: 0
+2024-09-02 18:57:36 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 18:57:36 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 18:57:36 INFO: Generating proof code
+2024-09-02 18:57:36 INFO: Temperature: 1.0
+2024-09-02 18:57:36 WARNING: Disabled ranking
+2024-09-02 18:57:36 INFO: Direct inference attempt 0
+2024-09-02 18:57:42 INFO: Infer time: 5.928732633590698s
+2024-09-02 18:57:42 INFO: Checking candidate 0-0
+2024-09-02 18:57:42 INFO: 0-0.rs in code pool
+2024-09-02 18:57:42 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 18:57:42 INFO: Working on merge-0.rs
+2024-09-02 18:57:47 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:57:47 INFO: Running houdini on merge-0.rs
+2024-09-02 18:57:47 INFO: Merged code with hdn is correct.
+2024-09-02 18:57:52 INFO: finished!

@@ -1,0 +1,34 @@
+2024-08-30 17:19:24 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 17:19:24 INFO: Running in generation mode
+2024-08-30 17:19:24 INFO: Repair steps: 10
+2024-08-30 17:19:24 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 17:19:24 INFO: Generating proof code
+2024-08-30 17:19:24 INFO: Temperature: 1.0
+2024-08-30 17:19:24 INFO: Direct inference attempt 0
+2024-08-30 17:19:24 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 2.000000 seconds
+2024-08-30 17:19:32 INFO: Infer time: 7.7771241664886475s
+2024-08-30 17:19:32 INFO: Checking candidate 0-0
+2024-08-30 17:19:32 INFO: 0-0.rs in code pool
+2024-08-30 17:19:32 INFO: 0-0.rs is now the best proof candidate
+2024-08-30 17:19:32 INFO: Checking candidate 0-1
+2024-08-30 17:19:33 INFO: 0-1.rs in code pool
+2024-08-30 17:19:33 INFO: 0-1.rs is now the best proof candidate
+2024-08-30 17:19:33 INFO: Checking candidate 0-2
+2024-08-30 17:19:33 ERROR: Error: 'verified'
+2024-08-30 17:19:33 ERROR: Error: 'errors'
+2024-08-30 17:19:33 INFO: Checking candidate 0-3
+2024-08-30 17:19:34 INFO: 0-3.rs in code pool
+2024-08-30 17:19:34 INFO: Checking candidate 0-4
+2024-08-30 17:19:34 INFO: 0-4.rs in code pool
+2024-08-30 17:19:34 INFO: Working on merge-0.rs
+2024-08-30 17:19:38 INFO: Merged code is better.
+2024-08-30 17:19:38 INFO: Running houdini on merge-0.rs
+2024-08-30 17:19:39 INFO: Working on merge-1.rs
+2024-08-30 17:19:40 INFO: Merged code is better.
+2024-08-30 17:19:40 INFO: Running houdini on merge-1.rs
+2024-08-30 17:19:40 INFO: Working on merge-2.rs
+2024-08-30 17:19:41 INFO: Merged code is better.
+2024-08-30 17:19:41 INFO: Running houdini on merge-2.rs
+2024-08-30 17:19:42 INFO: Working on merge-3.rs
+2024-08-30 17:19:42 INFO: Merged code is correct.
+2024-08-30 17:19:46 INFO: finished!

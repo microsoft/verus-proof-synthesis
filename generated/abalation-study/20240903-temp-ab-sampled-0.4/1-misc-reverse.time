@@ -1,0 +1,319 @@
+2024-09-03 20:10:06 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 20:10:06 INFO: Running in generation mode
+2024-09-03 20:10:06 INFO: Repair steps: 10
+2024-09-03 20:10:06 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:10:06 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:10:06 INFO: Generating proof code
+2024-09-03 20:10:06 INFO: Temperature: 0.4
+2024-09-03 20:10:06 INFO: Direct inference attempt 0
+2024-09-03 20:10:06 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 26.000000 seconds
+2024-09-03 20:10:33 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 9.000000 seconds
+2024-09-03 20:10:45 INFO: Infer time: 39.03539752960205s
+2024-09-03 20:10:45 INFO: Checking candidate 0-0
+2024-09-03 20:10:45 INFO: 0-0.rs in code pool
+2024-09-03 20:10:45 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 20:10:45 INFO: Checking candidate 0-1
+2024-09-03 20:10:46 INFO: 0-1.rs in code pool
+2024-09-03 20:10:46 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 20:10:46 INFO: Checking candidate 0-2
+2024-09-03 20:10:46 ERROR: Error: 'verified'
+2024-09-03 20:10:46 ERROR: Error: 'errors'
+2024-09-03 20:10:46 INFO: Checking candidate 0-3
+2024-09-03 20:10:47 INFO: 0-3.rs in code pool
+2024-09-03 20:10:47 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 20:10:47 INFO: Checking candidate 0-4
+2024-09-03 20:10:47 INFO: 0-4.rs in code pool
+2024-09-03 20:10:47 INFO: 0-4.rs is now the best proof candidate
+2024-09-03 20:10:47 INFO: Working on merge-0.rs
+2024-09-03 20:11:00 INFO: Merged code is better.
+2024-09-03 20:11:00 INFO: Running houdini on merge-0.rs
+2024-09-03 20:11:01 INFO: Working on merge-1.rs
+2024-09-03 20:11:17 INFO: Merged code is better.
+2024-09-03 20:11:17 INFO: Running houdini on merge-1.rs
+2024-09-03 20:11:18 INFO: Working on merge-2.rs
+2024-09-03 20:11:35 INFO: Merged code is better.
+2024-09-03 20:11:35 INFO: Running houdini on merge-2.rs
+2024-09-03 20:11:35 INFO: Working on merge-3.rs
+2024-09-03 20:11:52 INFO: Merged code is better.
+2024-09-03 20:11:52 INFO: Running houdini on merge-3.rs
+2024-09-03 20:12:00 INFO: refining with constantrefine_inference
+2024-09-03 20:12:04 INFO: Infer time: 3.8257462978363037s
+2024-09-03 20:12:04 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    requires
+        v.len() > 0,
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[length - i - 1],
+            forall|i: int| 0 <= i < n ==> v[length - i - 1] == old(v)[i],
+            n <= length / 2,
+            v.len() == length,
+            v.len() > 0,
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 20:12:06 INFO: Unsafe code change
+2024-09-03 20:12:06 INFO: Refinement did not change the code
+2024-09-03 20:12:06 INFO: refining with arraylen_inference
+2024-09-03 20:12:09 INFO: Infer time: 3.068432569503784s
+2024-09-03 20:12:09 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[length - i - 1],
+            forall|i: int| 0 <= i < n ==> v[length - i - 1] == old(v)[i],
+            n <= length / 2,
+            v.len() == length,
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 20:12:10 INFO: New refined code is a good repair
+2024-09-03 20:12:10 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[length - i - 1],
+            forall|i: int| 0 <= i < n ==> v[length - i - 1] == old(v)[i],
+            n <= length / 2,
+            v.len() == length,
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 20:12:10 INFO: refining with arrayrefine_inference
+2024-09-03 20:12:13 INFO: Infer time: 3.1883327960968018s
+2024-09-03 20:12:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[length - i - 1],
+            forall|i: int| 0 <= i < n ==> v[length - i - 1] == old(v)[i],
+            n <= length / 2,
+            v.len() == length,
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+
+2024-09-03 20:12:13 INFO: Refinement did not change the code
+2024-09-03 20:12:13 INFO: refining with condlooprefine_inference
+2024-09-03 20:12:19 INFO: Infer time: 5.259098768234253s
+2024-09-03 20:12:19 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn reverse(v: &mut Vec<u64>)
+    ensures
+        v.len() == old(v).len(),
+        forall|i: int| 0 <= i < old(v).len() ==> v[i] == old(v)[old(v).len() - i - 1],
+{
+    let length = v.len();
+    let mut n: usize = 0;
+    while n < length / 2
+        invariant
+            forall|i: int| 0 <= i < n ==> v[i] == old(v)[length - i - 1],
+            forall|i: int| 0 <= i < n ==> v[length - i - 1] == old(v)[i],
+            n <= length / 2,
+            v.len() == length,
+            n > 0 ==> forall|i: int| 0 <= i < n ==> v[i] == old(v)[length - i - 1],
+            n > 0 ==> forall|i: int| 0 <= i < n ==> v[length - i - 1] == old(v)[i],
+    {
+        let x = v[n];
+        let y = v[length - 1 - n];
+        v.set(n, y);
+        v.set(length - 1 - n, x);
+        n = n + 1;
+    }
+}
+
+} // verus!
+2024-09-03 20:12:20 INFO: New refined code under condloop is not better
+2024-09-03 20:12:20 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:12:20 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:12:20 INFO: Step 1: VerusErrorType.InvFailEnd with num=3.
+2024-09-03 20:12:20 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:12:26 INFO: Infer time: 6.4418861865997314s
+2024-09-03 20:12:26 INFO: repair-1-0 file generated
+2024-09-03 20:12:26 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:12:27 INFO: Step 1: VerusErrorType.InvFailEnd is fixed. Proof updated 1-0.
+2024-09-03 20:12:27 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-09-03 20:12:27 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:12:27 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:12:27 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:12:27 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 30.000000 seconds
+2024-09-03 20:12:57 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 11.000000 seconds
+2024-09-03 20:13:12 INFO: Infer time: 45.39810132980347s
+2024-09-03 20:13:17 INFO: repair-2-0 file generated
+2024-09-03 20:13:17 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:26 INFO: repair-2-1 file generated
+2024-09-03 20:13:26 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:26 INFO: repair-2-2 file generated
+2024-09-03 20:13:26 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:27 INFO: Step 3: VerusErrorType.AssertFail with num=5.
+2024-09-03 20:13:27 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:27 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:13:27 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:13:44 INFO: Infer time: 17.043215036392212s
+2024-09-03 20:13:44 INFO: repair-3-0 file generated
+2024-09-03 20:13:44 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:45 INFO: repair-3-1 file generated
+2024-09-03 20:13:45 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:46 INFO: repair-3-2 file generated
+2024-09-03 20:13:46 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:47 INFO: repair-3-3 file generated
+2024-09-03 20:13:47 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:48 INFO: repair-3-4 file generated
+2024-09-03 20:13:48 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:48 INFO: Step 4: VerusErrorType.AssertFail with num=5.
+2024-09-03 20:13:48 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:13:48 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:13:48 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:13:49 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 21.000000 seconds
+2024-09-03 20:14:10 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-03 20:14:20 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 8.000000 seconds
+2024-09-03 20:14:34 INFO: Infer time: 45.68921899795532s
+2024-09-03 20:14:38 INFO: repair-4-0 file generated
+2024-09-03 20:14:38 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:14:47 INFO: repair-4-1 file generated
+2024-09-03 20:14:47 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:14:47 INFO: Step 4: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 20:14:48 INFO: Step 5: VerusErrorType.AssertFail with num=3.
+2024-09-03 20:14:48 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:14:48 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:14:48 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:14:48 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 11.000000 seconds
+2024-09-03 20:15:04 INFO: Infer time: 16.52853512763977s
+2024-09-03 20:15:04 INFO: repair-5-0 file generated
+2024-09-03 20:15:04 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:05 INFO: Step 5: VerusErrorType.AssertFail is fixed. Proof updated 5-0.
+2024-09-03 20:15:05 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-09-03 20:15:05 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:05 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:15:05 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:15:05 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 4.000000 seconds
+2024-09-03 20:15:17 INFO: Infer time: 12.70591950416565s
+2024-09-03 20:15:18 INFO: repair-6-0 file generated
+2024-09-03 20:15:18 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:18 INFO: repair-6-1 file generated
+2024-09-03 20:15:18 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:19 INFO: repair-6-2 file generated
+2024-09-03 20:15:19 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:20 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-09-03 20:15:20 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:20 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:15:20 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:15:20 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 9.000000 seconds
+2024-09-03 20:15:34 INFO: Infer time: 14.505413293838501s
+2024-09-03 20:15:34 INFO: repair-7-0 file generated
+2024-09-03 20:15:34 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:35 INFO: repair-7-1 file generated
+2024-09-03 20:15:35 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:36 INFO: Step 7: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 20:15:36 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-09-03 20:15:36 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:15:36 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:15:36 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:15:36 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 3.000000 seconds
+2024-09-03 20:15:39 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 21.000000 seconds
+2024-09-03 20:16:00 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 9.000000 seconds
+2024-09-03 20:16:15 INFO: Infer time: 39.22643423080444s
+2024-09-03 20:16:15 INFO: repair-8-0 file generated
+2024-09-03 20:16:15 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:16:16 INFO: repair-8-1 file generated
+2024-09-03 20:16:16 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:16:17 INFO: repair-8-2 file generated
+2024-09-03 20:16:17 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:16:17 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-03 20:16:17 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:16:17 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:16:17 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:16:17 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 12.000000 seconds
+2024-09-03 20:16:35 INFO: Infer time: 17.581546545028687s
+2024-09-03 20:16:35 INFO: repair-9-0 file generated
+2024-09-03 20:16:35 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:16:35 INFO: Step 9: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 20:16:36 INFO: Step 10: VerusErrorType.AssertFail with num=3.
+2024-09-03 20:16:36 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:16:36 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 20:16:36 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 20:16:36 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 4.000000 seconds
+2024-09-03 20:16:40 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 21.000000 seconds
+2024-09-03 20:17:06 INFO: Infer time: 30.8832950592041s
+2024-09-03 20:17:07 INFO: repair-10-0 file generated
+2024-09-03 20:17:07 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:17:07 INFO: repair-10-1 file generated
+2024-09-03 20:17:07 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:17:08 INFO: repair-10-2 file generated
+2024-09-03 20:17:08 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 20:17:09 INFO: Houdini code is better
+2024-09-03 20:17:09 INFO: finished!
+Start repair

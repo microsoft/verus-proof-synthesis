@@ -1,0 +1,40 @@
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+    #[verifier::loop_isolation(false)]
+    pub fn remove_all_greater(v: Vec<i32>, e: i32) -> (result: Vec<i32>)
+        requires
+            forall|k1: int, k2: int| 0 <= k1 < k2 < v.len() ==> v[k1] != v[k2], // uniqueness of elements in v
+        ensures
+            forall|k: int| 0 <= k < result.len() ==> result[k] <= e && v@.contains(result[k]), // result elements should be <= e and contained in v
+            forall|k: int| 0 <= k < v.len() && v[k] <= e ==> result@.contains(v[k]), // all elements <= e in v should be in result
+    {
+        let mut i: usize = 0;
+        let vlen = v.len();
+        let mut result: Vec<i32> = vec![];
+        while i < v.len()
+            invariant
+                v.len() == vlen, // v's length remains the same
+                result.len() <= i, // result length is at most i
+                forall|k: int| 0 <= k < i ==> (v[k] <= e ==> result@.contains(v[k])), // all valid elements up to i are in result
+                forall|k: int| 0 <= k < result.len() ==> result[k] <= e && v@.contains(result[k]), // all elements in result are valid
+                i <= v.len(), // loop bounds
+                forall|k1: int, k2: int| 0 <= k1 < k2 < v.len() ==> v[k1] != v[k2], // uniqueness within original v
+        {
+            if v[i] <= e {
+                result.push(v[i]);
+            }
+            i += 1;
+        }
+        result
+    }
+}
+
+
+// error: multiple input filenames provided (first two filenames are `` and `/tmp/tmph46nhkwb`)
+// 
+
+// Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+// Safe: False

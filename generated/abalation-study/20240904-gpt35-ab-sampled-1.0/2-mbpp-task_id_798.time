@@ -1,0 +1,389 @@
+2024-09-04 16:04:28 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 16:04:28 INFO: Running in generation mode
+2024-09-04 16:04:28 INFO: Repair steps: 10
+2024-09-04 16:04:28 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:04:28 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:04:28 INFO: Generating proof code
+2024-09-04 16:04:28 INFO: Temperature: 1.0
+2024-09-04 16:04:28 INFO: Direct inference attempt 0
+2024-09-04 16:04:30 INFO: Infer time: 2.191887140274048s
+2024-09-04 16:04:30 INFO: Checking candidate 0-0
+2024-09-04 16:04:30 INFO: Checking candidate 0-1
+2024-09-04 16:04:30 INFO: Checking candidate 0-2
+2024-09-04 16:04:31 INFO: Checking candidate 0-3
+2024-09-04 16:04:31 INFO: Checking candidate 0-4
+2024-09-04 16:04:31 INFO: Regenerate...
+2024-09-04 16:04:31 INFO: Direct inference attempt 1
+2024-09-04 16:04:31 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 16:05:34 INFO: Infer time: 62.5988392829895s
+2024-09-04 16:05:34 INFO: Checking candidate 1-0
+2024-09-04 16:05:38 INFO: Checking candidate 1-1
+2024-09-04 16:05:38 INFO: Checking candidate 1-2
+2024-09-04 16:05:39 INFO: Checking candidate 1-3
+2024-09-04 16:05:39 INFO: Checking candidate 1-4
+2024-09-04 16:05:39 INFO: Regenerate...
+2024-09-04 16:05:39 INFO: Direct inference attempt 2
+2024-09-04 16:05:41 INFO: Infer time: 1.9925355911254883s
+2024-09-04 16:05:41 INFO: Checking candidate 2-0
+2024-09-04 16:05:41 INFO: Checking candidate 2-1
+2024-09-04 16:05:42 INFO: Checking candidate 2-2
+2024-09-04 16:05:42 INFO: Checking candidate 2-3
+2024-09-04 16:05:42 INFO: Checking candidate 2-4
+2024-09-04 16:05:42 INFO: Regenerate...
+2024-09-04 16:05:42 ERROR: No valid code found!
+2024-09-04 16:05:47 INFO: refining with constantrefine_inference
+2024-09-04 16:05:48 INFO: Infer time: 1.5712049007415771s
+2024-09-04 16:05:49 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+    
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+
+    while index < arr.len()
+        invariant
+            index <= arr.len(), index >= 0,
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 16:05:53 INFO: New refined code is a good repair
+2024-09-04 16:05:53 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+    
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+
+    while index < arr.len()
+        invariant
+            index <= arr.len(), index >= 0,
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 16:05:53 INFO: refining with arraylen_inference
+2024-09-04 16:05:55 INFO: Infer time: 1.4994995594024658s
+2024-09-04 16:05:55 INFO: 
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+    invariant arr.len() >= 0,
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures sum_to(arr@) == sum,
+    invariant arr.len() >= 0,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+
+    while index < arr.len()
+        invariant index <= arr.len(), index >= 0, arr.len() == arr.len(),
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+2024-09-04 16:05:55 ERROR: Error in comparing code changes: 
+2024-09-04 16:05:55 INFO: Unsafe code change
+2024-09-04 16:05:55 INFO: Refinement did not change the code
+2024-09-04 16:05:55 INFO: refining with arrayrefine_inference
+2024-09-04 16:05:57 INFO: Infer time: 1.7728972434997559s
+2024-09-04 16:05:57 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+    
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+
+    while index < arr.len()
+        invariant
+            0 <= index < arr.len(), // The array arr is never modified in the loop
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 16:05:57 INFO: New refined code is a good repair
+2024-09-04 16:05:57 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+    
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+
+    while index < arr.len()
+        invariant
+            0 <= index < arr.len(), // The array arr is never modified in the loop
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 16:05:57 INFO: refining with condlooprefine_inference
+2024-09-04 16:05:59 INFO: Infer time: 1.6767113208770752s
+2024-09-04 16:05:59 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+    
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+
+    while index < arr.len()
+        invariant
+            0 <= index < arr.len(), // The array arr is never modified in the loop
+            index > 0 ==> (sum == arr[( ..index ) as int].iter().sum::<i64>() as i128), // New invariant conditioned on the loop index
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+
+2024-09-04 16:05:59 INFO: New refined code under condloop is not better
+2024-09-04 16:05:59 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:05:59 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:06:00 INFO: Step 1: VerusErrorType.ArithmeticFlow with num=3.
+2024-09-04 16:06:00 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-04 16:06:04 INFO: Infer time: 4.090041160583496s
+2024-09-04 16:06:04 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:06:04 ERROR: Error in comparing code changes: 
+2024-09-04 16:06:04 INFO: repair-1-0 file generated
+2024-09-04 16:06:04 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:06:04 WARNING: The repair is not safe.
+2024-09-04 16:06:04 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:06:04 INFO: repair-1-1 file generated
+2024-09-04 16:06:04 INFO: Compilation Error: False, Verified: 1, Errors: 3, Verus Errors: 4
+2024-09-04 16:06:05 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:06:05 ERROR: Error in comparing code changes: 
+2024-09-04 16:06:05 INFO: repair-1-2 file generated
+2024-09-04 16:06:05 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:06:05 WARNING: The repair is not safe.
+2024-09-04 16:06:05 INFO: Step 2: VerusErrorType.ArithmeticFlow with num=5.
+2024-09-04 16:06:05 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-04 16:06:09 INFO: Infer time: 3.4019081592559814s
+2024-09-04 16:06:09 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:06:09 INFO: repair-2-0 file generated
+2024-09-04 16:06:09 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:06:09 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:06:09 ERROR: Error in comparing code changes: 
+2024-09-04 16:06:09 INFO: repair-2-1 file generated
+2024-09-04 16:06:09 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:06:09 WARNING: The repair is not safe.
+2024-09-04 16:06:09 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:06:10 INFO: repair-2-2 file generated
+2024-09-04 16:06:10 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 5
+2024-09-04 16:06:11 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:06:11 INFO: repair-2-3 file generated
+2024-09-04 16:06:11 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:06:11 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:06:11 ERROR: Error: 'verified'
+2024-09-04 16:06:11 ERROR: Error: 'errors'
+2024-09-04 16:06:12 INFO: repair-2-4 file generated
+2024-09-04 16:06:12 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:06:12 INFO: Step 3: VerusErrorType.ArithmeticFlow with num=5.
+2024-09-04 16:06:12 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-04 16:06:19 INFO: Infer time: 6.978383541107178s
+2024-09-04 16:06:19 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:06:19 ERROR: Error in comparing code changes: 
+2024-09-04 16:06:19 INFO: repair-3-0 file generated
+2024-09-04 16:06:19 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:06:19 WARNING: The repair is not safe.
+2024-09-04 16:06:19 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:06:19 ERROR: Error: 'verified'
+2024-09-04 16:06:19 ERROR: Error: 'errors'
+2024-09-04 16:06:19 INFO: repair-3-1 file generated
+2024-09-04 16:06:19 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:06:20 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:06:20 INFO: repair-3-2 file generated
+2024-09-04 16:06:20 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:06:20 INFO: Step 3: VerusErrorType.ArithmeticFlow is fixed. Proof updated 3-2.
+2024-09-04 16:06:21 INFO: Step 4: VerusErrorType.InvFailFront with num=3.
+2024-09-04 16:06:21 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:06:21 INFO: Infer time: 0.577110767364502s
+2024-09-04 16:06:21 INFO: Here is the quick fix output
+2024-09-04 16:06:21 ERROR: Error in comparing code changes: 
+2024-09-04 16:06:21 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 16:06:21 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 16:07:24 INFO: Infer time: 62.96864056587219s
+2024-09-04 16:07:25 INFO: repair-4-0 file generated
+2024-09-04 16:07:25 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:25 INFO: Step 4: VerusErrorType.InvFailFront is fixed. Proof updated 4-0.
+2024-09-04 16:07:25 INFO: Step 5: VerusErrorType.AssertFail with num=3.
+2024-09-04 16:07:25 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:07:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:07:28 INFO: Infer time: 2.879265785217285s
+2024-09-04 16:07:28 INFO: repair-5-0 file generated
+2024-09-04 16:07:28 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:29 INFO: Step 5: VerusErrorType.AssertFail is fixed. Proof updated 5-0.
+2024-09-04 16:07:29 INFO: Step 6: VerusErrorType.InvFailEnd with num=3.
+2024-09-04 16:07:29 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:32 INFO: Infer time: 3.041201114654541s
+2024-09-04 16:07:32 INFO: repair-6-0 file generated
+2024-09-04 16:07:32 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:33 INFO: Step 6: VerusErrorType.InvFailEnd is fixed. Proof updated 6-0.
+2024-09-04 16:07:33 INFO: Step 7: VerusErrorType.AssertFail with num=3.
+2024-09-04 16:07:33 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:33 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:07:33 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:07:37 INFO: Infer time: 3.842717170715332s
+2024-09-04 16:07:37 INFO: repair-7-0 file generated
+2024-09-04 16:07:37 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:38 INFO: repair-7-1 file generated
+2024-09-04 16:07:38 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:39 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:07:39 INFO: repair-7-2 file generated
+2024-09-04 16:07:39 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:40 INFO: Step 8: VerusErrorType.AssertFail with num=5.
+2024-09-04 16:07:40 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:40 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:07:40 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:07:45 INFO: Infer time: 4.40948748588562s
+2024-09-04 16:07:45 INFO: repair-8-0 file generated
+2024-09-04 16:07:45 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:45 INFO: Step 8: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 16:07:46 INFO: Step 9: VerusErrorType.AssertFail with num=3.
+2024-09-04 16:07:46 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:46 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:07:46 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:07:50 INFO: Infer time: 4.155219793319702s
+2024-09-04 16:07:50 INFO: repair-9-0 file generated
+2024-09-04 16:07:50 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:51 INFO: repair-9-1 file generated
+2024-09-04 16:07:51 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:52 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 16:07:52 INFO: repair-9-2 file generated
+2024-09-04 16:07:52 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:53 INFO: Step 10: VerusErrorType.AssertFail with num=5.
+2024-09-04 16:07:53 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:53 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:07:53 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:07:57 INFO: Infer time: 4.228154182434082s
+2024-09-04 16:07:58 INFO: repair-10-0 file generated
+2024-09-04 16:07:58 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 16:07:58 INFO: Step 10: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 16:07:59 INFO: Houdini code is better
+2024-09-04 16:07:59 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+
+    0 <= index < arr.len(), // The array arr is never modified in the loop && index >= 0
+

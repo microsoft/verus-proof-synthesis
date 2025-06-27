@@ -1,0 +1,64 @@
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+proof fn lemma_sum_to_monotonic(arr: Seq<i64>, index: nat)
+    requires
+        index <= arr.len(),
+    ensures
+        sum_to(arr.subrange(0, ( index ) as int)) <= sum_to(arr),
+    decreases arr.len() - index
+{
+    if index < arr.len() {
+        lemma_sum_to_monotonic(arr, index + 1);
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    assert(arr.len() <= 1000); // Added by AI
+    while index < arr.len()
+        invariant
+            arr.len() <= 1000,
+            index <= arr.len(),
+            sum_to(arr@.subrange(0, index as int)) == sum as int,
+            arr.len() <= 1000,
+            arr.len() == arr.len(),
+            sum <= i128::MAX, // Fixed by AI
+            sum >= i128::MIN, // Fixed by AI
+            forall |k: nat| k < index ==> sum + arr[k as int] as i128 <= i128::MAX && sum + arr[k as int] as i128 >= i128::MIN, // Added by AI
+    {
+        // Assertion to ensure no overflow/underflow
+        assert(sum + arr[( index ) as int] as i128 <= i128::MAX && sum + arr[( index ) as int] as i128 >= i128::MIN) by {
+            lemma_sum_to_monotonic(arr@, index as nat);
+        };
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+//         assert(sum + arr[( index ) as int] as i128 <= i128::MAX && sum + arr[( index ) as int] as i128 >= i128::MIN) by {
+//   assertion failed: sum + arr[( index ) as int] as i128 <= i128::MAX && sum + arr[( index ) as int] as i128 >= i128::MIN
+
+// Compilation Error: False, Verified: 1, Errors: 3, Verus Errors: 6
+// Safe: True

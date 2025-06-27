@@ -1,0 +1,57 @@
+2024-09-02 19:02:57 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:02:57 INFO: Running in generation mode
+2024-09-02 19:02:57 INFO: Repair steps: 0
+2024-09-02 19:02:57 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:02:57 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:02:57 INFO: Generating proof code
+2024-09-02 19:02:57 INFO: Temperature: 1.0
+2024-09-02 19:02:57 WARNING: Disabled ranking
+2024-09-02 19:02:57 INFO: Direct inference attempt 0
+2024-09-02 19:03:01 INFO: Infer time: 3.7876081466674805s
+2024-09-02 19:03:01 INFO: Checking candidate 0-0
+2024-09-02 19:03:01 INFO: 0-0.rs in code pool
+2024-09-02 19:03:01 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:03:01 INFO: Working on merge-0.rs
+2024-09-02 19:03:06 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:03:06 INFO: Running houdini on merge-0.rs
+2024-09-02 19:03:07 INFO: refining with constantrefine_inference
+2024-09-02 19:03:11 INFO: Infer time: 4.710943698883057s
+2024-09-02 19:03:12 INFO: Verus has succeeded.
+2024-09-02 19:03:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn binary_search(v: &Vec<u64>, k: u64) -> (r: usize)
+    requires
+        forall|i: int, j: int| 0 <= i <= j < v.len() ==> v[i] <= v[j],
+        exists|i: int| 0 <= i < v.len() && k == v[i],
+    ensures
+        r < v.len(),
+        k == v[r as int],
+{
+    let mut i1: usize = 0;
+    let mut i2: usize = v.len() - 1;
+    while i1 != i2
+        invariant
+            0 <= i1 <= i2 < v.len(),
+            exists|i: int| i1 <= i <= i2 && k == v[i],
+            forall|a: int, b: int| 0 <= a <= b < i1 ==> v[a] <= v[b],
+            forall|a: int, b: int| i2 <= a <= b < v.len() ==> v[a] <= v[b],
+            forall|i: int, j: int| 0 <= i <= j < v.len() ==> v[i] <= v[j],
+            exists|i: int| 0 <= i < v.len() && k == v[i],
+    {
+        let ix = i1 + (i2 - i1) / 2;
+        if v[ix] < k {
+            i1 = ix + 1;
+        } else {
+            i2 = ix;
+        }
+    }
+    i1
+}
+
+} // verus!
+
+2024-09-02 19:03:16 INFO: Verus succeeded with refinement!!
+2024-09-02 19:03:16 INFO: finished!

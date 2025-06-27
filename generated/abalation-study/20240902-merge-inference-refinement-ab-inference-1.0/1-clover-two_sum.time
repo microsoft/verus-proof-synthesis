@@ -1,0 +1,50 @@
+2024-09-02 17:16:25 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:16:25 INFO: Running in generation mode
+2024-09-02 17:16:25 INFO: Repair steps: 0
+2024-09-02 17:16:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:16:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:16:25 INFO: Generating proof code
+2024-09-02 17:16:25 INFO: Temperature: 1.0
+2024-09-02 17:16:25 INFO: Generate with uniform refinement mode
+2024-09-02 17:16:25 INFO: Direct inference attempt 0
+2024-09-02 17:16:25 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:16:33 INFO: Infer time: 7.818711042404175s
+2024-09-02 17:16:33 INFO: Checking candidate 0-0
+2024-09-02 17:16:34 INFO: 0-0.rs in code pool
+2024-09-02 17:16:34 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 17:16:34 INFO: Checking candidate 0-1
+2024-09-02 17:16:34 INFO: 0-1.rs in code pool
+2024-09-02 17:16:34 INFO: Checking candidate 0-2
+2024-09-02 17:16:35 INFO: 0-2.rs in code pool
+2024-09-02 17:16:35 INFO: Checking candidate 0-3
+2024-09-02 17:16:35 ERROR: Error: 'verified'
+2024-09-02 17:16:35 ERROR: Error: 'errors'
+2024-09-02 17:16:35 INFO: Checking candidate 0-4
+2024-09-02 17:16:36 INFO: 0-4.rs in code pool
+2024-09-02 17:16:36 INFO: Regenerate...
+2024-09-02 17:16:36 INFO: Direct inference attempt 1
+2024-09-02 17:16:36 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:16:43 INFO: Infer time: 7.499225854873657s
+2024-09-02 17:16:43 INFO: Checking candidate 1-0
+2024-09-02 17:16:44 ERROR: Error: 'verified'
+2024-09-02 17:16:44 ERROR: Error: 'errors'
+2024-09-02 17:16:44 INFO: Checking candidate 1-1
+2024-09-02 17:16:44 INFO: 1-1.rs in code pool
+2024-09-02 17:16:44 INFO: Regenerate...
+2024-09-02 17:16:44 INFO: Direct inference attempt 2
+2024-09-02 17:16:44 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:16:52 INFO: Infer time: 7.811171054840088s
+2024-09-02 17:16:52 INFO: Checking candidate 2-0
+2024-09-02 17:16:53 INFO: 2-0.rs in code pool
+2024-09-02 17:16:53 INFO: Working on merge-0.rs
+2024-09-02 17:16:57 INFO: Merged code is better.
+2024-09-02 17:16:57 INFO: Running houdini on merge-0.rs
+2024-09-02 17:16:58 INFO: Working on merge-1.rs
+2024-09-02 17:16:58 INFO: Running houdini on merge-1.rs
+2024-09-02 17:16:59 INFO: Working on merge-2.rs
+2024-09-02 17:16:59 INFO: Running houdini on merge-2.rs
+2024-09-02 17:17:00 INFO: Working on merge-3.rs
+2024-09-02 17:17:00 INFO: Running houdini on merge-3.rs
+2024-09-02 17:17:02 INFO: Working on merge-4.rs
+2024-09-02 17:17:02 INFO: Merged code is correct.
+2024-09-02 17:17:07 INFO: finished!

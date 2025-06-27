@@ -1,0 +1,3 @@
+Apologies, but it looks like the program you provided doesn't contain any loops that would require loop invariants to be added. Thus, there is no need to add loop invariants to the given Rust code. If you have a different piece of code or require further assistance, feel free to provide it, and I'd be happy to help.
+// is safe: False
+// Score: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 3

@@ -1,0 +1,85 @@
+2024-09-02 18:51:40 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 18:51:40 INFO: Running in generation mode
+2024-09-02 18:51:40 INFO: Repair steps: 0
+2024-09-02 18:51:40 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 18:51:40 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 18:51:40 INFO: Generating proof code
+2024-09-02 18:51:40 INFO: Temperature: 1.0
+2024-09-02 18:51:40 WARNING: Disabled ranking
+2024-09-02 18:51:40 INFO: Direct inference attempt 0
+2024-09-02 18:51:46 INFO: Infer time: 6.044743776321411s
+2024-09-02 18:51:46 INFO: Checking candidate 0-0
+2024-09-02 18:51:47 INFO: 0-0.rs in code pool
+2024-09-02 18:51:47 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 18:51:47 INFO: Working on merge-0.rs
+2024-09-02 18:51:51 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:51:51 INFO: Running houdini on merge-0.rs
+2024-09-02 18:51:52 INFO: refining with constantrefine_inference
+2024-09-02 18:51:59 INFO: Infer time: 7.0936784744262695s
+2024-09-02 18:52:00 INFO: Verus has succeeded.
+2024-09-02 18:52:00 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] == 6 * N,
+{
+    let mut i: usize = 0;
+    sum.set(0, 0);
+    while (i < N as usize)
+        invariant
+            0 <= i <= N as usize,
+            a.len() == N,
+            forall|k: usize| 0 <= k < i ==> a[(k) as int] == 1,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N as usize,
+            a.len() == N,
+            forall|k: usize| 0 <= k < i ==> a[(k) as int] == 6,
+            forall|k: usize| i <= k < N as usize ==> a[(k) as int] == 1,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        if (a[i] == 1) {
+            a.set(i, a[i] + 5);
+        } else {
+            a.set(i, a[i] - 1);
+        }
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N as usize,
+            a.len() == N,
+            forall|k: usize| 0 <= k < N as usize ==> a[(k) as int] == 6,
+            sum.len() == 1,
+            sum[0] == 6 * i as i32,
+            N > 0,
+            N < 1000,
+    {
+        sum.set(0, sum[0] + a[i]);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:52:04 INFO: Verus succeeded with refinement!!
+2024-09-02 18:52:04 INFO: finished!

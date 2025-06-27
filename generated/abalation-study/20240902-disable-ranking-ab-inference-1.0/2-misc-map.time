@@ -1,0 +1,148 @@
+2024-09-02 19:15:31 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:15:31 INFO: Running in generation mode
+2024-09-02 19:15:31 INFO: Repair steps: 0
+2024-09-02 19:15:31 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:15:31 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:15:31 INFO: Generating proof code
+2024-09-02 19:15:31 INFO: Temperature: 1.0
+2024-09-02 19:15:31 WARNING: Disabled ranking
+2024-09-02 19:15:31 INFO: Direct inference attempt 0
+2024-09-02 19:15:35 INFO: Infer time: 3.8752427101135254s
+2024-09-02 19:15:35 INFO: Checking candidate 0-0
+2024-09-02 19:15:35 INFO: 0-0.rs in code pool
+2024-09-02 19:15:35 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:15:35 INFO: Working on merge-0.rs
+2024-09-02 19:15:40 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:15:40 INFO: Running houdini on merge-0.rs
+2024-09-02 19:15:41 INFO: refining with constantrefine_inference
+2024-09-02 19:15:44 INFO: Infer time: 3.0782999992370605s
+2024-09-02 19:15:44 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+            forall|k: int| 0 <= k < xlen ==> old(x)[k] <= 0x7FFF_FFFB,
+            i <= xlen,
+            x.len() == xlen,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:15:49 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:15:49 INFO: refining with arraylen_inference
+2024-09-02 19:15:52 INFO: Infer time: 3.045348644256592s
+2024-09-02 19:15:52 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+            forall|k: int| 0 <= k < xlen ==> old(x)[k] <= 0x7FFF_FFFB,
+            i <= xlen,
+            x.len() == xlen,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+
+2024-09-02 19:15:53 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:15:53 INFO: refining with arrayrefine_inference
+2024-09-02 19:15:55 INFO: Infer time: 2.7990760803222656s
+2024-09-02 19:15:56 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+            forall|k: int| 0 <= k < xlen ==> old(x)[k] <= 0x7FFF_FFFB,
+            i <= xlen,
+            x.len() == xlen,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:15:56 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:15:56 INFO: refining with condlooprefine_inference
+2024-09-02 19:15:59 INFO: Infer time: 2.8712995052337646s
+2024-09-02 19:15:59 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+            forall|k: int| 0 <= k < xlen ==> old(x)[k] <= 0x7FFF_FFFB,
+            i <= xlen,
+            x.len() == xlen,
+            i > 0 ==> forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+    {
+        if i == 0 {
+            x.set(i, x[i] + 4);
+        } else {
+            x.set(i, x[i] + 4);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+2024-09-02 19:15:59 INFO: Unsafe code change
+2024-09-02 19:15:59 INFO: Refinement did not change the code
+2024-09-02 19:16:00 INFO: Original code is better
+2024-09-02 19:16:00 INFO: finished!

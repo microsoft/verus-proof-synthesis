@@ -1,0 +1,58 @@
+
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+    spec fn arith_sum_int(i: nat) -> nat
+        decreases i,
+    {
+        if i == 0 {
+            0
+        } else {
+            i + arith_sum_int((i - 1) as nat)
+        }
+    }
+
+    fn compute_arith_sum(n: u64) -> (sum: u64)
+        requires
+            arith_sum_int(n as nat) < 10000,
+        ensures
+            arith_sum_int(n as nat) == sum,
+    {
+        let mut i: u64 = 0;
+        let mut sum: u64 = 0;
+        while i < n
+            invariant
+                arith_sum_int(n as nat) < 10000,
+                i <= n,
+                sum == arith_sum_int(i as nat),
+        {
+            sum = sum + i + 1;
+            i = i + 1;
+            proof {
+                assert(i <= n);
+                assert(sum == arith_sum_int(i as nat));
+            }
+        }
+        sum
+    }
+}
+
+### Key Fixes:
+
+1. **Moving computation**: I updated `sum = sum + i + 1` instead of splitting it in the loop body and proof block.
+
+This should simplify and ensure that the code logic and assertions align correctly.
+
+If you still encounter issues with the command-line during verification, please ensure you're correctly invoking with a single filename and proper flags. For example:
+
+sh
+verus your_code_file.rs
+
+
+// error: multiple input filenames provided (first two filenames are `` and `/tmp/tmphkobxolz`)
+// 
+
+// Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 4
+// Safe: False

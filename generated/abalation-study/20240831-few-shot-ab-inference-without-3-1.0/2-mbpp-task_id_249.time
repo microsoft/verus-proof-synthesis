@@ -1,0 +1,44 @@
+2024-08-31 21:22:29 WARNING: Phase 1 examples: ['6', '7']
+2024-08-31 21:22:29 INFO: Running in generation mode
+2024-08-31 21:22:29 INFO: Repair steps: 0
+2024-08-31 21:22:29 WARNING: Generation initialized with phase1_examples: ['6', '7']
+2024-08-31 21:22:29 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:22:29 INFO: Generating proof code
+2024-08-31 21:22:29 INFO: Temperature: 1.0
+2024-08-31 21:22:29 INFO: Direct inference attempt 0
+2024-08-31 21:22:35 INFO: Infer time: 5.707047700881958s
+2024-08-31 21:22:35 INFO: Checking candidate 0-0
+2024-08-31 21:22:35 INFO: Checking candidate 0-1
+2024-08-31 21:22:35 INFO: Checking candidate 0-2
+2024-08-31 21:22:35 INFO: Checking candidate 0-3
+2024-08-31 21:22:35 INFO: Checking candidate 0-4
+2024-08-31 21:22:35 INFO: Regenerate...
+2024-08-31 21:22:35 INFO: Direct inference attempt 1
+2024-08-31 21:22:35 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 15.000000 seconds
+2024-08-31 21:22:56 INFO: Infer time: 21.06985068321228s
+2024-08-31 21:22:56 INFO: Checking candidate 1-0
+2024-08-31 21:22:57 INFO: Checking candidate 1-1
+2024-08-31 21:22:57 INFO: Checking candidate 1-2
+2024-08-31 21:22:57 INFO: Checking candidate 1-3
+2024-08-31 21:22:57 INFO: Checking candidate 1-4
+2024-08-31 21:22:57 INFO: 1-4.rs in code pool
+2024-08-31 21:22:57 INFO: 1-4.rs is now the best proof candidate
+2024-08-31 21:22:57 INFO: Regenerate...
+2024-08-31 21:22:57 INFO: Direct inference attempt 2
+2024-08-31 21:23:05 INFO: Infer time: 7.396903991699219s
+2024-08-31 21:23:05 INFO: Checking candidate 2-0
+2024-08-31 21:23:05 INFO: Checking candidate 2-1
+2024-08-31 21:23:05 ERROR: Error in comparing code changes: 
+2024-08-31 21:23:05 INFO: Checking candidate 2-2
+2024-08-31 21:23:06 INFO: 2-2.rs in code pool
+2024-08-31 21:23:06 INFO: 2-2.rs is now the best proof candidate
+2024-08-31 21:23:06 INFO: Checking candidate 2-3
+2024-08-31 21:23:06 INFO: Checking candidate 2-4
+2024-08-31 21:23:06 INFO: Regenerate...
+2024-08-31 21:23:06 INFO: Working on merge-0.rs
+2024-08-31 21:23:10 INFO: Running houdini on merge-0.rs
+2024-08-31 21:23:11 INFO: Working on merge-1.rs
+2024-08-31 21:23:11 INFO: Merged code is better.
+2024-08-31 21:23:11 INFO: Running houdini on merge-1.rs
+2024-08-31 21:23:12 INFO: Merged code with hdn is correct.
+2024-08-31 21:23:16 INFO: finished!

@@ -1,0 +1,91 @@
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+/// Helper function to prove that the resulting vector contains all elements from the input vector arr1
+proof fn result_contains_all_input_elements(arr1: &Vec<i32>, arr2: &Vec<i32>, result: &Vec<i32>)
+    ensures forall |i: int| (0 <= i < result.len()) ==> (arr1@.contains(result[i]) && !arr2@.contains(result[i]))
+{
+    forall |i: int| 0 <= i < result.len() ==>
+        (arr1@.contains(result[i]) && !arr2@.contains(result[i])) by {
+        let val = result@.index(i);
+        assert(0 <= i < arr1.len() && (arr2@.contains(val) || result@.contains(val))) by {
+            assert(0 <= i < result.len());
+            assert(0 <= i < arr1.len() && (arr2@.contains(val) || result@.contains(val))) by {
+                assert(0 <= i < arr1.len());
+                assert(arr2@.contains(arr1@.index(i)) || result@.contains(arr1@.index(i)));
+            }
+        }
+    }
+}
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            i <= str.len(),
+            0 <= i <= str.len(),
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int|
+                0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+                    # [trigger] arr1[i],
+                )),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            index <= arr1.len(),
+            0 <= index <= arr1.len(),
+            forall|i: int|
+                0 <= i < output_str.len() ==> (arr1@.contains(# [trigger] output_str[i])
+                    && !arr2@.contains(# [trigger] output_str[i])),
+            output_str.len() == 0 || arr1@.contains(# [trigger] output_str[output_str.len() - 1]),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+        proof {
+            result_contains_all_input_elements(arr1, arr2, &output_str);
+        }
+    }
+    output_str
+}
+} // verus!
+
+
+//             assert(forall|i: int| 0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(
+//                     # [trigger] arr1[i],
+//                 )));
+//   assertion failed: forall|i: int| 0 <= i < index ==> (arr2@.contains(# [trigger] arr1[i]) || output_str@.contains(                     # [trigger] arr1[i],                 ))
+
+// Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+// Safe: False

@@ -1,0 +1,3451 @@
+2024-08-30 09:31:50 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 09:31:50 INFO: Running in generation mode
+2024-08-30 09:31:50 INFO: Repair steps: 10
+2024-08-30 09:31:50 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:31:50 INFO: Generating proof code
+2024-08-30 09:31:50 INFO: Temperature: 1.0
+2024-08-30 09:31:50 INFO: Direct inference attempt 0
+2024-08-30 09:31:50 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:32:54 INFO: Infer time: 64.44626307487488s
+2024-08-30 09:32:54 INFO: Checking candidate 0-0
+2024-08-30 09:32:55 INFO: 0-0.rs in code pool
+2024-08-30 09:32:55 INFO: 0-0.rs is now the best proof candidate
+2024-08-30 09:32:55 INFO: Checking candidate 0-1
+2024-08-30 09:32:55 INFO: 0-1.rs in code pool
+2024-08-30 09:32:55 INFO: 0-1.rs is now the best proof candidate
+2024-08-30 09:32:55 INFO: Checking candidate 0-2
+2024-08-30 09:32:56 INFO: 0-2.rs in code pool
+2024-08-30 09:32:56 INFO: 0-2.rs is now the best proof candidate
+2024-08-30 09:32:56 INFO: Checking candidate 0-3
+2024-08-30 09:32:56 ERROR: Error: 'verified'
+2024-08-30 09:32:56 ERROR: Error: 'errors'
+2024-08-30 09:32:56 INFO: Checking candidate 0-4
+2024-08-30 09:32:56 INFO: Regenerate...
+2024-08-30 09:32:56 INFO: Direct inference attempt 1
+2024-08-30 09:32:59 INFO: Infer time: 2.8176791667938232s
+2024-08-30 09:32:59 INFO: Checking candidate 1-0
+2024-08-30 09:32:59 INFO: 1-0.rs in code pool
+2024-08-30 09:32:59 INFO: 1-0.rs is now the best proof candidate
+2024-08-30 09:32:59 INFO: Working on merge-0.rs
+2024-08-30 09:33:04 INFO: Merged code is better.
+2024-08-30 09:33:04 INFO: Running houdini on merge-0.rs
+2024-08-30 09:33:04 INFO: Working on merge-1.rs
+2024-08-30 09:33:05 INFO: Merged code is better.
+2024-08-30 09:33:05 INFO: Running houdini on merge-1.rs
+2024-08-30 09:33:05 INFO: Working on merge-2.rs
+2024-08-30 09:33:05 INFO: Merged code is better.
+2024-08-30 09:33:05 INFO: Running houdini on merge-2.rs
+2024-08-30 09:33:06 INFO: Working on merge-3.rs
+2024-08-30 09:33:06 INFO: Merged code is better.
+2024-08-30 09:33:06 INFO: Running houdini on merge-3.rs
+2024-08-30 09:33:07 INFO: refining with constantrefine_inference
+2024-08-30 09:33:10 INFO: Infer time: 3.4571096897125244s
+2024-08-30 09:33:11 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < index ==> (arr[k] % 2 == 0),
+            forall|k: int| 0 <= k < index ==> arr[k] % 2 == 0,
+            index <= arr.len(),
+            input_len == arr.len(),
+            // Repeated bound copied from function pre-condition
+            index < arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            return Some(index);
+        }
+        index += 1;
+    }
+    None
+}
+
+} // verus!
+
+2024-08-30 09:33:15 INFO: New refined code is worse
+2024-08-30 09:33:15 INFO: refining with arraylen_inference
+2024-08-30 09:33:32 INFO: Infer time: 16.697553634643555s
+2024-08-30 09:33:32 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < index ==> (arr[k] % 2 == 0),
+            forall|k: int| 0 <= k < index ==> arr[k] % 2 == 0,
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            return Some(index);
+        }
+        index += 1;
+    }
+    None
+}
+
+} // verus!
+
+2024-08-30 09:33:33 INFO: New refined code is a good repair
+2024-08-30 09:33:33 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < index ==> (arr[k] % 2 == 0),
+            forall|k: int| 0 <= k < index ==> arr[k] % 2 == 0,
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            return Some(index);
+        }
+        index += 1;
+    }
+    None
+}
+
+} // verus!
+
+2024-08-30 09:33:33 INFO: refining with arrayrefine_inference
+2024-08-30 09:33:36 INFO: Infer time: 3.3243823051452637s
+2024-08-30 09:33:36 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            // The following has been changed to cover every element in the array
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            // Comment: The array `arr` is never changed in this loop
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            return Some(index);
+        }
+        index += 1;
+    }
+    None
+}
+
+} // verus!
+
+2024-08-30 09:33:36 INFO: New refined code is a good repair
+2024-08-30 09:33:36 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            // The following has been changed to cover every element in the array
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            // Comment: The array `arr` is never changed in this loop
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            return Some(index);
+        }
+        index += 1;
+    }
+    None
+}
+
+} // verus!
+
+2024-08-30 09:33:36 INFO: refining with condlooprefine_inference
+2024-08-30 09:33:40 INFO: Infer time: 3.361433267593384s
+2024-08-30 09:33:40 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            index > 0 ==> forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if arr[index] % 2 != 0 {
+            return Some(index);
+        }
+        index += 1;
+    }
+    None
+}
+
+} // verus!
+
+2024-08-30 09:33:40 INFO: Unsafe code change
+2024-08-30 09:33:40 INFO: Refinement did not change the code
+2024-08-30 09:33:40 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:33:40 INFO: Step 1: VerusErrorType.PostCondFail with num=3.
+2024-08-30 09:33:40 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-08-30 09:33:41 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:34:45 INFO: Infer time: 65.1627745628357s
+2024-08-30 09:34:46 INFO: repair-1-0 file generated
+2024-08-30 09:34:46 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-08-30 09:34:46 INFO: Step 1: VerusErrorType.PostCondFail is fixed. Proof updated 1-0.
+2024-08-30 09:34:46 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-08-30 09:34:46 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-08-30 09:34:46 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:34:52 INFO: Infer time: 5.905129671096802s
+2024-08-30 09:35:01 INFO: Infer time: 9.20779013633728s
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+2024-08-30 09:35:03 ERROR: Error: 'verified'
+2024-08-30 09:35:03 ERROR: Error: 'errors'
+2024-08-30 09:35:03 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if (index as int) > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+2024-08-30 09:35:11 INFO: Infer time: 7.607115745544434s
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+	lemma_seq_take_all(s@);
+*/
+proof fn lemma_seq_take_all<T>(v: Seq<T>)
+    ensures
+        v == v.take(v.len() as int),
+{
+    assert(v =~= v.take(v.len() as int));
+}
+
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::take(i), with i being the loop index.
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.take(k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+       proof{
+        lemma_seq_take_ascend(s@, k as int);
+       }
+    }
+*/
+proof fn lemma_seq_take_ascend<T>(v: Seq<T>, i: int)
+    requires
+        0 < i <= v.len(),
+    ensures
+        v.take(i as int).drop_last() == v.take(i-1),
+{
+    assert(v.take(i as int).drop_last()=~=v.take(i-1));
+}
+
+
+
+#[verifier::loop_isolation(false)]
+fn find_first_odd(arr: &Vec<u32>) -> (index: Option<usize>)
+    ensures
+        if let Some(idx) = index {
+            &&& arr@.take(idx as int) == arr@.take(idx as int).filter(|x: u32| x % 2 == 0)
+            &&& arr[idx as int] % 2 != 0
+        } else {
+            forall|k: int| 0 <= k < arr.len() ==> (arr[k] % 2 == 0)
+        },
+{
+    reveal(Seq::filter);
+
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            arr.len() == input_len,
+            arr@.len() == arr.len(),
+            arr@.len() == input_len,
+            forall|i: int| 0 <= i < index ==> arr[i] % 2 == 0,
+            forall|k: int| 0 <= k < arr.len() ==> (if k < index { arr[k] % 2 == 0 } else { true }),
+            index <= arr.len(),
+            input_len == arr.len(),
+    {
+        if (arr[index] % 2 != 0) {
+            proof {
+                lemma_seq_take_all(arr@);
+                assert(arr@.take(index as int) == arr@.take(index as int).filter(|x: u32| x % 2 == 0));
+                assert(arr[index as int] % 2 != 0);
+            }
+            return Some(index);
+        }
+        index += 1;
+        proof {
+            if index > 0 {
+                lemma_seq_take_ascend(arr@, index as int);
+            }
+        }
+    }
+    None
+}
+
+} // verus!
+2024-08-30 09:35:13 ERROR: Error: 'verified'
+2024-08-30 09:35:13 ERROR: Error: 'errors'
+2024-08-30 09:35:13 INFO: repair-2-0 file generated
+2024-08-30 09:35:13 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 09:35:13 INFO: Step 3: VerusErrorType.AssertFail with num=5.
+2024-08-30 09:35:13 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-08-30 09:35:13 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:35:13 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:36:19 INFO: Infer time: 66.36153554916382s
+2024-08-30 09:36:33 INFO: Infer time: 13.161027193069458s
+2024-08-30 09:36:33 INFO: repair-3-0 file generated
+2024-08-30 09:36:33 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 09:36:33 INFO: Step 3: VerusErrorType.AssertFail is partially fixed. Proof updated 3-0.
+2024-08-30 09:36:34 INFO: Step 4: VerusErrorType.AssertFail with num=5.
+2024-08-30 09:36:34 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 09:36:34 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:36:34 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:37:34 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:38:45 INFO: Infer time: 131.1439049243927s
+2024-08-30 09:38:52 INFO: Infer time: 6.928273916244507s
+2024-08-30 09:38:52 INFO: repair-4-0 file generated
+2024-08-30 09:38:52 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 09:38:53 INFO: Step 4: VerusErrorType.AssertFail is partially fixed. Proof updated 4-0.
+2024-08-30 09:38:53 INFO: Step 5: VerusErrorType.AssertFail with num=5.
+2024-08-30 09:38:53 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 09:38:53 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:39:23 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 0.797431 seconds
+2024-08-30 09:39:24 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:40:36 INFO: Infer time: 102.6267478466034s
+2024-08-30 09:40:43 INFO: Infer time: 7.541567087173462s
+2024-08-30 09:40:44 INFO: repair-5-0 file generated
+2024-08-30 09:40:44 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 09:40:44 INFO: Step 6: VerusErrorType.AssertFail with num=5.
+2024-08-30 09:40:44 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 09:40:44 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:40:56 INFO: Infer time: 11.700467586517334s
+2024-08-30 09:41:04 INFO: Infer time: 7.660726547241211s
+2024-08-30 09:41:04 INFO: repair-6-0 file generated
+2024-08-30 09:41:04 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 09:41:05 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-08-30 09:41:05 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 09:41:05 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:41:05 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:42:22 INFO: Infer time: 77.64015913009644s
+2024-08-30 09:42:23 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:43:29 INFO: Infer time: 66.67927527427673s
+2024-08-30 09:43:30 INFO: repair-7-0 file generated
+2024-08-30 09:43:30 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 09:43:30 WARNING: The repair is not safe.
+2024-08-30 09:43:30 INFO: Step 8: VerusErrorType.AssertFail (failed last 4 time) with num=5.
+2024-08-30 09:43:30 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 09:43:42 INFO: Infer time: 12.30946135520935s
+2024-08-30 09:43:42 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 09:43:42 ERROR: Error in comparing code changes: 
+2024-08-30 09:43:42 INFO: repair-8-0 file generated
+2024-08-30 09:43:42 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 09:43:42 WARNING: The repair is not safe.
+2024-08-30 09:43:42 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 09:43:42 ERROR: Error in comparing code changes: 
+2024-08-30 09:43:42 INFO: repair-8-1 file generated
+2024-08-30 09:43:42 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 09:43:42 WARNING: The repair is not safe.
+2024-08-30 09:43:43 INFO: repair-8-2 file generated
+2024-08-30 09:43:43 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-08-30 09:43:43 ERROR: Error: 'verified'
+2024-08-30 09:43:43 ERROR: Error: 'errors'
+2024-08-30 09:43:43 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 09:43:43 ERROR: Error: 'verified'
+2024-08-30 09:43:43 ERROR: Error: 'errors'
+2024-08-30 09:43:43 INFO: repair-8-3 file generated
+2024-08-30 09:43:43 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 09:43:44 INFO: repair-8-4 file generated
+2024-08-30 09:43:44 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 09:43:44 INFO: Step 8: VerusErrorType.AssertFail is partially fixed. Proof updated 8-4.
+2024-08-30 09:43:44 INFO: Step 9: VerusErrorType.AssertFail (failed last 4 time) with num=5.
+2024-08-30 09:43:44 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 09:43:45 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:44:55 INFO: Infer time: 70.88085174560547s
+2024-08-30 09:44:55 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 09:44:56 INFO: repair-9-0 file generated
+2024-08-30 09:44:56 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 09:44:56 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 09:44:56 INFO: repair-9-1 file generated
+2024-08-30 09:44:56 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 09:44:56 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 09:44:56 INFO: repair-9-2 file generated
+2024-08-30 09:44:56 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 4
+2024-08-30 09:44:57 INFO: repair-9-3 file generated
+2024-08-30 09:44:57 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 2
+2024-08-30 09:44:57 INFO: repair-9-4 file generated
+2024-08-30 09:44:57 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 3
+2024-08-30 09:44:58 INFO: Step 9: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-08-30 09:44:58 INFO: Step 10: VerusErrorType.AssertFail with num=3.
+2024-08-30 09:44:58 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 3
+2024-08-30 09:44:58 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 09:44:58 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:45:58 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 09:47:09 INFO: Infer time: 131.16290998458862s
+2024-08-30 09:47:09 INFO: repair-10-0 file generated
+2024-08-30 09:47:09 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 2
+2024-08-30 09:47:09 INFO: Step 10: VerusErrorType.AssertFail is fixed. Proof updated 10-0.
+2024-08-30 09:47:10 ERROR: Error: 'NoneType' object is not subscriptable
+2024-08-30 09:47:10 ERROR: Error: 'NoneType' object is not subscriptable
+2024-08-30 09:47:10 INFO: Original code is better
+2024-08-30 09:47:10 INFO: finished!
+Start repair
+special fix: add reveal
+special fix: add reveal
+special fix: add reveal
+special fix: add reveal
+special fix: add reveal
+special fix: add reveal
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

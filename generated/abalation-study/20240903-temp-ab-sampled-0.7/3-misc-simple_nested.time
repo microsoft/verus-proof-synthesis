@@ -1,0 +1,466 @@
+2024-09-03 23:23:23 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 23:23:23 INFO: Running in generation mode
+2024-09-03 23:23:23 INFO: Repair steps: 10
+2024-09-03 23:23:23 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:23:23 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:23:23 INFO: Generating proof code
+2024-09-03 23:23:23 INFO: Temperature: 0.7
+2024-09-03 23:23:23 INFO: Direct inference attempt 0
+2024-09-03 23:23:31 INFO: Infer time: 7.928228855133057s
+2024-09-03 23:23:31 INFO: Checking candidate 0-0
+2024-09-03 23:23:31 ERROR: Error: 'verified'
+2024-09-03 23:23:31 ERROR: Error: 'errors'
+2024-09-03 23:23:31 INFO: Checking candidate 0-1
+2024-09-03 23:23:32 INFO: Checking candidate 0-2
+2024-09-03 23:23:32 INFO: 0-2.rs in code pool
+2024-09-03 23:23:32 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 23:23:32 INFO: Checking candidate 0-3
+2024-09-03 23:23:33 INFO: Checking candidate 0-4
+2024-09-03 23:23:33 INFO: Working on merge-0.rs
+2024-09-03 23:23:37 INFO: Merged code is better.
+2024-09-03 23:23:37 INFO: Running houdini on merge-0.rs
+2024-09-03 23:23:39 INFO: refining with constantrefine_inference
+2024-09-03 23:23:47 INFO: Infer time: 8.020966291427612s
+2024-09-03 23:23:47 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn simple_nested(a: &mut Vec<i32>, b: &Vec<i32>, N: i32) -> (sum: i32)
+    requires
+        forall|k: int| k <= # [trigger] b[k] <= k + 1,
+        old(a).len() == N,
+        b.len() == N,
+        N <= 0x3FFF_FFFF,
+    ensures
+        N <= sum <= 2 * N,
+{
+    let mut i: usize = 0;
+    let mut sum: i32 = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            N <= 0x3FFF_FFFF,
+            a.len() == N,
+            b.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == b[k] + 1 - k as i32,
+            sum <= 2 * i as i32,
+            N <= 0x3FFF_FFFF, // Repeated invariant
+    {
+        a.set(i, b[i] + 1);
+        let mut j: usize = 0;
+        while (j < i)
+            invariant
+                0 <= j <= i,
+                N <= 0x3FFF_FFFF,
+                a.len() == N,
+                a[(i) as int] == b[(i) as int] + 1 - j as i32,
+                b.len() == N,
+                N <= 0x3FFF_FFFF, // Repeated invariant
+        {
+            a.set(i, a[i] - 1);
+            j = j + 1;
+        }
+        sum = sum + a[i];
+        i = i + 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-03 23:23:52 INFO: New refined code is a good repair
+2024-09-03 23:23:52 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn simple_nested(a: &mut Vec<i32>, b: &Vec<i32>, N: i32) -> (sum: i32)
+    requires
+        forall|k: int| k <= # [trigger] b[k] <= k + 1,
+        old(a).len() == N,
+        b.len() == N,
+        N <= 0x3FFF_FFFF,
+    ensures
+        N <= sum <= 2 * N,
+{
+    let mut i: usize = 0;
+    let mut sum: i32 = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            N <= 0x3FFF_FFFF,
+            a.len() == N,
+            b.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == b[k] + 1 - k as i32,
+            sum <= 2 * i as i32,
+            N <= 0x3FFF_FFFF, // Repeated invariant
+    {
+        a.set(i, b[i] + 1);
+        let mut j: usize = 0;
+        while (j < i)
+            invariant
+                0 <= j <= i,
+                N <= 0x3FFF_FFFF,
+                a.len() == N,
+                a[(i) as int] == b[(i) as int] + 1 - j as i32,
+                b.len() == N,
+                N <= 0x3FFF_FFFF, // Repeated invariant
+        {
+            a.set(i, a[i] - 1);
+            j = j + 1;
+        }
+        sum = sum + a[i];
+        i = i + 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-03 23:23:52 INFO: refining with arraylen_inference
+2024-09-03 23:23:59 INFO: Infer time: 6.882400989532471s
+2024-09-03 23:23:59 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn simple_nested(a: &mut Vec<i32>, b: &Vec<i32>, N: i32) -> (sum: i32)
+    requires
+        forall|k: int| k <= # [trigger] b[k] <= k + 1,
+        old(a).len() == N,
+        b.len() == N,
+        N <= 0x3FFF_FFFF,
+    ensures
+        N <= sum <= 2 * N,
+{
+    let mut i: usize = 0;
+    let mut sum: i32 = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            N <= 0x3FFF_FFFF,
+            a.len() == N,
+            b.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == b[k] + 1 - k as i32,
+            sum <= 2 * i as i32,
+            N <= 0x3FFF_FFFF, // Repeated invariant
+    {
+        a.set(i, b[i] + 1);
+        let mut j: usize = 0;
+        while (j < i)
+            invariant
+                0 <= j <= i,
+                N <= 0x3FFF_FFFF,
+                a.len() == N,
+                a[(i) as int] == b[(i) as int] + 1 - j as i32,
+                b.len() == N,
+                N <= 0x3FFF_FFFF, // Repeated invariant
+        {
+            a.set(i, a[i] - 1);
+            j = j + 1;
+        }
+        sum = sum + a[i];
+        i = i + 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-03 23:23:59 INFO: Refinement did not change the code
+2024-09-03 23:23:59 INFO: refining with arrayrefine_inference
+2024-09-03 23:24:05 INFO: Infer time: 5.132307052612305s
+2024-09-03 23:24:05 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn simple_nested(a: &mut Vec<i32>, b: &Vec<i32>, N: i32) -> (sum: i32)
+    requires
+        forall|k: int| k <= # [trigger] b[k] <= k + 1,
+        old(a).len() == N,
+        b.len() == N,
+        N <= 0x3FFF_FFFF,
+    ensures
+        N <= sum <= 2 * N,
+{
+    let mut i: usize = 0;
+    let mut sum: i32 = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            N <= 0x3FFF_FFFF,
+            a.len() == N,
+            b.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == b[k] + 1 - k as i32,
+            sum <= 2 * i as i32,
+            N <= 0x3FFF_FFFF, // Repeated invariant
+    {
+        a.set(i, b[i] + 1);
+        let mut j: usize = 0;
+        while (j < i)
+            invariant
+                0 <= j <= i,
+                N <= 0x3FFF_FFFF,
+                a.len() == N,
+                // No need to change the invariant since a.set() is used in the loop
+                a[(i) as int] == b[(i) as int] + 1 - j as i32,
+                b.len() == N,
+                N <= 0x3FFF_FFFF, // Repeated invariant
+        {
+            a.set(i, a[i] - 1);
+            j = j + 1;
+        }
+        sum = sum + a[i];
+        i = i + 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-03 23:24:06 INFO: New refined code is a good repair
+2024-09-03 23:24:06 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn simple_nested(a: &mut Vec<i32>, b: &Vec<i32>, N: i32) -> (sum: i32)
+    requires
+        forall|k: int| k <= # [trigger] b[k] <= k + 1,
+        old(a).len() == N,
+        b.len() == N,
+        N <= 0x3FFF_FFFF,
+    ensures
+        N <= sum <= 2 * N,
+{
+    let mut i: usize = 0;
+    let mut sum: i32 = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            N <= 0x3FFF_FFFF,
+            a.len() == N,
+            b.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == b[k] + 1 - k as i32,
+            sum <= 2 * i as i32,
+            N <= 0x3FFF_FFFF, // Repeated invariant
+    {
+        a.set(i, b[i] + 1);
+        let mut j: usize = 0;
+        while (j < i)
+            invariant
+                0 <= j <= i,
+                N <= 0x3FFF_FFFF,
+                a.len() == N,
+                // No need to change the invariant since a.set() is used in the loop
+                a[(i) as int] == b[(i) as int] + 1 - j as i32,
+                b.len() == N,
+                N <= 0x3FFF_FFFF, // Repeated invariant
+        {
+            a.set(i, a[i] - 1);
+            j = j + 1;
+        }
+        sum = sum + a[i];
+        i = i + 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-03 23:24:06 INFO: refining with condlooprefine_inference
+2024-09-03 23:24:12 INFO: Infer time: 6.224512338638306s
+2024-09-03 23:24:12 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn simple_nested(a: &mut Vec<i32>, b: &Vec<i32>, N: i32) -> (sum: i32)
+    requires
+        forall|k: int| k <= # [trigger] b[k] <= k + 1,
+        old(a).len() == N,
+        b.len() == N,
+        N <= 0x3FFF_FFFF,
+    ensures
+        N <= sum <= 2 * N,
+{
+    let mut i: usize = 0;
+    let mut sum: i32 = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            N <= 0x3FFF_FFFF,
+            a.len() == N,
+            b.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k] == b[k] + 1 - k as i32,
+            sum <= 2 * i as i32,
+            N <= 0x3FFF_FFFF, // Repeated invariant
+            i > 0 ==> sum >= i as i32, // New invariant for handling first iteration
+    {
+        a.set(i, b[i] + 1);
+        let mut j: usize = 0;
+        while (j < i)
+            invariant
+                0 <= j <= i,
+                N <= 0x3FFF_FFFF,
+                a.len() == N,
+                // No need to change the invariant since a.set() is used in the loop
+                a[(i) as int] == b[(i) as int] + 1 - j as i32,
+                b.len() == N,
+                N <= 0x3FFF_FFFF, // Repeated invariant
+        {
+            a.set(i, a[i] - 1);
+            j = j + 1;
+        }
+        sum = sum + a[i];
+        i = i + 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-03 23:24:13 INFO: New refined code under condloop is not better
+2024-09-03 23:24:13 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:24:13 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:24:13 INFO: Step 1: VerusErrorType.InvFailEnd with num=3.
+2024-09-03 23:24:13 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:24:22 INFO: Infer time: 9.117603540420532s
+2024-09-03 23:24:23 INFO: repair-1-0 file generated
+2024-09-03 23:24:23 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:24:23 INFO: Step 1: VerusErrorType.InvFailEnd is fixed. Proof updated 1-0.
+2024-09-03 23:24:23 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:24:23 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:24:23 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:24:23 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:24:30 INFO: Infer time: 6.438566207885742s
+2024-09-03 23:24:30 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:24:30 INFO: repair-2-0 file generated
+2024-09-03 23:24:30 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:24:30 WARNING: The repair is not safe.
+2024-09-03 23:24:30 INFO: repair-2-1 file generated
+2024-09-03 23:24:30 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:24:30 WARNING: The repair is not safe.
+2024-09-03 23:24:31 INFO: repair-2-2 file generated
+2024-09-03 23:24:31 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:24:31 WARNING: The repair is not safe.
+2024-09-03 23:24:31 INFO: Step 3: VerusErrorType.AssertFail with num=5.
+2024-09-03 23:24:31 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:24:31 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:24:31 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:24:38 INFO: Infer time: 6.899361610412598s
+2024-09-03 23:24:38 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:24:38 ERROR: Error: 'verified'
+2024-09-03 23:24:38 ERROR: Error: 'errors'
+2024-09-03 23:24:39 INFO: repair-3-0 file generated
+2024-09-03 23:24:39 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 23:24:39 WARNING: The repair is not safe.
+2024-09-03 23:24:39 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:24:39 ERROR: Error: 'verified'
+2024-09-03 23:24:39 ERROR: Error: 'errors'
+2024-09-03 23:24:39 INFO: repair-3-1 file generated
+2024-09-03 23:24:39 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 23:24:39 WARNING: The repair is not safe.
+2024-09-03 23:24:39 INFO: repair-3-2 file generated
+2024-09-03 23:24:39 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:24:40 INFO: repair-3-3 file generated
+2024-09-03 23:24:40 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:24:40 WARNING: The repair is not safe.
+2024-09-03 23:24:40 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:24:41 INFO: repair-3-4 file generated
+2024-09-03 23:24:41 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:24:41 WARNING: The repair is not safe.
+2024-09-03 23:24:41 INFO: Step 4: VerusErrorType.AssertFail with num=5.
+2024-09-03 23:24:41 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:24:41 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:24:41 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:24:48 INFO: Infer time: 6.797889232635498s
+2024-09-03 23:24:48 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:24:48 INFO: repair-4-0 file generated
+2024-09-03 23:24:48 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:24:48 WARNING: The repair is not safe.
+2024-09-03 23:24:48 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:24:49 INFO: repair-4-1 file generated
+2024-09-03 23:24:49 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:24:49 WARNING: The repair is not safe.
+2024-09-03 23:24:49 INFO: repair-4-2 file generated
+2024-09-03 23:24:49 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:24:49 WARNING: The repair is not safe.
+2024-09-03 23:24:49 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:24:50 INFO: repair-4-3 file generated
+2024-09-03 23:24:50 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 11
+2024-09-03 23:24:50 WARNING: The repair is not safe.
+2024-09-03 23:24:50 INFO: repair-4-4 file generated
+2024-09-03 23:24:50 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:24:51 INFO: Step 4: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 23:24:51 INFO: Step 5: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:24:51 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:24:51 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:24:51 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:24:51 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 23.000000 seconds
+2024-09-03 23:25:24 INFO: Infer time: 33.63630723953247s
+2024-09-03 23:25:24 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:25:25 INFO: repair-5-0 file generated
+2024-09-03 23:25:25 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:25:25 WARNING: The repair is not safe.
+2024-09-03 23:25:25 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:25:26 INFO: repair-5-1 file generated
+2024-09-03 23:25:26 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:25:26 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:25:27 INFO: repair-5-2 file generated
+2024-09-03 23:25:27 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:25:27 WARNING: The repair is not safe.
+2024-09-03 23:25:27 INFO: Step 6: VerusErrorType.AssertFail with num=5.
+2024-09-03 23:25:27 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:25:27 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:25:27 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:25:34 INFO: Infer time: 7.4841718673706055s
+2024-09-03 23:25:35 INFO: repair-6-0 file generated
+2024-09-03 23:25:35 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 23:25:35 INFO: Step 6: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 23:25:35 INFO: Step 7: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:25:35 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 23:25:35 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:25:35 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:25:43 INFO: Infer time: 8.014134168624878s
+2024-09-03 23:25:44 INFO: repair-7-0 file generated
+2024-09-03 23:25:44 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 23:25:44 INFO: Step 7: VerusErrorType.AssertFail is fixed. Proof updated 7-0.
+2024-09-03 23:25:44 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:25:44 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-03 23:25:44 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:25:44 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:25:54 INFO: Infer time: 9.567739248275757s
+2024-09-03 23:25:54 INFO: repair-8-0 file generated
+2024-09-03 23:25:54 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:25:55 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:25:55 INFO: repair-8-1 file generated
+2024-09-03 23:25:55 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:25:55 WARNING: The repair is not safe.
+2024-09-03 23:25:56 INFO: repair-8-2 file generated
+2024-09-03 23:25:56 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:25:56 INFO: Step 8: VerusErrorType.AssertFail is fixed. Proof updated 8-2.
+2024-09-03 23:25:57 INFO: Step 9: VerusErrorType.InvFailEnd with num=3.
+2024-09-03 23:25:57 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:26:05 INFO: Infer time: 7.961185932159424s
+2024-09-03 23:26:05 INFO: repair-9-0 file generated
+2024-09-03 23:26:05 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:26:06 INFO: Step 9: VerusErrorType.InvFailEnd is fixed. Proof updated 9-0.
+2024-09-03 23:26:06 INFO: Step 10: VerusErrorType.AssertFail with num=3.
+2024-09-03 23:26:06 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:26:06 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 23:26:06 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 23:26:06 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 9.000000 seconds
+2024-09-03 23:26:23 INFO: Infer time: 17.184604167938232s
+2024-09-03 23:26:23 INFO: repair-10-0 file generated
+2024-09-03 23:26:23 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:26:23 WARNING: The repair is not safe.
+2024-09-03 23:26:24 INFO: repair-10-1 file generated
+2024-09-03 23:26:24 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-03 23:26:25 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 23:26:25 INFO: repair-10-2 file generated
+2024-09-03 23:26:25 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-03 23:26:27 INFO: Houdini code is better
+2024-09-03 23:26:28 INFO: finished!
+Start repair

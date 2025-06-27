@@ -1,0 +1,528 @@
+2024-09-04 15:42:42 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 15:42:42 INFO: Running in generation mode
+2024-09-04 15:42:42 INFO: Repair steps: 10
+2024-09-04 15:42:42 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:42:42 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:42:42 INFO: Generating proof code
+2024-09-04 15:42:42 INFO: Temperature: 1.0
+2024-09-04 15:42:42 INFO: Direct inference attempt 0
+2024-09-04 15:42:49 INFO: Infer time: 6.905652046203613s
+2024-09-04 15:42:49 INFO: Checking candidate 0-0
+2024-09-04 15:42:49 INFO: Checking candidate 0-1
+2024-09-04 15:42:50 INFO: 0-1.rs in code pool
+2024-09-04 15:42:50 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 15:42:50 INFO: Checking candidate 0-2
+2024-09-04 15:42:50 INFO: Checking candidate 0-3
+2024-09-04 15:42:51 INFO: 0-3.rs in code pool
+2024-09-04 15:42:51 INFO: 0-3.rs is now the best proof candidate
+2024-09-04 15:42:51 INFO: Checking candidate 0-4
+2024-09-04 15:42:51 INFO: Regenerate...
+2024-09-04 15:42:51 INFO: Direct inference attempt 1
+2024-09-04 15:42:51 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 15:43:57 INFO: Infer time: 66.02362847328186s
+2024-09-04 15:43:57 INFO: Checking candidate 1-0
+2024-09-04 15:43:58 INFO: 1-0.rs in code pool
+2024-09-04 15:43:58 INFO: Checking candidate 1-1
+2024-09-04 15:43:58 INFO: 1-1.rs in code pool
+2024-09-04 15:43:58 INFO: Working on merge-0.rs
+2024-09-04 15:44:03 INFO: Running houdini on merge-0.rs
+2024-09-04 15:44:03 INFO: Working on merge-1.rs
+2024-09-04 15:44:04 INFO: Merged code is better.
+2024-09-04 15:44:04 INFO: Running houdini on merge-1.rs
+2024-09-04 15:44:04 INFO: Working on merge-2.rs
+2024-09-04 15:44:05 INFO: Running houdini on merge-2.rs
+2024-09-04 15:44:06 INFO: Working on merge-3.rs
+2024-09-04 15:44:06 INFO: Running houdini on merge-3.rs
+2024-09-04 15:44:07 INFO: refining with constantrefine_inference
+2024-09-04 15:44:12 INFO: Infer time: 5.020737409591675s
+2024-09-04 15:44:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            0 <= i <= str.len(),
+            forall|j: int| 0 <= j < i ==> str[j] != key,
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|j: int|
+                0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                    # [trigger] arr1[j],
+                )),
+            0 <= index <= arr1.len(),
+            forall|j: int| 0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                # [trigger] arr1[j],
+            )),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-04 15:44:17 INFO: New refined code is a good repair
+2024-09-04 15:44:17 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            0 <= i <= str.len(),
+            forall|j: int| 0 <= j < i ==> str[j] != key,
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|j: int|
+                0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                    # [trigger] arr1[j],
+                )),
+            0 <= index <= arr1.len(),
+            forall|j: int| 0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                # [trigger] arr1[j],
+            )),
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-04 15:44:17 INFO: refining with arraylen_inference
+2024-09-04 15:44:21 INFO: Infer time: 3.7278902530670166s
+2024-09-04 15:44:21 INFO: 
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            0 <= i <= str.len(),
+            forall|j: int| 0 <= j < i ==> str[j] != key,
+            str.len() == str.len()
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|j: int|
+                0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                    # [trigger] arr1[j],
+                )),
+            0 <= index <= arr1.len(),
+            forall|j: int| 0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                # [trigger] arr1[j],
+            )),
+            arr1.len() == arr1.len(),
+            arr2.len() == arr2.len(),
+            output_str.len() == output_str.len()
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+
+2024-09-04 15:44:21 INFO: Unsafe code change
+2024-09-04 15:44:21 INFO: Refinement did not change the code
+2024-09-04 15:44:21 INFO: refining with arrayrefine_inference
+2024-09-04 15:44:26 INFO: Infer time: 5.342834949493408s
+2024-09-04 15:44:26 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            0 <= i <= str.len(),
+            forall|j: int| 0 <= j < i ==> str[j] != key,
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        // Invariant with explanation for unchanged array
+        invariant
+            0 <= index <= arr1.len(),
+            forall|j: int|
+                0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                    # [trigger] arr1[j],
+                )),
+            // Explanation: Array arr1 is not modified in this loop, as there are no calls to arr1.set() or any function that modifies arr1 elements.
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-04 15:44:27 INFO: New refined code is a good repair
+2024-09-04 15:44:27 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            0 <= i <= str.len(),
+            forall|j: int| 0 <= j < i ==> str[j] != key,
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        // Invariant with explanation for unchanged array
+        invariant
+            0 <= index <= arr1.len(),
+            forall|j: int|
+                0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                    # [trigger] arr1[j],
+                )),
+            // Explanation: Array arr1 is not modified in this loop, as there are no calls to arr1.set() or any function that modifies arr1 elements.
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-04 15:44:27 INFO: refining with condlooprefine_inference
+2024-09-04 15:44:31 INFO: Infer time: 3.9656593799591064s
+2024-09-04 15:44:31 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result <==> (exists|i: int| 0 <= i < str.len() && (str[i] == key)),
+{
+    let mut i = 0;
+    while i < str.len()
+        invariant
+            0 <= i <= str.len(),
+            forall|j: int| 0 <= j < i ==> str[j] != key,
+    {
+        if (str[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < result.len() ==> (arr1@.contains(# [trigger] result[i]) && !arr2@.contains(
+                # [trigger] result[i],
+            )),
+        forall|i: int|
+            0 <= i < arr1.len() ==> (arr2@.contains(# [trigger] arr1[i]) || result@.contains(
+                # [trigger] arr1[i],
+            )),
+{
+    let mut output_str = Vec::new();
+    let mut index: usize = 0;
+    while index < arr1.len()
+        // Invariant with explanation for unchanged array
+        invariant
+            0 <= index <= arr1.len(),
+            forall|j: int|
+                0 <= j < index ==> (!arr2@.contains(# [trigger] arr1[j]) ==> output_str@.contains(
+                    # [trigger] arr1[j],
+                )),
+            index > 0 ==> forall|j: int| 0 <= j < index ==> (arr1[j] != arr1[0]),
+            // Explanation: Array arr1 is not modified in this loop, as there are no calls to arr1.set() or any function that modifies arr1 elements.
+    {
+        if (!contains(arr2, arr1[index])) {
+            output_str.push(arr1[index]);
+        }
+        index += 1;
+    }
+    output_str
+}
+
+} // verus!
+
+2024-09-04 15:44:31 ERROR: Error: 'verified'
+2024-09-04 15:44:31 ERROR: Error: 'errors'
+2024-09-04 15:44:31 INFO: New refined code under condloop is not better
+2024-09-04 15:44:31 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:44:31 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:44:31 INFO: Step 1: VerusErrorType.InvFailEnd with num=3.
+2024-09-04 15:44:31 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:36 INFO: Infer time: 4.279011964797974s
+2024-09-04 15:44:36 INFO: repair-1-0 file generated
+2024-09-04 15:44:36 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:37 INFO: repair-1-1 file generated
+2024-09-04 15:44:37 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-04 15:44:37 INFO: repair-1-2 file generated
+2024-09-04 15:44:37 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:37 INFO: Step 2: VerusErrorType.InvFailEnd with num=5.
+2024-09-04 15:44:37 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:42 INFO: Infer time: 5.093751907348633s
+2024-09-04 15:44:43 INFO: repair-2-0 file generated
+2024-09-04 15:44:43 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:43 INFO: repair-2-1 file generated
+2024-09-04 15:44:43 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:43 INFO: Step 2: VerusErrorType.InvFailEnd is fixed. Proof updated 2-1.
+2024-09-04 15:44:44 INFO: Step 3: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:44:44 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:44 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:44:44 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:44:48 INFO: Infer time: 4.869499206542969s
+2024-09-04 15:44:48 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:44:49 INFO: repair-3-0 file generated
+2024-09-04 15:44:49 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:44:49 WARNING: The repair is not safe.
+2024-09-04 15:44:49 INFO: Step 4: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:44:49 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:49 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:44:49 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:44:54 INFO: Infer time: 5.088292121887207s
+2024-09-04 15:44:54 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:44:54 INFO: repair-4-0 file generated
+2024-09-04 15:44:54 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-04 15:44:54 WARNING: The repair is not safe.
+2024-09-04 15:44:54 INFO: Step 5: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:44:54 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:54 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:44:54 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:44:58 INFO: Infer time: 3.827807903289795s
+2024-09-04 15:44:58 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:44:58 INFO: repair-5-0 file generated
+2024-09-04 15:44:58 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:44:58 WARNING: The repair is not safe.
+2024-09-04 15:44:58 INFO: Step 6: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:44:58 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:44:58 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:44:58 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:45:03 INFO: Infer time: 4.719588279724121s
+2024-09-04 15:45:03 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:45:03 INFO: repair-6-0 file generated
+2024-09-04 15:45:03 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:45:03 WARNING: The repair is not safe.
+2024-09-04 15:45:03 INFO: Step 7: VerusErrorType.AssertFail (failed last 4 time) with num=5.
+2024-09-04 15:45:03 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:10 INFO: Infer time: 6.948007345199585s
+2024-09-04 15:45:11 ERROR: Error: 'verified'
+2024-09-04 15:45:11 ERROR: Error: 'errors'
+2024-09-04 15:45:11 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:45:11 ERROR: Error: 'verified'
+2024-09-04 15:45:11 ERROR: Error: 'errors'
+2024-09-04 15:45:11 INFO: repair-7-0 file generated
+2024-09-04 15:45:11 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:45:11 WARNING: The repair is not safe.
+2024-09-04 15:45:11 INFO: repair-7-1 file generated
+2024-09-04 15:45:11 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:11 WARNING: The repair is not safe.
+2024-09-04 15:45:11 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:45:11 INFO: repair-7-2 file generated
+2024-09-04 15:45:11 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:45:12 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 15:45:12 INFO: repair-7-3 file generated
+2024-09-04 15:45:12 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 4
+2024-09-04 15:45:12 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 15:45:12 INFO: repair-7-4 file generated
+2024-09-04 15:45:12 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:12 WARNING: The repair is not safe.
+2024-09-04 15:45:13 INFO: Step 8: VerusErrorType.AssertFail (failed last 5 time) with num=5.
+2024-09-04 15:45:13 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:21 INFO: Infer time: 8.179014205932617s
+2024-09-04 15:45:21 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 15:45:21 INFO: repair-8-0 file generated
+2024-09-04 15:45:21 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 15
+2024-09-04 15:45:21 WARNING: The repair is not safe.
+2024-09-04 15:45:21 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 15:45:22 ERROR: Error: 'verified'
+2024-09-04 15:45:22 ERROR: Error: 'errors'
+2024-09-04 15:45:22 INFO: repair-8-1 file generated
+2024-09-04 15:45:22 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:45:22 WARNING: The repair is not safe.
+2024-09-04 15:45:22 ERROR: Error: 'verified'
+2024-09-04 15:45:22 ERROR: Error: 'errors'
+2024-09-04 15:45:22 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:45:22 ERROR: Error: 'verified'
+2024-09-04 15:45:22 ERROR: Error: 'errors'
+2024-09-04 15:45:22 INFO: repair-8-2 file generated
+2024-09-04 15:45:22 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:45:22 WARNING: The repair is not safe.
+2024-09-04 15:45:22 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:45:22 INFO: repair-8-3 file generated
+2024-09-04 15:45:22 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:45:22 WARNING: The repair is not safe.
+2024-09-04 15:45:22 INFO: repair-8-4 file generated
+2024-09-04 15:45:22 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:23 INFO: Step 8: VerusErrorType.AssertFail is partially fixed. Proof updated 8-4.
+2024-09-04 15:45:23 INFO: Step 9: VerusErrorType.PostCondFail with num=5.
+2024-09-04 15:45:23 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:32 INFO: Infer time: 9.501590967178345s
+2024-09-04 15:45:33 INFO: repair-9-0 file generated
+2024-09-04 15:45:33 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:33 INFO: repair-9-1 file generated
+2024-09-04 15:45:33 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:33 INFO: Step 9: VerusErrorType.PostCondFail is fixed based on finer-grained check.
+2024-09-04 15:45:34 INFO: Step 10: VerusErrorType.PostCondFail with num=3.
+2024-09-04 15:45:34 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:41 INFO: Infer time: 7.170659065246582s
+2024-09-04 15:45:41 INFO: repair-10-0 file generated
+2024-09-04 15:45:41 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:42 INFO: repair-10-1 file generated
+2024-09-04 15:45:42 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 2
+2024-09-04 15:45:42 INFO: Step 10: VerusErrorType.PostCondFail is fixed. Proof updated 10-1.
+2024-09-04 15:45:42 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-04 15:45:42 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-04 15:45:42 INFO: Original code is better
+2024-09-04 15:45:43 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

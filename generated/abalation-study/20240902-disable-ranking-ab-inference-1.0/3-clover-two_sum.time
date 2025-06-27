@@ -1,0 +1,246 @@
+2024-09-02 19:16:00 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:16:00 INFO: Running in generation mode
+2024-09-02 19:16:00 INFO: Repair steps: 0
+2024-09-02 19:16:00 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:16:00 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:16:00 INFO: Generating proof code
+2024-09-02 19:16:00 INFO: Temperature: 1.0
+2024-09-02 19:16:00 WARNING: Disabled ranking
+2024-09-02 19:16:00 INFO: Direct inference attempt 0
+2024-09-02 19:16:08 INFO: Infer time: 7.644047737121582s
+2024-09-02 19:16:08 INFO: Checking candidate 0-0
+2024-09-02 19:16:08 INFO: 0-0.rs in code pool
+2024-09-02 19:16:08 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:16:08 INFO: Working on merge-0.rs
+2024-09-02 19:16:13 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:16:13 INFO: Running houdini on merge-0.rs
+2024-09-02 19:16:14 INFO: refining with constantrefine_inference
+2024-09-02 19:16:19 INFO: Infer time: 5.343573808670044s
+2024-09-02 19:16:20 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn two_sum(nums: &Vec<u32>, target: u32) -> (r: (usize, usize))
+    requires
+        nums.len() > 1,
+        forall|ii: int, jj: int|
+            ((0 <= ii && ii < nums.len() && ii < jj && jj < nums.len())) ==> nums[ii] + nums[jj]
+                < 256,
+        exists|i: int, j: int| (0 <= i && i < j && j < nums.len()) && nums[i] + nums[j] == target,
+    ensures
+        (0 <= r.0 && r.0 < r.1 && r.1 < nums.len()) && nums[r.0 as int] + nums[r.1 as int]
+            == target,
+        forall|ii: int, jj: int|
+            ((0 <= ii && ii < r.0 && ii < jj && jj < nums.len()) || (ii == r.0 && ii < jj && jj
+                < r.1)) ==> nums[ii] + nums[jj] != target,
+{
+    let n = nums.len();
+    let mut i = 0;
+    let mut j = 1;
+    while i < n - 1
+        invariant
+            0 <= i < n,
+            exists|idx1: int, idx2: int|
+                (0 <= idx1 && idx1 < idx2 && idx2 < nums.len()) && nums[idx1] + nums[idx2]
+                    == target,
+            forall|ii: int, jj: int|
+                ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j))
+                    ==> nums[ii] + nums[jj] != target,
+            n > 1,
+    {
+        j = i + 1;
+        while j < n
+            invariant
+                0 <= i < n,
+                forall|ii: int, jj: int|
+                    ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j))
+                        ==> nums[ii] + nums[jj] != target,
+                i < j <= n,
+                n > 1,
+        {
+            if nums[i] + nums[j] == target {
+                return (i, j);
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    (i, j)
+}
+
+} // verus!
+
+2024-09-02 19:16:24 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:16:24 INFO: refining with arraylen_inference
+2024-09-02 19:16:30 INFO: Infer time: 5.745121479034424s
+2024-09-02 19:16:30 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn two_sum(nums: &Vec<u32>, target: u32) -> (r: (usize, usize))
+    requires
+        nums.len() > 1,
+        forall|ii: int, jj: int|
+            ((0 <= ii && ii < nums.len() && ii < jj && jj < nums.len())) ==> nums[ii] + nums[jj]
+                < 256,
+        exists|i: int, j: int| (0 <= i && i < j && j < nums.len()) && nums[i] + nums[j] == target,
+    ensures
+        (0 <= r.0 && r.0 < r.1 && r.1 < nums.len()) && nums[r.0 as int] + nums[r.1 as int]
+            == target,
+        forall|ii: int, jj: int|
+            ((0 <= ii && ii < r.0 && ii < jj && jj < nums.len()) || (ii == r.0 && ii < jj && jj
+                < r.1)) ==> nums[ii] + nums[jj] != target,
+{
+    let n = nums.len();
+    let mut i = 0;
+    let mut j = 1;
+    while i < n - 1
+        invariant
+            0 <= i < n,
+            exists|idx1: int, idx2: int|
+                (0 <= idx1 && idx1 < idx2 && idx2 < nums.len()) && nums[idx1] + nums[idx2]
+                    == target,
+            forall|ii: int, jj: int|
+                ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j))
+                    ==> nums[ii] + nums[jj] != target,
+            n > 1,
+            nums.len() == n,
+    {
+        j = i + 1;
+        while j < n
+            invariant
+                0 <= i < n,
+                forall|ii: int, jj: int|
+                    ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j))
+                        ==> nums[ii] + nums[jj] != target,
+                i < j <= n,
+                nums.len() == n,
+        {
+            if nums[i] + nums[j] == target {
+                return (i, j);
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    (i, j)
+}
+
+} // verus!
+
+2024-09-02 19:16:31 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:16:31 INFO: refining with arrayrefine_inference
+2024-09-02 19:16:37 INFO: Infer time: 6.151843547821045s
+2024-09-02 19:16:37 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn two_sum(nums: &Vec<u32>, target: u32) -> (r: (usize, usize))
+    requires
+        nums.len() > 1,
+        forall|ii: int, jj: int|
+            ((0 <= ii && ii < nums.len() && ii < jj && jj < nums.len())) ==> nums[ii] + nums[jj]
+                < 256,
+        exists|i: int, j: int| (0 <= i && i < j && j < nums.len()) && nums[i] + nums[j] == target,
+    ensures
+        (0 <= r.0 && r.0 < r.1 && r.1 < nums.len()) && nums[r.0 as int] + nums[r.1 as int]
+            == target,
+        forall|ii: int, jj: int|
+            ((0 <= ii && ii < r.0 && ii < jj && jj < nums.len()) || (ii == r.0 && ii < jj && jj
+                < r.1)) ==> nums[ii] + nums[jj] != target,
+{
+    let n = nums.len();
+    let mut i = 0;
+    let mut j = 1;
+    while i < n - 1
+        invariant
+            0 <= i < n,
+            exists|idx1: int, idx2: int|
+                (0 <= idx1 && idx1 < idx2 && idx2 < nums.len()) && nums[idx1] + nums[idx2]
+                    == target,
+            // nums is never changed in this loop
+            forall|k: int| 0 <= k < nums.len() ==> (forall|ii: int, jj: int| ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j)) ==> nums[ii] + nums[jj] != target),
+            n > 1,
+    {
+        j = i + 1;
+        while j < n
+            invariant
+                0 <= i < n,
+                // nums is never changed in this loop
+                forall|k: int| 0 <= k < nums.len() ==> (forall|ii: int, jj: int| ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j)) ==> nums[ii] + nums[jj] != target),
+                i < j <= n,
+        {
+            if nums[i] + nums[j] == target {
+                return (i, j);
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    (i, j)
+}
+
+} // verus!
+
+2024-09-02 19:16:37 ERROR: Error: 'verified'
+2024-09-02 19:16:37 ERROR: Error: 'errors'
+2024-09-02 19:16:37 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:16:37 INFO: refining with condlooprefine_inference
+2024-09-02 19:16:45 INFO: Infer time: 7.704642295837402s
+2024-09-02 19:16:45 INFO: 
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+fn two_sum(nums: &Vec<u32>, target: u32) -> (r: (usize, usize))
+    requires
+        nums.len() > 1,
+        forall|ii: int, jj: int|
+            ((0 <= ii && ii < nums.len() && ii < jj && jj < nums.len())) ==> nums[ii] + nums[jj] < 256,
+        exists|i: int, j: int| (0 <= i && i < j && j < nums.len()) && nums[i] + nums[j] == target,
+    ensures
+        (0 <= r.0 && r.0 < r.1 && r.1 < nums.len()) && nums[r.0 as int] + nums[r.1 as int] == target,
+        forall|ii: int, jj: int|
+            ((0 <= ii && ii < r.0 && ii < jj && jj < nums.len()) || (ii == r.0 && ii < jj && jj < r.1)) ==> nums[ii] + nums[jj] != target,
+{
+    let n = nums.len();
+    let mut i = 0;
+    let mut j = 1;
+    while i < n - 1
+        invariant
+            0 <= i < n,
+            exists|idx1: int, idx2: int|
+                (0 <= idx1 && idx1 < idx2 && idx2 < nums.len()) && nums[idx1] + nums[idx2] == target,
+            forall|ii: int, jj: int|
+                ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j)) ==> nums[ii] + nums[jj] != target,
+            n > 1,
+            i > 0 ==> (forall|ii: int, jj: int|
+                ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j)) ==> nums[ii] + nums[jj] != target),
+    {
+        j = i + 1;
+        while j < n
+            invariant
+                0 <= i < n,
+                forall|ii: int, jj: int|
+                    ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j)) ==> nums[ii] + nums[jj] != target,
+                i < j <= n,
+                j > i + 1 ==> (forall|ii: int, jj: int|
+                    ((0 <= ii && ii < i && ii < jj && jj < n) || (ii == i && ii < jj && jj < j)) ==> nums[ii] + nums[jj] != target),
+        {
+            if nums[i] + nums[j] == target {
+                return (i, j);
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    (i, j)
+}
+} // verus!
+
+2024-09-02 19:16:46 INFO: New refined code under condloop is not better
+2024-09-02 19:16:46 INFO: Original code is better
+2024-09-02 19:16:46 INFO: finished!

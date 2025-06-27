@@ -1,0 +1,63 @@
+2024-09-03 19:38:05 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 19:38:05 INFO: Running in generation mode
+2024-09-03 19:38:05 INFO: Repair steps: 10
+2024-09-03 19:38:05 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:38:05 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:38:05 INFO: Generating proof code
+2024-09-03 19:38:05 INFO: Temperature: 1.0
+2024-09-03 19:38:05 INFO: Direct inference attempt 0
+2024-09-03 19:38:40 INFO: Infer time: 34.37387156486511s
+2024-09-03 19:38:40 INFO: Checking candidate 0-0
+2024-09-03 19:38:40 INFO: 0-0.rs in code pool
+2024-09-03 19:38:40 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 19:38:40 INFO: Checking candidate 0-1
+2024-09-03 19:38:40 ERROR: Error: 'verified'
+2024-09-03 19:38:40 ERROR: Error: 'errors'
+2024-09-03 19:38:40 INFO: Checking candidate 0-2
+2024-09-03 19:38:41 ERROR: Error: 'verified'
+2024-09-03 19:38:41 ERROR: Error: 'errors'
+2024-09-03 19:38:41 INFO: Checking candidate 0-3
+2024-09-03 19:38:41 ERROR: Error: 'verified'
+2024-09-03 19:38:41 ERROR: Error: 'errors'
+2024-09-03 19:38:41 INFO: Checking candidate 0-4
+2024-09-03 19:38:41 ERROR: Error: 'verified'
+2024-09-03 19:38:41 ERROR: Error: 'errors'
+2024-09-03 19:38:41 INFO: Working on merge-0.rs
+2024-09-03 19:38:46 INFO: Merged code is better.
+2024-09-03 19:38:46 INFO: Running houdini on merge-0.rs
+2024-09-03 19:38:46 INFO: refining with constantrefine_inference
+2024-09-03 19:39:11 INFO: Infer time: 24.554809093475342s
+2024-09-03 19:39:11 INFO: Verus has succeeded.
+2024-09-03 19:39:11 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains_consecutive_numbers(arr: &Vec<i32>) -> (is_consecutive: bool)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> (0 <= # [trigger] arr[i] + 1 < i32::MAX),
+    ensures
+        is_consecutive == (forall|i: int, j: int|
+            0 <= i < j < arr.len() && j == i + 1 ==> (arr[i] + 1 == arr[j])),
+{
+    let mut index = 0;
+    while (index < arr.len() - 1)
+        invariant
+            forall|i: int, j: int|
+                (0 <= i < j < index + 1) && (j == i + 1) ==> (arr[i] + 1 == arr[j]),
+            index + 1 <= arr.len(),
+            forall|i: int| 0 <= i < arr.len() ==> (0 <= # [trigger] arr[i] + 1 < i32::MAX), // added loop invariant
+    {
+        if (arr[index] + 1 != arr[index + 1]) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-09-03 19:39:11 INFO: Verus succeeded with refinement!!
+2024-09-03 19:39:12 INFO: finished!

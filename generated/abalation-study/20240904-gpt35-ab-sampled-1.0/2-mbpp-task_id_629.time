@@ -1,0 +1,441 @@
+2024-09-04 16:00:40 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 16:00:40 INFO: Running in generation mode
+2024-09-04 16:00:40 INFO: Repair steps: 10
+2024-09-04 16:00:41 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:00:41 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:00:41 INFO: Generating proof code
+2024-09-04 16:00:41 INFO: Temperature: 1.0
+2024-09-04 16:00:41 INFO: Direct inference attempt 0
+2024-09-04 16:00:43 INFO: Infer time: 2.265810966491699s
+2024-09-04 16:00:43 INFO: Checking candidate 0-0
+2024-09-04 16:00:43 INFO: 0-0.rs in code pool
+2024-09-04 16:00:43 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 16:00:43 INFO: Checking candidate 0-1
+2024-09-04 16:00:44 INFO: 0-1.rs in code pool
+2024-09-04 16:00:44 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 16:00:44 INFO: Checking candidate 0-2
+2024-09-04 16:00:44 INFO: 0-2.rs in code pool
+2024-09-04 16:00:44 INFO: 0-2.rs is now the best proof candidate
+2024-09-04 16:00:44 INFO: Checking candidate 0-3
+2024-09-04 16:00:45 INFO: Checking candidate 0-4
+2024-09-04 16:00:45 INFO: Working on merge-0.rs
+2024-09-04 16:00:49 INFO: Merged code is better.
+2024-09-04 16:00:49 INFO: Running houdini on merge-0.rs
+2024-09-04 16:00:50 INFO: Working on merge-1.rs
+2024-09-04 16:00:51 INFO: Running houdini on merge-1.rs
+2024-09-04 16:00:52 INFO: Working on merge-2.rs
+2024-09-04 16:00:52 INFO: Merged code is better.
+2024-09-04 16:00:52 INFO: Running houdini on merge-2.rs
+2024-09-04 16:00:53 INFO: refining with constantrefine_inference
+2024-09-04 16:00:54 INFO: Infer time: 1.403075933456421s
+2024-09-04 16:00:54 INFO: 
+fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+    requires
+        arr.len() > 0,
+    ensures
+        even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+{
+    let mut even_numbers: Vec<u32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0),
+            index <= arr.len(),
+            arr.len() > 0,
+    {
+        if (arr[index] % 2 == 0) {
+            even_numbers.push(arr[index]);
+        }
+        index += 1;
+    }
+    even_numbers
+}
+
+2024-09-04 16:00:59 INFO: Unsafe code change
+2024-09-04 16:00:59 INFO: Refinement did not change the code
+2024-09-04 16:00:59 INFO: refining with arraylen_inference
+2024-09-04 16:00:59 INFO: Infer time: 0.38409948348999023s
+2024-09-04 16:00:59 INFO: 
+    invariant
+        even_numbers.len() == even_numbers.len(),
+        index <= arr.len(),
+
+2024-09-04 16:00:59 ERROR: Error in comparing code changes: 
+2024-09-04 16:00:59 INFO: Unsafe code change
+2024-09-04 16:00:59 INFO: Refinement did not change the code
+2024-09-04 16:00:59 INFO: refining with arrayrefine_inference
+2024-09-04 16:01:01 INFO: Infer time: 1.944312334060669s
+2024-09-04 16:01:01 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+    ensures
+        even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+{
+    let mut even_numbers: Vec<u32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0),
+            // The array 'even_numbers' is the result of filtering elements from the input 'arr', and it is not modified within the loop.
+            // Therefore, the invariant covers every element in the array.
+            forall |k: int| 0 <= k < arr.len() ==> arr[k] % 2 == 0,
+            index <= arr.len(),
+    {
+        if (arr[index] % 2 == 0) {
+            even_numbers.push(arr[index]);
+        }
+        index += 1;
+    }
+    even_numbers
+}
+
+} // verus!
+
+2024-09-04 16:01:02 INFO: New refined code is a good repair
+2024-09-04 16:01:02 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+    ensures
+        even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+{
+    let mut even_numbers: Vec<u32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0),
+            // The array 'even_numbers' is the result of filtering elements from the input 'arr', and it is not modified within the loop.
+            // Therefore, the invariant covers every element in the array.
+            forall |k: int| 0 <= k < arr.len() ==> arr[k] % 2 == 0,
+            index <= arr.len(),
+    {
+        if (arr[index] % 2 == 0) {
+            even_numbers.push(arr[index]);
+        }
+        index += 1;
+    }
+    even_numbers
+}
+
+} // verus!
+
+2024-09-04 16:01:02 INFO: refining with condlooprefine_inference
+2024-09-04 16:01:05 INFO: Infer time: 3.078848361968994s
+2024-09-04 16:01:05 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+    ensures
+        even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+{
+    let mut even_numbers: Vec<u32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0),
+            // The array 'even_numbers' is the result of filtering elements from the input 'arr', and it is not modified within the loop.
+            // Therefore, the invariant covers every element in the array.
+            forall |k: int| 0 <= k < arr.len() ==> arr[k] % 2 == 0,
+            index <= arr.len(),
+            index > 0 ==> even_numbers.len() == (arr.subrange(0, index as int).filter(|x: u32| x % 2 == 0)).len(),
+    {
+        if (arr[index] % 2 == 0) {
+            even_numbers.push(arr[index]);
+        }
+        index += 1;
+    }
+    even_numbers
+}
+
+} // verus!
+
+2024-09-04 16:01:05 INFO: New refined code under condloop is not better
+2024-09-04 16:01:05 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:01:05 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:01:06 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-09-04 16:01:06 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 16:01:08 INFO: Infer time: 2.206930637359619s
+2024-09-04 16:01:08 INFO: Here is the quick fix output
+2024-09-04 16:01:08 ERROR: Error in comparing code changes: 
+2024-09-04 16:01:08 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 16:01:11 INFO: Infer time: 3.575334072113037s
+2024-09-04 16:01:12 INFO: repair-1-0 file generated
+2024-09-04 16:01:12 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 16:01:12 INFO: Step 1: VerusErrorType.InvFailFront is fixed. Proof updated 1-0.
+2024-09-04 16:01:12 INFO: Step 2: VerusErrorType.InvFailFront with num=3.
+2024-09-04 16:01:12 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 16:01:13 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 16:02:17 INFO: Infer time: 64.519779920578s
+2024-09-04 16:02:17 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:02:17 ERROR: Error in comparing code changes: 
+2024-09-04 16:02:17 INFO: repair-2-0 file generated
+2024-09-04 16:02:17 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:02:17 WARNING: The repair is not safe.
+2024-09-04 16:02:17 INFO: repair-2-1 file generated
+2024-09-04 16:02:17 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 16:02:18 INFO: Step 2: VerusErrorType.InvFailFront is fixed. Proof updated 2-1.
+2024-09-04 16:02:18 INFO: Step 3: VerusErrorType.AssertFail with num=3.
+2024-09-04 16:02:18 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 16:02:18 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:02:18 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:02:22 INFO: Infer time: 3.6355810165405273s
+2024-09-04 16:02:23 INFO: Infer time: 1.2942354679107666s
+2024-09-04 16:02:23 INFO: subrange lemma fix
+2024-09-04 16:02:24 INFO: Infer time: 1.0524799823760986s
+2024-09-04 16:02:24 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:02:24 ERROR: Error in comparing code changes: 
+2024-09-04 16:02:24 INFO: repair-3-0 file generated
+2024-09-04 16:02:24 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:02:24 WARNING: The repair is not safe.
+2024-09-04 16:02:25 INFO: Step 4: VerusErrorType.AssertFail with num=5.
+2024-09-04 16:02:25 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 16:02:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:02:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:02:28 INFO: Infer time: 3.680908679962158s
+2024-09-04 16:02:31 INFO: Infer time: 2.484462022781372s
+2024-09-04 16:02:31 INFO: subrange lemma fix
+2024-09-04 16:02:36 INFO: Infer time: 4.852420330047607s
+2024-09-04 16:02:36 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:02:36 INFO: repair-4-0 file generated
+2024-09-04 16:02:36 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:02:36 WARNING: The repair is not safe.
+2024-09-04 16:02:36 INFO: Step 5: VerusErrorType.AssertFail with num=5.
+2024-09-04 16:02:36 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 16:02:36 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:02:36 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:02:40 INFO: Infer time: 4.297765731811523s
+2024-09-04 16:02:40 ERROR: No verus! found in the code.
+2024-09-04 16:02:40 ERROR: No verus! found in the code.
+2024-09-04 16:02:43 INFO: Infer time: 2.7284395694732666s
+2024-09-04 16:02:43 INFO: subrange lemma fix
+2024-09-04 16:02:43 ERROR: No verus! found in the code.
+2024-09-04 16:02:43 ERROR: No verus! found in the code.
+2024-09-04 16:02:44 INFO: Infer time: 0.9910635948181152s
+2024-09-04 16:02:44 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:02:44 ERROR: Error in comparing code changes: 
+2024-09-04 16:02:44 INFO: repair-5-0 file generated
+2024-09-04 16:02:44 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:02:44 WARNING: The repair is not safe.
+2024-09-04 16:02:44 INFO: Step 6: VerusErrorType.AssertFail with num=5.
+2024-09-04 16:02:44 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 16:02:44 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:02:44 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:02:49 INFO: Infer time: 4.73366641998291s
+2024-09-04 16:02:52 INFO: Infer time: 3.2559280395507812s
+2024-09-04 16:02:52 INFO: subrange lemma fix
+2024-09-04 16:02:55 INFO: Infer time: 2.897968053817749s
+2024-09-04 16:02:55 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:02:55 INFO: repair-6-0 file generated
+2024-09-04 16:02:55 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:02:55 WARNING: The repair is not safe.
+2024-09-04 16:02:56 INFO: Step 7: VerusErrorType.AssertFail (failed last 4 time) with num=5.
+2024-09-04 16:02:56 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 16:02:56 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 16:04:01 INFO: Infer time: 65.36322164535522s
+2024-09-04 16:04:01 INFO: repair-7-0 file generated
+2024-09-04 16:04:01 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-04 16:04:01 INFO: Step 7: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 16:04:02 INFO: Step 8: VerusErrorType.InvFailFront with num=3.
+2024-09-04 16:04:02 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-04 16:04:05 INFO: Infer time: 3.619472026824951s
+2024-09-04 16:04:05 INFO: Here is the quick fix output
+2024-09-04 16:04:05 ERROR: Error in comparing code changes: 
+2024-09-04 16:04:05 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 16:04:10 INFO: Infer time: 4.560638189315796s
+2024-09-04 16:04:10 INFO: repair-8-0 file generated
+2024-09-04 16:04:10 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 16:04:10 INFO: Step 8: VerusErrorType.InvFailFront is fixed. Proof updated 8-0.
+2024-09-04 16:04:11 INFO: Step 9: VerusErrorType.AssertFail with num=3.
+2024-09-04 16:04:11 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 16:04:11 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:04:11 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:04:14 INFO: Infer time: 3.2369508743286133s
+2024-09-04 16:04:15 INFO: Infer time: 0.9569141864776611s
+2024-09-04 16:04:15 INFO: subrange lemma fix
+2024-09-04 16:04:15 ERROR: No verus! found in the code.
+2024-09-04 16:04:16 INFO: Infer time: 1.4377672672271729s
+2024-09-04 16:04:16 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:04:16 INFO: repair-9-0 file generated
+2024-09-04 16:04:16 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:04:16 WARNING: The repair is not safe.
+2024-09-04 16:04:17 INFO: Step 10: VerusErrorType.AssertFail with num=5.
+2024-09-04 16:04:17 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 16:04:17 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 16:04:17 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 16:04:21 INFO: Infer time: 4.426919460296631s
+2024-09-04 16:04:23 INFO: Infer time: 2.172693967819214s
+2024-09-04 16:04:23 INFO: subrange lemma fix
+2024-09-04 16:04:27 INFO: Infer time: 3.445486545562744s
+2024-09-04 16:04:27 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 16:04:27 INFO: repair-10-0 file generated
+2024-09-04 16:04:27 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 16:04:27 WARNING: The repair is not safe.
+2024-09-04 16:04:27 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-04 16:04:27 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-04 16:04:27 INFO: Original code is better
+2024-09-04 16:04:27 INFO: finished!
+Start repair
+
+while index < arr.len()
+    invariant
+        index > 0 ==> even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0),
+        forall |k: int| 0 <= k < arr.len() ==> arr[k] % 2 == 0,
+        index <= arr.len(),
+{
+    // loop body here
+}
+
+Warning: a non type error is passed to debug_type_error
+special fix: add reveal
+
+#[verifier::lemma_call]
+lemma_seq_subrange_all(arr@); // Call the lemma function just after initializing even_numbers
+
+//...
+
+proof {
+    lemma_seq_subrange_ascend(arr@, 0, index as int); // Call the lemma function inside the proof block
+    lemma_seq_subrange_all(arr@);  // Call the lemma function inside the proof block
+    assert(even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0));
+} // Moved loop invariant as an assertion
+
+Warning: a non type error is passed to debug_type_error
+special fix: add reveal
+
+#[verifier::proof]
+fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+    ensures
+        even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+{
+    reveal(Seq::filter);
+    let mut even_numbers: Vec<u32> = Vec::new();
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(arr@); // Added invocation to lemma_seq_subrange_all
+        lemma_seq_subrange_ascend(arr@, 0, 0); // Added invocation to lemma_seq_subrange_ascend
+        assert(even_numbers@ == arr@.subrange(0, 0).filter(|x: u32| x % 2 == 0));
+        assert(forall |k: int| 0 <= k < arr.len() ==> arr[k] % 2 == 0);
+    }
+    while index < arr.len()
+        invariant
+            even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0),
+            index <= arr.len(),
+    {
+        if (arr[index] % 2 == 0) {
+            even_numbers.push(arr[index]);
+        }
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(arr@, 0, index); // Added invocation to lemma_seq_subrange_ascend
+            lemma_seq_subrange_all(arr@); // Added invocation to lemma_seq_subrange_all
+            assert(even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0));
+        }
+    }
+    even_numbers
+}
+
+Warning: a non type error is passed to debug_type_error
+special fix: add reveal
+
+// ... (other code remains unchanged)
+
+// Assertion with invocation to lemma functions
+assert(even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0));
+invocation { seq_subrange_ascend(arr, 0, index as nat); }
+invocation { seq_subrange_all(arr, 0, index as nat, |x: u32| x % 2 == 0); }
+
+
+Warning: a non type error is passed to debug_type_error
+special fix: add reveal
+
+verus! {
+
+    #[verifier::loop_isolation(false)]
+    fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+        ensures
+            even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+    {
+        reveal(Seq::filter); // Added to help Verus understand filter
+        
+        let mut even_numbers: Vec<u32> = Vec::new();
+        let mut index = 0;
+        proof {
+            lemma_seq_subrange_all(arr@);  // Adding lemma invocation here
+            lemma_seq_subrange_all(arr@);  // Adding lemma invocation here
+            assert(even_numbers@ == arr@.subrange(0, 0).filter(|x: u32| x % 2 == 0));
+            assert(forall |k: int| 0 <= k < arr.len() ==> arr[k] % 2 == 0);
+        } // Moved loop invariant as an assertion
+        while index < arr.len()
+            invariant
+                even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0),
+                index <= arr.len(),
+        {
+            if (arr[index] % 2 == 0) {
+                even_numbers.push(arr[index]);
+            }
+            index += 1;
+            proof {
+                lemma_seq_subrange_ascend(arr@, 0, index as int);  // Adding lemma invocation here
+                lemma_seq_subrange_all(arr@);  // Adding lemma invocation here
+                assert(even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0));
+            } // Added by AI
+        }
+        even_numbers
+    }
+} // verus!
+
+Warning: a non type error is passed to debug_type_error
+Your code seems to have addressed the issue with the loop invariant. It appears that you've appropriately modified the loop invariant to be conditioned on the loop index. The new invariant should now hold at the beginning of each loop iteration. Good job on the modifications!
+special fix: add reveal
+
+#[verifier::seq_subrange_all]
+fn lemma_seq_subrange_all<T>(s: &Seq<T>)
+    ensures s@ == s[..] // Add this line
+{}
+
+#[verifier::loop_isolation(false)]
+
+fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+    requires
+        lemma_seq_subrange_all(arr@),  // Add this line
+        lemma_seq_subrange_ascend(arr@, 0, index as int),  // Add this line
+    ensures
+        even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+    {
+        reveal(Seq::filter); // Add this line
+        // ... rest of your function
+    }
+
+Warning: a non type error is passed to debug_type_error
+special fix: add reveal
+
+    #[verifier::loop_isolation(false)]
+    fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+        ensures
+            even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+    {
+        reveal(Seq::filter);
+        let index = 5; // For example
+        lemma_seq_subrange_all(arr@);
+        let result = arr.filter(|x: u32| x % 2 == 0);
+        lemma_seq_subrange_ascend(arr@, 0, index as int + 1);
+        lemma_seq_subrange_all(arr@.subrange(0, index as int));
+        assert(arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0) == even_numbers@);
+        result
+    }
+    // ... rest of the verus block
+
+Warning: a non type error is passed to debug_type_error

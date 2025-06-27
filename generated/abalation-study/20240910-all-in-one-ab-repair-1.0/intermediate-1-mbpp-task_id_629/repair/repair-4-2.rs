@@ -1,0 +1,105 @@
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+    #[verifier::loop_isolation(false)]
+    fn find_even_numbers(arr: &Vec<u32>) -> (even_numbers: Vec<u32>)
+        ensures
+            even_numbers@ == arr@.filter(|x: u32| x % 2 == 0),
+    {
+        let mut even_numbers: Vec<u32> = Vec::new();
+        let mut index = 0;
+
+        while index < arr.len()
+            invariant
+                even_numbers@ == arr@.subrange(0, index as int).filter(|x: u32| x % 2 == 0),
+                index <= arr.len(),
+                arr.len() == arr.len(),
+                forall |k: int| 0 <= k < arr.len() ==> arr@[k] == arr@[k], // Fixed incorrect usage
+        {
+            if (arr[index] % 2 == 0) {
+                even_numbers.push(arr[index]);
+            }
+            index += 1;
+        }
+
+        even_numbers
+    }
+}
+
+For the initial issue with your sorting function, we need to ensure the postcondition check is satisfied and there are no precondition violations at the start of loops. Here's the updated version:
+
+rust
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+    spec fn sorted_between(a: Seq<u32>, from: int, to: int) -> bool {
+        forall |i: int, j:int|  from <= i < j < to ==> a[i] <= a[j]
+    }
+ 
+    spec fn is_reorder_of<T>(r: Seq<int>, p: Seq<T>, s: Seq<T>) -> bool {
+        &&& r.len() == s.len()
+        &&& forall|i: int| 0 <= i < r.len() ==> 0 <= #[trigger] r[i] < r.len()
+        &&& forall|i: int, j: int| 0 <= i < j < r.len() ==> r[i] != r[j]
+        &&& p =~= r.map_values(|i: int| s[i])
+    }
+ 
+    fn test1(nums: &mut Vec<u32>)
+        ensures
+            sorted_between(nums@, 0, nums@.len() as int),
+            exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+    {
+        let n = nums.len();
+        if n == 0 {
+            proof {
+                let r = Seq::new(nums@.len(), |i: int| i);
+                assert(is_reorder_of(r, nums@, nums@));
+                assert(exists|r: Seq<int>| is_reorder_of(r, nums@, nums@));
+            }
+            return;
+        }
+
+        for i in 1..n
+            invariant
+                n == nums.len(),
+                sorted_between(nums@, 0, i as int),
+                exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+        {
+            let mut j = i;
+            while j != 0
+                invariant
+                    0 <= j <= i,
+                    i < n,
+                    n == nums.len(),
+                    forall|x: int, y: int| 0 <= x <= y <= i ==> x != j && y != j ==> nums[x] <= nums[y],
+                    sorted_between(nums@, j as int, i + 1),
+                    exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@),
+            {
+                if nums[j - 1] > nums[j] {
+                    proof {
+                        let r1 = choose|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@);
+                        let r2 = r1.update(j-1, r1[j as int]).update(j as int, r1[j-1]);
+                        assert(is_reorder_of(r2, nums@.update(j-1, nums@[j as int]).update(j as int, nums@[j-1]), old(nums)@));
+                    }
+                    let temp = nums[j - 1];
+                    nums.set(j - 1, nums[j]);
+                    nums.set(j, temp);
+                }
+                j -= 1;
+                proof {
+                    assert(exists|r: Seq<int>| is_reorder_of(r, nums@, old(nums)@));
+                }
+            }
+        }
+    }
+}
+
+
+// error: multiple input filenames provided (first two filenames are `` and `/tmp/tmp4_a72z7_`)
+// 
+
+// Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+// Safe: False

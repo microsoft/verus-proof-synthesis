@@ -1,0 +1,113 @@
+2024-09-04 17:02:37 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 17:02:37 INFO: Running in generation mode
+2024-09-04 17:02:37 INFO: Repair steps: 10
+2024-09-04 17:02:37 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 17:02:37 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 17:02:37 INFO: Generating proof code
+2024-09-04 17:02:37 INFO: Temperature: 1.0
+2024-09-04 17:02:37 INFO: Direct inference attempt 0
+2024-09-04 17:02:43 INFO: Infer time: 6.124977111816406s
+2024-09-04 17:02:43 INFO: Checking candidate 0-0
+2024-09-04 17:02:43 INFO: 0-0.rs in code pool
+2024-09-04 17:02:43 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 17:02:43 INFO: Checking candidate 0-1
+2024-09-04 17:02:44 INFO: 0-1.rs in code pool
+2024-09-04 17:02:44 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 17:02:44 INFO: Checking candidate 0-2
+2024-09-04 17:02:44 INFO: 0-2.rs in code pool
+2024-09-04 17:02:44 INFO: 0-2.rs is now the best proof candidate
+2024-09-04 17:02:44 INFO: Checking candidate 0-3
+2024-09-04 17:02:45 INFO: 0-3.rs in code pool
+2024-09-04 17:02:45 INFO: 0-3.rs is now the best proof candidate
+2024-09-04 17:02:45 INFO: Working on merge-0.rs
+2024-09-04 17:02:49 INFO: Merged code is better.
+2024-09-04 17:02:49 INFO: Running houdini on merge-0.rs
+2024-09-04 17:02:50 INFO: Working on merge-1.rs
+2024-09-04 17:02:50 ERROR: Error in merging code at step 1: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origcjqq5dbi.rs /tmp/merge_new_inv1i5d2p4s.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-04 17:02:50 INFO: Working on merge-2.rs
+2024-09-04 17:02:50 ERROR: Error in merging code at step 2: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origifrd0orp.rs /tmp/merge_new_invmnmsfmnh.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-04 17:02:50 INFO: Working on merge-3.rs
+2024-09-04 17:02:50 ERROR: Error in merging code at step 3: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origkk9vnt5m.rs /tmp/merge_new_inv8a5ohh6z.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-04 17:02:50 INFO: refining with constantrefine_inference
+2024-09-04 17:02:56 INFO: Infer time: 5.786251068115234s
+2024-09-04 17:02:56 INFO: Verus has succeeded.
+2024-09-04 17:02:56 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn conditional_average(
+    vals_1: &Vec<u64>,
+    vals_2: &Vec<u64>,
+    conds_1: &Vec<bool>,
+    conds_2: &Vec<bool>,
+    avgs: &mut Vec<u64>,
+)
+    requires
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall|idx: int|
+            0 <= idx < vals_1.len() ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx])
+                && (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])),
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            conds_1.len() == common_len,
+            conds_2.len() == common_len,
+            forall|idx: int|
+                0 <= idx < k ==> ((conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx]
+                    + vals_2[idx]) / 2) && (conds_1[idx] && !conds_2[idx] ==> avgs[idx]
+                    == vals_1[idx]) && (!conds_1[idx] && conds_2[idx] ==> avgs[idx]
+                    == vals_2[idx])),
+            k <= common_len,
+            vals_1.len() == common_len,
+            vals_2.len() == common_len,
+            forall|idx: int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+            forall|idx: int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall|idx: int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            } else {
+                new_avg = vals_1[k];
+            }
+        } else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+
+} // verus!
+
+2024-09-04 17:03:00 INFO: Verus succeeded with refinement!!
+2024-09-04 17:03:01 INFO: finished!
