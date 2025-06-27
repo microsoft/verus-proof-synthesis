@@ -14,6 +14,7 @@ This repository contains code and artifacts for the paper "**AutoVerus: Automate
   * `ablation/` - Tasks for ablation studies
   * See [benchmarks README](benchmarks/README.md) for details
 * **`code/`** - Python implementation of AutoVerus proof synthesis
+  * See [code README](code/README.md) for details
 * **`utils/lynette/`** - Verus parser supporting proof synthesis
 * **`generated/`** - Pre-generated proof results
   * `autoverus-generated/` - Results from our AutoVerus approach
@@ -128,7 +129,7 @@ All generated correct proofs have been verified by Verus to ensure correctness.
 > - Full reproduction requires time and OpenAI API costs
 > - Consider running experiments in parallel or on subsets for faster evaluation
 
-### 📊 Section 7.1: Overall Results (Paper Table 2)
+### 📊 Section 7.1: Overall Results
 
 **What it does:** Evaluates AutoVerus on all four benchmark suites to demonstrate overall effectiveness.
 
@@ -140,7 +141,7 @@ python verify.py --name gpt4o-mbpp --config-file config-artifact-openai.json
 python verify.py --name gpt4o-misc --config-file config-artifact-openai.json
 ```
 
-### 🔄 Section 7.2: Baseline Comparison (Paper Table 3)
+### 🔄 Section 7.2: Baseline Comparison
 
 **What it does:** Compares AutoVerus against direct LLM baseline to show the benefit of our approach.
 
@@ -154,7 +155,7 @@ python verify.py --name baseline-misc-simple --is-baseline
 
 ### 🔬 Section 7.4: Ablation Studies
 
-#### 7.4.1: Phase Analysis (Paper Figure 4)
+#### 7.4.1: Phase Analysis
 
 **What it does:** Studies the contribution of different components in our two-phase approach.
 
@@ -180,7 +181,7 @@ python verify.py --name disable-ranking-ab-inference --disable-ranking --repair-
 python verify.py --name disable-ranking-ab-refinement --disable-ranking --repair-num 0
 ```
 
-#### 7.4.2: Phase-3 Analysis (Paper Figure 5)
+#### 7.4.2: Phase-3 Analysis
 
 **What it does:** Compares our targeted repair approach vs. all-in-one repair strategy.
 
@@ -189,7 +190,7 @@ python verify.py --name disable-ranking-ab-refinement --disable-ranking --repair
 python verify.py --name all-in-one-ab-repair --repair-uniform --direct-repair
 ```
 
-#### 7.4.3: LLM Model Analysis (Paper Figure 6)
+#### 7.4.3: LLM Model Analysis
 
 **What it does:** Studies impact of different LLM choices and temperature settings.
 
