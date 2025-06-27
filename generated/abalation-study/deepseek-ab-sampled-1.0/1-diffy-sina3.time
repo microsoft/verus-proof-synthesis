@@ -1,0 +1,101 @@
+2025-03-24 03:55:43 WARNING: Phase 1 examples: ['3', '6', '7']
+2025-03-24 03:55:43 INFO: Running in generation mode
+2025-03-24 03:55:43 INFO: Repair steps: 10
+2025-03-24 03:55:43 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2025-03-24 03:55:43 WARNING: Generation initialized with repair_uniform: False
+2025-03-24 03:55:43 INFO: Generating proof code
+2025-03-24 03:55:43 INFO: Temperature: 1.0
+2025-03-24 03:55:43 INFO: Direct inference attempt 0
+2025-03-24 03:56:40 INFO: Infer time: 56.68749523162842s
+2025-03-24 03:56:40 INFO: Checking candidate 0-0
+2025-03-24 03:56:40 INFO: 0-0.rs in code pool
+2025-03-24 03:56:40 INFO: 0-0.rs is now the best proof candidate
+2025-03-24 03:56:40 INFO: Checking candidate 0-1
+2025-03-24 03:56:41 INFO: 0-1.rs in code pool
+2025-03-24 03:56:41 INFO: 0-1.rs is now the best proof candidate
+2025-03-24 03:56:41 INFO: Checking candidate 0-2
+2025-03-24 03:56:41 INFO: 0-2.rs in code pool
+2025-03-24 03:56:41 INFO: Checking candidate 0-3
+2025-03-24 03:56:42 INFO: 0-3.rs in code pool
+2025-03-24 03:56:42 INFO: 0-3.rs is now the best proof candidate
+2025-03-24 03:56:42 INFO: Working on merge-0.rs
+2025-03-24 03:56:55 INFO: Running houdini on merge-0.rs
+2025-03-24 03:56:56 INFO: Working on merge-1.rs
+2025-03-24 03:57:12 INFO: Merged code is better.
+2025-03-24 03:57:12 INFO: Running houdini on merge-1.rs
+2025-03-24 03:57:12 INFO: Merged code with hdn is correct.
+2025-03-24 03:57:16 INFO: finished!
+Using client 0
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+pub fn myfun(a: &mut Vec<i32>, b: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+	requires
+		N > 0,
+		old(a).len() == N,
+		old(b).len() == N,
+		old(sum).len() == 1,
+		N < 1000,
+	ensures
+		forall |k:int| 0 <= k < N ==> a[k] == N + 1,
+{
+	sum.set(0, 0);
+	let mut i: usize = 0;
+	while (i < N as usize)
+		invariant
+			i <= N,
+			sum[0] == 0,
+			a.len() == N,
+			b.len() == N,
+			forall |k: int| 0 <= k < i ==> a[k] == 1,
+	{
+		a.set(i, 1);
+		i = i + 1;
+	}
+
+	i = 0;
+	while (i < N as usize)
+		invariant
+			i <= N,
+			sum[0] == 0,
+			a.len() == N,
+			b.len() == N,
+			forall |k: int| 0 <= k < i ==> b[k] == 1,
+			forall |k: int| 0 <= k < N ==> a[k] == 1,
+	{
+		b.set(i, 1);
+		i = i + 1;
+	}
+
+	i = 0;
+	while (i < N as usize)
+		invariant
+			i <= N,
+			a.len() == N,
+			b.len() == N,
+			forall |k: int| 0 <= k < N ==> b[k] == 1,
+			forall |k: int| 0 <= k < N ==> a[k] == 1,
+			sum[0] == i as i32,
+	{
+		sum.set(0, sum[0] + a[i]);
+		i = i + 1;
+	}
+
+	i = 0;
+	while (i < N as usize)
+		invariant
+			i <= N,
+			a.len() == N,
+			b.len() == N,
+			sum[0] == N,
+			forall |k: int| 0 <= k < i ==> a[k] == N + 1,
+			forall |k: int| i <= k < N ==> a[k] == 1,
+	{
+		a.set(i, b[i] + sum[0]);
+		i = i + 1;
+	}
+}
+}

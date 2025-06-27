@@ -1,0 +1,67 @@
+2025-03-24 04:13:40 WARNING: Phase 1 examples: ['3', '6', '7']
+2025-03-24 04:13:40 INFO: Running in generation mode
+2025-03-24 04:13:40 INFO: Repair steps: 10
+2025-03-24 04:13:41 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2025-03-24 04:13:41 WARNING: Generation initialized with repair_uniform: False
+2025-03-24 04:13:41 INFO: Generating proof code
+2025-03-24 04:13:41 INFO: Temperature: 1.0
+2025-03-24 04:13:41 INFO: Direct inference attempt 0
+2025-03-24 04:14:34 INFO: Infer time: 52.972914695739746s
+2025-03-24 04:14:34 INFO: Checking candidate 0-0
+2025-03-24 04:14:38 INFO: Checking candidate 0-1
+2025-03-24 04:14:38 ERROR: Error: 'verified'
+2025-03-24 04:14:38 ERROR: Error: 'errors'
+2025-03-24 04:14:38 INFO: Checking candidate 0-2
+2025-03-24 04:14:39 INFO: Checking candidate 0-3
+2025-03-24 04:14:39 INFO: Verus has succeeded.
+2025-03-24 04:14:39 INFO: Verus succeeded!!
+2025-03-24 04:14:39 INFO: finished!
+Using client 0
+
+
+The function `all_elements_equals` is designed to check if every element in a given vector equals a specified value. To ensure its correctness, we add loop invariants that formally specify the properties maintained during each iteration of the loop. These invariants make it clear to the Verus verifier that the function behaves as intended.
+
+```rust
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn all_elements_equals(arr: &Vec<i32>, element: i32) -> (result: bool)
+    ensures
+        result == (forall|i: int| 0 <= i < arr.len() ==> (arr[i] == element)),
+    requires
+        // Any necessary preconditions can be specified here
+    {
+        let mut index = 0;
+
+        while (index < arr.len())
+            invariant
+                index <= arr.len(),
+                0 <= index < arr.len() ==> arr[index] == element,
+        {
+            if arr[index] != element {
+                return false;
+            }
+            index += 1;
+        }
+
+        true
+    }
+
+} // verus!
+```
+
+**Explanation:**
+
+1. **Loop Invariants:**
+   - `index <= arr.len()`: Ensures that the loop index does not exceed the length of the array, preventing out-of-bounds access.
+   - `0 <= index < arr.len() ==> arr[index] == element`: For every index value checked so far, the corresponding element in `arr` is equal to `element`. This invariant supports the correctness of the function by ensuring that all elements up to the current index meet the specified condition.
+
+2. **Function Logic:**
+   - The function initializes `index` to 0 and iterates through each element of `arr`.
+   - During each iteration, it checks the current element against `element`. If any element does not match, the function returns `false` immediately.
+   - If the loop completes without finding any mismatches, the function returns `true`, indicating all elements are equal to `element`.
+
+By incorporating these invariants, Verus can ensure that the function adheres to its specification, thus verifying its correctness formally.

@@ -1,0 +1,145 @@
+2025-03-24 08:04:39 WARNING: Phase 1 examples: ['3', '6', '7']
+2025-03-24 08:04:39 INFO: Running in generation mode
+2025-03-24 08:04:39 INFO: Repair steps: 10
+2025-03-24 08:04:39 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2025-03-24 08:04:39 WARNING: Generation initialized with repair_uniform: False
+2025-03-24 08:04:39 INFO: Generating proof code
+2025-03-24 08:04:39 INFO: Temperature: 1.0
+2025-03-24 08:04:39 INFO: Direct inference attempt 0
+2025-03-24 08:05:47 INFO: Infer time: 67.9817328453064s
+2025-03-24 08:05:47 INFO: Checking candidate 0-0
+2025-03-24 08:05:53 INFO: 0-0.rs in code pool
+2025-03-24 08:05:53 INFO: 0-0.rs is now the best proof candidate
+2025-03-24 08:05:53 INFO: Checking candidate 0-1
+2025-03-24 08:05:53 INFO: 0-1.rs in code pool
+2025-03-24 08:05:53 INFO: 0-1.rs is now the best proof candidate
+2025-03-24 08:05:53 INFO: Checking candidate 0-2
+2025-03-24 08:05:54 INFO: Checking candidate 0-3
+2025-03-24 08:05:54 INFO: 0-3.rs in code pool
+2025-03-24 08:05:54 INFO: Checking candidate 0-4
+2025-03-24 08:05:55 INFO: 0-4.rs in code pool
+2025-03-24 08:05:55 INFO: Working on merge-0.rs
+2025-03-24 08:06:00 INFO: Merged code is better.
+2025-03-24 08:06:00 INFO: Running houdini on merge-0.rs
+2025-03-24 08:06:01 INFO: Working on merge-1.rs
+2025-03-24 08:06:02 INFO: Merged code is better.
+2025-03-24 08:06:02 INFO: Running houdini on merge-1.rs
+2025-03-24 08:06:04 INFO: Working on merge-2.rs
+2025-03-24 08:06:19 INFO: Merged code is better.
+2025-03-24 08:06:19 INFO: Running houdini on merge-2.rs
+2025-03-24 08:06:22 INFO: Working on merge-3.rs
+2025-03-24 08:06:28 INFO: Merged code is better.
+2025-03-24 08:06:28 INFO: Running houdini on merge-3.rs
+2025-03-24 08:06:28 INFO: Merged code with hdn is correct.
+2025-03-24 08:06:32 INFO: finished!
+Using client 0
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, b: &mut Vec<i32>, c: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(b).len() == N,
+        old(c).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] <= 3 * N,
+{
+    sum.set(0, 0);
+    let mut i: usize = 0;
+
+    // First loop: initialize a to 1s
+    while (i < N as usize)
+        invariant
+            i <= N,
+            a.len() == N,
+            sum.len() == 1,
+            sum[0] == 0,
+            forall |k: int| 0 <= k < i ==> a[k] == 1,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+
+    i = 0;
+
+    // Second loop: sum a
+    while (i < N as usize)
+        invariant
+            i <= N,
+            a.len() == N,
+            sum.len() == 1,
+            sum[0] == i as i32,
+            forall |k: int| 0 <= k < i ==> a[k] == 1,
+    {
+        sum.set(0, sum[0] + a[i]);
+        i = i + 1;
+    }
+
+    i = 0;
+
+    // Third loop: initialize b to 1s
+    while (i < N as usize)
+        invariant
+            i <= N,
+            b.len() == N,
+            sum.len() == 1,
+            sum[0] == N as i32,
+            forall |k: int| 0 <= k < i ==> b[k] == 1,
+    {
+        b.set(i, 1);
+        i = i + 1;
+    }
+
+    i = 0;
+
+    // Fourth loop: sum b
+    while (i < N as usize)
+        invariant
+            i <= N,
+            b.len() == N,
+            sum.len() == 1,
+            sum[0] == N as i32 + i as i32,
+            forall |k: int| 0 <= k < i ==> b[k] == 1,
+    {
+        sum.set(0, sum[0] + b[i]);
+        i = i + 1;
+    }
+
+    i = 0;
+
+    // Fifth loop: initialize c to 1s
+    while (i < N as usize)
+        invariant
+            i <= N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] == 2 * (N as i32),
+            forall |k: int| 0 <= k < i ==> c[k] == 1,
+    {
+        c.set(i, 1);
+        i = i + 1;
+    }
+
+    i = 0;
+
+    // Sixth loop: sum c
+    while (i < N as usize)
+        invariant
+            i <= N,
+            c.len() == N,
+            sum.len() == 1,
+            sum[0] == 2 * (N as i32) + i as i32,
+            forall |k: int| 0 <= k < i ==> c[k] == 1,
+    {
+        sum.set(0, sum[0] + c[i]);
+        i = i + 1;
+    }
+}
+}

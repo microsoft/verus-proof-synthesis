@@ -60,19 +60,20 @@ generated/
 │   ├── baseline-mbpp-1.0/       # Baseline on MBPP benchmarks
 │   └── baseline-misc-1.0/       # Baseline on Misc benchmarks
 └── abalation-study/             # Results from ablation experiments
-    ├── 20240831-few-shot-ab-inference-without-3-1.0/
-    ├── 20240831-few-shot-ab-inference-without-6-1.0/
-    ├── 20240831-few-shot-ab-inference-without-7-1.0/
-    ├── 20240902-disable-ranking-ab-inference-1.0/
-    ├── 20240902-disable-ranking-ab-refinement-1.0/
-    ├── 20240902-merge-inference-refinement-ab-inference-1.0/
-    ├── 20240902-merge-inference-refinement-ab-refinement-1.0/
-    ├── 20240903-gpt4turbo-ab-sampled-1.0/
-    ├── 20240903-temp-ab-sampled-0.1/
-    ├── 20240903-temp-ab-sampled-0.4/
-    ├── 20240903-temp-ab-sampled-0.7/
-    ├── 20240904-gpt35-ab-sampled-1.0/
-    └── 20240910-all-in-one-ab-repair-1.0/
+    ├── few-shot-ab-inference-without-3-1.0/
+    ├── few-shot-ab-inference-without-6-1.0/
+    ├── few-shot-ab-inference-without-7-1.0/
+    ├── disable-ranking-ab-inference-1.0/
+    ├── disable-ranking-ab-refinement-1.0/
+    ├── merge-inference-refinement-ab-inference-1.0/
+    ├── merge-inference-refinement-ab-refinement-1.0/
+    ├── gpt35-ab-sampled-1.0/
+    ├── gpt4turbo-ab-sampled-1.0/
+    ├── deepseek-ab-sampled-1.0/
+    ├── temp-ab-sampled-0.1/
+    ├── temp-ab-sampled-0.4/
+    ├── temp-ab-sampled-0.7/
+    └── all-in-one-ab-repair-1.0/
 ```
 
 ### 📄 Result File Structure
@@ -84,9 +85,9 @@ benchmark-name/
 ├── 1-benchmark_name.rs          # Final generated proof (if successful)
 ├── 1-benchmark_name.time        # Execution timing and logging information
 └── intermediate-1-benchmark_name/  # All intermediate attempts
-    ├── 0-0.rs, 0-1.rs, ...     # Phase-1 proof attempts (multiple candidates)
-    ├── 1-0.rs, 1-1.rs, ...     # Phase-2 refinement attempts  
-    └── 2-0.rs, 2-1.rs, ...     # Phase-3 repair attempts (if needed)
+    ├── 0-0.rs, 0-1.rs, ..., 1-0.rs, ...    # Phase-1 proof attempts (multiple candidates)
+    ├── refine-0.rs, refine-1.rs, ...    # Phase-2 refinement attempts (if needed)
+    └── repair/  # Phase-3 repair attempts (if needed)
 ```
 
 **File Descriptions:**
@@ -98,6 +99,13 @@ benchmark-name/
 
 **1. Quick Analysis:**
 Browse the final `.rs` files to see successfully generated proofs for each benchmark.
+Their verification score is shown in the end of the file.
+For instance,
+```
+// Score: (1, 2)
+// Safe: True
+```
+For the verified proofs, the score should be `(N, 0)` and `Safe: True`.
 
 **2. Detailed Investigation:**
 - Check `.time` files for execution statistics and error logs
@@ -106,12 +114,12 @@ Browse the final `.rs` files to see successfully generated proofs for each bench
 
 **3. Reproduce Paper Results:**
 The generated results directly support the claims in our paper:
-- **Table 2** (Overall Results): Compare success rates across `autoverus-generated/` directories
-- **Table 3** (Baseline Comparison): Compare `autoverus-generated/` vs `baseline-generated/`  
-- **Figures 4-6** (Ablation Studies): Analyze results in `abalation-study/` directories
+- **Section 7.1 & 7.3** (Overall Results): Compare success rates across `autoverus-generated/` directories
+- **Section 7.2** (Baseline Comparison): Compare `autoverus-generated/` vs `baseline-generated/`  
+- **Section 7.4** (Ablation Studies): Analyze results in `abalation-study/` directories
 
 **4. Verification:**
-All generated proofs in final `.rs` files have been verified by Verus to ensure correctness.
+All generated correct proofs have been verified by Verus to ensure correctness.
 
 ## 🧪 Full Experimental Reproduction
 
@@ -132,17 +140,9 @@ python verify.py --name gpt4o-mbpp --config-file config-artifact-openai.json
 python verify.py --name gpt4o-misc --config-file config-artifact-openai.json
 ```
 
-**Expected results:** Success rates should match paper Table 2:
-- Clover: ~85% success rate
-- Diffy: ~75% success rate  
-- MBPP: ~80% success rate
-- Misc: ~70% success rate
-
 ### 🔄 Section 7.2: Baseline Comparison (Paper Table 3)
 
 **What it does:** Compares AutoVerus against direct LLM baseline to show the benefit of our approach.
-
-
 
 ```bash
 # Run baseline approach on each benchmark suite
@@ -151,8 +151,6 @@ python verify.py --name baseline-diffy-simple --is-baseline
 python verify.py --name baseline-mbpp-simple --is-baseline
 python verify.py --name baseline-misc-simple --is-baseline
 ```
-
-**Expected results:** Baseline should show significantly lower success rates (~30-50%) compared to AutoVerus.
 
 ### 🔬 Section 7.4: Ablation Studies
 
@@ -219,20 +217,6 @@ python verify.py --name temp-ab-sampled --temp 0.1 --config-file config-artifact
 python verify.py --name temp-ab-sampled --temp 0.4 --config-file config-artifact-openai.json  
 python verify.py --name temp-ab-sampled --temp 0.7 --config-file config-artifact-openai.json
 ```
-
-## 📈 Understanding Results
-
-**Result Files:** All results are saved in `results/<experiment-name>/`:
-- `summary.json` - Overall statistics and success rates
-- `detailed_results.json` - Per-benchmark detailed results  
-- `generated_proofs/` - All generated Verus proofs
-- `logs/` - Detailed execution logs
-
-**Key Metrics:**
-- **Success Rate** - Percentage of benchmarks with valid proofs
-- **Average Attempts** - Mean number of LLM calls needed per successful proof
-- **Runtime** - Total execution time
-- **Cost** - Estimated OpenAI API costs
 
 ## 🛠️ Running on Your Own Machine
 
