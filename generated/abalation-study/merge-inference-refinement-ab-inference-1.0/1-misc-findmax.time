@@ -1,0 +1,38 @@
+2024-09-02 17:33:59 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:33:59 INFO: Running in generation mode
+2024-09-02 17:33:59 INFO: Repair steps: 0
+2024-09-02 17:34:00 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:34:00 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:34:00 INFO: Generating proof code
+2024-09-02 17:34:00 INFO: Temperature: 1.0
+2024-09-02 17:34:00 INFO: Generate with uniform refinement mode
+2024-09-02 17:34:00 INFO: Direct inference attempt 0
+2024-09-02 17:34:00 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:34:04 INFO: Infer time: 4.103264808654785s
+2024-09-02 17:34:04 INFO: Checking candidate 0-0
+2024-09-02 17:34:04 INFO: 0-0.rs in code pool
+2024-09-02 17:34:04 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 17:34:04 INFO: Checking candidate 0-1
+2024-09-02 17:34:04 INFO: 0-1.rs in code pool
+2024-09-02 17:34:04 INFO: 0-1.rs is now the best proof candidate
+2024-09-02 17:34:04 INFO: Checking candidate 0-2
+2024-09-02 17:34:05 INFO: 0-2.rs in code pool
+2024-09-02 17:34:05 INFO: 0-2.rs is now the best proof candidate
+2024-09-02 17:34:05 INFO: Checking candidate 0-3
+2024-09-02 17:34:05 INFO: 0-3.rs in code pool
+2024-09-02 17:34:05 INFO: 0-3.rs is now the best proof candidate
+2024-09-02 17:34:05 INFO: Working on merge-0.rs
+2024-09-02 17:34:10 INFO: Merged code is better.
+2024-09-02 17:34:10 INFO: Running houdini on merge-0.rs
+2024-09-02 17:34:10 INFO: Working on merge-1.rs
+2024-09-02 17:34:11 INFO: Running houdini on merge-1.rs
+2024-09-02 17:34:11 INFO: Working on merge-2.rs
+2024-09-02 17:34:12 INFO: Running houdini on merge-2.rs
+2024-09-02 17:34:12 INFO: Working on merge-3.rs
+2024-09-02 17:34:13 INFO: Merged code is better.
+2024-09-02 17:34:13 INFO: Running houdini on merge-3.rs
+2024-09-02 17:34:14 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:34:14 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:34:14 INFO: Houdini code is better
+2024-09-02 17:34:19 INFO: finished!
+Start repair

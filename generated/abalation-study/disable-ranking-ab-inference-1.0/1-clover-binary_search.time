@@ -1,0 +1,97 @@
+2024-09-02 18:39:49 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 18:39:49 INFO: Running in generation mode
+2024-09-02 18:39:49 INFO: Repair steps: 0
+2024-09-02 18:39:49 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 18:39:49 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 18:39:49 INFO: Generating proof code
+2024-09-02 18:39:49 INFO: Temperature: 1.0
+2024-09-02 18:39:49 WARNING: Disabled ranking
+2024-09-02 18:39:49 INFO: Direct inference attempt 0
+2024-09-02 18:39:53 INFO: Infer time: 4.20529317855835s
+2024-09-02 18:39:53 INFO: Checking candidate 0-0
+2024-09-02 18:39:54 INFO: 0-0.rs in code pool
+2024-09-02 18:39:54 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 18:39:54 INFO: Working on merge-0.rs
+2024-09-02 18:39:58 ERROR: Error in merging code at step 0: Error in merging invariants:   Compiling unicode-ident v1.0.12
+   Compiling proc-macro2 v1.0.85
+   Compiling libc v0.2.155
+   Compiling utf8parse v0.2.2
+   Compiling rustix v0.38.34
+   Compiling serde v1.0.203
+   Compiling syn_verus v1.0.95 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/syn)
+   Compiling is_terminal_polyfill v1.70.0
+   Compiling anstyle v1.0.7
+   Compiling colorchoice v1.0.1
+   Compiling anstyle-query v1.1.0
+   Compiling prettyplease_verus v0.1.15 (/home/XXXX/verus-copilot-review/utils/lynette/dependencies/prettyplease)
+   Compiling bitflags v2.5.0
+   Compiling linux-raw-sys v0.4.14
+   Compiling heck v0.5.0
+   Compiling syn v1.0.109
+   Compiling strsim v0.11.1
+   Compiling serde_json v1.0.117
+   Compiling clap_lex v0.7.1
+   Compiling ryu v1.0.18
+   Compiling cfg-if v1.0.0
+   Compiling fastrand v2.1.0
+   Compiling lazy_static v1.4.0
+   Compiling itoa v1.0.11
+   Compiling anstyle-parse v0.2.4
+   Compiling once_cell v1.19.0
+   Compiling anstream v0.6.14
+   Compiling clap_builder v4.5.7
+   Compiling quote v1.0.36
+   Compiling is-terminal v0.4.12
+   Compiling colored v1.9.4
+   Compiling syn v2.0.66
+   Compiling tempfile v3.10.1
+   Compiling clap_derive v4.5.5
+   Compiling clap v4.5.7
+   Compiling lynette v0.0.0 (/home/XXXX/verus-copilot-review/utils/lynette/source/lynette)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.16s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origco6qabpe.rs /tmp/merge_new_inv8zh47vbl.rs`
+Conflict: let-statement conflict
+
+2024-09-02 18:39:58 INFO: refining with constantrefine_inference
+2024-09-02 18:40:02 INFO: Infer time: 3.8702969551086426s
+2024-09-02 18:40:02 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+verus! {
+
+fn binary_search(v: &Vec<u64>, k: u64) -> (r: usize)
+    requires
+        forall|i: int, j: int| 0 <= i <= j < v.len() ==> v[i] <= v[j],
+        exists|i: int| 0 <= i < v.len() && k == v[i],
+    ensures
+        r < v.len(),
+        k == v[r as int],
+{
+    let mut i1: usize = 0;
+    let mut i2: usize = v.len() - 1;
+
+    while i1 != i2
+        invariant
+            0 <= i1 <= i2 < v.len(),
+            exists|m: int| 0 <= m < v.len() && k == v[m] && i1 <= m <= i2,
+            forall|x: int, y: int| 0 <= x < i1 && i2 <= y < v.len() ==> v[x as int] < k <= v[y as int],
+            forall|i: int, j: int| 0 <= i <= j < v.len() ==> v[i] <= v[j],
+            exists|i: int| 0 <= i < v.len() && k == v[i],
+    {
+        let ghost d = i2 - i1;
+        
+        let ix = i1 + (i2 - i1) / 2;
+        if v[ix] < k {
+            i1 = ix + 1;
+        } else {
+            i2 = ix;
+        }
+    }
+    i1
+}
+
+} // verus!
+
+2024-09-02 18:40:07 INFO: Verus succeeded with refinement and Houdini!
+2024-09-02 18:40:07 INFO: finished!

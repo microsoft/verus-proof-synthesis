@@ -1,0 +1,297 @@
+2024-08-31 21:44:12 WARNING: Phase 1 examples: ['3', '7']
+2024-08-31 21:44:12 INFO: Running in generation mode
+2024-08-31 21:44:12 INFO: Repair steps: 0
+2024-08-31 21:44:13 WARNING: Generation initialized with phase1_examples: ['3', '7']
+2024-08-31 21:44:13 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:44:13 INFO: Generating proof code
+2024-08-31 21:44:13 INFO: Temperature: 1.0
+2024-08-31 21:44:13 INFO: Direct inference attempt 0
+2024-08-31 21:44:16 INFO: Infer time: 3.103306293487549s
+2024-08-31 21:44:16 INFO: Checking candidate 0-0
+2024-08-31 21:44:16 ERROR: Error: 'verified'
+2024-08-31 21:44:16 ERROR: Error: 'errors'
+2024-08-31 21:44:16 INFO: Checking candidate 0-1
+2024-08-31 21:44:16 ERROR: Error: 'verified'
+2024-08-31 21:44:16 ERROR: Error: 'errors'
+2024-08-31 21:44:16 INFO: Checking candidate 0-2
+2024-08-31 21:44:16 ERROR: Error: 'verified'
+2024-08-31 21:44:16 ERROR: Error: 'errors'
+2024-08-31 21:44:17 INFO: Checking candidate 0-3
+2024-08-31 21:44:17 ERROR: Error: 'verified'
+2024-08-31 21:44:17 ERROR: Error: 'errors'
+2024-08-31 21:44:17 INFO: Checking candidate 0-4
+2024-08-31 21:44:17 ERROR: Error: 'verified'
+2024-08-31 21:44:17 ERROR: Error: 'errors'
+2024-08-31 21:44:17 INFO: Regenerate...
+2024-08-31 21:44:17 INFO: Direct inference attempt 1
+2024-08-31 21:44:20 INFO: Infer time: 2.5242199897766113s
+2024-08-31 21:44:20 INFO: Checking candidate 1-0
+2024-08-31 21:44:20 ERROR: Error: 'verified'
+2024-08-31 21:44:20 ERROR: Error: 'errors'
+2024-08-31 21:44:20 INFO: Checking candidate 1-1
+2024-08-31 21:44:20 ERROR: Error: 'verified'
+2024-08-31 21:44:20 ERROR: Error: 'errors'
+2024-08-31 21:44:20 INFO: Checking candidate 1-2
+2024-08-31 21:44:20 ERROR: Error: 'verified'
+2024-08-31 21:44:20 ERROR: Error: 'errors'
+2024-08-31 21:44:21 INFO: Checking candidate 1-3
+2024-08-31 21:44:21 ERROR: Error: 'verified'
+2024-08-31 21:44:21 ERROR: Error: 'errors'
+2024-08-31 21:44:21 INFO: Checking candidate 1-4
+2024-08-31 21:44:21 ERROR: Error: 'verified'
+2024-08-31 21:44:21 ERROR: Error: 'errors'
+2024-08-31 21:44:21 INFO: Regenerate...
+2024-08-31 21:44:21 INFO: Direct inference attempt 2
+2024-08-31 21:44:24 INFO: Infer time: 2.4615633487701416s
+2024-08-31 21:44:24 INFO: Checking candidate 2-0
+2024-08-31 21:44:24 ERROR: Error: 'verified'
+2024-08-31 21:44:24 ERROR: Error: 'errors'
+2024-08-31 21:44:24 INFO: Checking candidate 2-1
+2024-08-31 21:44:24 ERROR: Error: 'verified'
+2024-08-31 21:44:24 ERROR: Error: 'errors'
+2024-08-31 21:44:24 INFO: Checking candidate 2-2
+2024-08-31 21:44:24 ERROR: Error: 'verified'
+2024-08-31 21:44:24 ERROR: Error: 'errors'
+2024-08-31 21:44:24 INFO: Checking candidate 2-3
+2024-08-31 21:44:25 ERROR: Error: 'verified'
+2024-08-31 21:44:25 ERROR: Error: 'errors'
+2024-08-31 21:44:25 INFO: Checking candidate 2-4
+2024-08-31 21:44:25 ERROR: Error: 'verified'
+2024-08-31 21:44:25 ERROR: Error: 'errors'
+2024-08-31 21:44:25 INFO: Regenerate...
+2024-08-31 21:44:25 ERROR: No valid code found!
+2024-08-31 21:44:29 INFO: refining with constantrefine_inference
+2024-08-31 21:44:31 INFO: Infer time: 2.1061246395111084s
+2024-08-31 21:44:32 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn all_sequence_equal_length(seq: &Vec<Vec<i32>>) -> (result: bool)
+    requires
+        seq.len() > 0,
+    ensures
+        result == (forall|i: int, j: int|
+            (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (#[trigger] seq[i].len()
+                == #[trigger] seq[j].len())),
+{
+    let mut index = 1;
+    while index < seq.len() 
+        invariant 
+            seq.len() > 0,
+    {
+        if ((&seq[index]).len() != (&seq[0]).len()) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:44:36 INFO: New refined code is a good repair
+2024-08-31 21:44:36 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn all_sequence_equal_length(seq: &Vec<Vec<i32>>) -> (result: bool)
+    requires
+        seq.len() > 0,
+    ensures
+        result == (forall|i: int, j: int|
+            (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (#[trigger] seq[i].len()
+                == #[trigger] seq[j].len())),
+{
+    let mut index = 1;
+    while index < seq.len() 
+        invariant 
+            seq.len() > 0,
+    {
+        if ((&seq[index]).len() != (&seq[0]).len()) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:44:36 INFO: refining with arraylen_inference
+2024-08-31 21:44:38 INFO: Infer time: 2.0950045585632324s
+2024-08-31 21:44:38 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn all_sequence_equal_length(seq: &Vec<Vec<i32>>) -> (result: bool)
+    requires
+        seq.len() > 0,
+    ensures
+        result == (forall|i: int, j: int|
+            (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (#[trigger] seq[i].len()
+                == #[trigger] seq[j].len())),
+{
+    let mut index = 1;
+    while index < seq.len() 
+        invariant 
+            seq.len() > 0,
+            seq.len() == seq.len(),
+    {
+        if ((&seq[index]).len() != (&seq[0]).len()) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:44:39 INFO: New refined code is a good repair
+2024-08-31 21:44:39 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn all_sequence_equal_length(seq: &Vec<Vec<i32>>) -> (result: bool)
+    requires
+        seq.len() > 0,
+    ensures
+        result == (forall|i: int, j: int|
+            (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (#[trigger] seq[i].len()
+                == #[trigger] seq[j].len())),
+{
+    let mut index = 1;
+    while index < seq.len() 
+        invariant 
+            seq.len() > 0,
+            seq.len() == seq.len(),
+    {
+        if ((&seq[index]).len() != (&seq[0]).len()) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:44:39 INFO: refining with arrayrefine_inference
+2024-08-31 21:44:42 INFO: Infer time: 2.9340012073516846s
+2024-08-31 21:44:42 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn all_sequence_equal_length(seq: &Vec<Vec<i32>>) -> (result: bool)
+    requires
+        seq.len() > 0,
+    ensures
+        result == (forall|i: int, j: int|
+            (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (#[trigger] seq[i].len()
+                == #[trigger] seq[j].len())),
+{
+    let mut index = 1;
+    while index < seq.len() 
+        invariant 
+            seq.len() > 0,
+            seq.len() == seq.len(),
+            // Adding invariant to cover every element in the array, as seq is not modified inside the loop
+            forall|i: int, j: int| (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (seq[i].len() == seq[j].len()),
+    {
+        if ((&seq[index]).len() != (&seq[0]).len()) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:44:42 INFO: New refined code is a good repair
+2024-08-31 21:44:42 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn all_sequence_equal_length(seq: &Vec<Vec<i32>>) -> (result: bool)
+    requires
+        seq.len() > 0,
+    ensures
+        result == (forall|i: int, j: int|
+            (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (#[trigger] seq[i].len()
+                == #[trigger] seq[j].len())),
+{
+    let mut index = 1;
+    while index < seq.len() 
+        invariant 
+            seq.len() > 0,
+            seq.len() == seq.len(),
+            // Adding invariant to cover every element in the array, as seq is not modified inside the loop
+            forall|i: int, j: int| (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (seq[i].len() == seq[j].len()),
+    {
+        if ((&seq[index]).len() != (&seq[0]).len()) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:44:42 INFO: refining with condlooprefine_inference
+2024-08-31 21:44:45 INFO: Infer time: 2.252347946166992s
+2024-08-31 21:44:45 INFO: use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn all_sequence_equal_length(seq: &Vec<Vec<i32>>) -> (result: bool)
+    requires
+        seq.len() > 0,
+    ensures
+        result == (forall|i: int, j: int|
+            (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (#[trigger] seq[i].len()
+                == #[trigger] seq[j].len())),
+{
+    let mut index = 1;
+    while index < seq.len() 
+        invariant 
+            seq.len() > 0,
+            seq.len() == seq.len(),
+            forall|i: int, j: int| (0 <= i < seq.len() && 0 <= j < seq.len()) ==> (i > 0 ==> seq[i].len() == seq[j].len()),
+    {
+        if ((&seq[index]).len() != (&seq[0]).len()) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+2024-08-31 21:44:45 INFO: New refined code under condloop is not better
+2024-08-31 21:44:45 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 21:44:45 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:44:46 INFO: Original code is better
+2024-08-31 21:44:46 INFO: finished!
+Start repair

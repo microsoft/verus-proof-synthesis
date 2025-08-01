@@ -1,0 +1,494 @@
+2024-08-31 21:52:31 WARNING: Phase 1 examples: ['3', '7']
+2024-08-31 21:52:31 INFO: Running in generation mode
+2024-08-31 21:52:31 INFO: Repair steps: 0
+2024-08-31 21:52:31 WARNING: Generation initialized with phase1_examples: ['3', '7']
+2024-08-31 21:52:31 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:52:31 INFO: Generating proof code
+2024-08-31 21:52:31 INFO: Temperature: 1.0
+2024-08-31 21:52:31 INFO: Direct inference attempt 0
+2024-08-31 21:52:38 INFO: Infer time: 6.948984384536743s
+2024-08-31 21:52:38 INFO: Checking candidate 0-0
+2024-08-31 21:52:38 ERROR: Error: 'verified'
+2024-08-31 21:52:38 ERROR: Error: 'errors'
+2024-08-31 21:52:39 INFO: Checking candidate 0-1
+2024-08-31 21:52:39 ERROR: Error: 'verified'
+2024-08-31 21:52:39 ERROR: Error: 'errors'
+2024-08-31 21:52:39 INFO: Checking candidate 0-2
+2024-08-31 21:52:39 INFO: 0-2.rs in code pool
+2024-08-31 21:52:39 INFO: 0-2.rs is now the best proof candidate
+2024-08-31 21:52:39 INFO: Checking candidate 0-3
+2024-08-31 21:52:40 ERROR: Error: 'verified'
+2024-08-31 21:52:40 ERROR: Error: 'errors'
+2024-08-31 21:52:40 INFO: Checking candidate 0-4
+2024-08-31 21:52:40 ERROR: Error: 'verified'
+2024-08-31 21:52:40 ERROR: Error: 'errors'
+2024-08-31 21:52:40 INFO: Regenerate...
+2024-08-31 21:52:40 INFO: Direct inference attempt 1
+2024-08-31 21:52:46 INFO: Infer time: 5.638267993927002s
+2024-08-31 21:52:46 INFO: Checking candidate 1-0
+2024-08-31 21:52:46 INFO: Checking candidate 1-1
+2024-08-31 21:52:46 ERROR: Error: 'verified'
+2024-08-31 21:52:46 ERROR: Error: 'errors'
+2024-08-31 21:52:46 INFO: Checking candidate 1-2
+2024-08-31 21:52:46 ERROR: Error: 'verified'
+2024-08-31 21:52:46 ERROR: Error: 'errors'
+2024-08-31 21:52:47 INFO: Checking candidate 1-3
+2024-08-31 21:52:47 ERROR: Error in comparing code changes: 
+2024-08-31 21:52:47 INFO: Checking candidate 1-4
+2024-08-31 21:52:47 ERROR: Error: 'verified'
+2024-08-31 21:52:47 ERROR: Error: 'errors'
+2024-08-31 21:52:47 INFO: Regenerate...
+2024-08-31 21:52:47 INFO: Direct inference attempt 2
+2024-08-31 21:52:53 INFO: Infer time: 6.1320085525512695s
+2024-08-31 21:52:53 INFO: Checking candidate 2-0
+2024-08-31 21:52:54 ERROR: Error: 'verified'
+2024-08-31 21:52:54 ERROR: Error: 'errors'
+2024-08-31 21:52:54 INFO: Checking candidate 2-1
+2024-08-31 21:52:54 INFO: 2-1.rs in code pool
+2024-08-31 21:52:54 INFO: Checking candidate 2-2
+2024-08-31 21:52:54 ERROR: Error: 'verified'
+2024-08-31 21:52:54 ERROR: Error: 'errors'
+2024-08-31 21:52:55 INFO: Checking candidate 2-3
+2024-08-31 21:52:55 INFO: 2-3.rs in code pool
+2024-08-31 21:52:55 INFO: 2-3.rs is now the best proof candidate
+2024-08-31 21:52:55 INFO: Checking candidate 2-4
+2024-08-31 21:52:55 ERROR: Error: 'verified'
+2024-08-31 21:52:55 ERROR: Error: 'errors'
+2024-08-31 21:52:55 INFO: Working on merge-0.rs
+2024-08-31 21:53:00 INFO: Merged code is better.
+2024-08-31 21:53:00 INFO: Running houdini on merge-0.rs
+2024-08-31 21:53:00 INFO: Working on merge-1.rs
+2024-08-31 21:53:01 INFO: Running houdini on merge-1.rs
+2024-08-31 21:53:01 INFO: Working on merge-2.rs
+2024-08-31 21:53:01 INFO: Merged code is better.
+2024-08-31 21:53:01 INFO: Running houdini on merge-2.rs
+2024-08-31 21:53:02 INFO: refining with constantrefine_inference
+2024-08-31 21:53:07 INFO: Infer time: 4.760335683822632s
+2024-08-31 21:53:07 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn sub_array_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            forall|j: int| 0 <= j < i ==> main[idx + j] == sub[j],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            forall|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l) =~= sub@) ==> (exists|
+                    m: int,
+                    n: int,
+                |
+                    0 <= m < index && n == m + sub.len() && (# [trigger] (main@.subrange(m, n)))
+                        =~= sub@),
+            index <= (main.len() - sub.len()) + 1,
+            index <= main.len(),
+            sub.len() <= main.len(),
+    {
+        if (sub_array_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+2024-08-31 21:53:12 INFO: New refined code is a good repair
+2024-08-31 21:53:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn sub_array_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            forall|j: int| 0 <= j < i ==> main[idx + j] == sub[j],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            forall|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l) =~= sub@) ==> (exists|
+                    m: int,
+                    n: int,
+                |
+                    0 <= m < index && n == m + sub.len() && (# [trigger] (main@.subrange(m, n)))
+                        =~= sub@),
+            index <= (main.len() - sub.len()) + 1,
+            index <= main.len(),
+            sub.len() <= main.len(),
+    {
+        if (sub_array_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+2024-08-31 21:53:12 INFO: refining with arraylen_inference
+2024-08-31 21:53:18 INFO: Infer time: 6.323940277099609s
+2024-08-31 21:53:18 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn sub_array_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            forall|j: int| 0 <= j < i ==> main[idx + j] == sub[j],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            forall|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l) =~= sub@) ==> (exists|
+                    m: int,
+                    n: int,
+                |
+                    0 <= m < index && n == m + sub.len() && (# [trigger] (main@.subrange(m, n)))
+                        =~= sub@),
+            index <= (main.len() - sub.len()) + 1,
+            index <= main.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (sub_array_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-31 21:53:19 INFO: New refined code is a good repair
+2024-08-31 21:53:19 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn sub_array_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            forall|j: int| 0 <= j < i ==> main[idx + j] == sub[j],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            forall|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l) =~= sub@) ==> (exists|
+                    m: int,
+                    n: int,
+                |
+                    0 <= m < index && n == m + sub.len() && (# [trigger] (main@.subrange(m, n)))
+                        =~= sub@),
+            index <= (main.len() - sub.len()) + 1,
+            index <= main.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (sub_array_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-31 21:53:19 INFO: refining with arrayrefine_inference
+2024-08-31 21:53:26 INFO: Infer time: 7.7018516063690186s
+2024-08-31 21:53:26 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn sub_array_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            // The following invariant already covers `forall |j: int| 0 <= j < i`.
+            // Comment: The related array is never changed in the loop.
+            forall |j: int| 0 <= j < sub.len() ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            forall|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l) =~= sub@) ==> (exists|
+                    m: int,
+                    n: int,
+                |
+                    0 <= m < index && n == m + sub.len() && (# [trigger] (main@.subrange(m, n)))
+                        =~= sub@),
+            index <= (main.len() - sub.len()) + 1,
+            index <= main.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (sub_array_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-31 21:53:27 INFO: New refined code is worse
+2024-08-31 21:53:27 INFO: refining with condlooprefine_inference
+2024-08-31 21:53:36 INFO: Infer time: 8.8372061252594s
+2024-08-31 21:53:36 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+// Function to check if the subarray exists at a given index in the main array
+fn sub_array_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            forall|j: int| 0 <= j < i ==> main[idx + j] == sub[j],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+// Function to check if subarray exists within the main array
+fn is_sub_array(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            forall|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l) =~= sub@) ==> (exists|
+                    m: int,
+                    n: int,
+                |
+                    0 <= m < index && n == m + sub.len() && (# [trigger] (main@.subrange(m, n)))
+                        =~= sub@),
+            index <= (main.len() - sub.len()) + 1,
+            index <= main.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+            index > 0 ==> (forall|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l) =~= sub@) ==> (exists|
+                    m: int,
+                    n: int,
+                |
+                    0 <= m < index && n == m + sub.len() && (# [trigger] (main@.subrange(m, n)))
+                        =~= sub@)),
+    {
+        if (sub_array_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-31 21:53:36 INFO: New refined code under condloop is not better
+2024-08-31 21:53:36 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 21:53:36 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:53:37 INFO: Original code is better
+2024-08-31 21:53:37 INFO: finished!
+Start repair

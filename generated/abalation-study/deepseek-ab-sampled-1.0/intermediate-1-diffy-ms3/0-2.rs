@@ -1,0 +1,50 @@
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32) 
+    requires 
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+        N < 1000,
+    ensures
+        sum[0] <= 2 * N,
+{
+    let mut i: usize = 0;
+
+    while (i < N as usize)
+        invariant
+            i <= N as usize,
+            a.len() == N,
+            sum.len() == 1,
+            forall |j: usize| j < i ==> a[( j ) as int] == (j % 3) as i32,
+    {
+        a.set(i, (i % 3) as i32); // Each a[i] is set to 0, 1, or 2
+        i = i + 1;
+    }
+
+    i = 0;
+    while (i < N as usize)
+        invariant
+            i <= N as usize,
+            a.len() == N,
+            sum.len() == 1,
+            forall |j: usize| j < i ==> a[( j ) as int] == (j % 3) as i32,
+            sum[0] <= 2 * N, // Use same condition for sum on loop invariant to prevent overflow
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]); // Each a[i] is 0,1, or 2, so sum[0] is bounded
+        }
+        i = i + 1;
+    }
+}
+}
+
+
+// is safe: False
+// Score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4

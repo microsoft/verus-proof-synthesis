@@ -1,0 +1,23 @@
+2024-09-11 04:43:20 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-11 04:43:20 INFO: Running in generation mode
+2024-09-11 04:43:20 INFO: Repair steps: 10
+2024-09-11 04:43:20 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-11 04:43:20 WARNING: Generation initialized with repair_uniform: True
+2024-09-11 04:43:20 INFO: Generating proof code
+2024-09-11 04:43:20 INFO: Temperature: 1.0
+2024-09-11 04:43:20 INFO: Generate with direct repair mode
+2024-09-11 04:43:21 WARNING: All-in-one repair is used!!!
+2024-09-11 04:43:21 WARNING: Loop isolation is not found in the code. Inserting loop isolation.
+2024-09-11 04:43:21 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-11 04:43:21 WARNING: Generation initialized with repair_uniform: False
+2024-09-11 04:43:21 INFO: Step 1
+2024-09-11 04:43:21 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:43:21 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 2.000000 seconds
+2024-09-11 04:43:32 INFO: Infer time: 10.93698525428772s
+2024-09-11 04:43:32 INFO: repair-1-0 file generated
+2024-09-11 04:43:32 INFO: Compilation Error: False, Verified: 1, Errors: 1, Verus Errors: 1
+2024-09-11 04:43:32 INFO: repair-1-1 file generated
+2024-09-11 04:43:32 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:43:33 INFO: All errors are fixed within 1 steps!!!
+2024-09-11 04:43:33 INFO: Verus succeeded after repair!!
+2024-09-11 04:43:33 INFO: finished!

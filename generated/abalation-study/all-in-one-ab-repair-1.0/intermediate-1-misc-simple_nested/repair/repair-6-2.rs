@@ -1,0 +1,60 @@
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+pub fn simple_nested(a: &mut Vec<i32>, b: &Vec<i32>, N: i32) -> (sum: i32)
+    requires
+        forall|k: int| 0 <= k < N ==> b[k] <= k + 1,
+        old(a).len() == N as usize,
+        b.len() == N as usize,
+        N <= 0x3FFF_FFFF,
+    ensures
+        N <= sum <= 2 * N,
+{
+    let mut i: usize = 0;
+    let mut sum: i32 = 0;
+    while i < N as usize
+        invariant
+            N <= 0x3FFF_FFFF,
+            b.len() == N as usize,
+            forall|k: int| 0 <= k < i ==> a[k as int] == b[k as int] + 1,
+            i <= N as usize,
+            old(a).len() == N as usize,
+            sum <= 2 * (i as i32),
+            N as usize == a.len(), // invariant added
+    {
+        a.set(i, b[i] + 1);
+        let mut j: usize = 0;
+        while j < i
+            invariant
+                N <= 0x3FFF_FFFF,
+                a[i as int] == b[i as int] + 1,
+                b.len() == N as usize,
+                forall |k: int| 0 <= k < i ==> a[k as int] == b[k as int] + 1,
+                j <= i,
+                old(a).len() == N as usize,
+                N as usize == a.len(), // invariant added
+        {
+            // a[i] must be decremented individually within the nested loop.
+            a.set(i, a[i] - 1);
+            j = j + 1;
+        }
+        // Fix invariant by restoring a[i] after nested loop.
+        a.set(i, a[i] + (i as i32));
+        sum = sum + a[i];
+        i = i + 1;
+    }
+    sum
+}
+
+} // verus!
+
+
+// error: multiple input filenames provided (first two filenames are `` and `/tmp/tmp_lagqqv3`)
+// 
+
+// Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+// Safe: False

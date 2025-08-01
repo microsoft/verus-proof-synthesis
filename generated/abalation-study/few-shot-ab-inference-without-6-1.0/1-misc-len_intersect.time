@@ -1,0 +1,236 @@
+2024-08-31 21:48:44 WARNING: Phase 1 examples: ['3', '7']
+2024-08-31 21:48:44 INFO: Running in generation mode
+2024-08-31 21:48:44 INFO: Repair steps: 0
+2024-08-31 21:48:45 WARNING: Generation initialized with phase1_examples: ['3', '7']
+2024-08-31 21:48:45 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:48:45 INFO: Generating proof code
+2024-08-31 21:48:45 INFO: Temperature: 1.0
+2024-08-31 21:48:45 INFO: Direct inference attempt 0
+2024-08-31 21:48:49 INFO: Infer time: 3.967066764831543s
+2024-08-31 21:48:49 INFO: Checking candidate 0-0
+2024-08-31 21:48:49 INFO: Checking candidate 0-1
+2024-08-31 21:48:49 INFO: Checking candidate 0-2
+2024-08-31 21:48:49 INFO: Checking candidate 0-3
+2024-08-31 21:48:50 INFO: Checking candidate 0-4
+2024-08-31 21:48:50 INFO: 0-4.rs in code pool
+2024-08-31 21:48:50 INFO: 0-4.rs is now the best proof candidate
+2024-08-31 21:48:50 INFO: Working on merge-0.rs
+2024-08-31 21:48:54 INFO: Merged code is better.
+2024-08-31 21:48:54 INFO: Running houdini on merge-0.rs
+2024-08-31 21:48:55 INFO: refining with constantrefine_inference
+2024-08-31 21:48:58 INFO: Infer time: 2.6275672912597656s
+2024-08-31 21:48:58 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+    } else {
+        let x = s1.choose();
+        let s1_ = s1.remove(x);
+        assert(s1_.len() == s1.len() - 1);
+        lemma_len_intersect(s1_, s2);
+
+        if s1.finite() {
+            if s2.contains(x) {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len() + 1);
+            } else {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len());
+            }
+        }
+    }
+}
+
+} // verus!
+
+2024-08-31 21:49:03 INFO: New refined code is a good repair
+2024-08-31 21:49:03 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+    } else {
+        let x = s1.choose();
+        let s1_ = s1.remove(x);
+        assert(s1_.len() == s1.len() - 1);
+        lemma_len_intersect(s1_, s2);
+
+        if s1.finite() {
+            if s2.contains(x) {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len() + 1);
+            } else {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len());
+            }
+        }
+    }
+}
+
+} // verus!
+
+2024-08-31 21:49:03 INFO: refining with arraylen_inference
+2024-08-31 21:49:05 INFO: Infer time: 2.538010835647583s
+2024-08-31 21:49:05 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+    } else {
+        let x = s1.choose();
+        let s1_ = s1.remove(x);
+        
+        // Loop invariant
+        assert(s1.len() == s1_.len() + 1);
+
+        lemma_len_intersect(s1_, s2);
+
+        if s1.finite() {
+            if s2.contains(x) {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len() + 1);
+            } else {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len());
+            }
+        }
+    }
+}
+
+} // verus!
+
+2024-08-31 21:49:06 INFO: New refined code is a good repair
+2024-08-31 21:49:06 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+    } else {
+        let x = s1.choose();
+        let s1_ = s1.remove(x);
+        
+        // Loop invariant
+        assert(s1.len() == s1_.len() + 1);
+
+        lemma_len_intersect(s1_, s2);
+
+        if s1.finite() {
+            if s2.contains(x) {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len() + 1);
+            } else {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len());
+            }
+        }
+    }
+}
+
+} // verus!
+
+2024-08-31 21:49:06 INFO: refining with arrayrefine_inference
+2024-08-31 21:49:08 INFO: Infer time: 2.360499858856201s
+2024-08-31 21:49:08 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+    } else {
+        let x = s1.choose();
+        let s1_ = s1.remove(x);
+        
+        // Loop invariant
+        assert(s1.len() == s1_.len() + 1);
+
+        lemma_len_intersect(s1_, s2);
+
+        if s1.finite() {
+            if s2.contains(x) {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len() + 1);
+            } else {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len());
+            }
+        }
+    }
+}
+
+} // verus!
+
+2024-08-31 21:49:09 INFO: Refinement did not change the code
+2024-08-31 21:49:09 INFO: refining with condlooprefine_inference
+2024-08-31 21:49:13 INFO: Infer time: 4.343161106109619s
+2024-08-31 21:49:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+    } else {
+        let x = s1.choose();
+        let s1_ = s1.remove(x);
+        
+        // Loop invariant
+        assert(s1.len() == s1_.len() + 1);
+        // New refined invariant for the specific handling on the first recursion
+        assert(s1.len() > 0 ==> s1.len() == s1_.len() + 1);
+
+        lemma_len_intersect(s1_, s2);
+
+        if s1.finite() {
+            if s2.contains(x) {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len() + 1);
+            } else {
+                assert(s1.intersect(s2).len() == s1_.intersect(s2).len());
+            }
+        }
+    }
+}
+
+} // verus!
+
+2024-08-31 21:49:13 INFO: New refined code under condloop is not better
+2024-08-31 21:49:13 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 21:49:13 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:49:14 INFO: Houdini code is better
+2024-08-31 21:49:14 INFO: finished!
+Start repair

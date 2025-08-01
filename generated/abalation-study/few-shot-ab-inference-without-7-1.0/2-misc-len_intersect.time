@@ -1,0 +1,248 @@
+2024-08-31 22:31:40 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:31:40 INFO: Running in generation mode
+2024-08-31 22:31:40 INFO: Repair steps: 0
+2024-08-31 22:31:40 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:31:40 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:31:40 INFO: Generating proof code
+2024-08-31 22:31:40 INFO: Temperature: 1.0
+2024-08-31 22:31:40 INFO: Direct inference attempt 0
+2024-08-31 22:31:45 INFO: Infer time: 4.679571628570557s
+2024-08-31 22:31:45 INFO: Checking candidate 0-0
+2024-08-31 22:31:46 INFO: 0-0.rs in code pool
+2024-08-31 22:31:46 INFO: 0-0.rs is now the best proof candidate
+2024-08-31 22:31:46 INFO: Checking candidate 0-1
+2024-08-31 22:31:46 INFO: 0-1.rs in code pool
+2024-08-31 22:31:46 INFO: 0-1.rs is now the best proof candidate
+2024-08-31 22:31:46 INFO: Checking candidate 0-2
+2024-08-31 22:31:46 INFO: 0-2.rs in code pool
+2024-08-31 22:31:46 INFO: 0-2.rs is now the best proof candidate
+2024-08-31 22:31:46 INFO: Checking candidate 0-3
+2024-08-31 22:31:46 ERROR: Error: 'verified'
+2024-08-31 22:31:46 ERROR: Error: 'errors'
+2024-08-31 22:31:47 INFO: Checking candidate 0-4
+2024-08-31 22:31:47 ERROR: Error in comparing code changes: 
+2024-08-31 22:31:47 INFO: Regenerate...
+2024-08-31 22:31:47 INFO: Direct inference attempt 1
+2024-08-31 22:31:51 INFO: Infer time: 4.34922194480896s
+2024-08-31 22:31:51 INFO: Checking candidate 1-0
+2024-08-31 22:31:51 INFO: 1-0.rs in code pool
+2024-08-31 22:31:51 INFO: 1-0.rs is now the best proof candidate
+2024-08-31 22:31:51 INFO: Working on merge-0.rs
+2024-08-31 22:31:56 INFO: Merged code is better.
+2024-08-31 22:31:56 INFO: Running houdini on merge-0.rs
+2024-08-31 22:31:56 INFO: Working on merge-1.rs
+2024-08-31 22:31:57 INFO: Merged code is better.
+2024-08-31 22:31:57 INFO: Running houdini on merge-1.rs
+2024-08-31 22:31:57 INFO: Working on merge-2.rs
+2024-08-31 22:31:58 INFO: Merged code is better.
+2024-08-31 22:31:58 INFO: Running houdini on merge-2.rs
+2024-08-31 22:31:58 INFO: Working on merge-3.rs
+2024-08-31 22:31:59 INFO: Merged code is better.
+2024-08-31 22:31:59 INFO: Running houdini on merge-3.rs
+2024-08-31 22:32:00 INFO: refining with constantrefine_inference
+2024-08-31 22:32:03 INFO: Infer time: 3.2016398906707764s
+2024-08-31 22:32:03 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let a = s1.choose();
+        let s1_less_a = s1.remove(a);
+        lemma_len_intersect(s1_less_a, s2);
+        if s2.contains(a) {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len() + 1);
+        } else {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len());
+        }
+        // Loop invariant added here
+        assert(s1.finite());
+    }
+}
+
+} // verus!
+
+2024-08-31 22:32:08 INFO: New refined code is a good repair
+2024-08-31 22:32:08 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let a = s1.choose();
+        let s1_less_a = s1.remove(a);
+        lemma_len_intersect(s1_less_a, s2);
+        if s2.contains(a) {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len() + 1);
+        } else {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len());
+        }
+        // Loop invariant added here
+        assert(s1.finite());
+    }
+}
+
+} // verus!
+
+2024-08-31 22:32:08 INFO: refining with arraylen_inference
+2024-08-31 22:32:11 INFO: Infer time: 3.7444567680358887s
+2024-08-31 22:32:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let a = s1.choose();
+        let s1_less_a = s1.remove(a);
+        lemma_len_intersect(s1_less_a, s2);
+        if s2.contains(a) {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len() + 1);
+        } else {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len());
+        }
+        // Loop invariant added here
+        assert(s1.finite());
+        assert(s1_less_a.len() == s1.len() - 1);
+    }
+}
+
+} // verus!
+
+2024-08-31 22:32:12 INFO: New refined code is a good repair
+2024-08-31 22:32:12 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let a = s1.choose();
+        let s1_less_a = s1.remove(a);
+        lemma_len_intersect(s1_less_a, s2);
+        if s2.contains(a) {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len() + 1);
+        } else {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len());
+        }
+        // Loop invariant added here
+        assert(s1.finite());
+        assert(s1_less_a.len() == s1.len() - 1);
+    }
+}
+
+} // verus!
+
+2024-08-31 22:32:12 INFO: refining with arrayrefine_inference
+2024-08-31 22:32:14 INFO: Infer time: 2.278348922729492s
+2024-08-31 22:32:14 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let a = s1.choose();
+        let s1_less_a = s1.remove(a);
+        lemma_len_intersect(s1_less_a, s2);
+        if s2.contains(a) {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len() + 1);
+        } else {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len());
+        }
+        // Loop invariant added here
+        assert(s1.finite());
+        assert(s1_less_a.len() == s1.len() - 1);
+    }
+}
+
+} // verus!
+
+2024-08-31 22:32:15 INFO: Refinement did not change the code
+2024-08-31 22:32:15 INFO: refining with condlooprefine_inference
+2024-08-31 22:32:20 INFO: Infer time: 5.238417625427246s
+2024-08-31 22:32:20 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let a = s1.choose();
+        let s1_less_a = s1.remove(a);
+        lemma_len_intersect(s1_less_a, s2);
+        if s2.contains(a) {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len() + 1);
+        } else {
+            assert(s1.intersect(s2).len() == s1_less_a.intersect(s2).len());
+        }
+        // Original assertions
+        assert(s1.finite());
+        assert(s1_less_a.len() == s1.len() - 1);
+
+        // Add new assertion conditioned on recursion depth
+        // Here, recursion_depth is analogous to an iteration index
+        // Let's define recursion depth as the length of the set after removal
+        assert(s1.len() > 0 ==> s1.finite());
+        assert(s1.len() > 0 ==> s1_less_a.len() == s1.len() - 1);
+    }
+}
+
+} // verus!
+
+2024-08-31 22:32:20 INFO: New refined code under condloop is not better
+2024-08-31 22:32:20 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 22:32:20 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:32:21 INFO: Houdini code is better
+2024-08-31 22:32:21 INFO: finished!
+Start repair

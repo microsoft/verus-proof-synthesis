@@ -1,0 +1,98 @@
+2024-09-05 07:12:34 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-05 07:12:34 INFO: Running in generation mode
+2024-09-05 07:12:34 INFO: Repair steps: 10
+2024-09-05 07:12:34 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-05 07:12:34 WARNING: Generation initialized with repair_uniform: False
+2024-09-05 07:12:34 INFO: Generating proof code with baseline
+2024-09-05 07:12:34 INFO: Temperature: 1.0
+2024-09-05 07:12:34 INFO: Generate with baseline mode
+2024-09-05 07:12:34 INFO: Direct inference with baseline attempt 0
+2024-09-05 07:12:34 INFO: Direct Full Inference ...
+2024-09-05 07:12:48 INFO: Infer time: 14.27263069152832s
+2024-09-05 07:12:48 INFO: Direct inference with baseline attempt 1
+2024-09-05 07:12:48 INFO: Direct Full Inference ...
+2024-09-05 07:13:00 INFO: Infer time: 11.888558864593506s
+2024-09-05 07:13:00 INFO: Direct inference with baseline attempt 2
+2024-09-05 07:13:00 INFO: Direct Full Inference ...
+2024-09-05 07:13:17 INFO: Infer time: 16.401385068893433s
+2024-09-05 07:13:17 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:13:17 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:13:17 INFO: Direct inference with baseline attempt 3
+2024-09-05 07:13:17 INFO: Direct Full Inference ...
+2024-09-05 07:13:43 INFO: Infer time: 25.626891613006592s
+2024-09-05 07:13:43 INFO: Direct inference with baseline attempt 4
+2024-09-05 07:13:43 INFO: Direct Full Inference ...
+2024-09-05 07:13:57 INFO: Infer time: 14.141741752624512s
+2024-09-05 07:13:57 INFO: Direct inference with baseline attempt 5
+2024-09-05 07:13:57 INFO: Direct Full Inference ...
+2024-09-05 07:14:24 INFO: Infer time: 26.729353427886963s
+2024-09-05 07:14:24 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:14:24 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:14:24 INFO: Direct inference with baseline attempt 6
+2024-09-05 07:14:24 INFO: Direct Full Inference ...
+2024-09-05 07:14:39 INFO: Infer time: 14.805618047714233s
+2024-09-05 07:14:39 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:14:39 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:14:39 INFO: Direct inference with baseline attempt 7
+2024-09-05 07:14:39 INFO: Direct Full Inference ...
+2024-09-05 07:14:50 INFO: Infer time: 11.304358005523682s
+2024-09-05 07:14:51 INFO: Direct inference with baseline attempt 8
+2024-09-05 07:14:51 INFO: Direct Full Inference ...
+2024-09-05 07:15:03 INFO: Infer time: 12.559143543243408s
+2024-09-05 07:15:03 INFO: Direct inference with baseline attempt 9
+2024-09-05 07:15:03 INFO: Direct Full Inference ...
+2024-09-05 07:15:16 INFO: Infer time: 12.6764554977417s
+2024-09-05 07:15:16 INFO: Direct inference with baseline attempt 10
+2024-09-05 07:15:16 INFO: Direct Full Inference ...
+2024-09-05 07:15:28 INFO: Infer time: 12.055761814117432s
+2024-09-05 07:15:28 ERROR: Error: 'verified'
+2024-09-05 07:15:28 ERROR: Error: 'errors'
+2024-09-05 07:15:28 INFO: Direct inference with baseline attempt 11
+2024-09-05 07:15:28 INFO: Direct Full Inference ...
+2024-09-05 07:15:42 INFO: Infer time: 13.153034448623657s
+2024-09-05 07:15:42 INFO: Direct inference with baseline attempt 12
+2024-09-05 07:15:42 INFO: Direct Full Inference ...
+2024-09-05 07:15:55 INFO: Infer time: 13.24743390083313s
+2024-09-05 07:15:55 INFO: Direct inference with baseline attempt 13
+2024-09-05 07:15:55 INFO: Direct Full Inference ...
+2024-09-05 07:16:06 INFO: Infer time: 11.126598834991455s
+2024-09-05 07:16:06 INFO: Direct inference with baseline attempt 14
+2024-09-05 07:16:06 INFO: Direct Full Inference ...
+2024-09-05 07:16:18 INFO: Infer time: 12.118913888931274s
+2024-09-05 07:16:19 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:16:19 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:16:19 INFO: Direct inference with baseline attempt 15
+2024-09-05 07:16:19 INFO: Direct Full Inference ...
+2024-09-05 07:16:31 INFO: Infer time: 12.003098964691162s
+2024-09-05 07:16:31 INFO: Direct inference with baseline attempt 16
+2024-09-05 07:16:31 INFO: Direct Full Inference ...
+2024-09-05 07:16:43 INFO: Infer time: 12.057227373123169s
+2024-09-05 07:16:43 INFO: Direct inference with baseline attempt 17
+2024-09-05 07:16:43 INFO: Direct Full Inference ...
+2024-09-05 07:16:59 INFO: Infer time: 15.770393133163452s
+2024-09-05 07:16:59 INFO: Direct inference with baseline attempt 18
+2024-09-05 07:16:59 INFO: Direct Full Inference ...
+2024-09-05 07:17:10 INFO: Infer time: 11.252869606018066s
+2024-09-05 07:17:11 INFO: Direct inference with baseline attempt 19
+2024-09-05 07:17:11 INFO: Direct Full Inference ...
+2024-09-05 07:17:22 INFO: Infer time: 11.669153451919556s
+2024-09-05 07:17:22 INFO: Direct inference with baseline attempt 20
+2024-09-05 07:17:22 INFO: Direct Full Inference ...
+2024-09-05 07:17:34 INFO: Infer time: 11.889431238174438s
+2024-09-05 07:17:34 INFO: Direct inference with baseline attempt 21
+2024-09-05 07:17:34 INFO: Direct Full Inference ...
+2024-09-05 07:17:47 INFO: Infer time: 12.234703779220581s
+2024-09-05 07:17:47 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:17:47 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 07:17:47 ERROR: Error: 'verified'
+2024-09-05 07:17:47 ERROR: Error: 'errors'
+2024-09-05 07:17:47 INFO: Direct inference with baseline attempt 22
+2024-09-05 07:17:47 INFO: Direct Full Inference ...
+2024-09-05 07:18:00 INFO: Infer time: 13.210967063903809s
+2024-09-05 07:18:00 INFO: Direct inference with baseline attempt 23
+2024-09-05 07:18:00 INFO: Direct Full Inference ...
+2024-09-05 07:18:15 INFO: Infer time: 14.697049379348755s
+2024-09-05 07:18:15 INFO: Direct inference with baseline attempt 24
+2024-09-05 07:18:15 INFO: Direct Full Inference ...
+2024-09-05 07:18:27 INFO: Infer time: 11.548327445983887s
+2024-09-05 07:18:28 INFO: finished!

@@ -1,0 +1,742 @@
+2025-03-24 06:48:10 WARNING: Phase 1 examples: ['3', '6', '7']
+2025-03-24 06:48:10 INFO: Running in generation mode
+2025-03-24 06:48:10 INFO: Repair steps: 10
+2025-03-24 06:48:10 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2025-03-24 06:48:10 WARNING: Generation initialized with repair_uniform: False
+2025-03-24 06:48:10 INFO: Generating proof code
+2025-03-24 06:48:10 INFO: Temperature: 1.0
+2025-03-24 06:48:10 INFO: Direct inference attempt 0
+2025-03-24 06:49:15 INFO: Infer time: 65.43093299865723s
+2025-03-24 06:49:15 INFO: Checking candidate 0-0
+2025-03-24 06:49:16 INFO: 0-0.rs in code pool
+2025-03-24 06:49:16 INFO: 0-0.rs is now the best proof candidate
+2025-03-24 06:49:16 INFO: Checking candidate 0-1
+2025-03-24 06:49:16 ERROR: Error in comparing code changes: 
+2025-03-24 06:49:16 INFO: Checking candidate 0-2
+2025-03-24 06:49:16 ERROR: Error in comparing code changes: 
+2025-03-24 06:49:16 INFO: Checking candidate 0-3
+2025-03-24 06:49:17 INFO: 0-3.rs in code pool
+2025-03-24 06:49:17 INFO: 0-3.rs is now the best proof candidate
+2025-03-24 06:49:17 INFO: Checking candidate 0-4
+2025-03-24 06:49:17 INFO: Regenerate...
+2025-03-24 06:49:17 INFO: Direct inference attempt 1
+2025-03-24 06:50:24 INFO: Infer time: 67.44231009483337s
+2025-03-24 06:50:24 INFO: Checking candidate 1-0
+2025-03-24 06:50:25 INFO: 1-0.rs in code pool
+2025-03-24 06:50:25 INFO: 1-0.rs is now the best proof candidate
+2025-03-24 06:50:25 INFO: Checking candidate 1-1
+2025-03-24 06:50:26 INFO: 1-1.rs in code pool
+2025-03-24 06:50:26 INFO: 1-1.rs is now the best proof candidate
+2025-03-24 06:50:26 INFO: Working on merge-0.rs
+2025-03-24 06:50:30 INFO: Running houdini on merge-0.rs
+2025-03-24 06:50:31 INFO: Working on merge-1.rs
+2025-03-24 06:50:31 ERROR: Error in merging code at step 1: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/chenyuan/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origudf0qiab.rs /tmp/merge_new_invs0r3hrla.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2025-03-24 06:50:31 INFO: Working on merge-2.rs
+2025-03-24 06:50:31 ERROR: Error in merging code at step 2: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/chenyuan/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origrygn09sd.rs /tmp/merge_new_inv4l8_1u8n.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2025-03-24 06:50:31 INFO: Working on merge-3.rs
+2025-03-24 06:50:32 ERROR: Error in merging code at step 3: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/chenyuan/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origivz32dcm.rs /tmp/merge_new_invk21ifg3o.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2025-03-24 06:50:32 INFO: refining with constantrefine_inference
+2025-03-24 06:51:12 INFO: Infer time: 40.152055978775024s
+2025-03-24 06:51:12 INFO: 
+use vstd::prelude::*;
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+            vals_1[k] < 1000,
+            vals_2[k] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+
+2025-03-24 06:51:12 INFO: Unsafe code change
+2025-03-24 06:51:12 INFO: Refinement did not change the code
+2025-03-24 06:51:12 INFO: refining with arraylen_inference
+2025-03-24 06:51:46 INFO: Infer time: 34.1221239566803s
+2025-03-24 06:51:47 INFO: 
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            vals_1.len() == common_len,
+            vals_2.len() == common_len,
+            conds_1.len() == common_len,
+            conds_2.len() == common_len,
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+
+2025-03-24 06:51:51 INFO: New refined code is a good repair
+2025-03-24 06:51:51 INFO: 
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            vals_1.len() == common_len,
+            vals_2.len() == common_len,
+            conds_1.len() == common_len,
+            conds_2.len() == common_len,
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+
+2025-03-24 06:51:51 INFO: refining with arrayrefine_inference
+2025-03-24 06:52:24 INFO: Infer time: 33.03240370750427s
+Using client 0
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            avgs.len() == k,
+            k <= common_len,
+            common_len > 0,
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+Using client 0
+
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant
+            k <= common_len,
+            avgs.len() == k,
+            forall |idx: int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            )
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+Using client 0
+
+
+```rust
+use vstd::prelude::*;
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+            vals_1[k] < 1000,
+            vals_2[k] < 1000,
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+```
+Using client 0
+
+
+Here is the modified code with the required loop invariants without any explanations:
+
+```rust
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            vals_1.len() == common_len,
+            vals_2.len() == common_len,
+            conds_1.len() == common_len,
+            conds_2.len() == common_len,
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+```
+Using client 0
+2025-03-24 06:52:24 INFO: 
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+            forall |idx:int| 0 <= idx < conds_1.len() ==> conds_1[idx] || conds_2[idx],
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+
+2025-03-24 06:52:25 INFO: New refined code is a good repair
+2025-03-24 06:52:25 INFO: 
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+            forall |idx:int| 0 <= idx < conds_1.len() ==> conds_1[idx] || conds_2[idx],
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+
+2025-03-24 06:52:25 INFO: refining with condlooprefine_inference
+2025-03-24 06:53:00 INFO: Infer time: 35.26376032829285s
+2025-03-24 06:53:00 INFO: 
+
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+            forall |idx:int| 0 <= idx < conds_1.len() ==> conds_1[idx] || conds_2[idx],
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            )
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+2025-03-24 06:53:01 INFO: New refined code under condloop is not better
+2025-03-24 06:53:01 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2025-03-24 06:53:01 WARNING: Generation initialized with repair_uniform: False
+2025-03-24 06:53:01 INFO: All errors are fixed within 0 steps!!!
+2025-03-24 06:53:01 INFO: Verus succeeded after repair!!
+2025-03-24 06:53:02 INFO: finished!
+
+
+Here is the updated code with adjusted loop invariants:
+
+```rust
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+            forall |idx:int| 0 <= idx < conds_1.len() ==> conds_1[idx] || conds_2[idx],
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            ),
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+```
+Using client 0
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus!{
+fn conditional_average(vals_1: &Vec<u64>, vals_2: &Vec<u64>, conds_1: &Vec<bool>, conds_2: &Vec<bool>, avgs: &mut Vec<u64>) 
+    requires 
+        vals_1.len() == vals_2.len(),
+        vals_1.len() == conds_1.len(),
+        vals_1.len() == conds_2.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> conds_1[idx] || conds_2[idx],
+        forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+        forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+    ensures
+        avgs.len() == vals_1.len(),
+        forall |idx:int| 0 <= idx < vals_1.len() ==> (
+            (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+            (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+            (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+        )
+{
+    let mut k: usize = 0;
+    let common_len = vals_1.len();
+    avgs.clear();
+    while (k < common_len)
+        invariant 
+            k <= common_len,
+            avgs.len() == k,
+            forall |idx:int| 0 <= idx < vals_1.len() ==> vals_1[idx] < 1000,
+            forall |idx:int| 0 <= idx < vals_2.len() ==> vals_2[idx] < 1000,
+            forall |idx:int| 0 <= idx < conds_1.len() ==> conds_1[idx] || conds_2[idx],
+            forall |idx:int| 0 <= idx < k ==> (
+                (conds_1[idx] && conds_2[idx] ==> avgs[idx] == (vals_1[idx] + vals_2[idx]) / 2) &&
+                (conds_1[idx] && !conds_2[idx] ==> avgs[idx] == vals_1[idx]) &&
+                (!conds_1[idx] && conds_2[idx] ==> avgs[idx] == vals_2[idx])
+            )
+    {
+        let mut new_avg: u64 = 0;
+        if (conds_1[k]) {
+            if (conds_2[k]) {
+                new_avg = (vals_1[k] + vals_2[k]) / 2;
+            }
+            else {
+                new_avg = vals_1[k];
+            }
+        }
+        else {
+            new_avg = vals_2[k];
+        }
+        avgs.push(new_avg);
+        k = k + 1;
+    }
+}
+}
+Start repair

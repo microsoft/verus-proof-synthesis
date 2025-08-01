@@ -1,0 +1,1281 @@
+2024-09-03 19:36:22 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 19:36:22 INFO: Running in generation mode
+2024-09-03 19:36:22 INFO: Repair steps: 10
+2024-09-03 19:36:22 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:36:22 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:36:22 INFO: Generating proof code
+2024-09-03 19:36:22 INFO: Temperature: 0.4
+2024-09-03 19:36:22 INFO: Direct inference attempt 0
+2024-09-03 19:36:28 INFO: Infer time: 5.672531604766846s
+2024-09-03 19:36:28 INFO: Checking candidate 0-0
+2024-09-03 19:36:33 INFO: 0-0.rs in code pool
+2024-09-03 19:36:33 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 19:36:33 INFO: Checking candidate 0-1
+2024-09-03 19:36:33 ERROR: Error: 'verified'
+2024-09-03 19:36:33 ERROR: Error: 'errors'
+2024-09-03 19:36:41 INFO: Checking candidate 0-2
+2024-09-03 19:36:41 ERROR: Error: 'verified'
+2024-09-03 19:36:41 ERROR: Error: 'errors'
+2024-09-03 19:36:49 INFO: Checking candidate 0-3
+2024-09-03 19:36:58 INFO: 0-3.rs in code pool
+2024-09-03 19:36:58 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 19:36:58 INFO: Checking candidate 0-4
+2024-09-03 19:36:58 INFO: 0-4.rs in code pool
+2024-09-03 19:36:58 INFO: 0-4.rs is now the best proof candidate
+2024-09-03 19:36:58 INFO: Working on merge-0.rs
+2024-09-03 19:37:11 INFO: Merged code is better.
+2024-09-03 19:37:11 INFO: Running houdini on merge-0.rs
+2024-09-03 19:37:11 INFO: Working on merge-1.rs
+2024-09-03 19:37:12 INFO: Running houdini on merge-1.rs
+2024-09-03 19:37:13 INFO: Working on merge-2.rs
+2024-09-03 19:37:13 INFO: Running houdini on merge-2.rs
+2024-09-03 19:37:14 INFO: refining with constantrefine_inference
+2024-09-03 19:37:20 INFO: Infer time: 6.4469544887542725s
+2024-09-03 19:37:21 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+            index < arr.len(),
+    {
+        if (arr[index] == key) {
+            counter += 1;
+        }
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+            index < arr.len(),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        index += 1;
+    }
+    unique_arr
+}
+
+} // verus!
+
+2024-09-03 19:37:21 INFO: New refined code is a good repair
+2024-09-03 19:37:21 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+            index < arr.len(),
+    {
+        if (arr[index] == key) {
+            counter += 1;
+        }
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+            index < arr.len(),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        index += 1;
+    }
+    unique_arr
+}
+
+} // verus!
+
+2024-09-03 19:37:21 INFO: refining with arraylen_inference
+2024-09-03 19:37:27 INFO: Infer time: 5.380766153335571s
+2024-09-03 19:37:27 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+            index < arr.len(),
+            arr.len() == input_len,
+    {
+        if (arr[index] == key) {
+            counter += 1;
+        }
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+            index < arr.len(),
+            arr.len() == input_len,
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        index += 1;
+    }
+    unique_arr
+}
+
+} // verus!
+
+2024-09-03 19:37:27 INFO: New refined code is worse
+2024-09-03 19:37:27 INFO: refining with arrayrefine_inference
+2024-09-03 19:37:34 INFO: Infer time: 7.314260482788086s
+2024-09-03 19:37:34 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+            forall |k:int| 0 <= k < arr.len() ==> true, // The array `arr` is not modified in this loop
+    {
+        if (arr[index] == key) {
+            counter += 1;
+        }
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+            forall |k:int| 0 <= k < arr.len() ==> true, // The array `arr` is not modified in this loop
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        index += 1;
+    }
+    unique_arr
+}
+
+} // verus!
+
+2024-09-03 19:37:35 ERROR: Error: 'verified'
+2024-09-03 19:37:35 ERROR: Error: 'errors'
+2024-09-03 19:37:35 INFO: New refined code is worse
+2024-09-03 19:37:35 INFO: refining with condlooprefine_inference
+2024-09-03 19:37:42 INFO: Infer time: 6.973338603973389s
+2024-09-03 19:37:42 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+            index > 0 ==> index < arr.len(),
+    {
+        if (arr[index] == key) {
+            counter += 1;
+        }
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+            index > 0 ==> index < arr.len(),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        index += 1;
+    }
+    unique_arr
+}
+
+} // verus!
+
+2024-09-03 19:37:42 INFO: New refined code under condloop is not better
+2024-09-03 19:37:42 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:37:42 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:37:43 INFO: Step 1: VerusErrorType.ArithmeticFlow with num=3.
+2024-09-03 19:37:43 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 8
+2024-09-03 19:37:50 INFO: Infer time: 7.15275764465332s
+2024-09-03 19:37:50 INFO: repair-1-0 file generated
+2024-09-03 19:37:50 INFO: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 8
+2024-09-03 19:37:50 INFO: Step 1: VerusErrorType.ArithmeticFlow is fixed. Proof updated 1-0.
+2024-09-03 19:37:51 INFO: Step 2: VerusErrorType.InvFailFront with num=3.
+2024-09-03 19:37:51 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 8
+2024-09-03 19:37:59 INFO: Infer time: 8.537556409835815s
+2024-09-03 19:37:59 INFO: Here is the quick fix output
+2024-09-03 19:37:59 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:38:06 INFO: Infer time: 6.1490089893341064s
+2024-09-03 19:38:14 INFO: repair-2-0 file generated
+2024-09-03 19:38:14 INFO: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 6
+2024-09-03 19:38:14 INFO: Step 2: VerusErrorType.InvFailFront is fixed. Proof updated 2-0.
+2024-09-03 19:38:14 INFO: Step 3: VerusErrorType.InvFailFront with num=3.
+2024-09-03 19:38:14 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 6
+2024-09-03 19:38:14 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-03 19:38:28 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 2.000000 seconds
+2024-09-03 19:38:35 INFO: Infer time: 21.059540033340454s
+2024-09-03 19:38:35 INFO: Here is the quick fix output
+2024-09-03 19:38:37 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 19:38:37 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 5.000000 seconds
+2024-09-03 19:38:49 INFO: Infer time: 11.792126893997192s
+2024-09-03 19:38:52 INFO: repair-3-0 file generated
+2024-09-03 19:38:52 INFO: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 5
+2024-09-03 19:38:52 INFO: Step 3: VerusErrorType.InvFailFront is fixed. Proof updated 3-0.
+2024-09-03 19:38:52 INFO: Step 4: VerusErrorType.InvFailEnd with num=3.
+2024-09-03 19:38:52 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 5
+2024-09-03 19:39:11 INFO: Infer time: 18.63176465034485s
+2024-09-03 19:39:11 INFO: repair-4-0 file generated
+2024-09-03 19:39:11 INFO: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 5
+2024-09-03 19:39:11 INFO: Step 4: VerusErrorType.InvFailEnd is fixed. Proof updated 4-0.
+2024-09-03 19:39:12 INFO: Step 5: VerusErrorType.AssertFail with num=3.
+2024-09-03 19:39:12 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 4, Verus Errors: 5
+2024-09-03 19:39:12 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:39:12 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:39:23 INFO: Infer time: 10.959582328796387s
+2024-09-03 19:39:36 INFO: Infer time: 12.837987422943115s
+2024-09-03 19:39:36 INFO: subrange lemma fix
+2024-09-03 19:39:46 INFO: Infer time: 10.294645071029663s
+2024-09-03 19:39:47 INFO: repair-5-0 file generated
+2024-09-03 19:39:47 INFO: Compilation Error: False, Verified: 4, Errors: 3, Verus Errors: 4
+2024-09-03 19:39:47 INFO: Step 5: VerusErrorType.AssertFail is partially fixed. Proof updated 5-0.
+2024-09-03 19:39:47 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-09-03 19:39:47 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 3, Verus Errors: 4
+2024-09-03 19:39:47 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:39:47 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:40:05 INFO: Infer time: 17.85763645172119s
+2024-09-03 19:40:18 INFO: Infer time: 13.100929498672485s
+2024-09-03 19:40:18 INFO: subrange lemma fix
+2024-09-03 19:40:30 INFO: Infer time: 12.178948402404785s
+Start repair
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+            index == 0 || index < arr.len(),
+    {
+        if (arr[index] == key) {
+            // Add assertion to prevent overflow
+            assert(counter < usize::MAX);
+            counter += 1;
+        }
+        // Add assertion to prevent overflow
+        assert(index < usize::MAX);
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+            index == 0 || index < arr.len(),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        // Add assertion to prevent overflow
+        assert(index < usize::MAX);
+        index += 1;
+    }
+    unique_arr
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+    {
+        if (arr[index] == key) {
+            // Add assertion to prevent overflow
+            assert(counter < usize::MAX);
+            counter += 1;
+        }
+        // Add assertion to prevent overflow
+        assert(index < usize::MAX);
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            index > 0 ==> unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        // Add assertion to prevent overflow
+        assert(index < usize::MAX);
+        index += 1;
+    }
+    unique_arr
+}
+
+} // verus!
+
+special fix: add reveal
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+    {
+        if (arr[index] == key) {
+            assert(counter < usize::MAX); // Add assertion to prevent overflow
+            counter += 1;
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    reveal(Seq::filter); // Add this line to reveal the filter function
+
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    proof {
+        assert(unique_arr@ == arr@.subrange(0, index as int).filter(
+            |x: i32| count_frequency_rcr(arr@, x) == 1,
+        ));
+        lemma_seq_subrange_all(arr@);
+    }
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(arr@, 0, index as int);
+            assert(unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ));
+        }
+    }
+    unique_arr
+}
+
+} // verus!
+
+special fix: add reveal
+2024-09-03 19:40:31 INFO: repair-6-0 file generated
+2024-09-03 19:40:31 INFO: Compilation Error: False, Verified: 4, Errors: 3, Verus Errors: 4
+2024-09-03 19:40:31 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-09-03 19:40:31 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 3, Verus Errors: 4
+2024-09-03 19:40:31 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:40:31 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:40:46 INFO: Infer time: 14.892529726028442s
+2024-09-03 19:40:59 INFO: Infer time: 12.650058031082153s
+2024-09-03 19:40:59 INFO: subrange lemma fix
+2024-09-03 19:41:16 INFO: Infer time: 16.977357625961304s
+2024-09-03 19:41:17 INFO: repair-7-0 file generated
+2024-09-03 19:41:17 INFO: Compilation Error: False, Verified: 3, Errors: 4, Verus Errors: 5
+2024-09-03 19:41:17 INFO: Step 8: VerusErrorType.AssertFail with num=5.
+2024-09-03 19:41:17 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 3, Verus Errors: 4
+2024-09-03 19:41:17 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:41:17 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:41:31 INFO: Infer time: 13.908048152923584s
+2024-09-03 19:41:44 INFO: Infer time: 12.774277925491333s
+2024-09-03 19:41:44 INFO: subrange lemma fix
+2024-09-03 19:41:55 INFO: Infer time: 11.279337167739868s
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+    {
+        if (arr[index] == key) {
+            assert(counter < usize::MAX); // Add assertion to prevent overflow
+            counter += 1;
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    reveal(Seq::filter); // Add this line to reveal the filter function
+
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    proof {
+        assert(unique_arr@ == arr@.subrange(0, index as int).filter(
+            |x: i32| count_frequency_rcr(arr@, x) == 1,
+        ));
+        lemma_seq_subrange_all(arr@);
+    }
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(arr@, 0, index as int);
+            assert(unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ));
+        }
+    }
+    unique_arr
+}
+
+} // verus!
+
+special fix: add reveal
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+    {
+        if (arr[index] == key) {
+            assert(counter < usize::MAX); // Add assertion to prevent overflow
+            counter += 1;
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    reveal(Seq::filter); // Add this line to reveal the filter function
+
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(arr@);
+    }
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(arr@, 0, index as int);
+        }
+    }
+    proof {
+        assert(unique_arr@ == arr@.subrange(0, index as int).filter(
+            |x: i32| count_frequency_rcr(arr@, x) == 1,
+        ));
+    }
+    unique_arr
+}
+
+} // verus!
+
+special fix: add reveal
+2024-09-03 19:42:01 INFO: repair-8-0 file generated
+2024-09-03 19:42:01 INFO: Compilation Error: False, Verified: 3, Errors: 4, Verus Errors: 5
+2024-09-03 19:42:02 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-03 19:42:02 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 3, Verus Errors: 4
+2024-09-03 19:42:02 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:42:02 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:42:24 INFO: Infer time: 21.909412145614624s
+2024-09-03 19:42:38 INFO: Infer time: 14.173802375793457s
+2024-09-03 19:42:38 INFO: subrange lemma fix
+2024-09-03 19:42:55 INFO: Infer time: 16.33556628227234s
+2024-09-03 19:42:55 INFO: repair-9-0 file generated
+2024-09-03 19:42:55 INFO: Compilation Error: False, Verified: 3, Errors: 4, Verus Errors: 5
+2024-09-03 19:42:56 INFO: Step 10: VerusErrorType.AssertFail (failed last 4 time) with num=5.
+2024-09-03 19:42:56 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 3, Verus Errors: 4
+2024-09-03 19:43:12 INFO: Infer time: 16.776408195495605s
+2024-09-03 19:43:13 INFO: repair-10-0 file generated
+2024-09-03 19:43:13 INFO: Compilation Error: False, Verified: 4, Errors: 3, Verus Errors: 4
+2024-09-03 19:43:13 INFO: Step 10: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 19:43:13 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-03 19:43:13 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-03 19:43:13 INFO: Original code is better
+2024-09-03 19:43:14 INFO: finished!
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+    {
+        if (arr[index] == key) {
+            assert(counter < usize::MAX); // Add assertion to prevent overflow
+            counter += 1;
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    reveal(Seq::filter); // Add this line to reveal the filter function
+
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(arr@);
+    }
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(arr@, 0, index as int);
+        }
+    }
+    unique_arr
+}
+
+} // verus!
+
+special fix: add reveal
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+pub open spec fn count_frequency_rcr(seq: Seq<i32>, key: i32) -> int
+    decreases seq.len(),
+{
+    if seq.len() == 0 {
+        0
+    } else {
+        count_frequency_rcr(seq.drop_last(), key) + if (seq.last() == key) {
+            1 as int
+        } else {
+            0 as int
+        }
+    }
+}
+
+fn count_frequency(arr: &Vec<i32>, key: i32) -> (frequency: usize)
+    ensures
+        count_frequency_rcr(arr@, key) == frequency,
+{
+    let mut index = 0;
+    let mut counter = 0;
+    while index < arr.len()
+        invariant
+            counter == count_frequency_rcr(arr@.subrange(0, index as int), key),
+            index <= arr.len(),
+    {
+        if (arr[index] == key) {
+            assert(counter < usize::MAX); // Add assertion to prevent overflow
+            counter += 1;
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+    }
+    counter
+}
+
+fn remove_duplicates(arr: &Vec<i32>) -> (unique_arr: Vec<i32>)
+    ensures
+        unique_arr@ == arr@.filter(|x: i32| count_frequency_rcr(arr@, x) == 1),
+{
+    reveal(Seq::filter); // Add this line to reveal the filter function
+
+    let mut unique_arr: Vec<i32> = Vec::new();
+    let input_len = arr.len();
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(arr@);
+    }
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            unique_arr@ == arr@.subrange(0, index as int).filter(
+                |x: i32| count_frequency_rcr(arr@, x) == 1,
+            ),
+    {
+        if count_frequency(&arr, arr[index]) == 1 {
+            unique_arr.push(arr[index]);
+        }
+        assert(index < usize::MAX); // Add assertion to prevent overflow
+        index += 1;
+        proof {
+            lemma_seq_subrange_ascend(arr@, 0, index as int);
+        }
+    }
+    unique_arr
+}
+
+}
+

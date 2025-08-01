@@ -1,3 +1,4 @@
 azure-identity==1.22.0
 numpy==2.2.5
 openai==1.77.0
+rich==13.6.0

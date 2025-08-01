@@ -1,0 +1,101 @@
+2024-08-31 22:28:32 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:28:32 INFO: Running in generation mode
+2024-08-31 22:28:32 INFO: Repair steps: 0
+2024-08-31 22:28:32 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:28:32 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:28:32 INFO: Generating proof code
+2024-08-31 22:28:32 INFO: Temperature: 1.0
+2024-08-31 22:28:32 INFO: Direct inference attempt 0
+2024-08-31 22:28:39 INFO: Infer time: 6.267327070236206s
+2024-08-31 22:28:39 INFO: Checking candidate 0-0
+2024-08-31 22:28:39 INFO: 0-0.rs in code pool
+2024-08-31 22:28:39 INFO: 0-0.rs is now the best proof candidate
+2024-08-31 22:28:39 INFO: Checking candidate 0-1
+2024-08-31 22:28:40 INFO: 0-1.rs in code pool
+2024-08-31 22:28:40 INFO: 0-1.rs is now the best proof candidate
+2024-08-31 22:28:40 INFO: Checking candidate 0-2
+2024-08-31 22:28:40 INFO: 0-2.rs in code pool
+2024-08-31 22:28:40 INFO: Checking candidate 0-3
+2024-08-31 22:28:41 INFO: 0-3.rs in code pool
+2024-08-31 22:28:41 INFO: Working on merge-0.rs
+2024-08-31 22:28:45 INFO: Running houdini on merge-0.rs
+2024-08-31 22:28:46 INFO: Working on merge-1.rs
+2024-08-31 22:28:46 INFO: Merged code is better.
+2024-08-31 22:28:46 INFO: Running houdini on merge-1.rs
+2024-08-31 22:28:47 INFO: Working on merge-2.rs
+2024-08-31 22:28:47 INFO: Running houdini on merge-2.rs
+2024-08-31 22:28:48 INFO: Working on merge-3.rs
+2024-08-31 22:28:49 INFO: Merged code is better.
+2024-08-31 22:28:49 INFO: Running houdini on merge-3.rs
+2024-08-31 22:28:50 INFO: refining with constantrefine_inference
+2024-08-31 22:28:58 INFO: Infer time: 8.338478565216064s
+2024-08-31 22:28:58 INFO: Verus has succeeded.
+2024-08-31 22:28:58 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] == 2 * N,
+{
+    sum.set(0, 0);
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == 1,
+            i <= N as usize,
+            N > 0,
+            N < 1000,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == 2,
+            forall|j: int| i <= j < N ==> a[j] == 1,
+            i <= N as usize,
+            N > 0,
+            N < 1000,
+    {
+        if (a[i] == 1) {
+            a.set(i, a[i] + 1);
+        } else {
+            a.set(i, a[i] - 1);
+        }
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            0 <= i <= N,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == 2,
+            forall|j: int| 0 <= j < i ==> a[j] == 2,
+            i <= N as usize,
+            sum.len() == 1,
+            sum[0] == (i as i32) * 2,
+            sum[0] <= 2 * i as i32,
+            N > 0,
+            N < 1000,
+    {
+        sum.set(0, sum[0] + a[i]);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 22:29:03 INFO: Verus succeeded with refinement!!
+2024-08-31 22:29:03 INFO: finished!

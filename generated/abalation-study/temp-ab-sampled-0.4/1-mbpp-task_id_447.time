@@ -1,0 +1,80 @@
+2024-09-03 19:34:53 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 19:34:53 INFO: Running in generation mode
+2024-09-03 19:34:53 INFO: Repair steps: 10
+2024-09-03 19:34:53 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:34:53 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:34:53 INFO: Generating proof code
+2024-09-03 19:34:53 INFO: Temperature: 0.4
+2024-09-03 19:34:53 INFO: Direct inference attempt 0
+2024-09-03 19:34:57 INFO: Infer time: 4.316626310348511s
+2024-09-03 19:34:57 INFO: Checking candidate 0-0
+2024-09-03 19:34:58 INFO: 0-0.rs in code pool
+2024-09-03 19:34:58 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 19:34:58 INFO: Checking candidate 0-1
+2024-09-03 19:34:58 INFO: 0-1.rs in code pool
+2024-09-03 19:34:58 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 19:34:58 INFO: Checking candidate 0-2
+2024-09-03 19:34:59 INFO: 0-2.rs in code pool
+2024-09-03 19:34:59 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 19:34:59 INFO: Checking candidate 0-3
+2024-09-03 19:34:59 INFO: 0-3.rs in code pool
+2024-09-03 19:34:59 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 19:34:59 INFO: Working on merge-0.rs
+2024-09-03 19:35:12 INFO: Merged code is better.
+2024-09-03 19:35:12 INFO: Running houdini on merge-0.rs
+2024-09-03 19:35:12 INFO: Working on merge-1.rs
+2024-09-03 19:35:13 INFO: Merged code is better.
+2024-09-03 19:35:13 INFO: Running houdini on merge-1.rs
+2024-09-03 19:35:13 INFO: Working on merge-2.rs
+2024-09-03 19:35:14 INFO: Merged code is better.
+2024-09-03 19:35:14 INFO: Running houdini on merge-2.rs
+2024-09-03 19:35:14 INFO: Working on merge-3.rs
+2024-09-03 19:35:15 INFO: Merged code is better.
+2024-09-03 19:35:15 INFO: Running houdini on merge-3.rs
+2024-09-03 19:35:24 WARNING: Non-linear arithmetic detected.
+2024-09-03 19:35:24 WARNING:             forall|j: int| 0 <= j < i ==> cubed_array[j] == nums[j] * nums[j] * nums[j],
+2024-09-03 19:35:24 INFO: refining with constantrefine_inference
+2024-09-03 19:35:31 INFO: Infer time: 7.590616226196289s
+2024-09-03 19:35:31 INFO: Verus has succeeded.
+2024-09-03 19:35:31 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn cube_element(nums: &Vec<i32>) -> (cubed: Vec<i32>)
+    requires
+        forall|k: int|
+            0 <= k < nums.len() ==> (i32::MIN <= # [trigger] nums[k] * # [trigger] nums[k]
+                <= i32::MAX),
+        forall|k: int|
+            0 <= k < nums.len() ==> (i32::MIN <= # [trigger] nums[k] * # [trigger] nums[k]
+                * # [trigger] nums[k] <= i32::MAX),
+    ensures
+        forall|i: int|
+            0 <= i < nums.len() ==> cubed[i] == # [trigger] nums[i] * # [trigger] nums[i]
+                * # [trigger] nums[i],
+{
+    let mut cubed_array: Vec<i32> = Vec::new();
+    let mut i = 0;
+    while i < nums.len()
+        invariant
+            cubed_array.len() == i,
+            forall|j: int| 0 <= j < i ==> cubed_array[j] == nums[j] * nums[j] * nums[j],
+            i <= nums.len(),
+            forall|k: int|
+                0 <= k < nums.len() ==> (i32::MIN <= # [trigger] nums[k] * # [trigger] nums[k]
+                    <= i32::MAX),
+            forall|k: int|
+                0 <= k < nums.len() ==> (i32::MIN <= # [trigger] nums[k] * # [trigger] nums[k]
+                    * # [trigger] nums[k] <= i32::MAX),
+    {
+        cubed_array.push(nums[i] * nums[i] * nums[i]);
+        i += 1;
+    }
+    cubed_array
+}
+
+} // verus!
+
+2024-09-03 19:35:32 INFO: Verus succeeded with refinement!!
+2024-09-03 19:35:32 INFO: finished!

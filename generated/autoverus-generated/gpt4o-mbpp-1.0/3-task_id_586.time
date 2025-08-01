@@ -1,0 +1,654 @@
+2024-08-30 11:35:35 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 11:35:35 INFO: Running in generation mode
+2024-08-30 11:35:35 INFO: Repair steps: 10
+2024-08-30 11:35:35 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 11:35:35 INFO: Generating proof code
+2024-08-30 11:35:35 INFO: Temperature: 1.0
+2024-08-30 11:35:35 INFO: Direct inference attempt 0
+2024-08-30 11:35:45 INFO: Infer time: 9.675750494003296s
+2024-08-30 11:35:45 INFO: Checking candidate 0-0
+2024-08-30 11:35:45 INFO: 0-0.rs in code pool
+2024-08-30 11:35:45 INFO: 0-0.rs is now the best proof candidate
+2024-08-30 11:35:45 INFO: Checking candidate 0-1
+2024-08-30 11:35:46 INFO: 0-1.rs in code pool
+2024-08-30 11:35:46 INFO: 0-1.rs is now the best proof candidate
+2024-08-30 11:35:46 INFO: Checking candidate 0-2
+2024-08-30 11:35:46 INFO: 0-2.rs in code pool
+2024-08-30 11:35:46 INFO: Checking candidate 0-3
+2024-08-30 11:35:47 INFO: Checking candidate 0-4
+2024-08-30 11:35:47 INFO: 0-4.rs in code pool
+2024-08-30 11:35:47 INFO: Regenerate...
+2024-08-30 11:35:47 INFO: Direct inference attempt 1
+2024-08-30 11:35:52 INFO: Infer time: 4.589169025421143s
+2024-08-30 11:35:52 INFO: Checking candidate 1-0
+2024-08-30 11:35:52 INFO: 1-0.rs in code pool
+2024-08-30 11:35:52 INFO: 1-0.rs is now the best proof candidate
+2024-08-30 11:35:52 INFO: Working on merge-0.rs
+2024-08-30 11:35:57 INFO: Merged code is better.
+2024-08-30 11:35:57 INFO: Running houdini on merge-0.rs
+2024-08-30 11:35:57 INFO: Working on merge-1.rs
+2024-08-30 11:35:57 INFO: Running houdini on merge-1.rs
+2024-08-30 11:35:58 INFO: Working on merge-2.rs
+2024-08-30 11:35:58 ERROR: Error in merging code at step 2: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origljdbyg0p.rs /tmp/merge_new_invhg20uz8c.rs`
+Conflict: Expr type conflict
+
+2024-08-30 11:35:58 INFO: Working on merge-3.rs
+2024-08-30 11:35:58 INFO: Running houdini on merge-3.rs
+2024-08-30 11:35:59 INFO: Working on merge-4.rs
+2024-08-30 11:35:59 INFO: Running houdini on merge-4.rs
+2024-08-30 11:36:00 INFO: refining with constantrefine_inference
+2024-08-30 11:36:05 INFO: Infer time: 4.847704172134399s
+2024-08-30 11:36:05 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+2024-08-30 11:36:10 INFO: New refined code is a good repair
+2024-08-30 11:36:10 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+2024-08-30 11:36:10 INFO: refining with arraylen_inference
+2024-08-30 11:36:16 INFO: Infer time: 6.246357679367065s
+2024-08-30 11:36:16 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-30 11:36:16 INFO: New refined code is a good repair
+2024-08-30 11:36:16 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-30 11:36:16 INFO: refining with arrayrefine_inference
+2024-08-30 11:36:21 INFO: Infer time: 4.7601635456085205s
+2024-08-30 11:36:21 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+            forall |k: int| 0 <= k < list.len() ==> list.len() == list.len(), // Invariant modified to cover every element in the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            forall |k: int| 0 <= k < list.len() ==> list.len() == list.len(), // Invariant modified to cover every element in the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-30 11:36:21 ERROR: Error: 'verified'
+2024-08-30 11:36:21 ERROR: Error: 'errors'
+2024-08-30 11:36:22 INFO: New refined code is worse
+2024-08-30 11:36:22 INFO: refining with condlooprefine_inference
+2024-08-30 11:36:27 INFO: Infer time: 5.937112092971802s
+2024-08-30 11:36:28 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        // No special handling for the first iteration in this loop
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        // No special handling for the first iteration in this loop
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+2024-08-30 11:36:28 INFO: New refined code under condloop is not better
+2024-08-30 11:36:28 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 11:36:28 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-08-30 11:36:28 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-08-30 11:36:32 INFO: Infer time: 4.14903712272644s
+2024-08-30 11:36:32 INFO: Here is the quick fix output
+2024-08-30 11:36:33 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 11:36:37 INFO: Infer time: 4.471475839614868s
+2024-08-30 11:36:37 INFO: repair-1-0 file generated
+2024-08-30 11:36:37 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:36:38 INFO: Step 1: VerusErrorType.InvFailFront is fixed. Proof updated 1-0.
+2024-08-30 11:36:38 INFO: Step 2: VerusErrorType.InvFailFront with num=3.
+2024-08-30 11:36:38 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:36:43 INFO: Infer time: 5.050062656402588s
+2024-08-30 11:36:43 INFO: Here is the quick fix output
+2024-08-30 11:36:43 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 11:36:43 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 11:37:49 INFO: Infer time: 65.98467683792114s
+2024-08-30 11:37:49 INFO: repair-2-0 file generated
+2024-08-30 11:37:49 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:37:50 INFO: repair-2-1 file generated
+2024-08-30 11:37:50 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:37:50 INFO: repair-2-2 file generated
+2024-08-30 11:37:50 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:37:50 INFO: Step 3: VerusErrorType.InvFailFront with num=5.
+2024-08-30 11:37:50 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:37:57 INFO: Infer time: 6.7165608406066895s
+2024-08-30 11:37:57 INFO: Here is the quick fix output
+2024-08-30 11:37:57 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 11:37:57 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 11:39:03 INFO: Infer time: 65.5503089427948s
+2024-08-30 11:39:03 INFO: repair-3-0 file generated
+2024-08-30 11:39:03 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:39:03 WARNING: The repair is not safe.
+2024-08-30 11:39:03 INFO: repair-3-1 file generated
+2024-08-30 11:39:03 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:39:04 INFO: repair-3-2 file generated
+2024-08-30 11:39:04 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:39:04 INFO: repair-3-3 file generated
+2024-08-30 11:39:04 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:39:05 INFO: repair-3-4 file generated
+2024-08-30 11:39:05 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:39:05 INFO: Step 4: VerusErrorType.InvFailFront with num=5.
+2024-08-30 11:39:05 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-30 11:39:05 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 11:40:10 INFO: Infer time: 65.46880507469177s
+2024-08-30 11:40:10 INFO: Here is the quick fix output
+2024-08-30 11:40:11 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 11:40:17 INFO: Infer time: 6.802222728729248s
+2024-08-30 11:40:18 INFO: repair-4-0 file generated
+2024-08-30 11:40:18 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-08-30 11:40:18 INFO: Step 4: VerusErrorType.InvFailFront is partially fixed. Proof updated 4-0.
+2024-08-30 11:40:18 INFO: Step 5: VerusErrorType.InvFailFront with num=5.
+2024-08-30 11:40:18 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-08-30 11:40:18 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 11:41:24 INFO: Infer time: 65.5427930355072s
+2024-08-30 11:41:24 INFO: Here is the quick fix output
+2024-08-30 11:41:24 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 11:41:24 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 11:42:34 INFO: Infer time: 70.62584948539734s
+2024-08-30 11:42:35 INFO: repair-5-0 file generated
+2024-08-30 11:42:35 INFO: Compilation Error: False, Verified: 1, Errors: 0, Verus Errors: 0
+2024-08-30 11:42:35 INFO: All errors are fixed within 5 steps!!!
+2024-08-30 11:42:35 INFO: Verus succeeded after repair!!
+2024-08-30 11:42:35 INFO: finished!
+Start repair
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            index > n ==> new_list@ == list@.subrange(n as int, index as int),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(new_list@ == list@.subrange(n as int, n as int)); // Added by AI
+    }
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            (index > 0) ==> new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(new_list@ == list@.subrange(n as int, n as int)); // Added by AI
+    }
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            index > 0 ==> new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(new_list@ == list@.subrange(n as int, n as int)); // Added by AI
+    }
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            index > 0 ==> new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    new_list
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn split_and_append(list: &Vec<i32>, n: usize) -> (new_list: Vec<i32>)
+    requires
+        list@.len() > 0,
+        0 < n < list@.len(),
+    ensures
+        new_list@ == list@.subrange(n as int, list@.len() as int).add(list@.subrange(0, n as int)),
+{
+    let mut new_list = Vec::new();
+    let mut index = n;
+    proof {
+        assert(new_list@ == list@.subrange(n as int, n as int)); // Added by AI
+    }
+    while index < list.len()
+        invariant
+            0 < n < list@.len(),
+            list@.len() > 0,
+            n <= index <= list.len(),
+            index <= list.len(),
+            new_list@ == list@.subrange(n as int, index as int),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+        proof {
+            assert(new_list@ == list@.subrange(n as int, index as int)); // Added by AI
+        }
+    }
+    let mut index = 0;
+    while index < n
+        invariant
+            0 < n < list@.len(),
+            0 <= index <= n,
+            list@.len() > 0,
+            index <= n,
+            index > 0 ==> new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            ),
+            list.len() == list.len(), // Loop invariant specifying the length of the array
+    {
+        new_list.push(list[index]);
+        index += 1;
+    }
+    proof {
+        assert(new_list@ == list@.subrange(n as int, list@.len() as int).add(
+                list@.subrange(0, index as int),
+            )); // Added by AI
+    }
+    new_list
+}
+
+} // verus!
+

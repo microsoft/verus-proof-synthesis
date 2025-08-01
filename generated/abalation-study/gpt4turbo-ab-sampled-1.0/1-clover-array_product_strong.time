@@ -1,0 +1,74 @@
+2024-09-03 16:46:13 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 16:46:13 INFO: Running in generation mode
+2024-09-03 16:46:13 INFO: Repair steps: 10
+2024-09-03 16:46:13 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 16:46:13 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 16:46:13 INFO: Generating proof code
+2024-09-03 16:46:13 INFO: Temperature: 1.0
+2024-09-03 16:46:13 INFO: Direct inference attempt 0
+2024-09-03 16:46:39 INFO: Infer time: 25.81342577934265s
+2024-09-03 16:46:39 INFO: Checking candidate 0-0
+2024-09-03 16:46:39 INFO: 0-0.rs in code pool
+2024-09-03 16:46:39 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 16:46:39 INFO: Checking candidate 0-1
+2024-09-03 16:46:40 INFO: 0-1.rs in code pool
+2024-09-03 16:46:40 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 16:46:40 INFO: Checking candidate 0-2
+2024-09-03 16:46:40 INFO: 0-2.rs in code pool
+2024-09-03 16:46:40 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 16:46:40 INFO: Checking candidate 0-3
+2024-09-03 16:46:40 INFO: 0-3.rs in code pool
+2024-09-03 16:46:40 INFO: Working on merge-0.rs
+2024-09-03 16:46:45 INFO: Merged code is better.
+2024-09-03 16:46:45 INFO: Running houdini on merge-0.rs
+2024-09-03 16:46:46 INFO: Working on merge-1.rs
+2024-09-03 16:46:46 INFO: Merged code is better.
+2024-09-03 16:46:46 INFO: Running houdini on merge-1.rs
+2024-09-03 16:46:47 INFO: Working on merge-2.rs
+2024-09-03 16:46:47 INFO: Merged code is better.
+2024-09-03 16:46:47 INFO: Running houdini on merge-2.rs
+2024-09-03 16:46:48 INFO: Working on merge-3.rs
+2024-09-03 16:46:48 INFO: Running houdini on merge-3.rs
+2024-09-03 16:46:49 WARNING: Non-linear arithmetic detected.
+2024-09-03 16:46:49 WARNING:             forall|i: int| (0 <= i && i < n) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+2024-09-03 16:46:49 INFO: refining with constantrefine_inference
+2024-09-03 16:47:11 INFO: Infer time: 21.757107973098755s
+2024-09-03 16:47:11 INFO: Verus has succeeded.
+2024-09-03 16:47:11 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            a.len() == len && b.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+            n <= len,
+            a.len() <= 100, // Upper bound for a.len()
+            forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000), // Upper bound for elements' product
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 16:47:11 INFO: Verus succeeded with refinement!!
+2024-09-03 16:47:11 INFO: finished!

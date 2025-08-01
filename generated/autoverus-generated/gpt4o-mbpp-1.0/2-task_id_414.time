@@ -1,0 +1,689 @@
+2024-08-30 06:00:06 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 06:00:06 INFO: Running in generation mode
+2024-08-30 06:00:06 INFO: Repair steps: 10
+2024-08-30 06:00:06 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 06:00:06 INFO: Generating proof code
+2024-08-30 06:00:06 INFO: Temperature: 1.0
+2024-08-30 06:00:06 INFO: Direct inference attempt 0
+2024-08-30 06:00:11 INFO: Infer time: 5.1484761238098145s
+2024-08-30 06:00:11 INFO: Checking candidate 0-0
+2024-08-30 06:00:11 INFO: Checking candidate 0-1
+2024-08-30 06:00:12 INFO: Checking candidate 0-2
+2024-08-30 06:00:12 ERROR: Error: 'verified'
+2024-08-30 06:00:12 ERROR: Error: 'errors'
+2024-08-30 06:00:12 INFO: Checking candidate 0-3
+2024-08-30 06:00:12 INFO: Checking candidate 0-4
+2024-08-30 06:00:12 INFO: Regenerate...
+2024-08-30 06:00:12 INFO: Direct inference attempt 1
+2024-08-30 06:00:12 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:01:17 INFO: Infer time: 64.55762529373169s
+2024-08-30 06:01:17 INFO: Checking candidate 1-0
+2024-08-30 06:01:17 ERROR: Error: 'verified'
+2024-08-30 06:01:17 ERROR: Error: 'errors'
+2024-08-30 06:01:17 INFO: Checking candidate 1-1
+2024-08-30 06:01:17 ERROR: Error: 'verified'
+2024-08-30 06:01:17 ERROR: Error: 'errors'
+2024-08-30 06:01:17 INFO: Checking candidate 1-2
+2024-08-30 06:01:17 INFO: Checking candidate 1-3
+2024-08-30 06:01:18 INFO: Checking candidate 1-4
+2024-08-30 06:01:18 INFO: 1-4.rs in code pool
+2024-08-30 06:01:18 INFO: 1-4.rs is now the best proof candidate
+2024-08-30 06:01:18 INFO: Working on merge-0.rs
+2024-08-30 06:01:22 INFO: Merged code is better.
+2024-08-30 06:01:22 INFO: Running houdini on merge-0.rs
+2024-08-30 06:01:24 INFO: refining with constantrefine_inference
+2024-08-30 06:01:24 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:02:28 INFO: Infer time: 64.7608392238617s
+2024-08-30 06:02:28 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+    requires
+        key > 0,
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> (arr[j] == key),
+            i <= arr.len(),
+            key > 0,
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+    requires
+        arr1.len() > 10,
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            exists|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]),
+            index <= arr1.len(),
+            arr1.len() > 10,
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 06:02:33 ERROR: Error in comparing code changes: 
+2024-08-30 06:02:33 INFO: Unsafe code change
+2024-08-30 06:02:33 INFO: Refinement did not change the code
+2024-08-30 06:02:33 INFO: refining with arraylen_inference
+2024-08-30 06:02:33 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:03:37 INFO: Infer time: 64.32048797607422s
+2024-08-30 06:03:37 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> (arr[j] == key),
+            i <= arr.len(),
+            arr.len() == old(arr.len()),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            exists|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]),
+            index <= arr1.len(),
+            arr1.len() == old(arr1.len()),
+            arr2.len() == old(arr2.len()),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 06:03:37 ERROR: Error: 'verified'
+2024-08-30 06:03:37 ERROR: Error: 'errors'
+2024-08-30 06:03:37 INFO: New refined code is worse
+2024-08-30 06:03:37 INFO: refining with arrayrefine_inference
+2024-08-30 06:03:40 INFO: Infer time: 2.7087035179138184s
+2024-08-30 06:03:40 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> (arr[j] == key),
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]), // Invariant modified to cover every element because `arr1` is not modified in this loop
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 06:03:41 INFO: New refined code is a good repair
+2024-08-30 06:03:41 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> (arr[j] == key),
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]), // Invariant modified to cover every element because `arr1` is not modified in this loop
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 06:03:41 INFO: refining with condlooprefine_inference
+2024-08-30 06:03:45 INFO: Infer time: 3.934689998626709s
+2024-08-30 06:03:45 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            exists|j: int| 0 <= j < i ==> (arr[j] == key),
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            index > 0 ==> forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]), // Restrict the invariant to cover all iterations except the first one
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+2024-08-30 06:03:46 INFO: New refined code under condloop is not better
+2024-08-30 06:03:46 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 06:03:46 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-08-30 06:03:46 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 5
+2024-08-30 06:03:46 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:04:46 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:05:46 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:06:50 INFO: Infer time: 184.37369298934937s
+2024-08-30 06:06:50 INFO: Here is the quick fix output
+2024-08-30 06:06:51 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 06:06:55 INFO: Infer time: 4.516953229904175s
+2024-08-30 06:06:55 INFO: repair-1-0 file generated
+2024-08-30 06:06:55 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 7
+2024-08-30 06:06:56 INFO: repair-1-1 file generated
+2024-08-30 06:06:56 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 6
+2024-08-30 06:06:56 WARNING: The repair is not safe.
+2024-08-30 06:06:56 ERROR: Error: 'verified'
+2024-08-30 06:06:56 ERROR: Error: 'errors'
+2024-08-30 06:06:56 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 06:06:56 ERROR: Error: 'verified'
+2024-08-30 06:06:56 ERROR: Error: 'errors'
+2024-08-30 06:06:57 INFO: repair-1-2 file generated
+2024-08-30 06:06:57 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 06:06:57 INFO: Step 2: VerusErrorType.InvFailFront with num=5.
+2024-08-30 06:06:57 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 5
+2024-08-30 06:07:01 INFO: Infer time: 4.542919874191284s
+2024-08-30 06:07:01 INFO: Here is the quick fix output
+2024-08-30 06:07:02 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 06:07:02 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:08:07 INFO: Infer time: 65.269602060318s
+2024-08-30 06:08:07 INFO: repair-2-0 file generated
+2024-08-30 06:08:07 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 5
+2024-08-30 06:08:08 INFO: repair-2-1 file generated
+2024-08-30 06:08:08 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 4
+2024-08-30 06:08:08 INFO: Step 2: VerusErrorType.InvFailFront is partially fixed. Proof updated 2-1.
+2024-08-30 06:08:09 INFO: Step 3: VerusErrorType.InvFailFront with num=5.
+2024-08-30 06:08:09 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 4
+2024-08-30 06:08:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:09:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:10:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:11:14 INFO: Infer time: 185.1923418045044s
+2024-08-30 06:11:14 INFO: Here is the quick fix output
+2024-08-30 06:11:14 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 06:11:15 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:12:15 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:13:21 INFO: Infer time: 126.26132702827454s
+2024-08-30 06:13:21 INFO: repair-3-0 file generated
+2024-08-30 06:13:21 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 4
+2024-08-30 06:13:21 INFO: Step 3: VerusErrorType.InvFailFront is fixed based on finer-grained check.
+2024-08-30 06:13:22 INFO: Step 4: VerusErrorType.InvFailFront with num=3.
+2024-08-30 06:13:22 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 4
+2024-08-30 06:13:25 INFO: Infer time: 3.892514228820801s
+2024-08-30 06:13:25 INFO: Here is the quick fix output
+2024-08-30 06:13:26 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 06:13:26 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:14:30 INFO: Infer time: 64.60986709594727s
+2024-08-30 06:14:31 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-08-30 06:14:31 INFO: repair-4-0 file generated
+2024-08-30 06:14:31 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-08-30 06:14:31 INFO: repair-4-1 file generated
+2024-08-30 06:14:31 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 4
+2024-08-30 06:14:32 INFO: repair-4-2 file generated
+2024-08-30 06:14:32 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 5
+2024-08-30 06:14:32 INFO: Step 5: VerusErrorType.InvFailFront with num=5.
+2024-08-30 06:14:32 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 4
+2024-08-30 06:14:32 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:15:33 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:16:33 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:17:37 INFO: Infer time: 184.80473971366882s
+2024-08-30 06:17:37 INFO: Here is the quick fix output
+2024-08-30 06:17:38 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 06:17:43 INFO: Infer time: 5.470545530319214s
+2024-08-30 06:17:43 INFO: repair-5-0 file generated
+2024-08-30 06:17:43 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 06:17:43 WARNING: The repair is not safe.
+2024-08-30 06:17:44 INFO: repair-5-1 file generated
+2024-08-30 06:17:44 INFO: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 4
+2024-08-30 06:17:44 INFO: Step 5: VerusErrorType.InvFailFront is fixed based on finer-grained check.
+2024-08-30 06:17:44 INFO: Step 6: VerusErrorType.InvFailFront with num=3.
+2024-08-30 06:17:44 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 3, Verus Errors: 4
+2024-08-30 06:17:44 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:18:45 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:19:49 INFO: Infer time: 125.0133593082428s
+2024-08-30 06:19:49 INFO: Here is the quick fix output
+2024-08-30 06:19:50 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 06:19:55 INFO: Infer time: 4.852569818496704s
+2024-08-30 06:19:55 INFO: repair-6-0 file generated
+2024-08-30 06:19:55 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 06:19:55 INFO: Step 6: VerusErrorType.InvFailFront is fixed. Proof updated 6-0.
+2024-08-30 06:19:55 INFO: Step 7: VerusErrorType.InvFailEnd with num=3.
+2024-08-30 06:19:55 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 06:19:59 INFO: Infer time: 4.118616819381714s
+2024-08-30 06:19:59 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 06:20:00 ERROR: Error in comparing code changes: 
+2024-08-30 06:20:00 INFO: repair-7-0 file generated
+2024-08-30 06:20:00 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 06:20:00 WARNING: The repair is not safe.
+2024-08-30 06:20:00 INFO: repair-7-1 file generated
+2024-08-30 06:20:00 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 06:20:00 INFO: Step 7: VerusErrorType.InvFailEnd is fixed. Proof updated 7-1.
+2024-08-30 06:20:00 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-08-30 06:20:00 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 2
+2024-08-30 06:20:00 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 06:20:07 INFO: Infer time: 6.818140029907227s
+2024-08-30 06:20:08 INFO: repair-8-0 file generated
+2024-08-30 06:20:08 INFO: Compilation Error: False, Verified: 3, Errors: 2, Verus Errors: 2
+2024-08-30 06:20:08 INFO: Step 8: VerusErrorType.AssertFail is partially fixed. Proof updated 8-0.
+2024-08-30 06:20:08 INFO: Step 9: VerusErrorType.AssertFail with num=3.
+2024-08-30 06:20:08 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 2, Verus Errors: 2
+2024-08-30 06:20:08 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 06:20:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:21:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:22:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 06:23:18 INFO: Infer time: 189.9318540096283s
+2024-08-30 06:23:18 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 06:23:19 INFO: repair-9-0 file generated
+2024-08-30 06:23:19 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-08-30 06:23:19 INFO: Step 10: VerusErrorType.AssertFail with num=5.
+2024-08-30 06:23:19 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 2, Verus Errors: 2
+2024-08-30 06:23:19 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 06:23:27 INFO: Infer time: 8.21277379989624s
+2024-08-30 06:23:27 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 06:23:27 INFO: repair-10-0 file generated
+2024-08-30 06:23:27 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-08-30 06:23:28 INFO: Houdini code is better
+2024-08-30 06:23:28 INFO: finished!
+Start repair
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            i > 0 ==> exists|j: int| 0 <= j < i ==> (arr[j] == key),
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]), // Invariant modified to cover every element because `arr1` is not modified in this loop
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+Warning: a non type error is passed to debug_type_error
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    while i < arr.len()
+        invariant
+            i > 0 ==> exists|j: int| 0 <= j < i ==> (arr[j] == key),
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            index > 0 ==> forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]),
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    proof {
+        assert(!exists|j: int| 0 <= j < i ==> (arr[j] == key)); // Added by AI
+    }
+    while i < arr.len()
+        invariant
+            i > 0 ==> exists|j: int| 0 <= j < i && (arr[j] == key),
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]), // Invariant modified to cover every element because `arr1` is not modified in this loop
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    proof {
+        assert(!exists|j: int| 0 <= j < i && (arr[j] == key)); // Modified by AI
+    }
+    while i < arr.len()
+        invariant
+            i > 0 ==> exists|j: int| 0 <= j < i && (arr[j] == key), // Modified 
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]), // Invariant modified to cover every element because `arr1` is not modified in this loop
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    proof {
+        assert(!exists|j: int| 0 <= j < i && (arr[j] == key));
+    }
+    while i < arr.len()
+        invariant
+            i > 0 ==> exists|j: int| 0 <= j < i && (arr[j] == key), 
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]),
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut i = 0;
+    proof {
+        assert(!exists|j: int| 0 <= j < i && (arr[j] == key));
+    }
+    while i < arr.len()
+        invariant
+            i > 0 ==> exists|j: int| 0 <= j < i ==> (arr[j] == key) || (arr[j] != key), // Conditioned on loop index
+            i <= arr.len(),
+    {
+        if (arr[i] == key) {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn any_value_exists(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == exists|k: int| 0 <= k < arr1.len() && arr2@.contains(# [trigger] arr1[k]),
+{
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|k: int| 0 <= k < index ==> arr2@.contains(# [trigger] arr1[k]), // Invariant modified to cover every element because `arr1` is not modified in this loop
+            index <= arr1.len(),
+    {
+        if (contains(arr2, arr1[index])) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

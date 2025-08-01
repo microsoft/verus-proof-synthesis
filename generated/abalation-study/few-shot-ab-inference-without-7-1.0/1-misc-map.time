@@ -1,0 +1,186 @@
+2024-08-31 22:25:41 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:25:41 INFO: Running in generation mode
+2024-08-31 22:25:41 INFO: Repair steps: 0
+2024-08-31 22:25:41 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:25:41 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:25:41 INFO: Generating proof code
+2024-08-31 22:25:41 INFO: Temperature: 1.0
+2024-08-31 22:25:41 INFO: Direct inference attempt 0
+2024-08-31 22:25:45 INFO: Infer time: 3.5266356468200684s
+2024-08-31 22:25:45 INFO: Checking candidate 0-0
+2024-08-31 22:25:45 INFO: 0-0.rs in code pool
+2024-08-31 22:25:45 INFO: 0-0.rs is now the best proof candidate
+2024-08-31 22:25:45 INFO: Checking candidate 0-1
+2024-08-31 22:25:46 INFO: 0-1.rs in code pool
+2024-08-31 22:25:46 INFO: 0-1.rs is now the best proof candidate
+2024-08-31 22:25:46 INFO: Checking candidate 0-2
+2024-08-31 22:25:46 INFO: 0-2.rs in code pool
+2024-08-31 22:25:46 INFO: Checking candidate 0-3
+2024-08-31 22:25:46 INFO: 0-3.rs in code pool
+2024-08-31 22:25:46 INFO: 0-3.rs is now the best proof candidate
+2024-08-31 22:25:46 INFO: Working on merge-0.rs
+2024-08-31 22:25:51 INFO: Running houdini on merge-0.rs
+2024-08-31 22:25:52 INFO: Working on merge-1.rs
+2024-08-31 22:25:52 INFO: Running houdini on merge-1.rs
+2024-08-31 22:25:53 INFO: Working on merge-2.rs
+2024-08-31 22:25:53 INFO: Running houdini on merge-2.rs
+2024-08-31 22:25:54 INFO: Working on merge-3.rs
+2024-08-31 22:25:54 INFO: Merged code is better.
+2024-08-31 22:25:54 INFO: Running houdini on merge-3.rs
+2024-08-31 22:25:55 INFO: refining with constantrefine_inference
+2024-08-31 22:25:59 INFO: Infer time: 3.634611129760742s
+2024-08-31 22:25:59 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> # [trigger] x@[k] == old(x)@[k] + 4,
+            i <= xlen,
+            x.len() == xlen,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 22:26:04 INFO: New refined code is a good repair
+2024-08-31 22:26:04 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> # [trigger] x@[k] == old(x)@[k] + 4,
+            i <= xlen,
+            x.len() == xlen,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 22:26:04 INFO: refining with arraylen_inference
+2024-08-31 22:26:07 INFO: Infer time: 2.8697705268859863s
+2024-08-31 22:26:07 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> # [trigger] x@[k] == old(x)@[k] + 4,
+            i <= xlen,
+            x.len() == xlen,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 22:26:07 INFO: Refinement did not change the code
+2024-08-31 22:26:07 INFO: refining with arrayrefine_inference
+2024-08-31 22:26:09 INFO: Infer time: 2.524653673171997s
+2024-08-31 22:26:10 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> # [trigger] x@[k] == old(x)@[k] + 4,
+            i <= xlen,
+            x.len() == xlen,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 22:26:10 INFO: Refinement did not change the code
+2024-08-31 22:26:10 INFO: refining with condlooprefine_inference
+2024-08-31 22:26:14 INFO: Infer time: 4.346376657485962s
+2024-08-31 22:26:14 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> # [trigger] x@[k] == old(x)@[k] + 4,
+            i <= xlen,
+            x.len() == xlen,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 22:26:14 INFO: Refinement did not change the code
+2024-08-31 22:26:14 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 22:26:14 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:26:15 INFO: Original code is better
+2024-08-31 22:26:15 INFO: finished!
+Start repair

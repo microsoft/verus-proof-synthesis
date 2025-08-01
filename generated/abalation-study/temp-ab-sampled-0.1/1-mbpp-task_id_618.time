@@ -1,0 +1,76 @@
+2024-09-03 17:16:39 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 17:16:39 INFO: Running in generation mode
+2024-09-03 17:16:39 INFO: Repair steps: 10
+2024-09-03 17:16:39 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:16:39 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:16:39 INFO: Generating proof code
+2024-09-03 17:16:39 INFO: Temperature: 0.1
+2024-09-03 17:16:39 INFO: Direct inference attempt 0
+2024-09-03 17:16:45 INFO: Infer time: 5.720365285873413s
+2024-09-03 17:16:45 INFO: Checking candidate 0-0
+2024-09-03 17:16:45 INFO: 0-0.rs in code pool
+2024-09-03 17:16:45 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 17:16:45 INFO: Checking candidate 0-1
+2024-09-03 17:16:46 INFO: 0-1.rs in code pool
+2024-09-03 17:16:46 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 17:16:46 INFO: Checking candidate 0-2
+2024-09-03 17:16:46 INFO: 0-2.rs in code pool
+2024-09-03 17:16:46 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 17:16:46 INFO: Checking candidate 0-3
+2024-09-03 17:16:47 INFO: 0-3.rs in code pool
+2024-09-03 17:16:47 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 17:16:47 INFO: Working on merge-0.rs
+2024-09-03 17:17:00 INFO: Merged code is better.
+2024-09-03 17:17:00 INFO: Running houdini on merge-0.rs
+2024-09-03 17:17:00 INFO: Working on merge-1.rs
+2024-09-03 17:17:17 INFO: Merged code is better.
+2024-09-03 17:17:17 INFO: Running houdini on merge-1.rs
+2024-09-03 17:17:17 INFO: Working on merge-2.rs
+2024-09-03 17:17:34 INFO: Merged code is better.
+2024-09-03 17:17:34 INFO: Running houdini on merge-2.rs
+2024-09-03 17:17:34 INFO: Working on merge-3.rs
+2024-09-03 17:17:42 INFO: Merged code is better.
+2024-09-03 17:17:42 INFO: Running houdini on merge-3.rs
+2024-09-03 17:17:43 WARNING: Non-linear arithmetic detected.
+2024-09-03 17:17:43 WARNING:             forall|i: int| 0 <= i < index ==> output_arr[i] == (arr1[i] / arr2[i]),
+2024-09-03 17:17:43 INFO: refining with constantrefine_inference
+2024-09-03 17:17:47 INFO: Infer time: 4.510515213012695s
+2024-09-03 17:17:48 INFO: Verus has succeeded.
+2024-09-03 17:17:48 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_divide(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] / arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            forall|i: int| 0 <= i < index ==> output_arr[i] == (arr1[i] / arr2[i]),
+            index <= arr1.len(),
+            output_arr.len() == index,
+            arr1.len() == arr2.len(),
+            forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+            forall|i: int|
+                (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+    {
+        output_arr.push((arr1[index] / arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-03 17:17:52 INFO: Verus succeeded with refinement!!
+2024-09-03 17:17:52 INFO: finished!

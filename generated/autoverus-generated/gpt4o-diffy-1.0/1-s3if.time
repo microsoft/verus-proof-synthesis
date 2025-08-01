@@ -1,0 +1,32 @@
+2024-08-30 17:19:54 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 17:19:54 INFO: Running in generation mode
+2024-08-30 17:19:54 INFO: Repair steps: 10
+2024-08-30 17:19:54 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 17:19:54 INFO: Generating proof code
+2024-08-30 17:19:54 INFO: Temperature: 1.0
+2024-08-30 17:19:54 INFO: Direct inference attempt 0
+2024-08-30 17:20:00 INFO: Infer time: 6.027223587036133s
+2024-08-30 17:20:00 INFO: Checking candidate 0-0
+2024-08-30 17:20:00 INFO: 0-0.rs in code pool
+2024-08-30 17:20:00 INFO: 0-0.rs is now the best proof candidate
+2024-08-30 17:20:00 INFO: Checking candidate 0-1
+2024-08-30 17:20:01 ERROR: Error in comparing code changes: 
+2024-08-30 17:20:01 INFO: Checking candidate 0-2
+2024-08-30 17:20:01 INFO: 0-2.rs in code pool
+2024-08-30 17:20:01 INFO: Checking candidate 0-3
+2024-08-30 17:20:01 ERROR: Error in comparing code changes: 
+2024-08-30 17:20:01 INFO: Checking candidate 0-4
+2024-08-30 17:20:02 INFO: 0-4.rs in code pool
+2024-08-30 17:20:02 INFO: Regenerate...
+2024-08-30 17:20:02 INFO: Direct inference attempt 1
+2024-08-30 17:20:06 INFO: Infer time: 4.514039754867554s
+2024-08-30 17:20:06 INFO: Checking candidate 1-0
+2024-08-30 17:20:07 INFO: 1-0.rs in code pool
+2024-08-30 17:20:07 INFO: 1-0.rs is now the best proof candidate
+2024-08-30 17:20:07 INFO: Working on merge-0.rs
+2024-08-30 17:20:11 INFO: Running houdini on merge-0.rs
+2024-08-30 17:20:12 INFO: Working on merge-1.rs
+2024-08-30 17:20:12 INFO: Running houdini on merge-1.rs
+2024-08-30 17:20:13 INFO: Working on merge-2.rs
+2024-08-30 17:20:14 INFO: Merged code is correct.
+2024-08-30 17:20:18 INFO: finished!

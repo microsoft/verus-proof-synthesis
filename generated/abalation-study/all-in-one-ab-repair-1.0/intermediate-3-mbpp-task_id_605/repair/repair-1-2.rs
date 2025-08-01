@@ -1,0 +1,43 @@
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)] // This attribute can be kept or removed based on your need
+
+spec fn is_divisible(n: int, divisor: int) -> bool {
+    (n % divisor) == 0
+}
+
+fn prime_num(n: u64) -> (result: bool)
+    requires
+        n >= 2,
+    ensures
+        result == (forall|k: int| 2 <= k < (n as int) ==> !is_divisible(n as int, k)),
+{
+    // It's unnecessary to check as `n >= 2` is a precondition.
+    let mut index = 2;
+    while index < n
+        invariant
+            2 <= index <= n,
+            // This invariant ensures that for all k in the range 2 to index, the number n is not divisible by k.
+            forall|k: int| 2 <= k < index ==> !is_divisible(n as int, k),
+            index <= n,
+            n >= 2,
+    {
+        if is_divisible(n as int, index as int) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+
+// error: multiple input filenames provided (first two filenames are `` and `/tmp/tmp_o44ks18`)
+// 
+
+// Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+// Safe: False

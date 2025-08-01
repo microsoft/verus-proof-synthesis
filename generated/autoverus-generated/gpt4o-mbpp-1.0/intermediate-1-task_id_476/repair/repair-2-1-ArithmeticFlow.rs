@@ -1,0 +1,82 @@
+
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+proof fn lemma_safe_addition(min_val: i32, max_val: i32)
+    requires
+        i32::MIN / 2 < min_val < i32::MAX / 2,
+        i32::MIN / 2 < max_val < i32::MAX / 2,
+    ensures
+        min_val as int + max_val as int <= i32::MAX as int,
+        min_val as int + max_val as int >= i32::MIN as int,
+{}
+
+fn sum_min_max(arr: &Vec<i32>) -> (sum: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        sum == max_rcur(arr@) + min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            arr.len() == arr.len(),
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> arr[i] <= max_val,
+            forall|i: int| 0 <= i < index ==> arr[i] >= min_val,
+            forall|i: int| 0 <= i < index ==> min_val <= # [trigger] arr[i] <= max_val,
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+
+    // Assertion for overflow/underflow
+    assert(min_val as int + max_val as int <= i32::MAX as int);
+    assert(min_val as int + max_val as int >= i32::MIN as int);
+
+    lemma_safe_addition(min_val, max_val);
+    
+    max_val + min_val
+}
+
+} // verus!
+
+
+//     max_val + min_val
+//   None: max_val + min_val
+
+// Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+// Safe: False

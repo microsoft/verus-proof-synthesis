@@ -1,0 +1,34 @@
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn max_length_list(seq: &Vec<Vec<i32>>) -> (max_list: &Vec<i32>)
+    requires
+        seq.len() > 0,
+    ensures
+        forall|k: int| 0 <= k < seq.len() ==> max_list.len() >= #[trigger] (seq[k]).len(),
+        exists|k: int| 0 <= k < seq.len() && max_list@ =~= #[trigger] (seq[k]@),
+{
+    let mut max_list = &seq[0];
+    let mut index = 1;
+
+    while index < seq.len()
+        invariant
+            1 <= seq.len(),
+            index <= seq.len(),
+            exists|i: int| 0 <= i < index && max_list@ =~= #[trigger] (seq[i]@),
+            forall|k: int| 0 <= k < index ==> max_list.len() >= #[trigger] (seq[k]).len(),
+    {
+        if ((seq[index]).len() > max_list.len()) {
+            max_list = &seq[index];
+        }
+        index += 1;
+    }
+    max_list
+}
+
+} // verus!
+// is safe: True
+// Score: Compilation Error: False, Verified: 1, Errors: 1, Verus Errors: 1

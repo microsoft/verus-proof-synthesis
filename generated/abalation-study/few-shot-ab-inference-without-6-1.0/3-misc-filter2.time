@@ -1,0 +1,243 @@
+2024-08-31 21:57:43 WARNING: Phase 1 examples: ['3', '7']
+2024-08-31 21:57:43 INFO: Running in generation mode
+2024-08-31 21:57:43 INFO: Repair steps: 0
+2024-08-31 21:57:43 WARNING: Generation initialized with phase1_examples: ['3', '7']
+2024-08-31 21:57:43 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:57:43 INFO: Generating proof code
+2024-08-31 21:57:43 INFO: Temperature: 1.0
+2024-08-31 21:57:43 INFO: Direct inference attempt 0
+2024-08-31 21:57:48 INFO: Infer time: 4.3975090980529785s
+2024-08-31 21:57:48 INFO: Checking candidate 0-0
+2024-08-31 21:57:48 INFO: Checking candidate 0-1
+2024-08-31 21:57:48 INFO: Checking candidate 0-2
+2024-08-31 21:57:49 INFO: 0-2.rs in code pool
+2024-08-31 21:57:49 INFO: 0-2.rs is now the best proof candidate
+2024-08-31 21:57:49 INFO: Checking candidate 0-3
+2024-08-31 21:57:49 INFO: 0-3.rs in code pool
+2024-08-31 21:57:49 INFO: 0-3.rs is now the best proof candidate
+2024-08-31 21:57:49 INFO: Checking candidate 0-4
+2024-08-31 21:57:49 INFO: Working on merge-0.rs
+2024-08-31 21:57:54 INFO: Running houdini on merge-0.rs
+2024-08-31 21:57:55 INFO: Working on merge-1.rs
+2024-08-31 21:57:55 INFO: Merged code is better.
+2024-08-31 21:57:55 INFO: Running houdini on merge-1.rs
+2024-08-31 21:57:57 INFO: refining with constantrefine_inference
+2024-08-31 21:57:59 INFO: Infer time: 2.721465587615967s
+2024-08-31 21:58:00 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            old(y).len() == 0,
+            x.len() == xlen,
+            y.len() <= i,
+            y.len() <= xlen,
+            y@ == x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+            old(y).len() == 0,
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 21:58:04 INFO: New refined code is a good repair
+2024-08-31 21:58:04 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            old(y).len() == 0,
+            x.len() == xlen,
+            y.len() <= i,
+            y.len() <= xlen,
+            y@ == x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+            old(y).len() == 0,
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 21:58:04 INFO: refining with arraylen_inference
+2024-08-31 21:58:07 INFO: Infer time: 2.578850269317627s
+2024-08-31 21:58:07 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            old(y).len() == 0,
+            x.len() == xlen,
+            y.len() <= i,
+            y.len() <= xlen,
+            x.len() == xlen, // Length invariant for x
+            y.len() <= xlen, // Length invariant for y
+            y@ == x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+            old(y).len() == 0,
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 21:58:08 INFO: New refined code is a good repair
+2024-08-31 21:58:08 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            old(y).len() == 0,
+            x.len() == xlen,
+            y.len() <= i,
+            y.len() <= xlen,
+            x.len() == xlen, // Length invariant for x
+            y.len() <= xlen, // Length invariant for y
+            y@ == x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+            old(y).len() == 0,
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 21:58:08 INFO: refining with arrayrefine_inference
+2024-08-31 21:58:11 INFO: Infer time: 3.0939416885375977s
+2024-08-31 21:58:11 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            old(y).len() == 0,
+            x.len() == xlen,
+            y.len() <= i,
+            y.len() <= xlen,
+            x.len() == xlen, // Length invariant for x
+            y.len() <= xlen, // Length invariant for y
+            forall |k: int| 0 <= k < x.len() ==> true, // Ensures every element in x is covered
+            y@ == x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0),
+            old(y).len() == 0,
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 21:58:11 ERROR: Error: 'verified'
+2024-08-31 21:58:11 ERROR: Error: 'errors'
+2024-08-31 21:58:11 INFO: New refined code is worse
+2024-08-31 21:58:11 INFO: refining with condlooprefine_inference
+2024-08-31 21:58:17 INFO: Infer time: 5.7499330043792725s
+2024-08-31 21:58:17 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun4(x: &Vec<u64>, y: &mut Vec<u64>)
+    requires
+        old(y).len() == 0,
+    ensures
+        y@ == x@.filter(|k: u64| k % 3 == 0),
+{
+    let mut i: usize = 0;
+    let xlen = x.len();
+    while (i < xlen)
+        invariant
+            i <= xlen,
+            old(y).len() == 0,
+            x.len() == xlen,
+            y.len() <= i,
+            y.len() <= xlen,
+            x.len() == xlen, // Length invariant for x
+            y.len() <= xlen, // Length invariant for y
+            i > 0 ==> y@ == x@.subrange(0, (i) as int).filter(|k: u64| k % 3 == 0), // Adjusted invariant for i > 0
+            old(y).len() == 0,
+    {
+        if (x[i] % 3 == 0) {
+            y.push(x[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 21:58:18 INFO: New refined code under condloop is not better
+2024-08-31 21:58:18 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 21:58:18 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:58:18 INFO: Houdini code is better
+2024-08-31 21:58:19 INFO: finished!
+Start repair

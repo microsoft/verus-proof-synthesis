@@ -1,0 +1,28 @@
+2024-09-04 14:11:00 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 14:11:00 INFO: Running in generation mode
+2024-09-04 14:11:00 INFO: Repair steps: 10
+2024-09-04 14:11:00 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:11:00 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:11:00 INFO: Generating proof code
+2024-09-04 14:11:00 INFO: Temperature: 1.0
+2024-09-04 14:11:00 INFO: Direct inference attempt 0
+2024-09-04 14:11:00 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 14:12:05 INFO: Infer time: 64.62484788894653s
+2024-09-04 14:12:05 INFO: Checking candidate 0-0
+2024-09-04 14:12:05 INFO: 0-0.rs in code pool
+2024-09-04 14:12:05 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 14:12:05 INFO: Checking candidate 0-1
+2024-09-04 14:12:05 INFO: Checking candidate 0-2
+2024-09-04 14:12:06 INFO: 0-2.rs in code pool
+2024-09-04 14:12:06 INFO: 0-2.rs is now the best proof candidate
+2024-09-04 14:12:06 INFO: Checking candidate 0-3
+2024-09-04 14:12:06 INFO: 0-3.rs in code pool
+2024-09-04 14:12:06 INFO: 0-3.rs is now the best proof candidate
+2024-09-04 14:12:06 INFO: Checking candidate 0-4
+2024-09-04 14:12:07 INFO: 0-4.rs in code pool
+2024-09-04 14:12:07 INFO: 0-4.rs is now the best proof candidate
+2024-09-04 14:12:07 INFO: Working on merge-0.rs
+2024-09-04 14:12:11 INFO: Merged code is better.
+2024-09-04 14:12:11 INFO: Running houdini on merge-0.rs
+2024-09-04 14:12:11 INFO: Merged code with hdn is correct.
+2024-09-04 14:12:16 INFO: finished!

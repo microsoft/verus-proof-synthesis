@@ -1,0 +1,59 @@
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+        N < 1000,
+    ensures
+        sum[0] <= 2 * N,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N < 1000,
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < i ==> a[k as int] == (k % 3) as i32,
+            i <= N as usize,
+            sum.len() == 1,
+    {
+        a.set(i, (i % 3) as i32);
+        i = i + 1;
+    }
+    i = 0;
+    proof {
+        sum.set(0, 0); // Set initial value of sum[0]
+        assert(0 <= sum[0] && sum[0] <= 2 * 0);
+    }
+    while (i < N as usize)
+        invariant
+            0 <= sum[0] <= 2 * i as i32,
+            N < 1000,
+            N > 0,
+            a.len() == N,
+            forall|k: int| 0 <= k < a.len() ==> a[k as int] == (k % 3) as i32,
+            i <= N as usize,
+            sum.len() == 1,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+//         assert(0 <= sum[0] <= 2 * 0); // Added by AI
+//   assertion failed: 0 <= sum[0] <= 2 * 0
+
+// Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+// Safe: True

@@ -1,0 +1,19 @@
+2024-08-30 04:05:43 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 04:05:43 INFO: Running in generation mode
+2024-08-30 04:05:43 INFO: Repair steps: 10
+2024-08-30 04:05:43 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 04:05:43 INFO: Generating proof code
+2024-08-30 04:05:43 INFO: Temperature: 1.0
+2024-08-30 04:05:43 INFO: Direct inference attempt 0
+2024-08-30 04:05:43 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 04:06:43 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 04:07:44 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 04:08:44 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 04:09:44 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 04:10:55 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 04:11:58 INFO: Infer time: 374.76284551620483s
+2024-08-30 04:11:58 INFO: Checking candidate 0-0
+2024-08-30 04:11:58 INFO: Verus has succeeded.
+2024-08-30 04:11:58 INFO: Verus succeeded!!
+2024-08-30 04:11:58 INFO: finished!
+Rate Limit Error

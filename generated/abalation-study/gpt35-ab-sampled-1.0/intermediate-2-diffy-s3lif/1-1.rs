@@ -1,0 +1,69 @@
+
+use vstd::prelude::*;
+fn main() {}
+
+verus! {
+    pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+        requires
+            N > 0,
+            old(a).len() == N,
+            old(sum).len() == 1,
+            N < 1000,
+        ensures
+            sum[0] == 4 * N,
+    {
+        sum.set(0, 0);
+        let mut i: usize = 0;
+        while (i < N as usize)
+            invariant
+                i <= N as usize,
+                N > 0,
+                sum.len() == 1,
+                forall |j:int| 0 <= j < i ==> a[j] == 1,
+                forall |j:int| i <= j < N as usize ==> a[j] == 0,
+        {
+            a.set(i, 1);
+            i = i + 1;
+        }
+
+        i = 0;
+        while (i < N as usize)
+            invariant
+                i <= N as usize,
+                N < 1000,
+                sum.len() == 1,
+                forall |j:int| 0 <= j < N as usize ==> a[j] == 1, //to support function post-condition
+                forall |j:int| i <= j < N as usize ==> a[j] == 0,
+                sum[0] == seq_sum(a@.subrange(0, i as int)),
+        {
+            if (a[i] == 1) {
+                a.set(i, a[i] + 3);
+            } else {
+                a.set(i, a[i] - 1);
+            }
+            i = i + 1;
+            proof {
+                lemma_seq_subrange_sum(a@, 0, i as int);
+            }
+        }
+
+        i = 0;
+        while (i < N as usize)
+            invariant
+                i <= N as usize,
+                N < 1000,
+                sum.len() == 1,
+                forall |j:int| 0 <= j < N as usize ==> a[j] == 4, //to support function post-condition
+                sum[0] == seq_sum(a@.subrange(0, i as int)),
+        {
+            sum.set(0, sum[0] + a[i]);
+            i = i + 1;
+            proof {
+                lemma_seq_subrange_sum(a@, 0, i as int);
+            }
+        }
+    }
+}
+
+// is safe: True
+// Score: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 4

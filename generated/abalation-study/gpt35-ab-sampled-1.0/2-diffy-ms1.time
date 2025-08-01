@@ -1,0 +1,425 @@
+2024-09-04 15:21:38 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 15:21:38 INFO: Running in generation mode
+2024-09-04 15:21:38 INFO: Repair steps: 10
+2024-09-04 15:21:38 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:21:38 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:21:38 INFO: Generating proof code
+2024-09-04 15:21:38 INFO: Temperature: 1.0
+2024-09-04 15:21:38 INFO: Direct inference attempt 0
+2024-09-04 15:21:38 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 15:22:39 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 15:23:43 INFO: Infer time: 124.64638328552246s
+2024-09-04 15:23:43 INFO: Checking candidate 0-0
+2024-09-04 15:23:43 INFO: 0-0.rs in code pool
+2024-09-04 15:23:43 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 15:23:43 INFO: Checking candidate 0-1
+2024-09-04 15:23:44 INFO: 0-1.rs in code pool
+2024-09-04 15:23:44 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 15:23:44 INFO: Checking candidate 0-2
+2024-09-04 15:23:44 ERROR: Error: 'verified'
+2024-09-04 15:23:44 ERROR: Error: 'errors'
+2024-09-04 15:23:44 INFO: Checking candidate 0-3
+2024-09-04 15:23:44 ERROR: Error: 'verified'
+2024-09-04 15:23:44 ERROR: Error: 'errors'
+2024-09-04 15:23:44 INFO: Checking candidate 0-4
+2024-09-04 15:23:45 INFO: 0-4.rs in code pool
+2024-09-04 15:23:45 INFO: 0-4.rs is now the best proof candidate
+2024-09-04 15:23:45 INFO: Working on merge-0.rs
+2024-09-04 15:23:49 INFO: Running houdini on merge-0.rs
+2024-09-04 15:23:50 INFO: Working on merge-1.rs
+2024-09-04 15:23:50 INFO: Running houdini on merge-1.rs
+2024-09-04 15:23:51 INFO: Working on merge-2.rs
+2024-09-04 15:23:51 INFO: Merged code is better.
+2024-09-04 15:23:51 INFO: Running houdini on merge-2.rs
+2024-09-04 15:23:52 INFO: refining with constantrefine_inference
+2024-09-04 15:23:57 INFO: Infer time: 4.296462297439575s
+2024-09-04 15:23:57 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+    ensures
+        sum[0] == 0,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == j % 1,
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+    {
+        a.set(i, i % 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+            i <= N,
+            old(a).len() == N,
+            sum.len() == 1,
+            sum[0] == 0,
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+
+2024-09-04 15:24:02 INFO: New refined code is a good repair
+2024-09-04 15:24:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+    ensures
+        sum[0] == 0,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == j % 1,
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+    {
+        a.set(i, i % 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+            i <= N,
+            old(a).len() == N,
+            sum.len() == 1,
+            sum[0] == 0,
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+
+2024-09-04 15:24:02 INFO: refining with arraylen_inference
+2024-09-04 15:24:06 INFO: Infer time: 3.6306657791137695s
+2024-09-04 15:24:06 INFO: 
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == j % 1,
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+            i <= N,
+            old(a).len() == N,
+            sum.len() == 1,
+            sum[0] == 0,
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1
+
+2024-09-04 15:24:06 ERROR: Error in comparing code changes: 
+2024-09-04 15:24:06 INFO: Unsafe code change
+2024-09-04 15:24:06 INFO: Refinement did not change the code
+2024-09-04 15:24:06 INFO: refining with arrayrefine_inference
+2024-09-04 15:24:09 INFO: Infer time: 3.1381545066833496s
+2024-09-04 15:24:09 INFO: 
+    invariant
+        N > 0,
+        a.len() == N,
+        forall|j: int| 0 <= j < i ==> a[j] == j % 1,
+        i <= N,
+        old(a).len() == N,
+        old(sum)[0] == 0,
+        sum.len() == 1,
+        N > 0,
+        a.len() == N,
+        forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+        i <= N,
+        old(a).len() == N,
+        old(sum)[0] == 0,
+        sum.len() == 1,
+        // The array 'a' is never modified within this loop, as there are no 'a.set()' operations. Therefore, the invariant still covers every element in the array.
+rust
+    invariant
+        N > 0,
+        a.len() == N,
+        forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+        forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+        i <= N,
+        old(a).len() == N,
+        sum.len() == 1,
+        sum[0] == 0,
+        N > 0,
+        a.len() == N,
+        forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+        forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+        i <= N,
+        old(a).len() == N,
+        old(sum)[0] == 0,
+        sum.len() == 1,
+        // The array 'a' is never modified within this loop, as there are no 'a.set()' operations. Therefore, the invariant still covers every element in the array.
+
+2024-09-04 15:24:09 ERROR: Error in comparing code changes: 
+2024-09-04 15:24:09 INFO: Unsafe code change
+2024-09-04 15:24:09 INFO: Refinement did not change the code
+2024-09-04 15:24:09 INFO: refining with condlooprefine_inference
+2024-09-04 15:24:13 INFO: Infer time: 4.23335337638855s
+2024-09-04 15:24:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+    ensures
+        sum[0] == 0,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == j % 1,
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+    {
+        a.set(i, i % 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+            i <= N,
+            old(a).len() == N,
+            sum.len() == 1,
+            sum[0] == 0,
+            N > 0,
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == j % 1,
+            forall|j: int| 0 <= j < i ==> sum[j] + a[j] == sum[(i) as int],
+            i <= N,
+            old(a).len() == N,
+            old(sum)[0] == 0,
+            sum.len() == 1,
+            i > 0 ==> sum.len() == 1,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-04 15:24:14 INFO: New refined code under condloop is not better
+2024-09-04 15:24:14 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:24:14 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:24:14 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-09-04 15:24:14 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-04 15:24:20 INFO: Infer time: 5.708346128463745s
+2024-09-04 15:24:20 INFO: Here is the quick fix output
+2024-09-04 15:24:20 ERROR: Error in comparing code changes: 
+2024-09-04 15:24:20 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 15:24:26 INFO: Infer time: 6.06336522102356s
+2024-09-04 15:24:27 INFO: repair-1-0 file generated
+2024-09-04 15:24:27 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-04 15:24:27 INFO: repair-1-1 file generated
+2024-09-04 15:24:27 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:24:28 INFO: Step 1: VerusErrorType.InvFailFront is fixed. Proof updated 1-1.
+2024-09-04 15:24:28 INFO: Step 2: VerusErrorType.InvFailFront with num=3.
+2024-09-04 15:24:28 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:24:29 INFO: Infer time: 0.5716967582702637s
+2024-09-04 15:24:29 INFO: Here is the quick fix output
+2024-09-04 15:24:29 ERROR: Error in comparing code changes: 
+2024-09-04 15:24:29 INFO: [repair_invfail_front] Quick fix is not safe. Move on to more general fix.
+2024-09-04 15:24:33 INFO: Infer time: 4.623940467834473s
+2024-09-04 15:24:34 INFO: repair-2-0 file generated
+2024-09-04 15:24:34 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:24:35 INFO: repair-2-1 file generated
+2024-09-04 15:24:35 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 15:24:35 INFO: Step 2: VerusErrorType.InvFailFront is fixed. Proof updated 2-1.
+2024-09-04 15:24:35 INFO: Step 3: VerusErrorType.InvFailEnd with num=3.
+2024-09-04 15:24:35 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-09-04 15:24:41 INFO: Infer time: 5.067959547042847s
+2024-09-04 15:24:41 INFO: repair-3-0 file generated
+2024-09-04 15:24:41 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:24:42 INFO: Step 3: VerusErrorType.InvFailEnd is fixed. Proof updated 3-0.
+2024-09-04 15:24:42 INFO: Step 4: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:24:42 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:24:42 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:24:42 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:24:47 INFO: Infer time: 5.60749626159668s
+2024-09-04 15:24:47 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:24:48 INFO: repair-4-0 file generated
+2024-09-04 15:24:48 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 15:24:48 INFO: repair-4-1 file generated
+2024-09-04 15:24:48 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:24:49 INFO: repair-4-2 file generated
+2024-09-04 15:24:49 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:24:50 INFO: Step 5: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:24:50 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+2024-09-04 15:24:50 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:24:50 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:24:56 INFO: Infer time: 6.60823130607605s
+2024-09-04 15:24:57 INFO: repair-5-0 file generated
+2024-09-04 15:24:57 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:24:57 INFO: Step 5: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 15:24:58 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:24:58 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:24:58 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:24:58 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:25:03 INFO: Infer time: 5.543322324752808s
+2024-09-04 15:25:03 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 15:25:03 INFO: repair-6-0 file generated
+2024-09-04 15:25:03 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-04 15:25:04 INFO: repair-6-1 file generated
+2024-09-04 15:25:04 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:25:05 INFO: repair-6-2 file generated
+2024-09-04 15:25:05 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:25:05 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:25:05 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:25:05 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:25:05 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:25:06 INFO: Retrying request to /deployments/gpt-35-turbo/chat/completions in 60.000000 seconds
+2024-09-04 15:26:12 INFO: Infer time: 66.67855072021484s
+2024-09-04 15:26:12 INFO: repair-7-0 file generated
+2024-09-04 15:26:12 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:13 INFO: Step 7: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 15:26:13 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:26:13 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:13 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:26:13 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:26:19 INFO: Infer time: 5.825652599334717s
+2024-09-04 15:26:19 INFO: repair-8-0 file generated
+2024-09-04 15:26:19 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:20 INFO: repair-8-1 file generated
+2024-09-04 15:26:20 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:21 INFO: repair-8-2 file generated
+2024-09-04 15:26:21 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:22 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-04 15:26:22 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:22 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:26:22 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:26:28 INFO: Infer time: 6.133828639984131s
+2024-09-04 15:26:29 INFO: repair-9-0 file generated
+2024-09-04 15:26:29 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:29 INFO: Step 9: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 15:26:29 INFO: Step 10: VerusErrorType.AssertFail with num=3.
+2024-09-04 15:26:29 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:29 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 15:26:29 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 15:26:35 INFO: Infer time: 5.447326898574829s
+2024-09-04 15:26:35 INFO: repair-10-0 file generated
+2024-09-04 15:26:35 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:36 INFO: repair-10-1 file generated
+2024-09-04 15:26:36 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-04 15:26:37 INFO: repair-10-2 file generated
+2024-09-04 15:26:37 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-04 15:26:39 INFO: Houdini code is better
+2024-09-04 15:26:39 INFO: finished!
+Start repair
+
+i > 0 == > old (sum)[0] == 0,
+
+
+            i > 0 ==> sum[0] == 0,
+
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

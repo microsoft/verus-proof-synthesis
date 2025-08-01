@@ -1,0 +1,147 @@
+2024-09-02 18:57:52 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 18:57:52 INFO: Running in generation mode
+2024-09-02 18:57:52 INFO: Repair steps: 0
+2024-09-02 18:57:52 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 18:57:52 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 18:57:52 INFO: Generating proof code
+2024-09-02 18:57:52 INFO: Temperature: 1.0
+2024-09-02 18:57:52 WARNING: Disabled ranking
+2024-09-02 18:57:52 INFO: Direct inference attempt 0
+2024-09-02 18:57:57 INFO: Infer time: 4.889500379562378s
+2024-09-02 18:57:57 INFO: Checking candidate 0-0
+2024-09-02 18:57:57 ERROR: Error: 'verified'
+2024-09-02 18:57:57 ERROR: Error: 'errors'
+2024-09-02 18:57:57 INFO: Checking candidate 0-1
+2024-09-02 18:57:58 INFO: 0-1.rs in code pool
+2024-09-02 18:57:58 INFO: 0-1.rs is now the best proof candidate
+2024-09-02 18:57:58 INFO: Working on merge-0.rs
+2024-09-02 18:58:02 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:58:02 INFO: Running houdini on merge-0.rs
+2024-09-02 18:58:03 INFO: refining with constantrefine_inference
+2024-09-02 18:58:05 INFO: Infer time: 2.2214083671569824s
+2024-09-02 18:58:06 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            forall|i: int, j: int| 0 <= i < j < index ==> (arr[i] <= arr[j]),
+            index < arr.len(),
+            arr.len() > 0,
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-09-02 18:58:11 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:58:11 INFO: refining with arraylen_inference
+2024-09-02 18:58:13 INFO: Infer time: 2.255324602127075s
+2024-09-02 18:58:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            forall|i: int, j: int| 0 <= i < j < index ==> (arr[i] <= arr[j]),
+            index < arr.len(),
+            arr.len() == old(arr.len()),
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-09-02 18:58:13 ERROR: Error: 'verified'
+2024-09-02 18:58:13 ERROR: Error: 'errors'
+2024-09-02 18:58:13 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:58:13 INFO: refining with arrayrefine_inference
+2024-09-02 18:58:15 INFO: Infer time: 2.2189602851867676s
+2024-09-02 18:58:15 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            forall|i: int, j: int| 0 <= i < j < index ==> (arr[i] <= arr[j]),
+            forall|k: int| 0 <= k < arr.len() ==> true, // arr is not modified in the loop
+            index < arr.len(),
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-09-02 18:58:16 ERROR: Error: 'verified'
+2024-09-02 18:58:16 ERROR: Error: 'errors'
+2024-09-02 18:58:16 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:58:16 INFO: refining with condlooprefine_inference
+2024-09-02 18:58:19 INFO: Infer time: 2.7607030868530273s
+2024-09-02 18:58:19 INFO: Verus has succeeded.
+2024-09-02 18:58:19 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            forall|i: int, j: int| 0 <= i < j < index ==> (arr[i] <= arr[j]),
+            index < arr.len(),
+            index > 0 ==> forall|i: int, j: int| 0 <= i < j < index + 1 ==> (arr[i] <= arr[j]),
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+2024-09-02 18:58:19 INFO: Verus succeeded with refinement!!
+2024-09-02 18:58:19 INFO: finished!

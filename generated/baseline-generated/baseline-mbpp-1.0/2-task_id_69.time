@@ -1,0 +1,13 @@
+2024-09-05 05:12:34 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-05 05:12:34 INFO: Running in generation mode
+2024-09-05 05:12:34 INFO: Repair steps: 10
+2024-09-05 05:12:34 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-05 05:12:34 WARNING: Generation initialized with repair_uniform: False
+2024-09-05 05:12:34 INFO: Generating proof code with baseline
+2024-09-05 05:12:34 INFO: Temperature: 1.0
+2024-09-05 05:12:34 INFO: Generate with baseline mode
+2024-09-05 05:12:34 INFO: Direct inference with baseline attempt 0
+2024-09-05 05:12:34 INFO: Direct Full Inference ...
+2024-09-05 05:12:35 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 2.000000 seconds
+2024-09-05 05:12:44 INFO: Infer time: 9.980056524276733s
+2024-09-05 05:12:45 INFO: finished!

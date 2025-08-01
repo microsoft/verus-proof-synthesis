@@ -1,0 +1,37 @@
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+    fn cube_element(nums: &Vec<i32>) -> (cubed: Vec<i32>)
+        requires
+            forall|k: int|
+                0 <= k < nums.len() ==> (i32::MIN <= #[trigger] nums[k] * #[trigger] nums[k]
+                    <= i32::MAX),
+            forall|k: int|
+                0 <= k < nums.len() ==> (i32::MIN <= #[trigger] nums[k] * #[trigger] nums[k]
+                    * #[trigger] nums[k] <= i32::MAX),
+        ensures
+            forall|i: int|
+                0 <= i < nums.len() ==> cubed[i] == #[trigger] nums[i] * #[trigger] nums[i]
+                    * #[trigger] nums[i],
+    {
+        let mut cubed_array: Vec<i32> = Vec::new();
+        let mut i = 0;
+        while i < nums.len()
+            invariant
+                i <= nums.len(),
+                forall|j: int|
+                    0 <= j < i ==> (i32::MIN <= nums[j] * nums[j] * nums[j] <= i32::MAX),
+        {
+            cubed_array.push(nums[i] * nums[i] * nums[i]);
+            i += 1;
+        }
+        cubed_array
+    }
+} // verus!
+
+// is safe: True
+// Score: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1

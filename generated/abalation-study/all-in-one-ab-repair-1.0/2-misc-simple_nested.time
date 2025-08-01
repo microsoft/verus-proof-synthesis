@@ -1,0 +1,238 @@
+2024-09-11 03:56:07 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-11 03:56:07 INFO: Running in generation mode
+2024-09-11 03:56:07 INFO: Repair steps: 10
+2024-09-11 03:56:08 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-11 03:56:08 WARNING: Generation initialized with repair_uniform: True
+2024-09-11 03:56:08 INFO: Generating proof code
+2024-09-11 03:56:08 INFO: Temperature: 1.0
+2024-09-11 03:56:08 INFO: Generate with direct repair mode
+2024-09-11 03:56:08 WARNING: All-in-one repair is used!!!
+2024-09-11 03:56:08 WARNING: Loop isolation is not found in the code. Inserting loop isolation.
+2024-09-11 03:56:08 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-11 03:56:08 WARNING: Generation initialized with repair_uniform: False
+2024-09-11 03:56:08 INFO: Step 1
+2024-09-11 03:56:08 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 03:56:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 19.000000 seconds
+2024-09-11 03:56:27 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 23.000000 seconds
+2024-09-11 03:56:51 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 3.000000 seconds
+2024-09-11 03:57:06 INFO: Infer time: 58.309136390686035s
+2024-09-11 03:57:06 INFO: repair-1-0 file generated
+2024-09-11 03:57:06 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-11 03:57:07 WARNING: The repair is not safe.
+2024-09-11 03:57:07 INFO: repair-1-1 file generated
+2024-09-11 03:57:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-11 03:57:07 WARNING: The repair is not safe.
+2024-09-11 03:57:07 ERROR: Error: 'verified'
+2024-09-11 03:57:07 ERROR: Error: 'errors'
+2024-09-11 03:57:07 INFO: repair-1-2 file generated
+2024-09-11 03:57:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 03:57:07 WARNING: The repair is not safe.
+2024-09-11 03:57:07 INFO: repair-1-3 file generated
+2024-09-11 03:57:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-11 03:57:07 WARNING: The repair is not safe.
+2024-09-11 03:57:07 INFO: repair-1-4 file generated
+2024-09-11 03:57:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 3
+2024-09-11 03:57:07 WARNING: The repair is not safe.
+2024-09-11 03:57:07 INFO: Step 2
+2024-09-11 03:57:07 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 03:57:07 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 20.000000 seconds
+2024-09-11 03:57:28 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 15.000000 seconds
+2024-09-11 03:57:43 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 8.000000 seconds
+2024-09-11 03:57:51 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 3.000000 seconds
+2024-09-11 03:58:07 INFO: Infer time: 59.175352573394775s
+2024-09-11 03:58:07 INFO: repair-2-0 file generated
+2024-09-11 03:58:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 4
+2024-09-11 03:58:07 WARNING: The repair is not safe.
+2024-09-11 03:58:07 ERROR: Error in comparing code changes: 
+2024-09-11 03:58:07 INFO: repair-2-1 file generated
+2024-09-11 03:58:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 03:58:07 WARNING: The repair is not safe.
+2024-09-11 03:58:07 ERROR: Error in comparing code changes: 
+2024-09-11 03:58:07 INFO: repair-2-2 file generated
+2024-09-11 03:58:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 03:58:07 WARNING: The repair is not safe.
+2024-09-11 03:58:07 INFO: repair-2-3 file generated
+2024-09-11 03:58:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-11 03:58:07 WARNING: The repair is not safe.
+2024-09-11 03:58:07 INFO: repair-2-4 file generated
+2024-09-11 03:58:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 03:58:07 WARNING: The repair is not safe.
+2024-09-11 03:58:07 INFO: Step 3
+2024-09-11 03:58:07 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 03:58:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 21.000000 seconds
+2024-09-11 03:58:29 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 15.000000 seconds
+2024-09-11 03:58:44 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 11.000000 seconds
+2024-09-11 03:59:06 INFO: Infer time: 58.98406195640564s
+2024-09-11 03:59:07 ERROR: Error: 'verified'
+2024-09-11 03:59:07 ERROR: Error: 'errors'
+2024-09-11 03:59:07 INFO: repair-3-0 file generated
+2024-09-11 03:59:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 03:59:07 WARNING: The repair is not safe.
+2024-09-11 03:59:07 INFO: repair-3-1 file generated
+2024-09-11 03:59:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 03:59:07 WARNING: The repair is not safe.
+2024-09-11 03:59:07 INFO: repair-3-2 file generated
+2024-09-11 03:59:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 03:59:07 WARNING: The repair is not safe.
+2024-09-11 03:59:07 INFO: repair-3-3 file generated
+2024-09-11 03:59:07 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-11 03:59:07 WARNING: The repair is not safe.
+2024-09-11 03:59:07 ERROR: Error: 'verified'
+2024-09-11 03:59:07 ERROR: Error: 'errors'
+2024-09-11 03:59:07 INFO: repair-3-4 file generated
+2024-09-11 03:59:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 03:59:07 WARNING: The repair is not safe.
+2024-09-11 03:59:08 INFO: Step 4
+2024-09-11 03:59:08 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 03:59:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 22.000000 seconds
+2024-09-11 03:59:30 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 14.000000 seconds
+2024-09-11 03:59:44 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-11 03:59:55 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-11 04:00:06 INFO: Infer time: 57.93673133850098s
+2024-09-11 04:00:06 INFO: repair-4-0 file generated
+2024-09-11 04:00:06 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-11 04:00:06 WARNING: The repair is not safe.
+2024-09-11 04:00:06 INFO: repair-4-1 file generated
+2024-09-11 04:00:06 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-11 04:00:06 WARNING: The repair is not safe.
+2024-09-11 04:00:06 INFO: repair-4-2 file generated
+2024-09-11 04:00:06 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:00:06 WARNING: The repair is not safe.
+2024-09-11 04:00:06 INFO: repair-4-3 file generated
+2024-09-11 04:00:06 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-11 04:00:06 WARNING: The repair is not safe.
+2024-09-11 04:00:07 INFO: repair-4-4 file generated
+2024-09-11 04:00:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-11 04:00:07 WARNING: The repair is not safe.
+2024-09-11 04:00:07 INFO: Step 5
+2024-09-11 04:00:07 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:00:07 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 24.000000 seconds
+2024-09-11 04:00:31 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 23.000000 seconds
+2024-09-11 04:00:55 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 2.000000 seconds
+2024-09-11 04:01:12 INFO: Infer time: 64.73708462715149s
+2024-09-11 04:01:12 INFO: repair-5-0 file generated
+2024-09-11 04:01:12 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 04:01:12 WARNING: The repair is not safe.
+2024-09-11 04:01:12 INFO: repair-5-1 file generated
+2024-09-11 04:01:12 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-11 04:01:12 WARNING: The repair is not safe.
+2024-09-11 04:01:12 ERROR: Error: 'verified'
+2024-09-11 04:01:12 ERROR: Error: 'errors'
+2024-09-11 04:01:12 INFO: repair-5-2 file generated
+2024-09-11 04:01:12 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 04:01:12 WARNING: The repair is not safe.
+2024-09-11 04:01:12 INFO: repair-5-3 file generated
+2024-09-11 04:01:12 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 04:01:12 WARNING: The repair is not safe.
+2024-09-11 04:01:13 INFO: repair-5-4 file generated
+2024-09-11 04:01:13 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 04:01:13 WARNING: The repair is not safe.
+2024-09-11 04:01:13 INFO: Step 6
+2024-09-11 04:01:13 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:01:13 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 19.000000 seconds
+2024-09-11 04:01:32 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 23.000000 seconds
+2024-09-11 04:01:56 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 2.000000 seconds
+2024-09-11 04:02:15 INFO: Infer time: 61.92237043380737s
+2024-09-11 04:02:15 INFO: repair-6-0 file generated
+2024-09-11 04:02:15 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 8
+2024-09-11 04:02:15 WARNING: The repair is not safe.
+2024-09-11 04:02:15 INFO: repair-6-1 file generated
+2024-09-11 04:02:15 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 7
+2024-09-11 04:02:15 WARNING: The repair is not safe.
+2024-09-11 04:02:16 INFO: repair-6-2 file generated
+2024-09-11 04:02:16 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-11 04:02:16 WARNING: The repair is not safe.
+2024-09-11 04:02:16 INFO: repair-6-3 file generated
+2024-09-11 04:02:16 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 5
+2024-09-11 04:02:16 WARNING: The repair is not safe.
+2024-09-11 04:02:16 INFO: repair-6-4 file generated
+2024-09-11 04:02:16 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 04:02:16 WARNING: The repair is not safe.
+2024-09-11 04:02:16 INFO: Step 7
+2024-09-11 04:02:16 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:02:16 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 30.000000 seconds
+2024-09-11 04:02:47 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-11 04:02:57 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-11 04:03:11 INFO: Infer time: 54.83008337020874s
+2024-09-11 04:03:11 INFO: repair-7-0 file generated
+2024-09-11 04:03:11 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 04:03:11 WARNING: The repair is not safe.
+2024-09-11 04:03:11 INFO: repair-7-1 file generated
+2024-09-11 04:03:11 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 04:03:11 WARNING: The repair is not safe.
+2024-09-11 04:03:12 INFO: repair-7-2 file generated
+2024-09-11 04:03:12 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:03:12 WARNING: The repair is not safe.
+2024-09-11 04:03:12 INFO: repair-7-3 file generated
+2024-09-11 04:03:12 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 04:03:12 WARNING: The repair is not safe.
+2024-09-11 04:03:12 INFO: repair-7-4 file generated
+2024-09-11 04:03:12 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-11 04:03:12 WARNING: The repair is not safe.
+2024-09-11 04:03:12 INFO: Step 8
+2024-09-11 04:03:12 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:03:12 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 20.000000 seconds
+2024-09-11 04:03:33 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 14.000000 seconds
+2024-09-11 04:03:47 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 12.000000 seconds
+2024-09-11 04:04:14 INFO: Infer time: 62.181748151779175s
+2024-09-11 04:04:15 INFO: repair-8-0 file generated
+2024-09-11 04:04:15 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 5
+2024-09-11 04:04:15 WARNING: The repair is not safe.
+2024-09-11 04:04:15 INFO: repair-8-1 file generated
+2024-09-11 04:04:15 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 12
+2024-09-11 04:04:15 WARNING: The repair is not safe.
+2024-09-11 04:04:15 INFO: repair-8-2 file generated
+2024-09-11 04:04:15 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 4
+2024-09-11 04:04:15 WARNING: The repair is not safe.
+2024-09-11 04:04:15 ERROR: Error: 'verified'
+2024-09-11 04:04:15 ERROR: Error: 'errors'
+2024-09-11 04:04:15 INFO: repair-8-3 file generated
+2024-09-11 04:04:15 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 04:04:15 WARNING: The repair is not safe.
+2024-09-11 04:04:15 INFO: repair-8-4 file generated
+2024-09-11 04:04:15 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-11 04:04:15 WARNING: The repair is not safe.
+2024-09-11 04:04:16 INFO: Step 9
+2024-09-11 04:04:16 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:04:16 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 18.000000 seconds
+2024-09-11 04:04:34 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 24.000000 seconds
+2024-09-11 04:04:58 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-11 04:05:18 INFO: Infer time: 62.45151734352112s
+2024-09-11 04:05:18 ERROR: Error in comparing code changes: 
+2024-09-11 04:05:18 INFO: repair-9-0 file generated
+2024-09-11 04:05:18 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 04:05:18 WARNING: The repair is not safe.
+2024-09-11 04:05:18 INFO: repair-9-1 file generated
+2024-09-11 04:05:18 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 4
+2024-09-11 04:05:18 WARNING: The repair is not safe.
+2024-09-11 04:05:19 INFO: repair-9-2 file generated
+2024-09-11 04:05:19 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-11 04:05:19 WARNING: The repair is not safe.
+2024-09-11 04:05:19 INFO: repair-9-3 file generated
+2024-09-11 04:05:19 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 3
+2024-09-11 04:05:19 WARNING: The repair is not safe.
+2024-09-11 04:05:19 INFO: repair-9-4 file generated
+2024-09-11 04:05:19 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-11 04:05:19 WARNING: The repair is not safe.
+2024-09-11 04:05:19 INFO: Step 10
+2024-09-11 04:05:19 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-09-11 04:05:19 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 29.000000 seconds
+2024-09-11 04:05:48 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 12.000000 seconds
+2024-09-11 04:06:17 INFO: Infer time: 58.11513328552246s
+2024-09-11 04:06:18 INFO: repair-10-0 file generated
+2024-09-11 04:06:18 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-11 04:06:18 WARNING: The repair is not safe.
+2024-09-11 04:06:18 INFO: repair-10-1 file generated
+2024-09-11 04:06:18 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 5
+2024-09-11 04:06:18 WARNING: The repair is not safe.
+2024-09-11 04:06:18 INFO: repair-10-2 file generated
+2024-09-11 04:06:18 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-11 04:06:18 WARNING: The repair is not safe.
+2024-09-11 04:06:18 INFO: repair-10-3 file generated
+2024-09-11 04:06:18 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 3
+2024-09-11 04:06:18 WARNING: The repair is not safe.
+2024-09-11 04:06:18 INFO: repair-10-4 file generated
+2024-09-11 04:06:18 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 7
+2024-09-11 04:06:18 WARNING: The repair is not safe.
+2024-09-11 04:06:19 INFO: Original code is better
+2024-09-11 04:06:19 INFO: finished!

@@ -1,0 +1,86 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python cache and build files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Rust build artifacts
+target/
+Cargo.lock
+*.rs.bk
+
+# Output and temporary files
+code/_output/
+*.log
+*.tmp
+*.temp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test files and coverage
+.coverage
+.pytest_cache/
+.tox/
+htmlcov/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints
+
+# Local configuration
+config.local.*
+
+# Backup files
+*.bak
+*.backup 

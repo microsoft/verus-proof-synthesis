@@ -1,0 +1,209 @@
+2024-09-04 14:43:12 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 14:43:12 INFO: Running in generation mode
+2024-09-04 14:43:12 INFO: Repair steps: 10
+2024-09-04 14:43:12 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:43:12 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:43:12 INFO: Generating proof code
+2024-09-04 14:43:12 INFO: Temperature: 1.0
+2024-09-04 14:43:12 INFO: Direct inference attempt 0
+2024-09-04 14:43:15 INFO: Infer time: 2.9517734050750732s
+2024-09-04 14:43:15 INFO: Checking candidate 0-0
+2024-09-04 14:43:15 INFO: 0-0.rs in code pool
+2024-09-04 14:43:15 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 14:43:15 INFO: Checking candidate 0-1
+2024-09-04 14:43:16 INFO: 0-1.rs in code pool
+2024-09-04 14:43:16 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 14:43:16 INFO: Checking candidate 0-2
+2024-09-04 14:43:16 INFO: 0-2.rs in code pool
+2024-09-04 14:43:16 INFO: 0-2.rs is now the best proof candidate
+2024-09-04 14:43:16 INFO: Checking candidate 0-3
+2024-09-04 14:43:17 INFO: 0-3.rs in code pool
+2024-09-04 14:43:17 INFO: 0-3.rs is now the best proof candidate
+2024-09-04 14:43:17 INFO: Working on merge-0.rs
+2024-09-04 14:43:21 INFO: Running houdini on merge-0.rs
+2024-09-04 14:43:22 INFO: Working on merge-1.rs
+2024-09-04 14:43:22 INFO: Merged code is better.
+2024-09-04 14:43:22 INFO: Running houdini on merge-1.rs
+2024-09-04 14:43:23 INFO: Working on merge-2.rs
+2024-09-04 14:43:23 INFO: Merged code is better.
+2024-09-04 14:43:23 INFO: Running houdini on merge-2.rs
+2024-09-04 14:43:24 INFO: Working on merge-3.rs
+2024-09-04 14:43:24 INFO: Merged code is better.
+2024-09-04 14:43:24 INFO: Running houdini on merge-3.rs
+2024-09-04 14:43:25 WARNING: Non-linear arithmetic detected.
+2024-09-04 14:43:25 WARNING:             forall|i: int| 0 <= i < index ==> output_arr[i] == arr1[i] * arr2[i],
+2024-09-04 14:43:25 INFO: refining with constantrefine_inference
+2024-09-04 14:43:30 INFO: Infer time: 4.159991264343262s
+2024-09-04 14:43:30 INFO: 
+fn element_wise_multiplication(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    ensures
+        result.len() == arr1.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] * arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            forall|i: int| (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+            forall|i: int| 0 <= i < index ==> output_arr[i] == arr1[i] * arr2[i],
+            index <= arr1.len(),
+            output_arr.len() == index,
+    {
+        output_arr.push((arr1[index] * arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+2024-09-04 14:43:34 INFO: Unsafe code change
+2024-09-04 14:43:34 INFO: Refinement did not change the code
+2024-09-04 14:43:34 INFO: refining with arraylen_inference
+2024-09-04 14:43:35 INFO: Infer time: 0.7475755214691162s
+2024-09-04 14:43:35 INFO: 
+        while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            output_arr.len() == index,
+            forall|i: int| 0 <= i < arr1.len() ==> (i32::MIN <= arr1[i] * arr2[i] <= i32::MAX)
+    {
+        // ...
+    }
+
+2024-09-04 14:43:43 ERROR: Error in comparing code changes: 
+2024-09-04 14:43:43 INFO: Unsafe code change
+2024-09-04 14:43:43 INFO: Refinement did not change the code
+2024-09-04 14:43:43 INFO: refining with arrayrefine_inference
+2024-09-04 14:43:45 INFO: Infer time: 2.4370198249816895s
+2024-09-04 14:43:45 INFO: 
+fn element_wise_multiplication(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    ensures
+        result.len() == arr1.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] * arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            // Array arr1 is never directly modified in the loop, so the invariant is not changed.
+            forall|i: int| 0 <= i < output_arr.len() ==> output_arr[i] == arr1[i] * arr2[i],
+            index <= arr1.len(),
+            output_arr.len() == index,
+    {
+        output_arr.push((arr1[index] * arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+2024-09-04 14:43:51 INFO: Unsafe code change
+2024-09-04 14:43:51 INFO: Refinement did not change the code
+2024-09-04 14:43:51 INFO: refining with condlooprefine_inference
+2024-09-04 14:43:55 INFO: Infer time: 3.3743700981140137s
+2024-09-04 14:43:55 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_multiplication(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    ensures
+        result.len() == arr1.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] * arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            forall|i: int| 0 <= i < index ==> output_arr[i] == arr1[i] * arr2[i],
+            index <= arr1.len(),
+            output_arr.len() == index,
+            index > 0 ==> output_arr[index - 1] == arr1[index - 1] * arr2[index - 1],
+    {
+        output_arr.push((arr1[index] * arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-04 14:44:00 INFO: New refined code under condloop is not better
+2024-09-04 14:44:00 INFO: refining with nonlinear_inference
+2024-09-04 14:44:01 INFO: Infer time: 1.2185108661651611s
+2024-09-04 14:44:01 INFO: 
+    assert(arr1.len() == arr2.len()) by (nonlinear_arith)
+        requires
+            arr1.len() == arr2.len(),
+            forall|i: int|
+                (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    ensures
+        result.len() == arr1.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] * arr2[i]),
+
+2024-09-04 14:44:08 ERROR: Error in comparing code changes: 
+2024-09-04 14:44:08 INFO: Unsafe code change
+2024-09-04 14:44:08 INFO: Refinement did not change the code
+2024-09-04 14:44:08 INFO: refining with nonlbound_inference
+2024-09-04 14:44:11 INFO: Infer time: 2.934262752532959s
+2024-09-04 14:44:11 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_multiplication(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] * arr2[i]) <= i32::MAX),
+    ensures
+        result.len() == arr1.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] * arr2[i]),
+    {
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            forall|i: int| 0 <= i < index ==> output_arr[i] == arr1[i] * arr2[i],
+            index <= arr1.len(),
+            output_arr.len() == index,
+            assert(0 <= arr1[index], arr1[index] <= i32::MAX, {}),
+            assert(0 <= arr2[index], arr2[index] <= i32::MAX, {}),
+            assert(i32::MIN <= arr1[index] * arr2[index], arr1[index] * arr2[index] <= i32::MAX, {}) by (nonlinear_arith),
+    {
+        output_arr.push((arr1[index] * arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-04 14:44:17 ERROR: Error in comparing code changes: 
+2024-09-04 14:44:17 INFO: Unsafe code change
+2024-09-04 14:44:17 INFO: Refinement did not change the code
+2024-09-04 14:44:17 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:44:17 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:44:17 INFO: All errors are fixed within 0 steps!!!
+2024-09-04 14:44:17 INFO: Verus succeeded after repair!!
+2024-09-04 14:44:17 INFO: finished!
+Start repair

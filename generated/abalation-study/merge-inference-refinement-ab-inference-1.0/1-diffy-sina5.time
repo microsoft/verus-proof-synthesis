@@ -1,0 +1,37 @@
+2024-09-02 17:22:41 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:22:41 INFO: Running in generation mode
+2024-09-02 17:22:41 INFO: Repair steps: 0
+2024-09-02 17:22:41 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:22:41 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:22:41 INFO: Generating proof code
+2024-09-02 17:22:41 INFO: Temperature: 1.0
+2024-09-02 17:22:41 INFO: Generate with uniform refinement mode
+2024-09-02 17:22:41 INFO: Direct inference attempt 0
+2024-09-02 17:22:41 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:22:50 INFO: Infer time: 8.932588815689087s
+2024-09-02 17:22:50 INFO: Checking candidate 0-0
+2024-09-02 17:22:50 INFO: Checking candidate 0-1
+2024-09-02 17:22:50 ERROR: Error: 'verified'
+2024-09-02 17:22:50 ERROR: Error: 'errors'
+2024-09-02 17:22:51 INFO: Checking candidate 0-2
+2024-09-02 17:22:51 INFO: 0-2.rs in code pool
+2024-09-02 17:22:51 INFO: 0-2.rs is now the best proof candidate
+2024-09-02 17:22:51 INFO: Checking candidate 0-3
+2024-09-02 17:22:51 ERROR: Error: 'verified'
+2024-09-02 17:22:51 ERROR: Error: 'errors'
+2024-09-02 17:22:51 INFO: Checking candidate 0-4
+2024-09-02 17:22:52 ERROR: Error: 'verified'
+2024-09-02 17:22:52 ERROR: Error: 'errors'
+2024-09-02 17:22:52 INFO: Regenerate...
+2024-09-02 17:22:52 INFO: Direct inference attempt 1
+2024-09-02 17:22:52 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:23:04 INFO: Infer time: 11.870708227157593s
+2024-09-02 17:23:04 INFO: Checking candidate 1-0
+2024-09-02 17:23:04 INFO: 1-0.rs in code pool
+2024-09-02 17:23:04 INFO: Checking candidate 1-1
+2024-09-02 17:23:04 ERROR: Error: 'verified'
+2024-09-02 17:23:04 ERROR: Error: 'errors'
+2024-09-02 17:23:04 INFO: Checking candidate 1-2
+2024-09-02 17:23:04 INFO: Verus has succeeded.
+2024-09-02 17:23:05 INFO: Verus succeeded!!
+2024-09-02 17:23:05 INFO: finished!

@@ -1,0 +1,591 @@
+2024-09-03 17:13:34 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 17:13:34 INFO: Running in generation mode
+2024-09-03 17:13:34 INFO: Repair steps: 10
+2024-09-03 17:13:34 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:13:34 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:13:34 INFO: Generating proof code
+2024-09-03 17:13:34 INFO: Temperature: 0.1
+2024-09-03 17:13:34 INFO: Direct inference attempt 0
+2024-09-03 17:13:43 INFO: Infer time: 9.049054861068726s
+2024-09-03 17:13:43 INFO: Checking candidate 0-0
+2024-09-03 17:13:43 INFO: 0-0.rs in code pool
+2024-09-03 17:13:43 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 17:13:43 INFO: Checking candidate 0-1
+2024-09-03 17:13:44 INFO: 0-1.rs in code pool
+2024-09-03 17:13:44 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 17:13:44 INFO: Checking candidate 0-2
+2024-09-03 17:13:44 INFO: 0-2.rs in code pool
+2024-09-03 17:13:44 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 17:13:44 INFO: Checking candidate 0-3
+2024-09-03 17:13:45 ERROR: Error: 'verified'
+2024-09-03 17:13:45 ERROR: Error: 'errors'
+2024-09-03 17:13:45 INFO: Checking candidate 0-4
+2024-09-03 17:13:45 ERROR: Error: 'verified'
+2024-09-03 17:13:45 ERROR: Error: 'errors'
+2024-09-03 17:13:45 INFO: Working on merge-0.rs
+2024-09-03 17:13:50 INFO: Merged code is better.
+2024-09-03 17:13:50 INFO: Running houdini on merge-0.rs
+2024-09-03 17:13:51 INFO: Working on merge-1.rs
+2024-09-03 17:13:51 INFO: Merged code is better.
+2024-09-03 17:13:51 INFO: Running houdini on merge-1.rs
+2024-09-03 17:13:52 INFO: Working on merge-2.rs
+2024-09-03 17:14:09 INFO: Merged code is better.
+2024-09-03 17:14:09 INFO: Running houdini on merge-2.rs
+2024-09-03 17:14:10 INFO: refining with constantrefine_inference
+2024-09-03 17:14:18 INFO: Infer time: 8.194063663482666s
+2024-09-03 17:14:18 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 17:14:19 INFO: New refined code is a good repair
+2024-09-03 17:14:19 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 17:14:19 INFO: refining with arraylen_inference
+2024-09-03 17:14:26 INFO: Infer time: 7.215636491775513s
+2024-09-03 17:14:26 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+            arr.len() == arr.len(),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 17:14:34 INFO: New refined code is a good repair
+2024-09-03 17:14:34 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+            arr.len() == arr.len(),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 17:14:34 INFO: refining with arrayrefine_inference
+2024-09-03 17:14:41 INFO: Infer time: 6.87206768989563s
+2024-09-03 17:14:41 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2, // This invariant ensures that the property holds for all elements in the array
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+            arr.len() == arr.len(),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 17:14:46 INFO: New refined code is a good repair
+2024-09-03 17:14:46 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2, // This invariant ensures that the property holds for all elements in the array
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+            arr.len() == arr.len(),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 17:14:46 INFO: refining with condlooprefine_inference
+2024-09-03 17:15:01 INFO: Infer time: 15.007909297943115s
+2024-09-03 17:15:01 INFO: 
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            1 <= index <= arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2, // This invariant ensures that the property holds for all elements in the array
+            index > 1 ==> max_val == max_rcur(arr@.subrange(0, index as int)),
+            index > 1 ==> min_val == min_rcur(arr@.subrange(0, index as int)),
+            arr.len() == arr.len(),
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+    }
+    max_val - min_val
+}
+
+} // verus!
+
+2024-09-03 17:15:02 INFO: New refined code under condloop is not better
+2024-09-03 17:15:02 INFO: Step 1: VerusErrorType.ArithmeticFlow with num=3.
+2024-09-03 17:15:02 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 17:15:13 INFO: Infer time: 10.410102128982544s
+2024-09-03 17:15:18 INFO: repair-1-0 file generated
+2024-09-03 17:15:18 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:15:26 INFO: repair-1-1 file generated
+2024-09-03 17:15:26 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:15:26 WARNING: The repair is not safe.
+2024-09-03 17:15:35 INFO: repair-1-2 file generated
+2024-09-03 17:15:35 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 7
+2024-09-03 17:15:35 WARNING: The repair is not safe.
+2024-09-03 17:15:35 INFO: Step 2: VerusErrorType.ArithmeticFlow with num=5.
+2024-09-03 17:15:35 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 17:15:50 INFO: Infer time: 14.7085542678833s
+2024-09-03 17:15:50 INFO: repair-2-0 file generated
+2024-09-03 17:15:50 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:15:50 WARNING: The repair is not safe.
+2024-09-03 17:15:50 ERROR: Error: 'verified'
+2024-09-03 17:15:50 ERROR: Error: 'errors'
+2024-09-03 17:15:50 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:15:51 ERROR: Error: 'verified'
+2024-09-03 17:15:51 ERROR: Error: 'errors'
+2024-09-03 17:15:51 INFO: repair-2-1 file generated
+2024-09-03 17:15:51 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:15:51 WARNING: The repair is not safe.
+2024-09-03 17:15:51 INFO: repair-2-2 file generated
+2024-09-03 17:15:51 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:15:51 WARNING: The repair is not safe.
+2024-09-03 17:15:51 INFO: repair-2-3 file generated
+2024-09-03 17:15:51 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 7
+2024-09-03 17:15:52 INFO: repair-2-4 file generated
+2024-09-03 17:15:52 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:15:52 WARNING: The repair is not safe.
+2024-09-03 17:15:52 INFO: Step 3: VerusErrorType.ArithmeticFlow with num=5.
+2024-09-03 17:15:52 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 17:16:07 INFO: Infer time: 14.544161796569824s
+2024-09-03 17:16:07 INFO: repair-3-0 file generated
+2024-09-03 17:16:07 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:16:07 WARNING: The repair is not safe.
+2024-09-03 17:16:07 ERROR: Error: 'verified'
+2024-09-03 17:16:07 ERROR: Error: 'errors'
+2024-09-03 17:16:07 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:16:07 ERROR: Error: 'verified'
+2024-09-03 17:16:07 ERROR: Error: 'errors'
+2024-09-03 17:16:07 INFO: repair-3-1 file generated
+2024-09-03 17:16:07 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:16:08 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-03 17:16:08 INFO: repair-3-2 file generated
+2024-09-03 17:16:08 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 8
+2024-09-03 17:16:08 WARNING: The repair is not safe.
+2024-09-03 17:16:09 INFO: repair-3-3 file generated
+2024-09-03 17:16:09 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:16:09 WARNING: The repair is not safe.
+2024-09-03 17:16:09 INFO: repair-3-4 file generated
+2024-09-03 17:16:09 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:16:10 INFO: Step 4: VerusErrorType.ArithmeticFlow with num=5.
+2024-09-03 17:16:10 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 17:16:21 INFO: Infer time: 11.496079683303833s
+2024-09-03 17:16:21 INFO: repair-4-0 file generated
+2024-09-03 17:16:21 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:16:21 WARNING: The repair is not safe.
+2024-09-03 17:16:22 ERROR: Error: 'verified'
+2024-09-03 17:16:22 ERROR: Error: 'errors'
+2024-09-03 17:16:22 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:16:22 ERROR: Error: 'verified'
+2024-09-03 17:16:22 ERROR: Error: 'errors'
+2024-09-03 17:16:22 INFO: repair-4-1 file generated
+2024-09-03 17:16:22 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:16:22 INFO: repair-4-2 file generated
+2024-09-03 17:16:22 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:16:22 WARNING: The repair is not safe.
+2024-09-03 17:16:22 ERROR: Error: 'verified'
+2024-09-03 17:16:22 ERROR: Error: 'errors'
+2024-09-03 17:16:22 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:16:23 ERROR: Error: 'verified'
+2024-09-03 17:16:23 ERROR: Error: 'errors'
+2024-09-03 17:16:23 INFO: repair-4-3 file generated
+2024-09-03 17:16:23 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:16:23 ERROR: Error: 'verified'
+2024-09-03 17:16:23 ERROR: Error: 'errors'
+2024-09-03 17:16:23 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:16:23 ERROR: Error: 'verified'
+2024-09-03 17:16:23 ERROR: Error: 'errors'
+2024-09-03 17:16:23 ERROR: Error in comparing code changes: 
+2024-09-03 17:16:23 INFO: repair-4-4 file generated
+2024-09-03 17:16:23 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:16:23 WARNING: The repair is not safe.
+2024-09-03 17:16:23 INFO: Step 5: VerusErrorType.ArithmeticFlow with num=5.
+2024-09-03 17:16:23 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 4
+2024-09-03 17:16:36 INFO: Infer time: 12.901657342910767s
+2024-09-03 17:16:37 INFO: repair-5-0 file generated
+2024-09-03 17:16:37 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:16:37 WARNING: The repair is not safe.
+2024-09-03 17:16:37 INFO: repair-5-1 file generated
+2024-09-03 17:16:37 INFO: Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 6
+2024-09-03 17:16:37 WARNING: The repair is not safe.
+2024-09-03 17:16:37 ERROR: Error: 'verified'
+2024-09-03 17:16:37 ERROR: Error: 'errors'
+2024-09-03 17:16:37 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:16:37 ERROR: Error: 'verified'
+2024-09-03 17:16:37 ERROR: Error: 'errors'
+2024-09-03 17:16:37 ERROR: Error in comparing code changes: 
+2024-09-03 17:16:37 INFO: repair-5-2 file generated
+2024-09-03 17:16:37 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:16:37 WARNING: The repair is not safe.
+2024-09-03 17:16:37 ERROR: Error: 'verified'
+2024-09-03 17:16:37 ERROR: Error: 'errors'
+2024-09-03 17:16:37 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:16:37 ERROR: Error: 'verified'
+2024-09-03 17:16:37 ERROR: Error: 'errors'
+2024-09-03 17:16:38 ERROR: Error in comparing code changes: 
+2024-09-03 17:16:38 INFO: repair-5-3 file generated
+2024-09-03 17:16:38 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:16:38 WARNING: The repair is not safe.
+2024-09-03 17:16:38 ERROR: Error: 'verified'
+2024-09-03 17:16:38 ERROR: Error: 'errors'
+2024-09-03 17:16:38 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:16:38 ERROR: Error: 'verified'
+2024-09-03 17:16:38 ERROR: Error: 'errors'
+2024-09-03 17:16:38 ERROR: Error in comparing code changes: 
+2024-09-03 17:16:38 INFO: repair-5-4 file generated
+2024-09-03 17:16:38 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-03 17:16:38 WARNING: The repair is not safe.
+2024-09-03 17:16:38 INFO: All repair attempts failed due to empty results.
+2024-09-03 17:16:39 INFO: Houdini code is better
+2024-09-03 17:16:39 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

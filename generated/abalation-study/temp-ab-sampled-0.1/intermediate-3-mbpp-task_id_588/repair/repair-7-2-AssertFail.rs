@@ -1,0 +1,102 @@
+
+#![verifier::loop_isolation(false)]
+use vstd::math::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn max_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        max(seq.last() as int, max_rcur(seq.drop_last()))
+    }
+}
+
+spec fn min_rcur(seq: Seq<i32>) -> int
+    decreases seq.len(),
+{
+    if seq.len() <= 1 {
+        seq.first() as int
+    } else {
+        min(seq.last() as int, min_rcur(seq.drop_last()))
+    }
+}
+
+proof fn lemma_monotonic_max(seq: Seq<i32>, i: int, j: int)
+    requires
+        0 <= i <= j <= seq.len(),
+    ensures
+        max_rcur(seq.subrange(0, i)) <= max_rcur(seq.subrange(0, j)),
+    decreases j - i
+{
+    if i < j {
+        lemma_monotonic_max(seq, i, j - 1);
+    }
+}
+
+proof fn lemma_monotonic_min(seq: Seq<i32>, i: int, j: int)
+    requires
+        0 <= i <= j <= seq.len(),
+    ensures
+        min_rcur(seq.subrange(0, i)) >= min_rcur(seq.subrange(0, j)),
+    decreases j - i
+{
+    if i < j {
+        lemma_monotonic_min(seq, i, j - 1);
+    }
+}
+
+fn difference_max_min(arr: &Vec<i32>) -> (diff: i32)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+    ensures
+        diff == max_rcur(arr@) - min_rcur(arr@),
+{
+    let mut min_val = arr[0];
+    let mut max_val = arr[0];
+    let mut index = 1;
+    while index < arr.len()
+        invariant
+            0 <= index <= arr.len(),
+            1 <= arr.len(),
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2,
+            forall|i: int| 0 <= i < index ==> max_val >= arr[i],
+            forall|i: int| 0 <= i < index ==> min_val <= arr[i],
+            max_val == max_rcur(arr@.subrange(0, index as int)),
+            min_val == min_rcur(arr@.subrange(0, index as int)),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> i32::MIN / 2 < # [trigger] arr[i] < i32::MAX / 2, // This invariant covers every element in the array and the array is never changed in the loop
+            arr.len() == arr.len(),
+            max_val as int - min_val as int <= i32::MAX as int,
+    {
+        if (arr[index] <= min_val) {
+            min_val = arr[index];
+        } else if (arr[index] > max_val) {
+            max_val = arr[index];
+        }
+        index += 1;
+        proof {
+            assert(max_rcur(arr@.subrange(0, index as int)) >= min_rcur(arr@.subrange(0, index as int)));
+            assert(max_rcur(arr@.subrange(0, index as int)) - min_rcur(arr@.subrange(0, index as int)) <= i32::MAX as int);
+        }
+    }
+
+    // Assertion to ensure no overflow/underflow
+    assert(max_val as int - min_val as int <= i32::MAX as int);
+    assert(max_val as int - min_val as int >= i32::MIN as int);
+
+    max_val - min_val
+}
+
+} // verus!
+
+
+//             assert(max_val as int - min_val as int <= i32::MAX as int);
+//   assertion failed: max_val as int - min_val as int <= i32::MAX as int
+
+// Compilation Error: False, Verified: 2, Errors: 3, Verus Errors: 7
+// Safe: True

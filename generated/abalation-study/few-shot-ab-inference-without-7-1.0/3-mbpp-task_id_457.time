@@ -1,0 +1,292 @@
+2024-08-31 22:35:10 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:35:10 INFO: Running in generation mode
+2024-08-31 22:35:10 INFO: Repair steps: 0
+2024-08-31 22:35:10 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:35:10 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:35:10 INFO: Generating proof code
+2024-08-31 22:35:10 INFO: Temperature: 1.0
+2024-08-31 22:35:10 INFO: Direct inference attempt 0
+2024-08-31 22:35:14 INFO: Infer time: 3.537698268890381s
+2024-08-31 22:35:14 INFO: Checking candidate 0-0
+2024-08-31 22:35:14 INFO: Checking candidate 0-1
+2024-08-31 22:35:14 INFO: 0-1.rs in code pool
+2024-08-31 22:35:14 INFO: 0-1.rs is now the best proof candidate
+2024-08-31 22:35:14 INFO: Checking candidate 0-2
+2024-08-31 22:35:15 INFO: 0-2.rs in code pool
+2024-08-31 22:35:15 INFO: Checking candidate 0-3
+2024-08-31 22:35:15 INFO: 0-3.rs in code pool
+2024-08-31 22:35:15 INFO: 0-3.rs is now the best proof candidate
+2024-08-31 22:35:15 INFO: Checking candidate 0-4
+2024-08-31 22:35:15 INFO: 0-4.rs in code pool
+2024-08-31 22:35:15 INFO: 0-4.rs is now the best proof candidate
+2024-08-31 22:35:15 INFO: Regenerate...
+2024-08-31 22:35:15 INFO: Direct inference attempt 1
+2024-08-31 22:35:19 INFO: Infer time: 3.9144928455352783s
+2024-08-31 22:35:19 INFO: Checking candidate 1-0
+2024-08-31 22:35:20 INFO: 1-0.rs in code pool
+2024-08-31 22:35:20 INFO: 1-0.rs is now the best proof candidate
+2024-08-31 22:35:20 INFO: Working on merge-0.rs
+2024-08-31 22:35:24 INFO: Running houdini on merge-0.rs
+2024-08-31 22:35:25 INFO: Working on merge-1.rs
+2024-08-31 22:35:25 INFO: Running houdini on merge-1.rs
+2024-08-31 22:35:26 INFO: Working on merge-2.rs
+2024-08-31 22:35:26 INFO: Running houdini on merge-2.rs
+2024-08-31 22:35:27 INFO: Working on merge-3.rs
+2024-08-31 22:35:27 INFO: Merged code is better.
+2024-08-31 22:35:27 INFO: Running houdini on merge-3.rs
+2024-08-31 22:35:28 INFO: Working on merge-4.rs
+2024-08-31 22:35:29 INFO: Merged code is better.
+2024-08-31 22:35:29 INFO: Running houdini on merge-4.rs
+2024-08-31 22:35:29 INFO: refining with constantrefine_inference
+2024-08-31 22:35:33 INFO: Infer time: 3.8809452056884766s
+2024-08-31 22:35:34 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn min_sublist(seq: &Vec<Vec<i32>>) -> (min_list: &Vec<i32>)
+    requires
+        seq.len() > 0,
+    ensures
+        forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(),
+        exists|k: int| 0 <= k < seq.len() && min_list@ =~= # [trigger] (seq[k]@),
+{
+    let mut min_list = &seq[0];
+    let mut index = 1;
+    while index < seq.len()
+        invariant
+            0 <= index <= seq.len(),
+            exists|k: int| 0 <= k < index && min_list@ =~= # [trigger] (seq[k]@),
+            forall|j: int| 0 <= j < index ==> min_list.len() <= # [trigger] (seq[j]).len(),
+            forall|k: int| 0 <= k < index ==> min_list.len() <= # [trigger] (seq[k]).len(),
+            index <= seq.len(),
+            seq.len() > 0,
+    {
+        if ((seq[index]).len() < min_list.len()) {
+            min_list = &seq[index];
+        }
+        index += 1;
+    }
+    min_list
+}
+
+} // verus!
+
+2024-08-31 22:35:38 INFO: New refined code is a good repair
+2024-08-31 22:35:38 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn min_sublist(seq: &Vec<Vec<i32>>) -> (min_list: &Vec<i32>)
+    requires
+        seq.len() > 0,
+    ensures
+        forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(),
+        exists|k: int| 0 <= k < seq.len() && min_list@ =~= # [trigger] (seq[k]@),
+{
+    let mut min_list = &seq[0];
+    let mut index = 1;
+    while index < seq.len()
+        invariant
+            0 <= index <= seq.len(),
+            exists|k: int| 0 <= k < index && min_list@ =~= # [trigger] (seq[k]@),
+            forall|j: int| 0 <= j < index ==> min_list.len() <= # [trigger] (seq[j]).len(),
+            forall|k: int| 0 <= k < index ==> min_list.len() <= # [trigger] (seq[k]).len(),
+            index <= seq.len(),
+            seq.len() > 0,
+    {
+        if ((seq[index]).len() < min_list.len()) {
+            min_list = &seq[index];
+        }
+        index += 1;
+    }
+    min_list
+}
+
+} // verus!
+
+2024-08-31 22:35:38 INFO: refining with arraylen_inference
+2024-08-31 22:35:41 INFO: Infer time: 2.730421781539917s
+2024-08-31 22:35:41 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn min_sublist(seq: &Vec<Vec<i32>>) -> (min_list: &Vec<i32>)
+    requires
+        seq.len() > 0,
+    ensures
+        forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(),
+        exists|k: int| 0 <= k < seq.len() && min_list@ =~= # [trigger] (seq[k]@),
+{
+    let mut min_list = &seq[0];
+    let mut index = 1;
+    while index < seq.len()
+        invariant
+            0 <= index <= seq.len(),
+            exists|k: int| 0 <= k < index && min_list@ =~= # [trigger] (seq[k]@),
+            forall|j: int| 0 <= j < index ==> min_list.len() <= # [trigger] (seq[j]).len(),
+            forall|k: int| 0 <= k < index ==> min_list.len() <= # [trigger] (seq[k]).len(),
+            index <= seq.len(),
+            seq.len() > 0,
+            seq.len() == seq.len(),
+    {
+        if ((seq[index]).len() < min_list.len()) {
+            min_list = &seq[index];
+        }
+        index += 1;
+    }
+    min_list
+}
+
+} // verus!
+
+2024-08-31 22:35:42 INFO: New refined code is a good repair
+2024-08-31 22:35:42 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn min_sublist(seq: &Vec<Vec<i32>>) -> (min_list: &Vec<i32>)
+    requires
+        seq.len() > 0,
+    ensures
+        forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(),
+        exists|k: int| 0 <= k < seq.len() && min_list@ =~= # [trigger] (seq[k]@),
+{
+    let mut min_list = &seq[0];
+    let mut index = 1;
+    while index < seq.len()
+        invariant
+            0 <= index <= seq.len(),
+            exists|k: int| 0 <= k < index && min_list@ =~= # [trigger] (seq[k]@),
+            forall|j: int| 0 <= j < index ==> min_list.len() <= # [trigger] (seq[j]).len(),
+            forall|k: int| 0 <= k < index ==> min_list.len() <= # [trigger] (seq[k]).len(),
+            index <= seq.len(),
+            seq.len() > 0,
+            seq.len() == seq.len(),
+    {
+        if ((seq[index]).len() < min_list.len()) {
+            min_list = &seq[index];
+        }
+        index += 1;
+    }
+    min_list
+}
+
+} // verus!
+
+2024-08-31 22:35:42 INFO: refining with arrayrefine_inference
+2024-08-31 22:35:45 INFO: Infer time: 3.7208609580993652s
+2024-08-31 22:35:45 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn min_sublist(seq: &Vec<Vec<i32>>) -> (min_list: &Vec<i32>)
+    requires
+        seq.len() > 0,
+    ensures
+        forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(),
+        exists|k: int| 0 <= k < seq.len() && min_list@ =~= # [trigger] (seq[k]@),
+{
+    let mut min_list = &seq[0];
+    let mut index = 1;
+    while index < seq.len()
+        invariant
+            0 <= index <= seq.len(),
+            exists|k: int| 0 <= k < index && min_list@ =~= # [trigger] (seq[k]@),
+            forall|j: int| 0 <= j < index ==> min_list.len() <= # [trigger] (seq[j]).len(),
+            forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(), // The array `seq` is not modified in the loop, hence this invariant covers every element in the array.
+            index <= seq.len(),
+            seq.len() > 0,
+            seq.len() == seq.len(),
+    {
+        if ((seq[index]).len() < min_list.len()) {
+            min_list = &seq[index];
+        }
+        index += 1;
+    }
+    min_list
+}
+
+} // verus!
+
+2024-08-31 22:35:46 INFO: New refined code is a good repair
+2024-08-31 22:35:46 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn min_sublist(seq: &Vec<Vec<i32>>) -> (min_list: &Vec<i32>)
+    requires
+        seq.len() > 0,
+    ensures
+        forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(),
+        exists|k: int| 0 <= k < seq.len() && min_list@ =~= # [trigger] (seq[k]@),
+{
+    let mut min_list = &seq[0];
+    let mut index = 1;
+    while index < seq.len()
+        invariant
+            0 <= index <= seq.len(),
+            exists|k: int| 0 <= k < index && min_list@ =~= # [trigger] (seq[k]@),
+            forall|j: int| 0 <= j < index ==> min_list.len() <= # [trigger] (seq[j]).len(),
+            forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(), // The array `seq` is not modified in the loop, hence this invariant covers every element in the array.
+            index <= seq.len(),
+            seq.len() > 0,
+            seq.len() == seq.len(),
+    {
+        if ((seq[index]).len() < min_list.len()) {
+            min_list = &seq[index];
+        }
+        index += 1;
+    }
+    min_list
+}
+
+} // verus!
+
+2024-08-31 22:35:46 INFO: refining with condlooprefine_inference
+2024-08-31 22:35:51 INFO: Infer time: 5.1456849575042725s
+2024-08-31 22:35:51 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn min_sublist(seq: &Vec<Vec<i32>>) -> (min_list: &Vec<i32>)
+    requires
+        seq.len() > 0,
+    ensures
+        forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len(),
+        exists|k: int| 0 <= k < seq.len() && min_list@ =~= # [trigger] (seq[k]@),
+{
+    let mut min_list = &seq[0];
+    let mut index = 1;
+    while index < seq.len()
+        invariant
+            0 <= index <= seq.len(),
+            exists|k: int| 0 <= k < index && min_list@ =~= # [trigger] (seq[k]@),
+            forall|j: int| 0 <= j < index ==> min_list.len() <= # [trigger] (seq[j]).len(),
+            ((index > 0) ==> forall|k: int| 0 <= k < seq.len() ==> min_list.len() <= # [trigger] (seq[k]).len()), // Conditioned invariant for index > 0
+            index <= seq.len(),
+            seq.len() > 0,
+            seq.len() == seq.len(),
+    {
+        if ((seq[index]).len() < min_list.len()) {
+            min_list = &seq[index];
+        }
+        index += 1;
+    }
+    min_list
+}
+
+} // verus!
+
+2024-08-31 22:35:52 INFO: New refined code under condloop is not better
+2024-08-31 22:35:52 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 22:35:52 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:35:52 INFO: Houdini code is better
+2024-08-31 22:35:53 INFO: finished!
+Start repair

@@ -1,0 +1,303 @@
+2024-08-29 19:39:55 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-29 19:39:55 INFO: Running in generation mode
+2024-08-29 19:39:55 INFO: Repair steps: 10
+2024-08-29 19:39:55 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 19:39:55 INFO: Generating proof code
+2024-08-29 19:39:55 INFO: Temperature: 1.0
+2024-08-29 19:39:55 INFO: Direct inference attempt 0
+2024-08-29 19:39:57 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 19:41:27 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.960680 seconds
+2024-08-29 19:41:58 INFO: Infer time: 123.09917759895325s
+2024-08-29 19:41:58 INFO: Checking candidate 0-0
+2024-08-29 19:41:59 INFO: 0-0.rs in code pool
+2024-08-29 19:41:59 INFO: 0-0.rs is now the best proof candidate
+2024-08-29 19:41:59 INFO: Checking candidate 0-1
+2024-08-29 19:41:59 INFO: 0-1.rs in code pool
+2024-08-29 19:41:59 INFO: 0-1.rs is now the best proof candidate
+2024-08-29 19:41:59 INFO: Checking candidate 0-2
+2024-08-29 19:41:59 INFO: 0-2.rs in code pool
+2024-08-29 19:41:59 INFO: 0-2.rs is now the best proof candidate
+2024-08-29 19:41:59 INFO: Checking candidate 0-3
+2024-08-29 19:42:00 INFO: 0-3.rs in code pool
+2024-08-29 19:42:00 INFO: 0-3.rs is now the best proof candidate
+2024-08-29 19:42:00 INFO: Working on merge-0.rs
+2024-08-29 19:42:04 INFO: Merged code is better.
+2024-08-29 19:42:04 INFO: Running houdini on merge-0.rs
+2024-08-29 19:42:05 INFO: Working on merge-1.rs
+2024-08-29 19:42:05 INFO: Merged code is better.
+2024-08-29 19:42:05 INFO: Running houdini on merge-1.rs
+2024-08-29 19:42:06 INFO: Working on merge-2.rs
+2024-08-29 19:42:06 INFO: Merged code is better.
+2024-08-29 19:42:06 INFO: Running houdini on merge-2.rs
+2024-08-29 19:42:06 INFO: Working on merge-3.rs
+2024-08-29 19:42:07 INFO: Merged code is better.
+2024-08-29 19:42:07 INFO: Running houdini on merge-3.rs
+2024-08-29 19:42:08 INFO: refining with constantrefine_inference
+2024-08-29 19:42:14 INFO: Infer time: 6.872024059295654s
+2024-08-29 19:42:15 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn get_first_elements(arr: &Vec<Vec<i32>>) -> (result: Vec<i32>)
+    requires
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+    ensures
+        arr.len() == result.len(),
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] result[i] == # [trigger] arr[i][0],
+{
+    let mut first_elem_arr: Vec<i32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            first_elem_arr.len() == index,
+            forall|i: int|
+                0 <= i < index ==> # [trigger] first_elem_arr[i] == # [trigger] arr[i][0],
+            forall|i: int| 0 <= i < index ==> first_elem_arr[i] == arr[i][0],
+            forall|j: int|
+                0 <= j < index ==> # [trigger] first_elem_arr[j] == # [trigger] arr[j][0],
+            index <= arr.len(),
+            forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+    {
+        let seq = &arr[index];
+        first_elem_arr.push(seq[0]);
+        index += 1;
+    }
+    first_elem_arr
+}
+
+} // verus!
+
+2024-08-29 19:42:16 INFO: New refined code is a good repair
+2024-08-29 19:42:16 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn get_first_elements(arr: &Vec<Vec<i32>>) -> (result: Vec<i32>)
+    requires
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+    ensures
+        arr.len() == result.len(),
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] result[i] == # [trigger] arr[i][0],
+{
+    let mut first_elem_arr: Vec<i32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            first_elem_arr.len() == index,
+            forall|i: int|
+                0 <= i < index ==> # [trigger] first_elem_arr[i] == # [trigger] arr[i][0],
+            forall|i: int| 0 <= i < index ==> first_elem_arr[i] == arr[i][0],
+            forall|j: int|
+                0 <= j < index ==> # [trigger] first_elem_arr[j] == # [trigger] arr[j][0],
+            index <= arr.len(),
+            forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+    {
+        let seq = &arr[index];
+        first_elem_arr.push(seq[0]);
+        index += 1;
+    }
+    first_elem_arr
+}
+
+} // verus!
+
+2024-08-29 19:42:16 INFO: refining with arraylen_inference
+2024-08-29 19:42:21 INFO: Infer time: 5.173391819000244s
+2024-08-29 19:42:21 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn get_first_elements(arr: &Vec<Vec<i32>>) -> (result: Vec<i32>)
+    requires
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+    ensures
+        arr.len() == result.len(),
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] result[i] == # [trigger] arr[i][0],
+{
+    let mut first_elem_arr: Vec<i32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            first_elem_arr.len() == index,
+            forall|i: int|
+                0 <= i < index ==> # [trigger] first_elem_arr[i] == # [trigger] arr[i][0],
+            forall|i: int| 0 <= i < index ==> first_elem_arr[i] == arr[i][0],
+            forall|j: int|
+                0 <= j < index ==> # [trigger] first_elem_arr[j] == # [trigger] arr[j][0],
+            index <= arr.len(),
+            forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+            arr.len() == arr.len(),    // Invariant for arr length
+            first_elem_arr.len() == first_elem_arr.len(), // Invariant for first_elem_arr length
+    {
+        let seq = &arr[index];
+        first_elem_arr.push(seq[0]);
+        index += 1;
+    }
+    first_elem_arr
+}
+
+} // verus!
+
+2024-08-29 19:42:22 INFO: New refined code is a good repair
+2024-08-29 19:42:22 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn get_first_elements(arr: &Vec<Vec<i32>>) -> (result: Vec<i32>)
+    requires
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+    ensures
+        arr.len() == result.len(),
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] result[i] == # [trigger] arr[i][0],
+{
+    let mut first_elem_arr: Vec<i32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            first_elem_arr.len() == index,
+            forall|i: int|
+                0 <= i < index ==> # [trigger] first_elem_arr[i] == # [trigger] arr[i][0],
+            forall|i: int| 0 <= i < index ==> first_elem_arr[i] == arr[i][0],
+            forall|j: int|
+                0 <= j < index ==> # [trigger] first_elem_arr[j] == # [trigger] arr[j][0],
+            index <= arr.len(),
+            forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+            arr.len() == arr.len(),    // Invariant for arr length
+            first_elem_arr.len() == first_elem_arr.len(), // Invariant for first_elem_arr length
+    {
+        let seq = &arr[index];
+        first_elem_arr.push(seq[0]);
+        index += 1;
+    }
+    first_elem_arr
+}
+
+} // verus!
+
+2024-08-29 19:42:22 INFO: refining with arrayrefine_inference
+2024-08-29 19:42:25 INFO: Infer time: 3.4615445137023926s
+2024-08-29 19:42:25 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn get_first_elements(arr: &Vec<Vec<i32>>) -> (result: Vec<i32>)
+    requires
+        forall|i: int| 0 <= i < arr.len() ==> #[trigger] arr[i].len() > 0,
+    ensures
+        arr.len() == result.len(),
+        forall|i: int| 0 <= i < arr.len() ==> #[trigger] result[i] == #[trigger] arr[i][0],
+{
+    let mut first_elem_arr: Vec<i32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            first_elem_arr.len() == index,
+            forall|i: int|
+                0 <= i < index ==> #[trigger] first_elem_arr[i] == #[trigger] arr[i][0],
+            forall|i: int| 0 <= i < arr.len() ==> #[trigger] arr[i].len() > 0,
+    {
+        // Invariant already covers entire array for modifications
+        let seq = &arr[index];
+        first_elem_arr.push(seq[0]);
+        index += 1;
+    }
+    first_elem_arr
+}
+
+} // verus!
+
+2024-08-29 19:42:26 INFO: New refined code is worse
+2024-08-29 19:42:26 INFO: refining with condlooprefine_inference
+2024-08-29 19:42:32 INFO: Infer time: 5.933037281036377s
+2024-08-29 19:42:32 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn get_first_elements(arr: &Vec<Vec<i32>>) -> (result: Vec<i32>)
+    requires
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+    ensures
+        arr.len() == result.len(),
+        forall|i: int| 0 <= i < arr.len() ==> # [trigger] result[i] == # [trigger] arr[i][0],
+{
+    let mut first_elem_arr: Vec<i32> = Vec::new();
+    let mut index = 0;
+    while index < arr.len()
+        invariant
+            first_elem_arr.len() == index,
+            index > 0 ==> forall|i: int| 0 <= i < index ==> # [trigger] first_elem_arr[i] == # [trigger] arr[i][0],
+            index > 0 ==> forall|i: int| 0 <= i < index ==> first_elem_arr[i] == arr[i][0],
+            index > 0 ==> forall|j: int| 0 <= j < index ==> # [trigger] first_elem_arr[j] == # [trigger] arr[j][0],
+            index <= arr.len(),
+            forall|i: int| 0 <= i < arr.len() ==> # [trigger] arr[i].len() > 0,
+            arr.len() == arr.len(),    // Invariant for arr length
+            first_elem_arr.len() == first_elem_arr.len(), // Invariant for first_elem_arr length
+    {
+        let seq = &arr[index];
+        first_elem_arr.push(seq[0]);
+        index += 1;
+    }
+    first_elem_arr
+}
+
+} // verus!
+
+2024-08-29 19:42:32 INFO: New refined code under condloop is not better
+2024-08-29 19:42:32 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-29 19:42:33 INFO: Step 1: VerusErrorType.PreCondFailVecLen with num=3.
+2024-08-29 19:42:33 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-08-29 19:42:37 INFO: Infer time: 4.7402503490448s
+2024-08-29 19:42:37 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-29 19:42:37 INFO: repair-1-0 file generated
+2024-08-29 19:42:37 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-29 19:42:38 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-29 19:42:38 INFO: repair-1-1 file generated
+2024-08-29 19:42:38 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-29 19:42:38 INFO: repair-1-2 file generated
+2024-08-29 19:42:38 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 19:42:38 INFO: Step 2: VerusErrorType.PreCondFailVecLen with num=5.
+2024-08-29 19:42:38 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-08-29 19:42:39 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-29 19:43:46 INFO: Infer time: 67.41688871383667s
+2024-08-29 19:43:50 INFO: repair-2-0 file generated
+2024-08-29 19:43:50 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 19:43:51 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-29 19:43:51 INFO: repair-2-1 file generated
+2024-08-29 19:43:51 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-08-29 19:43:51 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-08-29 19:43:51 INFO: Verus has succeeded.
+2024-08-29 19:43:51 INFO: repair-2-2 file generated
+2024-08-29 19:43:51 INFO: Compilation Error: False, Verified: 1, Errors: 0, Verus Errors: 0
+2024-08-29 19:43:51 WARNING: The repair is not safe.
+2024-08-29 19:43:51 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-29 19:43:52 INFO: repair-2-3 file generated
+2024-08-29 19:43:52 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-08-29 19:43:52 INFO: repair-2-4 file generated
+2024-08-29 19:43:52 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 19:43:52 INFO: Step 3: VerusErrorType.PreCondFailVecLen with num=5.
+2024-08-29 19:43:52 INFO: Current score: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-08-29 19:43:58 INFO: Infer time: 5.5284364223480225s
+2024-08-29 19:43:58 INFO: repair-3-0 file generated
+2024-08-29 19:43:58 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 1
+2024-08-29 19:43:58 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-29 19:43:58 INFO: repair-3-1 file generated
+2024-08-29 19:43:58 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-29 19:43:59 INFO: repair-3-2 file generated
+2024-08-29 19:43:59 INFO: Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 3
+2024-08-29 19:43:59 INFO: repair-3-3 file generated
+2024-08-29 19:43:59 INFO: Compilation Error: False, Verified: 1, Errors: 0, Verus Errors: 0
+2024-08-29 19:43:59 INFO: All errors are fixed within 3 steps!!!
+2024-08-29 19:43:59 INFO: Verus succeeded after repair!!
+2024-08-29 19:44:00 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

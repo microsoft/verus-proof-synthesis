@@ -1,0 +1,4698 @@
+2024-08-30 02:41:02 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 02:41:02 INFO: Running in generation mode
+2024-08-30 02:41:02 INFO: Repair steps: 10
+2024-08-30 02:41:02 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 02:41:02 INFO: Generating proof code
+2024-08-30 02:41:02 INFO: Temperature: 1.0
+2024-08-30 02:41:02 INFO: Direct inference attempt 0
+2024-08-30 02:41:02 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:42:03 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:43:10 INFO: Infer time: 128.13221383094788s
+2024-08-30 02:43:10 INFO: Checking candidate 0-0
+2024-08-30 02:43:11 INFO: 0-0.rs in code pool
+2024-08-30 02:43:11 INFO: 0-0.rs is now the best proof candidate
+2024-08-30 02:43:11 INFO: Checking candidate 0-1
+2024-08-30 02:43:11 INFO: Checking candidate 0-2
+2024-08-30 02:43:11 ERROR: Error: 'verified'
+2024-08-30 02:43:11 ERROR: Error: 'errors'
+2024-08-30 02:43:11 INFO: Checking candidate 0-3
+2024-08-30 02:43:11 INFO: Checking candidate 0-4
+2024-08-30 02:43:12 INFO: Working on merge-0.rs
+2024-08-30 02:43:16 INFO: Merged code is better.
+2024-08-30 02:43:16 INFO: Running houdini on merge-0.rs
+2024-08-30 02:43:17 INFO: refining with constantrefine_inference
+2024-08-30 02:43:17 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:44:22 INFO: Infer time: 65.16244745254517s
+2024-08-30 02:44:22 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+    {
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 02:44:26 INFO: New refined code is a good repair
+2024-08-30 02:44:26 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+    {
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 02:44:26 INFO: refining with arraylen_inference
+2024-08-30 02:44:55 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:45:56 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:47:02 INFO: Infer time: 155.66201782226562s
+2024-08-30 02:47:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 02:47:03 INFO: New refined code is a good repair
+2024-08-30 02:47:03 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            main.len() == main.len(),
+            sub.len() == sub.len(),
+    {
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 02:47:03 INFO: refining with arrayrefine_inference
+2024-08-30 02:47:08 INFO: Infer time: 5.250653505325317s
+2024-08-30 02:47:08 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 02:47:09 INFO: New refined code is a good repair
+2024-08-30 02:47:09 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 02:47:09 INFO: refining with condlooprefine_inference
+2024-08-30 02:47:17 INFO: Infer time: 8.13179898262024s
+2024-08-30 02:47:17 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 02:47:17 INFO: Refinement did not change the code
+2024-08-30 02:47:17 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 02:47:17 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-08-30 02:47:17 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 02:47:26 INFO: Infer time: 8.389072179794312s
+2024-08-30 02:47:26 INFO: Here is the quick fix output
+2024-08-30 02:47:26 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 02:47:34 INFO: Infer time: 8.265754222869873s
+2024-08-30 02:47:34 INFO: repair-1-0 file generated
+2024-08-30 02:47:34 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 02:47:35 INFO: Step 1: VerusErrorType.InvFailFront is fixed. Proof updated 1-0.
+2024-08-30 02:47:35 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-08-30 02:47:35 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 02:47:35 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 02:47:35 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:48:35 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:49:44 INFO: Infer time: 129.4405219554901s
+2024-08-30 02:49:44 INFO: subrange lemma fix
+2024-08-30 02:49:52 INFO: Infer time: 7.97847318649292s
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+2024-08-30 02:49:54 ERROR: Error: 'verified'
+2024-08-30 02:49:54 ERROR: Error: 'errors'
+2024-08-30 02:49:54 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+Fatal error: err_trace does not have a label
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+2024-08-30 02:50:04 INFO: Infer time: 9.074601650238037s
+Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index as int > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!2024-08-30 02:50:05 ERROR: Error: 'verified'
+2024-08-30 02:50:05 ERROR: Error: 'errors'
+2024-08-30 02:50:05 INFO: repair-2-0 file generated
+2024-08-30 02:50:05 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 02:50:05 WARNING: The repair is not safe.
+2024-08-30 02:50:05 INFO: Step 3: VerusErrorType.AssertFail with num=5.
+2024-08-30 02:50:05 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 02:50:05 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 02:50:16 INFO: Infer time: 10.351282835006714s
+2024-08-30 02:50:16 INFO: subrange lemma fix
+2024-08-30 02:50:25 INFO: Infer time: 9.37912893295288s
+2024-08-30 02:50:25 INFO: repair-3-0 file generated
+2024-08-30 02:50:25 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 02:50:26 INFO: Step 3: VerusErrorType.AssertFail is fixed. Proof updated 3-0.
+2024-08-30 02:50:26 INFO: Step 4: VerusErrorType.InvFailFront with num=3.
+2024-08-30 02:50:26 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 02:50:38 INFO: Infer time: 11.852360010147095s
+2024-08-30 02:50:38 INFO: Here is the quick fix output
+Start repair
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    while index <= (main.len() - sub.len())
+        invariant
+            (index > 0) ==> exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i: int, j: int)
+    requires
+        0 <= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j - 1),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j - 1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>, 
+    idx: usize
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if main[idx + i] != sub[i] {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(
+    main: &Vec<i32>, 
+    sub: &Vec<i32>
+) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if is_sub_list_at_index(&main, &sub, index) {
+            return true;
+        }
+        index += 1;
+        proof {
+            if index > 1 {
+                lemma_seq_subrange_ascend(main@, 0, index as int);
+            }
+        }
+    }
+    false
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@); // Use lemma_seq_subrange_all here
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        proof {
+            if index > 0 {
+                lemma_seq_subrange_ascend(main@, 0, ( index ) as int); // Use lemma_seq_subrange_ascend here
+            }
+        }
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+2024-08-30 02:50:38 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 02:50:38 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:51:39 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:52:52 INFO: Infer time: 133.9945592880249s
+2024-08-30 02:52:52 INFO: repair-4-0 file generated
+2024-08-30 02:52:52 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 02:52:53 INFO: repair-4-1 file generated
+2024-08-30 02:52:53 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 02:52:53 INFO: repair-4-2 file generated
+2024-08-30 02:52:53 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 1
+2024-08-30 02:52:54 INFO: Step 4: VerusErrorType.InvFailFront is fixed. Proof updated 4-2.
+2024-08-30 02:52:54 INFO: Step 5: VerusErrorType.AssertFail with num=3.
+2024-08-30 02:52:54 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 1
+2024-08-30 02:52:54 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 02:52:54 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:54:06 INFO: Infer time: 71.54193902015686s
+2024-08-30 02:54:06 INFO: subrange lemma fix
+2024-08-30 02:54:06 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:55:06 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:56:06 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:57:17 INFO: Infer time: 191.84862661361694s
+2024-08-30 02:57:18 INFO: repair-5-0 file generated
+2024-08-30 02:57:18 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 02:57:18 INFO: Step 5: VerusErrorType.AssertFail is fixed. Proof updated 5-0.
+2024-08-30 02:57:18 INFO: Step 6: VerusErrorType.InvFailFront with num=3.
+2024-08-30 02:57:18 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 02:57:18 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:58:19 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 02:59:19 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:00:19 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:01:35 INFO: Infer time: 256.7721002101898s
+2024-08-30 03:01:35 INFO: Here is the quick fix output
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (
+            main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@); // Use lemma_seq_subrange_all here
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            index > 0 ==> exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        proof {
+            if index > 0 {
+                lemma_seq_subrange_ascend(main@, 0, ( index ) as int); // Use lemma_seq_subrange_ascend here
+            }
+        }
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@); // Use lemma_seq_subrange_all here
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        proof {
+            if index > 0 {
+                lemma_seq_subrange_ascend(main@, 0, (index + sub.len()) as int); // Use lemma_seq_subrange_ascend here
+            }
+        }
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-30 03:01:35 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 03:01:52 INFO: Infer time: 16.052441835403442s
+2024-08-30 03:01:52 INFO: repair-6-0 file generated
+2024-08-30 03:01:52 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 1
+2024-08-30 03:01:52 INFO: Step 6: VerusErrorType.InvFailFront is fixed. Proof updated 6-0.
+2024-08-30 03:01:52 INFO: Step 7: VerusErrorType.AssertFail with num=3.
+2024-08-30 03:01:52 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 1
+2024-08-30 03:01:52 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 03:01:53 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:02:53 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:04:12 INFO: Infer time: 139.8301441669464s
+2024-08-30 03:04:12 INFO: subrange lemma fix
+2024-08-30 03:04:12 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:05:13 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:06:31 INFO: Infer time: 138.93549036979675s
+2024-08-30 03:06:31 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 03:06:31 INFO: repair-7-0 file generated
+2024-08-30 03:06:31 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-08-30 03:06:32 INFO: Step 8: VerusErrorType.AssertFail with num=5.
+2024-08-30 03:06:32 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 1
+2024-08-30 03:06:32 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 03:06:32 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:07:32 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:08:32 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:09:32 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:10:33 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:11:43 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:12:54 INFO: Infer time: 382.86224389076233s
+2024-08-30 03:12:54 INFO: subrange lemma fix
+2024-08-30 03:13:06 INFO: Infer time: 11.215408325195312s
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@); // Use lemma_seq_subrange_all here
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            (index > 0 ==> exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@),
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        proof {
+            if index > 0 {
+                lemma_seq_subrange_ascend(main@, 0, (index + sub.len()) as int); // Use lemma_seq_subrange_ascend here
+            }
+        }
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@); // Use lemma_seq_subrange_all here
+    }
+    assert(exists|k: int, l: int| 0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@); // Added by AI
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        proof {
+            if index > 0 {
+                lemma_seq_subrange_ascend(main@, 0, (index + sub.len()) as int); // Use lemma_seq_subrange_ascend here
+            }
+        }
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+} // verus!
+
+Warning: a non type error is passed to debug_type_error
+Rate Limit Error
+2024-08-30 03:13:06 INFO: repair-8-0 file generated
+2024-08-30 03:13:06 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 03:13:06 INFO: Step 8: VerusErrorType.AssertFail is fixed. Proof updated 8-0.
+2024-08-30 03:13:07 INFO: Step 9: VerusErrorType.InvFailFront with num=3.
+2024-08-30 03:13:07 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 03:13:07 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:14:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:15:19 INFO: Infer time: 132.4424102306366s
+2024-08-30 03:15:19 INFO: Here is the quick fix output
+2024-08-30 03:15:19 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-08-30 03:15:31 INFO: Infer time: 11.616385221481323s
+2024-08-30 03:15:31 INFO: repair-9-0 file generated
+2024-08-30 03:15:31 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 03:15:32 INFO: repair-9-1 file generated
+2024-08-30 03:15:32 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 2
+2024-08-30 03:15:32 INFO: repair-9-2 file generated
+2024-08-30 03:15:32 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 1
+2024-08-30 03:15:33 INFO: Step 9: VerusErrorType.InvFailFront is fixed. Proof updated 9-2.
+2024-08-30 03:15:33 INFO: Step 10: VerusErrorType.AssertFail with num=3.
+2024-08-30 03:15:33 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 1
+2024-08-30 03:15:33 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 03:15:44 INFO: Infer time: 11.124558210372925s
+2024-08-30 03:15:44 INFO: subrange lemma fix
+2024-08-30 03:15:53 INFO: Infer time: 9.080862760543823s
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        proof {
+            if index > 0 {
+                lemma_seq_subrange_ascend(main@, 0, (index + sub.len()) as int);
+            }
+        }
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+}
+
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    while index <= (main.len() - sub.len())
+        invariant
+            (index > 0) ==> (exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@),
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        proof {
+            if index > 0 {
+                lemma_seq_subrange_ascend(main@, 0, (index + sub.len()) as int);
+            }
+        }
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+}
+
+2024-08-30 03:15:53 INFO: repair-10-0 file generated
+2024-08-30 03:15:53 INFO: Compilation Error: False, Verified: 4, Errors: 1, Verus Errors: 1
+2024-08-30 03:15:54 ERROR: Error: 'NoneType' object is not subscriptable
+2024-08-30 03:15:54 ERROR: Error: 'NoneType' object is not subscriptable
+2024-08-30 03:15:54 INFO: Original code is better
+2024-08-30 03:15:54 INFO: finished!
+
+use vstd::prelude::*;
+fn main() {}
+verus! {
+/*
+ This lemma is often useful to put right after a loop that has a loop invariant involving Seq::subrange(0, i), with i being the loop index.
+
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(0, k as int)...,
+          ...
+    {
+       ...
+       k = k + 1;
+    }
+    proof{
+     	lemma_seq_subrange_all(s@);
+    }
+ */
+
+proof fn lemma_seq_subrange_all<T>(v: Seq<T>)
+    ensures
+        v == v.subrange(0, v.len() as int),
+{
+    assert(v =~= v.subrange(0, v.len() as int));
+}
+
+/*
+ This lemma is often useful to put near the end of a loop body that has a loop invariant involving Seq::subrange(j, k), with k being the loop index. It will help prove the property of range j..k+1 of a Sequence based on the property held for range j..k of a Sequence.
+ 
+ Example usage:
+    while ( k < s.len() )
+      invariant
+          ...
+          k <= s.len(),
+          ...s@.subrange(j, k as int)...,
+          ...
+    {
+       ...
+       proof{
+       	  lemma_seq_subrange_ascend(s@, j, k+1);
+       }
+       k = k + 1;
+    }
+
+ */
+
+proof fn lemma_seq_subrange_ascend<T>(v: Seq<T>, i:int, j: int)
+    requires
+        0<= i < j <= v.len(),
+    ensures
+        v.subrange(i, j as int).drop_last() == v.subrange(i, j-1 ),
+{
+    assert(v.subrange(i, j as int).drop_last() =~= v.subrange(i, j-1));
+}
+
+#[verifier::loop_isolation(false)]
+
+fn is_sub_list_at_index(main: &Vec<i32>, sub: &Vec<i32>, idx: usize) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+        0 <= idx <= (main.len() - sub.len()),
+    ensures
+        result == (main@.subrange(idx as int, (idx + sub@.len())) =~= sub@),
+{
+    let mut i = 0;
+    while i < sub.len()
+        invariant
+            0 <= idx <= (main.len() - sub.len()),
+            forall|j: int| 0 <= j < i ==> main[idx + j as usize] == sub[j as int],
+            i <= sub.len(),
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        if (main[idx + i] != sub[i]) {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn is_sub_list(main: &Vec<i32>, sub: &Vec<i32>) -> (result: bool)
+    requires
+        sub.len() <= main.len(),
+    ensures
+        result == (exists|k: int, l: int|
+            0 <= k <= (main.len() - sub.len()) && l == k + sub.len() && (# [trigger] (main@.subrange(k, l))) =~= sub@),
+{
+    if sub.len() > main.len() {
+        return false;
+    }
+    let mut index = 0;
+    proof {
+        lemma_seq_subrange_all(main@);
+    }
+    proof {
+        assert(exists|k: int, l: int|
+            0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@); // Added by AI
+    } // Added by AI
+    while index <= (main.len() - sub.len())
+        invariant
+            exists|k: int, l: int|
+                0 <= k < index && l == k + sub.len() && (main@.subrange(k, l)) =~= sub@,
+            index <= (main.len() - sub.len()) + 1,
+            sub.len() <= main.len(),
+            forall|k: int| 0 <= k < main.len() ==> main[k] == main[k], // main is never modified in the loop
+            forall|k: int| 0 <= k < sub.len() ==> sub[k] == sub[k],   // sub is never modified in the loop
+    {
+        proof {
+            if index > 0 {
+                lemma_seq_subrange_ascend(main@, 0, (index + sub.len()) as int);
+            }
+        }
+        if (is_sub_list_at_index(&main, &sub, index)) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+}
+

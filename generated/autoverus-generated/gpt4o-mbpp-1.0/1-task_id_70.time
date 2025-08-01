@@ -1,0 +1,54 @@
+2024-08-30 03:15:54 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 03:15:54 INFO: Running in generation mode
+2024-08-30 03:15:54 INFO: Repair steps: 10
+2024-08-30 03:15:55 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 03:15:55 INFO: Generating proof code
+2024-08-30 03:15:55 INFO: Temperature: 1.0
+2024-08-30 03:15:55 INFO: Direct inference attempt 0
+2024-08-30 03:15:55 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:16:58 INFO: Infer time: 63.0176260471344s
+2024-08-30 03:16:58 INFO: Checking candidate 0-0
+2024-08-30 03:16:58 ERROR: Error: 'verified'
+2024-08-30 03:16:58 ERROR: Error: 'errors'
+2024-08-30 03:16:58 INFO: Checking candidate 0-1
+2024-08-30 03:16:58 ERROR: Error: 'verified'
+2024-08-30 03:16:58 ERROR: Error: 'errors'
+2024-08-30 03:16:58 INFO: Checking candidate 0-2
+2024-08-30 03:16:58 ERROR: Error: 'verified'
+2024-08-30 03:16:58 ERROR: Error: 'errors'
+2024-08-30 03:16:58 INFO: Checking candidate 0-3
+2024-08-30 03:16:59 ERROR: Error: 'verified'
+2024-08-30 03:16:59 ERROR: Error: 'errors'
+2024-08-30 03:16:59 INFO: Checking candidate 0-4
+2024-08-30 03:16:59 ERROR: Error: 'verified'
+2024-08-30 03:16:59 ERROR: Error: 'errors'
+2024-08-30 03:16:59 INFO: Regenerate...
+2024-08-30 03:16:59 INFO: Direct inference attempt 1
+2024-08-30 03:17:01 INFO: Infer time: 2.428349733352661s
+2024-08-30 03:17:01 INFO: Checking candidate 1-0
+2024-08-30 03:17:02 ERROR: Error: 'verified'
+2024-08-30 03:17:02 ERROR: Error: 'errors'
+2024-08-30 03:17:02 INFO: Checking candidate 1-1
+2024-08-30 03:17:02 ERROR: Error: 'verified'
+2024-08-30 03:17:02 ERROR: Error: 'errors'
+2024-08-30 03:17:02 INFO: Checking candidate 1-2
+2024-08-30 03:17:02 ERROR: Error: 'verified'
+2024-08-30 03:17:02 ERROR: Error: 'errors'
+2024-08-30 03:17:02 INFO: Checking candidate 1-3
+2024-08-30 03:17:02 ERROR: Error: 'verified'
+2024-08-30 03:17:02 ERROR: Error: 'errors'
+2024-08-30 03:17:03 INFO: Checking candidate 1-4
+2024-08-30 03:17:03 ERROR: Error: 'verified'
+2024-08-30 03:17:03 ERROR: Error: 'errors'
+2024-08-30 03:17:03 INFO: Regenerate...
+2024-08-30 03:17:03 INFO: Direct inference attempt 2
+2024-08-30 03:17:03 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 60.000000 seconds
+2024-08-30 03:18:06 INFO: Infer time: 63.542184591293335s
+2024-08-30 03:18:06 INFO: Checking candidate 2-0
+2024-08-30 03:18:07 ERROR: Error: 'verified'
+2024-08-30 03:18:07 ERROR: Error: 'errors'
+2024-08-30 03:18:07 INFO: Checking candidate 2-1
+2024-08-30 03:18:07 INFO: Checking candidate 2-2
+2024-08-30 03:18:07 INFO: Verus has succeeded.
+2024-08-30 03:18:07 INFO: Verus succeeded!!
+2024-08-30 03:18:08 INFO: finished!

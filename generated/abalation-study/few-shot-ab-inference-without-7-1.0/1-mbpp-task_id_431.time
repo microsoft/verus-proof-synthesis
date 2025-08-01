@@ -1,0 +1,240 @@
+2024-08-31 22:18:03 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:18:03 INFO: Running in generation mode
+2024-08-31 22:18:03 INFO: Repair steps: 0
+2024-08-31 22:18:04 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:18:04 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:18:04 INFO: Generating proof code
+2024-08-31 22:18:04 INFO: Temperature: 1.0
+2024-08-31 22:18:04 INFO: Direct inference attempt 0
+2024-08-31 22:18:08 INFO: Infer time: 4.551371335983276s
+2024-08-31 22:18:08 INFO: Checking candidate 0-0
+2024-08-31 22:18:08 INFO: Checking candidate 0-1
+2024-08-31 22:18:08 ERROR: Error: 'verified'
+2024-08-31 22:18:08 ERROR: Error: 'errors'
+2024-08-31 22:18:09 INFO: Checking candidate 0-2
+2024-08-31 22:18:09 INFO: Checking candidate 0-3
+2024-08-31 22:18:09 INFO: 0-3.rs in code pool
+2024-08-31 22:18:09 INFO: 0-3.rs is now the best proof candidate
+2024-08-31 22:18:09 INFO: Checking candidate 0-4
+2024-08-31 22:18:10 INFO: 0-4.rs in code pool
+2024-08-31 22:18:10 INFO: Working on merge-0.rs
+2024-08-31 22:18:14 INFO: Merged code is better.
+2024-08-31 22:18:14 INFO: Running houdini on merge-0.rs
+2024-08-31 22:18:15 INFO: Working on merge-1.rs
+2024-08-31 22:18:15 INFO: Running houdini on merge-1.rs
+2024-08-31 22:18:16 INFO: refining with constantrefine_inference
+2024-08-31 22:18:19 INFO: Infer time: 3.649793863296509s
+2024-08-31 22:18:20 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn has_common_element(list1: &Vec<i32>, list2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == (exists|i: int, j: int|
+            0 <= i < list1.len() && 0 <= j < list2.len() && (list1[i] == list2[j])),
+{
+    let mut i = 0;
+    while i < list1.len()
+        invariant
+            0 <= i <= list1.len(),
+            forall|m: int, n: int| 0 <= m < i && 0 <= n < list2.len() ==> list1[m] != list2[n],
+            0 <= i < list1.len(), // invariant for upper bound from pre-condition
+    {
+        let mut j = 0;
+        while j < list2.len()
+            invariant
+                0 <= j <= list2.len(),
+                forall|m: int, n: int|
+                    0 <= m <= i && 0 <= n < j ==> (m == i ==> list1[m] != list2[n]),
+                forall|n: int| 0 <= n < j ==> list1[(i) as int] != list2[n],
+                0 <= j < list2.len(), // invariant for upper bound from pre-condition
+        {
+            if list1[i] == list2[j] {
+                return true;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-31 22:18:24 INFO: New refined code is worse
+2024-08-31 22:18:24 INFO: refining with arraylen_inference
+2024-08-31 22:18:28 INFO: Infer time: 4.128345489501953s
+2024-08-31 22:18:29 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn has_common_element(list1: &Vec<i32>, list2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == (exists|i: int, j: int|
+            0 <= i < list1.len() && 0 <= j < list2.len() && (list1[i] == list2[j])),
+{
+    let mut i = 0;
+    while i < list1.len()
+        invariant
+            0 <= i <= list1.len(),
+            list1.len() == list1.len(),
+            list2.len() == list2.len(),
+            forall|m: int, n: int| 0 <= m < i && 0 <= n < list2.len() ==> list1[m] != list2[n],
+    {
+        let mut j = 0;
+        while j < list2.len()
+            invariant
+                0 <= j <= list2.len(),
+                list1.len() == list1.len(),
+                list2.len() == list2.len(),
+                forall|m: int, n: int|
+                    0 <= m <= i && 0 <= n < j ==> (m == i ==> list1[m] != list2[n]),
+                forall|n: int| 0 <= n < j ==> list1[(i) as int] != list2[n],
+        {
+            if list1[i] == list2[j] {
+                return true;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-31 22:18:29 INFO: New refined code is a good repair
+2024-08-31 22:18:29 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn has_common_element(list1: &Vec<i32>, list2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == (exists|i: int, j: int|
+            0 <= i < list1.len() && 0 <= j < list2.len() && (list1[i] == list2[j])),
+{
+    let mut i = 0;
+    while i < list1.len()
+        invariant
+            0 <= i <= list1.len(),
+            list1.len() == list1.len(),
+            list2.len() == list2.len(),
+            forall|m: int, n: int| 0 <= m < i && 0 <= n < list2.len() ==> list1[m] != list2[n],
+    {
+        let mut j = 0;
+        while j < list2.len()
+            invariant
+                0 <= j <= list2.len(),
+                list1.len() == list1.len(),
+                list2.len() == list2.len(),
+                forall|m: int, n: int|
+                    0 <= m <= i && 0 <= n < j ==> (m == i ==> list1[m] != list2[n]),
+                forall|n: int| 0 <= n < j ==> list1[(i) as int] != list2[n],
+        {
+            if list1[i] == list2[j] {
+                return true;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-31 22:18:29 INFO: refining with arrayrefine_inference
+2024-08-31 22:18:34 INFO: Infer time: 4.825000762939453s
+2024-08-31 22:18:34 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn has_common_element(list1: &Vec<i32>, list2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == (exists|i: int, j: int|
+            0 <= i < list1.len() && 0 <= j < list2.len() && (list1[i] == list2[j])),
+{
+    let mut i = 0;
+    while i < list1.len()
+        invariant
+            0 <= i <= list1.len(),
+            list1.len() == list1.len(),
+            list2.len() == list2.len(),
+            forall|m: int, n: int| 0 <= m < i && 0 <= n < list2.len() ==> list1[m] != list2[n],
+    {
+        let mut j = 0;
+        while j < list2.len()
+            invariant
+                0 <= j <= list2.len(),
+                list1.len() == list1.len(),
+                list2.len() == list2.len(),
+                forall|m: int, n: int|
+                    0 <= m <= i && 0 <= n < j ==> (m == i ==> list1[m] != list2[n]),
+                /* Updated invariant to cover every element in list2 since list2 is not modified in the loop */
+                forall|n: int| 0 <= n < list2.len() ==> list1[(i) as int] != list2[n],
+        {
+            if list1[i] == list2[j] {
+                return true;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    false
+}
+
+} // verus!
+
+2024-08-31 22:18:35 INFO: New refined code is worse
+2024-08-31 22:18:35 INFO: refining with condlooprefine_inference
+2024-08-31 22:18:40 INFO: Infer time: 4.999919176101685s
+2024-08-31 22:18:40 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn has_common_element(list1: &Vec<i32>, list2: &Vec<i32>) -> (result: bool)
+    ensures
+        result == (exists|i: int, j: int|
+            0 <= i < list1.len() && 0 <= j < list2.len() && (list1[i] == list2[j])),
+{
+    let mut i = 0;
+    while i < list1.len()
+        invariant
+            0 <= i <= list1.len(),
+            list1.len() == list1.len(),
+            list2.len() == list2.len(),
+            forall|m: int, n: int| 0 <= m < i && 0 <= n < list2.len() ==> list1[m] != list2[n],
+            i > 0 ==> (forall|m: int, n: int| 0 <= m < i && 0 <= n < list2.len() ==> list1[m] != list2[n]), // New invariant for handling the first iteration
+    {
+        let mut j = 0;
+        while j < list2.len()
+            invariant
+                0 <= j <= list2.len(),
+                list1.len() == list1.len(),
+                list2.len() == list2.len(),
+                forall|m: int, n: int|
+                    0 <= m <= i && 0 <= n < j ==> (m == i ==> list1[m] != list2[n]),
+                forall|n: int| 0 <= n < j ==> list1[(i) as int] != list2[n],
+                i > 0 ==> (forall|n: int| 0 <= n < j ==> list1[(i) as int] != list2[n]), // New invariant for handling the first iteration
+        {
+            if list1[i] == list2[j] {
+                return true;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    false
+}
+
+} // verus!
+2024-08-31 22:18:40 INFO: New refined code under condloop is not better
+2024-08-31 22:18:40 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 22:18:40 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:18:40 INFO: Verus succeeded after repair!!
+2024-08-31 22:18:41 INFO: finished!
+Start repair

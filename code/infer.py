@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation. #
+# Licensed under the MIT license.      #
 import openai
 from openai import AzureOpenAI, OpenAI
 from azure.identity import (
@@ -42,14 +44,25 @@ class LLM:
         self.client = []
         # there may be no key and instead authentication is used
         if config.use_openai:
-            for i in range(len(config.aoai_api_key)):
+            if len(config.aoai_api_key) == 0:
+                self.logger.info("Using OpenAI API Key from environment variable")
                 self.client.append(
                     OpenAI(
-                        api_key=config.aoai_api_key[i],
-                        base_url=config.aoai_api_base[i],
+                        api_key=os.getenv("OPENAI_API_KEY"),
+                        base_url=config.aoai_api_base[0],
                         max_retries=config.aoai_max_retries,
                     )
                 )
+            else:
+                for i in range(len(config.aoai_api_key)):
+                    self.client.append(
+                        OpenAI(
+                            api_key=config.aoai_api_key[i],
+                            base_url=config.aoai_api_base[i],
+                            max_retries=config.aoai_max_retries,
+                        )
+                    )
+        # there may be no key and instead authentication is used
         elif len(config.aoai_api_key) == 0:
             scope = "https://cognitiveservices.azure.com/.default"
 

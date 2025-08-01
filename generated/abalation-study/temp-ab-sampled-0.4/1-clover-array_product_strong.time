@@ -1,0 +1,446 @@
+2024-09-03 19:11:02 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 19:11:02 INFO: Running in generation mode
+2024-09-03 19:11:02 INFO: Repair steps: 10
+2024-09-03 19:11:02 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:11:02 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:11:02 INFO: Generating proof code
+2024-09-03 19:11:02 INFO: Temperature: 0.4
+2024-09-03 19:11:02 INFO: Direct inference attempt 0
+2024-09-03 19:11:06 INFO: Infer time: 3.9785966873168945s
+2024-09-03 19:11:06 INFO: Checking candidate 0-0
+2024-09-03 19:11:14 INFO: 0-0.rs in code pool
+2024-09-03 19:11:14 INFO: 0-0.rs is now the best proof candidate
+2024-09-03 19:11:14 INFO: Checking candidate 0-1
+2024-09-03 19:11:22 INFO: 0-1.rs in code pool
+2024-09-03 19:11:22 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 19:11:22 INFO: Checking candidate 0-2
+2024-09-03 19:11:31 INFO: 0-2.rs in code pool
+2024-09-03 19:11:31 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 19:11:31 INFO: Checking candidate 0-3
+2024-09-03 19:11:31 INFO: 0-3.rs in code pool
+2024-09-03 19:11:31 INFO: Working on merge-0.rs
+2024-09-03 19:11:44 INFO: Merged code is better.
+2024-09-03 19:11:44 INFO: Running houdini on merge-0.rs
+2024-09-03 19:11:44 INFO: Working on merge-1.rs
+2024-09-03 19:11:45 INFO: Merged code is better.
+2024-09-03 19:11:45 INFO: Running houdini on merge-1.rs
+2024-09-03 19:11:45 INFO: Working on merge-2.rs
+2024-09-03 19:12:02 INFO: Merged code is better.
+2024-09-03 19:12:02 INFO: Running houdini on merge-2.rs
+2024-09-03 19:12:02 INFO: Working on merge-3.rs
+2024-09-03 19:12:03 INFO: Running houdini on merge-3.rs
+2024-09-03 19:12:11 WARNING: Non-linear arithmetic detected.
+2024-09-03 19:12:11 WARNING:             forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+2024-09-03 19:12:11 INFO: refining with constantrefine_inference
+2024-09-03 19:12:16 INFO: Infer time: 4.495903253555298s
+2024-09-03 19:12:16 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 19:12:18 INFO: New refined code is a good repair
+2024-09-03 19:12:18 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 19:12:18 INFO: refining with arraylen_inference
+2024-09-03 19:12:22 INFO: Infer time: 3.8751680850982666s
+2024-09-03 19:12:22 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 19:12:23 INFO: Refinement did not change the code
+2024-09-03 19:12:23 INFO: refining with arrayrefine_inference
+2024-09-03 19:12:26 INFO: Infer time: 3.866499900817871s
+2024-09-03 19:12:27 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|k: int| 0 <= k < a.len() ==> a[k] == a[k], // a is never changed in the loop
+            forall|k: int| 0 <= k < b.len() ==> b[k] == b[k], // b is never changed in the loop
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 19:12:27 INFO: New refined code is a good repair
+2024-09-03 19:12:27 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|k: int| 0 <= k < a.len() ==> a[k] == a[k], // a is never changed in the loop
+            forall|k: int| 0 <= k < b.len() ==> b[k] == b[k], // b is never changed in the loop
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 19:12:27 INFO: refining with condlooprefine_inference
+2024-09-03 19:12:33 INFO: Infer time: 5.787938356399536s
+2024-09-03 19:12:33 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            n > 0 ==> forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|k: int| 0 <= k < a.len() ==> a[k] == a[k], // a is never changed in the loop
+            forall|k: int| 0 <= k < b.len() ==> b[k] == b[k], // b is never changed in the loop
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 19:12:34 INFO: New refined code under condloop is not better
+2024-09-03 19:12:34 INFO: refining with nonlinear_inference
+2024-09-03 19:12:38 INFO: Infer time: 4.218438148498535s
+2024-09-03 19:12:38 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|k: int| 0 <= k < a.len() ==> a[k] == a[k], // a is never changed in the loop
+            forall|k: int| 0 <= k < b.len() ==> b[k] == b[k], // b is never changed in the loop
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        assert(product == a[( n ) as int] * b[( n ) as int]) by (nonlinear_arith)
+            requires
+                a[( n ) as int] * b[( n ) as int] < 1000,
+                {};
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+
+
+
+
+2024-09-03 19:12:39 INFO: New refined code is a good repair
+2024-09-03 19:12:39 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|k: int| 0 <= k < a.len() ==> a[k] == a[k], // a is never changed in the loop
+            forall|k: int| 0 <= k < b.len() ==> b[k] == b[k], // b is never changed in the loop
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        assert(product == a[( n ) as int] * b[( n ) as int]) by (nonlinear_arith)
+            requires
+                a[( n ) as int] * b[( n ) as int] < 1000,
+                {};
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+
+
+
+
+2024-09-03 19:12:39 INFO: refining with nonlbound_inference
+2024-09-03 19:12:47 INFO: Infer time: 7.550739049911499s
+2024-09-03 19:12:47 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|k: int| 0 <= k < a.len() ==> a[k] == a[k], // a is never changed in the loop
+            forall|k: int| 0 <= k < b.len() ==> b[k] == b[k], // b is never changed in the loop
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        assert(product == a[( n ) as int] * b[( n ) as int]) by (nonlinear_arith)
+            requires
+                0 <= a[( n ) as int],
+                0 <= b[( n ) as int],
+                a[( n ) as int] * b[( n ) as int] < 1000,
+                {};
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 19:12:52 INFO: New refined code is a good repair
+2024-09-03 19:12:52 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|k: int| 0 <= k < a.len() ==> a[k] == a[k], // a is never changed in the loop
+            forall|k: int| 0 <= k < b.len() ==> b[k] == b[k], // b is never changed in the loop
+            n <= len,
+            a.len() <= 100 && a.len() == b.len(), // copied pre-condition
+    {
+        let product: u32 = a[n] * b[n];
+        assert(product == a[( n ) as int] * b[( n ) as int]) by (nonlinear_arith)
+            requires
+                0 <= a[( n ) as int],
+                0 <= b[( n ) as int],
+                a[( n ) as int] * b[( n ) as int] < 1000,
+                {};
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-03 19:12:52 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:12:52 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:12:52 INFO: Step 1: VerusErrorType.AssertFail with num=3.
+2024-09-03 19:12:52 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 1, Verus Errors: 1
+2024-09-03 19:12:52 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:12:52 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:13:00 INFO: Infer time: 7.816576957702637s
+2024-09-03 19:13:04 INFO: repair-1-0 file generated
+2024-09-03 19:13:04 INFO: Compilation Error: False, Verified: 1, Errors: 0, Verus Errors: 0
+2024-09-03 19:13:04 INFO: All errors are fixed within 1 steps!!!
+2024-09-03 19:13:04 INFO: Verus succeeded after repair!!
+2024-09-03 19:13:05 INFO: finished!
+Start repair

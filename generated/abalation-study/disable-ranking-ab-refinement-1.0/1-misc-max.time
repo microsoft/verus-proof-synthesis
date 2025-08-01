@@ -1,0 +1,90 @@
+2024-09-02 19:32:10 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:32:10 INFO: Running in generation mode
+2024-09-02 19:32:10 INFO: Repair steps: 0
+2024-09-02 19:32:10 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:32:10 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:32:10 INFO: Generating proof code
+2024-09-02 19:32:10 INFO: Temperature: 1.0
+2024-09-02 19:32:10 WARNING: Disabled ranking
+2024-09-02 19:32:10 INFO: Direct inference attempt 0
+2024-09-02 19:32:16 INFO: Infer time: 5.911535978317261s
+2024-09-02 19:32:16 INFO: Checking candidate 0-0
+2024-09-02 19:32:16 INFO: 0-0.rs in code pool
+2024-09-02 19:32:16 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:32:16 INFO: Working on merge-0.rs
+2024-09-02 19:32:21 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:32:21 INFO: Running houdini on merge-0.rs
+2024-09-02 19:32:21 INFO: refining with constantrefine_inference
+2024-09-02 19:32:24 INFO: Infer time: 2.409318685531616s
+2024-09-02 19:32:24 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun1(x: &Vec<u64>) -> (res: u64)
+    requires
+        x.len() >= 1,
+    ensures
+        forall|i: int| 0 <= i < x.len() ==> res >= x[i],
+        exists|i: int| 0 <= i < x.len() && res == x[i],
+{
+    let mut max_value = x[0];
+    let mut i: usize = 1;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            0 <= i <= xlen,
+            exists|j: int| 0 <= j < i && max_value == x[j],
+            forall|j: int| 0 <= j < i ==> max_value >= x[j],
+            max_value >= x[0],
+            x.len() >= 1,
+    {
+        if x[i] > max_value {
+            max_value = x[i];
+        }
+        i = i + 1;
+    }
+    max_value
+}
+
+} // verus!
+
+2024-09-02 19:32:29 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:32:29 INFO: refining with arraylen_inference
+2024-09-02 19:32:31 INFO: Infer time: 2.667207717895508s
+2024-09-02 19:32:31 INFO: Verus has succeeded.
+2024-09-02 19:32:31 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun1(x: &Vec<u64>) -> (res: u64)
+    requires
+        x.len() >= 1,
+    ensures
+        forall|i: int| 0 <= i < x.len() ==> res >= x[i],
+        exists|i: int| 0 <= i < x.len() && res == x[i],
+{
+    let mut max_value = x[0];
+    let mut i: usize = 1;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            0 <= i <= xlen,
+            exists|j: int| 0 <= j < i && max_value == x[j],
+            forall|j: int| 0 <= j < i ==> max_value >= x[j],
+            max_value >= x[0],
+            x.len() == xlen,
+    {
+        if x[i] > max_value {
+            max_value = x[i];
+        }
+        i = i + 1;
+    }
+    max_value
+}
+
+} // verus!
+
+2024-09-02 19:32:32 INFO: Verus succeeded with refinement!!
+2024-09-02 19:32:32 INFO: finished!

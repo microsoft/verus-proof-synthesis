@@ -1,0 +1,50 @@
+2024-09-02 17:53:37 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:53:37 INFO: Running in generation mode
+2024-09-02 17:53:37 INFO: Repair steps: 0
+2024-09-02 17:53:37 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:53:37 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:53:37 INFO: Generating proof code
+2024-09-02 17:53:37 INFO: Temperature: 1.0
+2024-09-02 17:53:37 INFO: Generate with uniform refinement mode
+2024-09-02 17:53:37 INFO: Direct inference attempt 0
+2024-09-02 17:53:37 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:53:48 INFO: Infer time: 11.008260011672974s
+2024-09-02 17:53:48 INFO: Checking candidate 0-0
+2024-09-02 17:53:48 INFO: 0-0.rs in code pool
+2024-09-02 17:53:48 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 17:53:48 INFO: Checking candidate 0-1
+2024-09-02 17:53:49 INFO: 0-1.rs in code pool
+2024-09-02 17:53:49 INFO: Checking candidate 0-2
+2024-09-02 17:53:49 INFO: 0-2.rs in code pool
+2024-09-02 17:53:49 INFO: 0-2.rs is now the best proof candidate
+2024-09-02 17:53:49 INFO: Checking candidate 0-3
+2024-09-02 17:53:50 INFO: 0-3.rs in code pool
+2024-09-02 17:53:50 INFO: Working on merge-0.rs
+2024-09-02 17:53:54 INFO: Merged code is better.
+2024-09-02 17:53:54 INFO: Running houdini on merge-0.rs
+2024-09-02 17:53:55 INFO: Working on merge-1.rs
+2024-09-02 17:53:55 ERROR: Error in merging code at step 1: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origc1902oiz.rs /tmp/merge_new_invmokk9vxf.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-02 17:53:55 INFO: Working on merge-2.rs
+2024-09-02 17:53:55 ERROR: Error in merging code at step 2: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origwvltnfan.rs /tmp/merge_new_invv2fb1g6e.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-02 17:53:55 INFO: Working on merge-3.rs
+2024-09-02 17:53:55 ERROR: Error in merging code at step 3: Error in merging invariants:    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/XXXX/verus-copilot-review/utils/lynette/source/target/debug/lynette code merge --invariants /tmp/merge_inv_origwplsp0eg.rs /tmp/merge_new_inv2gf8vxe1.rs`
+thread 'main' panicked at lynette/src/merge/mod.rs:33:17:
+assertion failed: pure_rust_1 == pure_rust_2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+2024-09-02 17:53:55 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:53:55 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:53:55 INFO: Verus succeeded after repair!!
+2024-09-02 17:54:00 INFO: finished!
+Start repair

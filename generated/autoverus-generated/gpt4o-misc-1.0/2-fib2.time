@@ -1,0 +1,466 @@
+2024-08-30 16:34:13 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 16:34:13 INFO: Running in generation mode
+2024-08-30 16:34:13 INFO: Repair steps: 10
+2024-08-30 16:34:13 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:34:13 INFO: Generating proof code
+2024-08-30 16:34:13 INFO: Temperature: 1.0
+2024-08-30 16:34:13 INFO: Direct inference attempt 0
+2024-08-30 16:34:13 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 3.000000 seconds
+2024-08-30 16:34:22 INFO: Infer time: 9.060252666473389s
+2024-08-30 16:34:22 INFO: Checking candidate 0-0
+2024-08-30 16:34:23 INFO: 0-0.rs in code pool
+2024-08-30 16:34:23 INFO: 0-0.rs is now the best proof candidate
+2024-08-30 16:34:23 INFO: Checking candidate 0-1
+2024-08-30 16:34:23 INFO: 0-1.rs in code pool
+2024-08-30 16:34:23 INFO: 0-1.rs is now the best proof candidate
+2024-08-30 16:34:23 INFO: Checking candidate 0-2
+2024-08-30 16:34:24 INFO: 0-2.rs in code pool
+2024-08-30 16:34:24 INFO: Checking candidate 0-3
+2024-08-30 16:34:24 INFO: 0-3.rs in code pool
+2024-08-30 16:34:24 INFO: Working on merge-0.rs
+2024-08-30 16:34:28 INFO: Running houdini on merge-0.rs
+2024-08-30 16:34:29 INFO: Working on merge-1.rs
+2024-08-30 16:34:30 INFO: Merged code is better.
+2024-08-30 16:34:30 INFO: Running houdini on merge-1.rs
+2024-08-30 16:34:30 INFO: Working on merge-2.rs
+2024-08-30 16:34:31 INFO: Running houdini on merge-2.rs
+2024-08-30 16:34:31 INFO: Working on merge-3.rs
+2024-08-30 16:34:32 INFO: Running houdini on merge-3.rs
+2024-08-30 16:34:33 INFO: refining with constantrefine_inference
+2024-08-30 16:34:39 INFO: Infer time: 5.952975511550903s
+2024-08-30 16:34:39 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            0 <= 2 <= i <= n,
+            fib.len() == i,
+            fibo_fits_i32(n as int),
+            forall|j: int| 0 <= j < i ==> # [trigger] fib[j] == fibo(j),
+            i <= n,
+            fibo_fits_i32(n as int),
+            n >= 2,
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:34:44 INFO: New refined code is a good repair
+2024-08-30 16:34:44 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            0 <= 2 <= i <= n,
+            fib.len() == i,
+            fibo_fits_i32(n as int),
+            forall|j: int| 0 <= j < i ==> # [trigger] fib[j] == fibo(j),
+            i <= n,
+            fibo_fits_i32(n as int),
+            n >= 2,
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:34:44 INFO: refining with arraylen_inference
+2024-08-30 16:34:48 INFO: Infer time: 4.0457680225372314s
+2024-08-30 16:34:48 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            0 <= 2 <= i <= n,
+            fib.len() == i,
+            fibo_fits_i32(n as int),
+            forall|j: int| 0 <= j < i ==> # [trigger] fib[j] == fibo(j),
+            i <= n,
+            fibo_fits_i32(n as int),
+            n >= 2,
+            fib.len() == n, // Invariant added here
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:34:49 INFO: New refined code is a good repair
+2024-08-30 16:34:49 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            0 <= 2 <= i <= n,
+            fib.len() == i,
+            fibo_fits_i32(n as int),
+            forall|j: int| 0 <= j < i ==> # [trigger] fib[j] == fibo(j),
+            i <= n,
+            fibo_fits_i32(n as int),
+            n >= 2,
+            fib.len() == n, // Invariant added here
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:34:49 INFO: refining with arrayrefine_inference
+2024-08-30 16:34:53 INFO: Infer time: 4.808767557144165s
+2024-08-30 16:34:54 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            0 <= 2 <= i <= n,
+            fib.len() == i,
+            fibo_fits_i32(n as int),
+            forall|j: int| 0 <= j < i ==> # [trigger] fib[j] == fibo(j),
+            i <= n,
+            fibo_fits_i32(n as int),
+            n >= 2,
+            fib.len() == n, // Invariant added here
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:34:54 INFO: Refinement did not change the code
+2024-08-30 16:34:54 INFO: refining with condlooprefine_inference
+2024-08-30 16:34:59 INFO: Infer time: 5.322324514389038s
+2024-08-30 16:34:59 INFO: 
+#[allow(unused_imports)]
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn fibo(n: int) -> nat
+    decreases n,
+{
+    if n <= 0 {
+        0
+    } else if n == 1 {
+        1
+    } else {
+        fibo(n - 2) + fibo(n - 1)
+    }
+}
+
+spec fn fibo_fits_i32(n: int) -> bool {
+    fibo(n) < 0x8000_0000
+}
+
+fn fibonacci(n: usize) -> (ret: Vec<i32>)
+    requires
+        fibo_fits_i32(n as int),
+        n >= 2,
+    ensures
+        forall|i: int| 2 <= i < n ==> # [trigger] ret@[i] == fibo(i),
+        ret@.len() == n,
+{
+    let mut fib = Vec::new();
+    fib.push(0);
+    fib.push(1);
+    let mut i = 2;
+    while i < n
+        invariant
+            0 <= 2 <= i <= n,
+            fib.len() == i,
+            fibo_fits_i32(n as int),
+            forall|j: int| 0 <= j < i ==> # [trigger] fib[j] == fibo(j),
+            i <= n,
+            fibo_fits_i32(n as int),
+            n >= 2,
+            // fib.len() == n invariant is incorrect here as it will only be true at the end of the loop. Removed that part.
+    {
+        let next_fib = fib[i - 1] + fib[i - 2];
+        fib.push(next_fib);
+        i += 1;
+    }
+    fib
+}
+
+} // verus!
+
+2024-08-30 16:35:00 INFO: New refined code under condloop is not better
+2024-08-30 16:35:00 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:35:00 INFO: Step 1: VerusErrorType.InvFailFront with num=3.
+2024-08-30 16:35:00 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 16:35:10 INFO: Infer time: 10.209441184997559s
+2024-08-30 16:35:10 ERROR: Error: 'verified'
+2024-08-30 16:35:10 ERROR: Error: 'errors'
+2024-08-30 16:35:10 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:35:10 ERROR: Error: 'verified'
+2024-08-30 16:35:10 ERROR: Error: 'errors'
+2024-08-30 16:35:10 ERROR: Error in comparing code changes: 
+2024-08-30 16:35:10 INFO: repair-1-0 file generated
+2024-08-30 16:35:10 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:35:10 WARNING: The repair is not safe.
+2024-08-30 16:35:10 ERROR: Error: 'verified'
+2024-08-30 16:35:10 ERROR: Error: 'errors'
+2024-08-30 16:35:10 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:35:11 ERROR: Error: 'verified'
+2024-08-30 16:35:11 ERROR: Error: 'errors'
+2024-08-30 16:35:11 ERROR: Error in comparing code changes: 
+2024-08-30 16:35:11 INFO: repair-1-1 file generated
+2024-08-30 16:35:11 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:35:11 WARNING: The repair is not safe.
+2024-08-30 16:35:11 ERROR: Error: 'verified'
+2024-08-30 16:35:11 ERROR: Error: 'errors'
+2024-08-30 16:35:11 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:35:11 ERROR: Error: 'verified'
+2024-08-30 16:35:11 ERROR: Error: 'errors'
+2024-08-30 16:35:11 ERROR: Error in comparing code changes: 
+2024-08-30 16:35:11 INFO: repair-1-2 file generated
+2024-08-30 16:35:11 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:35:11 WARNING: The repair is not safe.
+2024-08-30 16:35:11 INFO: Step 2: VerusErrorType.InvFailFront with num=5.
+2024-08-30 16:35:11 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 1
+2024-08-30 16:35:20 INFO: Infer time: 9.132397651672363s
+2024-08-30 16:35:21 INFO: repair-2-0 file generated
+2024-08-30 16:35:21 INFO: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:35:21 INFO: Step 2: VerusErrorType.InvFailFront is fixed. Proof updated 2-0.
+2024-08-30 16:35:21 INFO: Step 3: VerusErrorType.ArithmeticFlow with num=3.
+2024-08-30 16:35:21 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 1, Verus Errors: 2
+2024-08-30 16:35:37 INFO: Infer time: 15.62721562385559s
+2024-08-30 16:35:37 INFO: repair-3-0 file generated
+2024-08-30 16:35:37 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 2
+2024-08-30 16:35:37 INFO: Step 3: VerusErrorType.ArithmeticFlow is fixed. Proof updated 3-0.
+2024-08-30 16:35:37 INFO: Step 4: VerusErrorType.Other (not supported yet) with num=3.
+2024-08-30 16:35:37 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 2
+2024-08-30 16:35:46 INFO: Infer time: 8.94093632698059s
+2024-08-30 16:35:46 INFO: repair-4-0 file generated
+2024-08-30 16:35:46 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:35:47 INFO: Step 4: VerusErrorType.Other is fixed. Proof updated 4-0.
+2024-08-30 16:35:47 INFO: Step 5: VerusErrorType.PostCondFail with num=3.
+2024-08-30 16:35:47 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:35:56 INFO: Infer time: 9.717488527297974s
+2024-08-30 16:35:56 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:35:57 INFO: repair-5-0 file generated
+2024-08-30 16:35:57 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:35:57 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:35:57 INFO: repair-5-1 file generated
+2024-08-30 16:35:57 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:35:57 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:35:57 INFO: repair-5-2 file generated
+2024-08-30 16:35:57 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:35:57 INFO: Step 6: VerusErrorType.PostCondFail with num=5.
+2024-08-30 16:35:57 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:36:06 INFO: Infer time: 8.740668296813965s
+2024-08-30 16:36:06 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:36:06 INFO: repair-6-0 file generated
+2024-08-30 16:36:06 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:36:06 INFO: repair-6-1 file generated
+2024-08-30 16:36:06 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:36:07 INFO: Step 6: VerusErrorType.PostCondFail is fixed. Proof updated 6-1.
+2024-08-30 16:36:07 INFO: Step 7: VerusErrorType.AssertFail with num=3.
+2024-08-30 16:36:07 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:36:07 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:36:16 INFO: Infer time: 9.792071104049683s
+2024-08-30 16:36:17 INFO: repair-7-0 file generated
+2024-08-30 16:36:17 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:36:17 INFO: repair-7-1 file generated
+2024-08-30 16:36:17 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:36:18 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:36:18 INFO: repair-7-2 file generated
+2024-08-30 16:36:18 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:36:18 INFO: Step 8: VerusErrorType.AssertFail with num=5.
+2024-08-30 16:36:18 INFO: Current score: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:36:18 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 16:36:18 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 4.000000 seconds
+2024-08-30 16:36:33 INFO: Infer time: 14.832036972045898s
+2024-08-30 16:36:33 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-08-30 16:36:33 INFO: repair-8-0 file generated
+2024-08-30 16:36:33 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-08-30 16:36:33 INFO: repair-8-1 file generated
+2024-08-30 16:36:33 INFO: Compilation Error: False, Verified: 3, Errors: 1, Verus Errors: 1
+2024-08-30 16:36:33 INFO: Verus succeeded with hdn!!
+2024-08-30 16:36:34 INFO: Verus succeeded after repair!!
+2024-08-30 16:36:34 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

@@ -1,0 +1,49 @@
+2024-08-31 21:45:14 WARNING: Phase 1 examples: ['3', '7']
+2024-08-31 21:45:14 INFO: Running in generation mode
+2024-08-31 21:45:14 INFO: Repair steps: 0
+2024-08-31 21:45:14 WARNING: Generation initialized with phase1_examples: ['3', '7']
+2024-08-31 21:45:14 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:45:14 INFO: Generating proof code
+2024-08-31 21:45:14 INFO: Temperature: 1.0
+2024-08-31 21:45:14 INFO: Direct inference attempt 0
+2024-08-31 21:45:16 INFO: Infer time: 2.458106279373169s
+2024-08-31 21:45:16 INFO: Checking candidate 0-0
+2024-08-31 21:45:17 ERROR: Error: 'verified'
+2024-08-31 21:45:17 ERROR: Error: 'errors'
+2024-08-31 21:45:17 INFO: Checking candidate 0-1
+2024-08-31 21:45:17 ERROR: Error: 'verified'
+2024-08-31 21:45:17 ERROR: Error: 'errors'
+2024-08-31 21:45:17 INFO: Checking candidate 0-2
+2024-08-31 21:45:17 ERROR: Error: 'verified'
+2024-08-31 21:45:17 ERROR: Error: 'errors'
+2024-08-31 21:45:17 INFO: Checking candidate 0-3
+2024-08-31 21:45:17 ERROR: Error: 'verified'
+2024-08-31 21:45:17 ERROR: Error: 'errors'
+2024-08-31 21:45:17 INFO: Checking candidate 0-4
+2024-08-31 21:45:18 ERROR: Error: 'verified'
+2024-08-31 21:45:18 ERROR: Error: 'errors'
+2024-08-31 21:45:18 INFO: Regenerate...
+2024-08-31 21:45:18 INFO: Direct inference attempt 1
+2024-08-31 21:45:20 INFO: Infer time: 2.6481692790985107s
+2024-08-31 21:45:20 INFO: Checking candidate 1-0
+2024-08-31 21:45:21 ERROR: Error: 'verified'
+2024-08-31 21:45:21 ERROR: Error: 'errors'
+2024-08-31 21:45:21 INFO: Checking candidate 1-1
+2024-08-31 21:45:21 ERROR: Error: 'verified'
+2024-08-31 21:45:21 ERROR: Error: 'errors'
+2024-08-31 21:45:21 INFO: Checking candidate 1-2
+2024-08-31 21:45:21 ERROR: Error: 'verified'
+2024-08-31 21:45:21 ERROR: Error: 'errors'
+2024-08-31 21:45:21 INFO: Checking candidate 1-3
+2024-08-31 21:45:21 ERROR: Error: 'verified'
+2024-08-31 21:45:21 ERROR: Error: 'errors'
+2024-08-31 21:45:22 INFO: Checking candidate 1-4
+2024-08-31 21:45:22 ERROR: Error: 'verified'
+2024-08-31 21:45:22 ERROR: Error: 'errors'
+2024-08-31 21:45:22 INFO: Regenerate...
+2024-08-31 21:45:22 INFO: Direct inference attempt 2
+2024-08-31 21:45:24 INFO: Infer time: 2.4625966548919678s
+2024-08-31 21:45:24 INFO: Checking candidate 2-0
+2024-08-31 21:45:25 INFO: Verus has succeeded.
+2024-08-31 21:45:25 INFO: Verus succeeded!!
+2024-08-31 21:45:25 INFO: finished!

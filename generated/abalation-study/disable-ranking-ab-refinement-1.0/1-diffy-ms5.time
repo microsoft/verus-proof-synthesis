@@ -1,0 +1,207 @@
+2024-09-02 19:27:54 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:27:54 INFO: Running in generation mode
+2024-09-02 19:27:54 INFO: Repair steps: 0
+2024-09-02 19:27:54 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:27:54 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:27:54 INFO: Generating proof code
+2024-09-02 19:27:54 INFO: Temperature: 1.0
+2024-09-02 19:27:54 WARNING: Disabled ranking
+2024-09-02 19:27:54 INFO: Direct inference attempt 0
+2024-09-02 19:27:59 INFO: Infer time: 4.883731365203857s
+2024-09-02 19:27:59 INFO: Checking candidate 0-0
+2024-09-02 19:28:00 INFO: 0-0.rs in code pool
+2024-09-02 19:28:00 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:28:00 INFO: Working on merge-0.rs
+2024-09-02 19:28:04 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:28:04 INFO: Running houdini on merge-0.rs
+2024-09-02 19:28:05 INFO: refining with constantrefine_inference
+2024-09-02 19:28:09 INFO: Infer time: 3.827422857284546s
+2024-09-02 19:28:09 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+        N < 1000,
+    ensures
+        sum[0] <= 4 * N,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            forall|j: int| 0 <= j < i as int ==> a[j as int] == (j % 5) as i32,
+            i <= N as usize,
+            N > 0,
+            N < 1000,
+    {
+        a.set(i, (i % 5) as i32);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            forall|j: int| 0 <= j < i as int ==> a[j as int] == (j % 5) as i32,
+            i <= N as usize,
+            sum.len() == 1,
+            sum[0] <= 4 * (i as i32),
+            N > 0,
+            N < 1000,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:28:14 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:28:14 INFO: refining with arraylen_inference
+2024-09-02 19:28:20 INFO: Infer time: 5.82641863822937s
+2024-09-02 19:28:20 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+        N < 1000,
+    ensures
+        sum[0] <= 4 * N,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            forall|j: int| 0 <= j < i as int ==> a[j as int] == (j % 5) as i32,
+            i <= N as usize,
+    {
+        a.set(i, (i % 5) as i32);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            forall|j: int| 0 <= j < i as int ==> a[j as int] == (j % 5) as i32,
+            i <= N as usize,
+            sum.len() == 1,
+            sum[0] <= 4 * (i as i32),
+            a.len() == N,
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+
+2024-09-02 19:28:21 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:28:21 INFO: refining with arrayrefine_inference
+2024-09-02 19:28:25 INFO: Infer time: 4.07275915145874s
+2024-09-02 19:28:25 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+        N < 1000,
+    ensures
+        sum[0] <= 4 * N,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            forall|j: int| 0 <= j < i as int ==> a[j as int] == (j % 5) as i32,
+            i <= N as usize,
+    {
+        a.set(i, (i % 5) as i32);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            forall|j: int| 0 <= j < N ==> a[j as int] == (j % 5) as i32, // Covering every element as 'a' is assumed unmodified
+            i <= N as usize,
+            sum.len() == 1,
+            sum[0] <= 4 * (i as i32),
+    {
+        if (i == 0) {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:28:26 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:28:26 INFO: refining with condlooprefine_inference
+2024-09-02 19:28:30 INFO: Infer time: 4.306610107421875s
+2024-09-02 19:28:30 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: i32)
+    requires
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N > 0,
+        N < 1000,
+    ensures
+        sum[0] <= 4 * N,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N,
+            forall|j: int| 0 <= j < i as int ==> a[j as int] == (j % 5) as i32,
+            i <= N as usize,
+    {
+        a.set(i, (i % 5) as i32);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            forall|j: int| 0 <= j < i as int ==> a[j as int] == (j % 5) as i32,
+            i <= N as usize,
+            sum.len() == 1,
+            i > 0 ==> sum[0] <= 4 * (i as i32),
+    {
+        if i == 0 {
+            sum.set(0, 0);
+        } else {
+            sum.set(0, sum[0] + a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+2024-09-02 19:28:30 INFO: Unsafe code change
+2024-09-02 19:28:30 INFO: Refinement did not change the code
+2024-09-02 19:28:31 INFO: Houdini code is better
+2024-09-02 19:28:31 INFO: finished!

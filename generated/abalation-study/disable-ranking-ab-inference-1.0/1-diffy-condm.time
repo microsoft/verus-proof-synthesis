@@ -1,0 +1,200 @@
+2024-09-02 18:42:59 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 18:42:59 INFO: Running in generation mode
+2024-09-02 18:42:59 INFO: Repair steps: 0
+2024-09-02 18:42:59 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 18:42:59 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 18:42:59 INFO: Generating proof code
+2024-09-02 18:42:59 INFO: Temperature: 1.0
+2024-09-02 18:42:59 WARNING: Disabled ranking
+2024-09-02 18:42:59 INFO: Direct inference attempt 0
+2024-09-02 18:43:07 INFO: Infer time: 7.7038397789001465s
+2024-09-02 18:43:07 INFO: Checking candidate 0-0
+2024-09-02 18:43:07 INFO: 0-0.rs in code pool
+2024-09-02 18:43:07 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 18:43:07 INFO: Working on merge-0.rs
+2024-09-02 18:43:12 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:43:12 INFO: Running houdini on merge-0.rs
+2024-09-02 18:43:13 INFO: refining with constantrefine_inference
+2024-09-02 18:43:16 INFO: Infer time: 3.299630880355835s
+2024-09-02 18:43:16 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, N: u32)
+    requires
+        N > 0,
+        old(a).len() == N,
+    ensures
+        forall|k: int| 0 <= k < N ==> a[k] % 2 == N % 2,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N as usize,
+            forall|k: int| 0 <= k < i as int ==> a[k] == 0,
+            i <= N as usize,
+    {
+        a.set(i, 0);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N as usize,
+            forall|k: int| 0 <= k < i as int ==> a[k] % 2 == N as i32 % 2,
+            forall|k: int| i as u32 <= k < N ==> a[k] == 0,
+            i <= N as usize,
+    {
+        if (N % 2 == 0) {
+            a.set(i, a[i] + 2);
+        } else {
+            a.set(i, a[i] + 1);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:43:21 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:43:21 INFO: refining with arraylen_inference
+2024-09-02 18:43:24 INFO: Infer time: 3.001953601837158s
+2024-09-02 18:43:24 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, N: u32)
+    requires
+        N > 0,
+        old(a).len() == N,
+    ensures
+        forall|k: int| 0 <= k < N ==> a[k] % 2 == N % 2,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N as usize,
+            forall|k: int| 0 <= k < i as int ==> a[k] == 0,
+            i <= N as usize,
+    {
+        a.set(i, 0);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N as usize,
+            forall|k: int| 0 <= k < i as int ==> a[k] % 2 == N as i32 % 2,
+            forall|k: int| i as u32 <= k < N ==> a[k] == 0,
+            i <= N as usize,
+    {
+        if (N % 2 == 0) {
+            a.set(i, a[i] + 2);
+        } else {
+            a.set(i, a[i] + 1);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:43:25 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:43:25 INFO: refining with arrayrefine_inference
+2024-09-02 18:43:28 INFO: Infer time: 3.1306989192962646s
+2024-09-02 18:43:28 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, N: u32)
+    requires
+        N > 0,
+        old(a).len() == N,
+    ensures
+        forall|k: int| 0 <= k < N ==> a[k] % 2 == N % 2,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N as usize,
+            forall|k: int| 0 <= k < i as int ==> a[k] == 0,
+            i <= N as usize,
+    {
+        a.set(i, 0);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N as usize,
+            forall|k: int| 0 <= k < i as int ==> a[k] % 2 == N as i32 % 2,
+            forall|k: int| i as u32 <= k < N ==> a[k] == 0,
+            i <= N as usize,
+    {
+        if (N % 2 == 0) {
+            a.set(i, a[i] + 2);
+        } else {
+            a.set(i, a[i] + 1);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:43:29 INFO: Disabled ranking and the code is not correct.
+2024-09-02 18:43:29 INFO: refining with condlooprefine_inference
+2024-09-02 18:43:37 INFO: Infer time: 7.86377215385437s
+2024-09-02 18:43:37 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, N: u32)
+    requires
+        N > 0,
+        old(a).len() == N,
+    ensures
+        forall|k: int| 0 <= k < N ==> a[k] % 2 == N % 2,
+{
+    let mut i: usize = 0;
+    while (i < N as usize)
+        invariant
+            N > 0,
+            a.len() == N as usize,
+            i == 0 || forall|k: int| 0 <= k < i as int ==> a[k] == 0,
+            i <= N as usize,
+    {
+        a.set(i, 0);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N as usize)
+        invariant
+            a.len() == N as usize,
+            i > 0 ==>
+            (forall|k: int| 0 <= k < i as int ==> a[k] % 2 == N as i32 % 2),
+            forall|k: int| i as u32 <= k < N ==> a[k] == 0,
+            i <= N as usize,
+    {
+        if (N % 2 == 0) {
+            a.set(i, a[i] + 2);
+        } else {
+            a.set(i, a[i] + 1);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 18:43:38 INFO: New refined code under condloop is not better
+2024-09-02 18:43:38 INFO: Houdini code is better
+2024-09-02 18:43:38 INFO: finished!

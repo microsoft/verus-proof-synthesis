@@ -1,0 +1,217 @@
+2024-09-02 19:20:25 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:20:25 INFO: Running in generation mode
+2024-09-02 19:20:25 INFO: Repair steps: 0
+2024-09-02 19:20:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:20:25 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:20:25 INFO: Generating proof code
+2024-09-02 19:20:25 INFO: Temperature: 1.0
+2024-09-02 19:20:25 WARNING: Disabled ranking
+2024-09-02 19:20:25 INFO: Direct inference attempt 0
+2024-09-02 19:20:31 INFO: Infer time: 6.28727388381958s
+2024-09-02 19:20:31 INFO: Checking candidate 0-0
+2024-09-02 19:20:31 INFO: 0-0.rs in code pool
+2024-09-02 19:20:31 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:20:31 INFO: Working on merge-0.rs
+2024-09-02 19:20:36 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:20:36 INFO: Running houdini on merge-0.rs
+2024-09-02 19:20:37 INFO: refining with constantrefine_inference
+2024-09-02 19:20:42 INFO: Infer time: 4.897676706314087s
+2024-09-02 19:20:42 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let x = s1.choose();
+        let s1_minus_x = s1.remove(x);
+        assert(s1_minus_x.len() == s1.len() - 1) by {
+            assume(s1.len() >= 1);
+            assert(s1_minus_x.len() == s1.len() - 1);
+        }
+        lemma_len_intersect(s1_minus_x, s2);
+        if s2.contains(x) {
+            assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len() + 1) by {
+                assert(s1.intersect(s2) =~= s1_minus_x.intersect(s2).insert(x));
+                assume(s1_minus_x.intersect(s2).contains(x) == false);
+                assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len() + 1);
+            }
+        } else {
+            assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len()) by {
+                assert(s1.intersect(s2) =~= s1_minus_x.intersect(s2));
+                assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len());
+            }
+        }
+        assert(s1_minus_x.intersect(s2).len() <= s1_minus_x.len());
+        assert(s1_minus_x.len() == s1.len() - 1);
+
+        // Loop/invariant assertion
+        assume(s1.finite());
+
+        if s2.contains(x) {
+            assume(s1_minus_x.intersect(s2).len() + 1 <= s1.len());
+        } else {
+            assume(s1_minus_x.intersect(s2).len() <= s1.len() - 1);
+        }
+    }
+}
+
+} // verus!
+
+2024-09-02 19:20:46 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:20:46 INFO: refining with arraylen_inference
+2024-09-02 19:20:57 INFO: Infer time: 10.390316724777222s
+2024-09-02 19:20:57 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let x = s1.choose();
+        let s1_minus_x = s1.remove(x);
+        assert(s1_minus_x.len() == s1.len() - 1) by {
+            assume(s1.len() >= 1);
+            assert(s1_minus_x.len() == s1.len() - 1);
+        }
+        lemma_len_intersect(s1_minus_x, s2);
+        if s2.contains(x) {
+            assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len() + 1) by {
+                assert(s1.intersect(s2) =~= s1_minus_x.intersect(s2).insert(x));
+                assume(s1_minus_x.intersect(s2).contains(x) == false);
+                assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len() + 1);
+            }
+        } else {
+            assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len()) by {
+                assert(s1.intersect(s2) =~= s1_minus_x.intersect(s2));
+                assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len());
+            }
+        }
+        assert(s1_minus_x.intersect(s2).len() <= s1_minus_x.len());
+        assert(s1_minus_x.len() == s1.len() - 1);
+        if s2.contains(x) {
+            assume(s1_minus_x.intersect(s2).len() + 1 <= s1.len());
+        } else {
+            assume(s1_minus_x.intersect(s2).len() <= s1.len() - 1);
+        }
+    }
+}
+
+} // verus!
+
+2024-09-02 19:20:57 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:20:57 INFO: refining with arrayrefine_inference
+2024-09-02 19:21:02 INFO: Infer time: 4.890560865402222s
+2024-09-02 19:21:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let x = s1.choose();
+        let s1_minus_x = s1.remove(x);
+        assert(s1_minus_x.len() == s1.len() - 1) by {
+            assume(s1.len() >= 1);
+            assert(s1_minus_x.len() == s1.len() - 1);
+        }
+        lemma_len_intersect(s1_minus_x, s2);
+        if s2.contains(x) {
+            assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len() + 1) by {
+                assert(s1.intersect(s2) =~= s1_minus_x.intersect(s2).insert(x));
+                assume(s1_minus_x.intersect(s2).contains(x) == false);
+                assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len() + 1);
+            }
+        } else {
+            assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len()) by {
+                assert(s1.intersect(s2) =~= s1.minus_x.intersect(s2));
+                assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len());
+            }
+        }
+        assert(s1_minus_x.intersect(s2).len() <= s1_minus_x.len());
+        assert(s1_minus_x.len() == s1.len() - 1);
+        if s2.contains(x) {
+            assume(s1_minus_x.intersect(s2).len() + 1 <= s1.len());
+        } else {
+            assume(s1_minus_x.intersect(s2).len() <= s1.len() - 1);
+        }
+    }
+}
+
+} // verus!
+
+2024-09-02 19:21:03 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:21:03 INFO: refining with condlooprefine_inference
+2024-09-02 19:21:10 INFO: Infer time: 7.110290050506592s
+2024-09-02 19:21:10 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_len_intersect<A>(s1: Set<A>, s2: Set<A>)
+    requires
+        s1.finite(),
+    ensures
+        s1.intersect(s2).len() <= s1.len(),
+    decreases s1.len(),
+{
+    if s1.len() == 0 {
+        assert(s1.intersect(s2).len() == 0);
+    } else {
+        let x = s1.choose();
+        let s1_minus_x = s1.remove(x);
+        assert(s1_minus_x.len() == s1.len() - 1) by {
+            assume(s1.len() >= 1);
+            assert(s1_minus_x.len() == s1.len() - 1);
+        }
+        lemma_len_intersect(s1_minus_x, s2);
+        if s2.contains(x) {
+            assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len() + 1) by {
+                assert(s1.intersect(s2) =~= s1_minus_x.intersect(s2).insert(x));
+                assume(s1_minus_x.intersect(s2).contains(x) == false);
+                assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len() + 1);
+            }
+            assert(s1_minus_x.intersect(s2).len() + 1 <= s1.len()) by {
+                assume(s1_minus_x.intersect(s2).len() <= s1.len() - 1);
+            }
+        } else {
+            assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len()) by {
+                assert(s1.intersect(s2) =~= s1_minus_x.intersect(s2));
+                assert(s1.intersect(s2).len() == s1_minus_x.intersect(s2).len());
+            }
+            assert(s1_minus_x.intersect(s2).len() <= s1.len() - 1);
+        }
+        assert(s1_minus_x.intersect(s2).len() <= s1_minus_x.len());
+        assert(s1_minus_x.len() == s1.len() - 1);
+    }
+}
+
+} // verus!
+
+2024-09-02 19:21:10 INFO: New refined code under condloop is not better
+2024-09-02 19:21:11 INFO: Original code is better
+2024-09-02 19:21:11 INFO: finished!

@@ -1,0 +1,835 @@
+2024-09-04 11:09:17 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 11:09:17 INFO: Running in generation mode
+2024-09-04 11:09:17 INFO: Repair steps: 10
+2024-09-04 11:09:17 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:09:17 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:09:17 INFO: Generating proof code
+2024-09-04 11:09:17 INFO: Temperature: 1.0
+2024-09-04 11:09:17 INFO: Direct inference attempt 0
+2024-09-04 11:10:08 INFO: Infer time: 51.18788266181946s
+2024-09-04 11:10:08 INFO: Checking candidate 0-0
+2024-09-04 11:10:08 INFO: 0-0.rs in code pool
+2024-09-04 11:10:08 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 11:10:08 INFO: Checking candidate 0-1
+2024-09-04 11:10:09 INFO: 0-1.rs in code pool
+2024-09-04 11:10:09 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 11:10:09 INFO: Checking candidate 0-2
+2024-09-04 11:10:09 INFO: 0-2.rs in code pool
+2024-09-04 11:10:09 INFO: 0-2.rs is now the best proof candidate
+2024-09-04 11:10:09 INFO: Checking candidate 0-3
+2024-09-04 11:10:10 INFO: 0-3.rs in code pool
+2024-09-04 11:10:10 INFO: 0-3.rs is now the best proof candidate
+2024-09-04 11:10:10 INFO: Working on merge-0.rs
+2024-09-04 11:10:14 INFO: Running houdini on merge-0.rs
+2024-09-04 11:10:15 INFO: Working on merge-1.rs
+2024-09-04 11:10:15 INFO: Running houdini on merge-1.rs
+2024-09-04 11:10:16 INFO: Working on merge-2.rs
+2024-09-04 11:10:17 INFO: Running houdini on merge-2.rs
+2024-09-04 11:10:18 INFO: Working on merge-3.rs
+2024-09-04 11:10:18 INFO: Merged code is better.
+2024-09-04 11:10:18 INFO: Running houdini on merge-3.rs
+2024-09-04 11:10:19 INFO: refining with constantrefine_inference
+2024-09-04 11:11:15 INFO: Infer time: 56.39586162567139s
+2024-09-04 11:11:16 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 11:11:20 INFO: New refined code is a good repair
+2024-09-04 11:11:20 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 11:11:20 INFO: refining with arraylen_inference
+2024-09-04 11:13:02 INFO: Infer time: 101.73642110824585s
+2024-09-04 11:13:02 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 11:13:03 INFO: New refined code is a good repair
+2024-09-04 11:13:03 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 11:13:03 INFO: refining with arrayrefine_inference
+2024-09-04 11:14:07 INFO: Infer time: 63.88771295547485s
+2024-09-04 11:14:07 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            // The array arr is never modified in this loop, hence it is valid to expand the invariant to cover every element.
+            forall |k: int| 0 <= k && k < index ==> sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 11:14:07 ERROR: Error: 'verified'
+2024-09-04 11:14:07 ERROR: Error: 'errors'
+2024-09-04 11:14:07 INFO: New refined code is worse
+2024-09-04 11:14:07 INFO: refining with condlooprefine_inference
+2024-09-04 11:16:29 INFO: Infer time: 142.18829560279846s
+2024-09-04 11:16:30 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+    {
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!
+
+2024-09-04 11:16:30 INFO: Refinement did not change the code
+2024-09-04 11:16:30 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:16:30 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:16:30 INFO: Step 1: VerusErrorType.ArithmeticFlow with num=3.
+2024-09-04 11:16:30 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 3
+2024-09-04 11:20:16 INFO: Infer time: 226.1956832408905s
+2024-09-04 11:20:16 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:20:17 INFO: repair-1-0 file generated
+2024-09-04 11:20:17 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:20:17 INFO: Step 1: VerusErrorType.ArithmeticFlow is fixed. Proof updated 1-0.
+2024-09-04 11:20:17 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-09-04 11:20:17 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:20:17 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:20:17 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:21:35 INFO: Infer time: 77.73756766319275s
+2024-09-04 11:21:35 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:21:36 INFO: repair-2-0 file generated
+2024-09-04 11:21:36 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:21:36 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:21:37 INFO: repair-2-1 file generated
+2024-09-04 11:21:37 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 5
+2024-09-04 11:21:37 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:21:38 INFO: repair-2-2 file generated
+2024-09-04 11:21:38 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:21:38 INFO: Step 3: VerusErrorType.AssertFail with num=5.
+2024-09-04 11:21:38 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:21:38 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:21:38 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:25:11 INFO: Infer time: 212.8141508102417s
+2024-09-04 11:25:11 INFO: repair-3-0 file generated
+2024-09-04 11:25:11 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:25:12 INFO: Step 3: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 11:25:12 INFO: Step 4: VerusErrorType.AssertFail with num=3.
+2024-09-04 11:25:12 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:25:12 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:25:12 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:26:38 INFO: Infer time: 85.98210525512695s
+2024-09-04 11:26:38 INFO: repair-4-0 file generated
+2024-09-04 11:26:38 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 5
+2024-09-04 11:26:39 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:26:39 INFO: repair-4-1 file generated
+2024-09-04 11:26:39 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 5
+2024-09-04 11:26:40 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!Fatal error: err_trace does not have a labeluse vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+spec fn sum_to(arr: Seq<i64>) -> int
+    decreases arr.len(),
+{
+    if arr.len() == 0 {
+        0
+    } else {
+        sum_to(arr.drop_last()) + arr.last()
+    }
+}
+
+fn sum(arr: &Vec<i64>) -> (sum: i128)
+    ensures
+        sum_to(arr@) == sum,
+{
+    let mut index = 0;
+    let mut sum = 0i128;
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            sum == sum_to(arr@.subrange(0, index as int)) as i128,
+            arr.len() == arr@.len(),
+            i128::MIN <= sum, // Ensure the invariant maintains no underflow
+            i128::MAX >= sum, // Ensure the invariant maintains no overflow
+            i128::MAX - (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) >= sum, // Ensure no overflow for future additions
+            i128::MIN + (arr@.subrange(index as int, arr.len() as int).map(|x| x as i128).fold(0i128, |acc, x| acc + x)) <= sum, // Ensure no underflow for future subtractions
+    {
+        // Assert that adding the next element won't cause overflow
+        assert(i128::MAX - (arr[index] as i128) >= sum); // Ensure no overflow
+        assert(i128::MIN - (arr[index] as i128) <= sum); // Ensure no underflow
+
+        sum = sum + arr[index] as i128;
+        index += 1;
+    }
+    sum
+}
+
+} // verus!2024-09-04 11:28:22 INFO: Infer time: 101.1903612613678s
+2024-09-04 11:28:22 ERROR: Error in comparing code changes: 
+2024-09-04 11:28:22 INFO: repair-4-2 file generated
+2024-09-04 11:28:22 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 1
+2024-09-04 11:28:22 WARNING: The repair is not safe.
+2024-09-04 11:28:22 INFO: Step 5: VerusErrorType.AssertFail with num=5.
+2024-09-04 11:28:22 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:28:22 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:28:22 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:30:05 INFO: Infer time: 102.40220046043396s
+2024-09-04 11:30:05 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:30:05 INFO: repair-5-0 file generated
+2024-09-04 11:30:05 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:30:06 INFO: Step 5: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 11:30:06 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-09-04 11:30:06 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:30:06 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:30:06 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:31:22 INFO: Infer time: 76.67824506759644s
+2024-09-04 11:31:23 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:31:23 INFO: repair-6-0 file generated
+2024-09-04 11:31:23 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 5
+2024-09-04 11:31:24 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:31:24 INFO: repair-6-1 file generated
+2024-09-04 11:31:24 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:31:25 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:31:25 INFO: repair-6-2 file generated
+2024-09-04 11:31:25 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:31:26 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-09-04 11:31:26 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:31:26 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:31:26 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:32:44 INFO: Infer time: 78.57201361656189s
+2024-09-04 11:32:44 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-04 11:32:45 INFO: repair-7-0 file generated
+2024-09-04 11:32:45 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-04 11:32:45 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:32:45 INFO: repair-7-1 file generated
+2024-09-04 11:32:45 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:32:46 INFO: Step 7: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-04 11:32:46 INFO: Step 8: VerusErrorType.AssertFail with num=3.
+2024-09-04 11:32:46 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:32:46 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:32:46 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:33:43 INFO: Infer time: 57.491201400756836s
+2024-09-04 11:33:44 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:33:44 INFO: repair-8-0 file generated
+2024-09-04 11:33:44 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:33:45 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:33:45 INFO: repair-8-1 file generated
+2024-09-04 11:33:45 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:33:46 INFO: repair-8-2 file generated
+2024-09-04 11:33:46 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:33:46 WARNING: The repair is not safe.
+2024-09-04 11:33:46 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-04 11:33:46 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:33:46 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 11:33:46 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 11:34:27 INFO: Infer time: 40.53787684440613s
+2024-09-04 11:34:27 INFO: repair-9-0 file generated
+2024-09-04 11:34:27 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:34:27 INFO: Step 9: VerusErrorType.AssertFail is fixed. Proof updated 9-0.
+2024-09-04 11:34:28 INFO: Step 10: VerusErrorType.InvFailEnd with num=3.
+2024-09-04 11:34:28 INFO: Current score: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:35:03 INFO: Infer time: 34.95622491836548s
+2024-09-04 11:35:03 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:35:03 INFO: repair-10-0 file generated
+2024-09-04 11:35:03 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:35:04 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:35:04 INFO: repair-10-1 file generated
+2024-09-04 11:35:04 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:35:05 INFO: Fix failed due to compilation error: VerusErrorType.MismatchedType.
+2024-09-04 11:35:06 INFO: repair-10-2 file generated
+2024-09-04 11:35:06 INFO: Compilation Error: False, Verified: 1, Errors: 2, Verus Errors: 4
+2024-09-04 11:35:07 INFO: Houdini code is better
+2024-09-04 11:35:07 INFO: finished!
+Start repair
+Warning: a non type error is passed to debug_type_error

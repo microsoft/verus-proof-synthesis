@@ -1,0 +1,72 @@
+2024-09-03 19:35:32 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 19:35:32 INFO: Running in generation mode
+2024-09-03 19:35:32 INFO: Repair steps: 10
+2024-09-03 19:35:32 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 19:35:32 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 19:35:32 INFO: Generating proof code
+2024-09-03 19:35:32 INFO: Temperature: 0.4
+2024-09-03 19:35:32 INFO: Direct inference attempt 0
+2024-09-03 19:35:35 INFO: Infer time: 3.119084596633911s
+2024-09-03 19:35:35 INFO: Checking candidate 0-0
+2024-09-03 19:35:35 ERROR: Error: 'verified'
+2024-09-03 19:35:35 ERROR: Error: 'errors'
+2024-09-03 19:35:36 INFO: Checking candidate 0-1
+2024-09-03 19:35:36 INFO: 0-1.rs in code pool
+2024-09-03 19:35:36 INFO: 0-1.rs is now the best proof candidate
+2024-09-03 19:35:36 INFO: Checking candidate 0-2
+2024-09-03 19:35:36 INFO: 0-2.rs in code pool
+2024-09-03 19:35:36 INFO: 0-2.rs is now the best proof candidate
+2024-09-03 19:35:36 INFO: Checking candidate 0-3
+2024-09-03 19:35:37 INFO: 0-3.rs in code pool
+2024-09-03 19:35:37 INFO: 0-3.rs is now the best proof candidate
+2024-09-03 19:35:37 INFO: Checking candidate 0-4
+2024-09-03 19:35:37 INFO: 0-4.rs in code pool
+2024-09-03 19:35:37 INFO: 0-4.rs is now the best proof candidate
+2024-09-03 19:35:37 INFO: Working on merge-0.rs
+2024-09-03 19:35:50 INFO: Merged code is better.
+2024-09-03 19:35:50 INFO: Running houdini on merge-0.rs
+2024-09-03 19:35:51 INFO: Working on merge-1.rs
+2024-09-03 19:36:06 INFO: Merged code is better.
+2024-09-03 19:36:06 INFO: Running houdini on merge-1.rs
+2024-09-03 19:36:07 INFO: Working on merge-2.rs
+2024-09-03 19:36:07 INFO: Merged code is better.
+2024-09-03 19:36:07 INFO: Running houdini on merge-2.rs
+2024-09-03 19:36:08 INFO: Working on merge-3.rs
+2024-09-03 19:36:08 INFO: Merged code is better.
+2024-09-03 19:36:08 INFO: Running houdini on merge-3.rs
+2024-09-03 19:36:09 INFO: refining with constantrefine_inference
+2024-09-03 19:36:13 INFO: Infer time: 3.6005003452301025s
+2024-09-03 19:36:13 INFO: Verus has succeeded.
+2024-09-03 19:36:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn contains_consecutive_numbers(arr: &Vec<i32>) -> (is_consecutive: bool)
+    requires
+        arr.len() > 0,
+        forall|i: int| 0 <= i < arr.len() ==> (0 <= # [trigger] arr[i] + 1 < i32::MAX),
+    ensures
+        is_consecutive == (forall|i: int, j: int|
+            0 <= i < j < arr.len() && j == i + 1 ==> (arr[i] + 1 == arr[j])),
+{
+    let mut index = 0;
+    while (index < arr.len() - 1)
+        invariant
+            0 <= index < arr.len(),
+            arr.len() > 0,
+            forall|i: int| 0 <= i < arr.len() ==> (0 <= # [trigger] arr[i] + 1 < i32::MAX),
+            forall|i: int, j: int| 0 <= i < j <= index && j == i + 1 ==> (arr[i] + 1 == arr[j]),
+    {
+        if (arr[index] + 1 != arr[index + 1]) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-09-03 19:36:14 INFO: Verus succeeded with refinement!!
+2024-09-03 19:36:22 INFO: finished!

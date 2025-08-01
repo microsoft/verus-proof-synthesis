@@ -1,0 +1,190 @@
+2024-09-04 14:10:26 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 14:10:26 INFO: Running in generation mode
+2024-09-04 14:10:26 INFO: Repair steps: 10
+2024-09-04 14:10:26 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:10:26 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:10:26 INFO: Generating proof code
+2024-09-04 14:10:26 INFO: Temperature: 1.0
+2024-09-04 14:10:26 INFO: Direct inference attempt 0
+2024-09-04 14:10:30 INFO: Infer time: 3.912248134613037s
+2024-09-04 14:10:30 INFO: Checking candidate 0-0
+2024-09-04 14:10:31 INFO: 0-0.rs in code pool
+2024-09-04 14:10:31 INFO: 0-0.rs is now the best proof candidate
+2024-09-04 14:10:31 INFO: Checking candidate 0-1
+2024-09-04 14:10:31 INFO: 0-1.rs in code pool
+2024-09-04 14:10:31 INFO: 0-1.rs is now the best proof candidate
+2024-09-04 14:10:31 INFO: Checking candidate 0-2
+2024-09-04 14:10:32 INFO: 0-2.rs in code pool
+2024-09-04 14:10:32 INFO: Checking candidate 0-3
+2024-09-04 14:10:32 INFO: 0-3.rs in code pool
+2024-09-04 14:10:32 INFO: Working on merge-0.rs
+2024-09-04 14:10:37 INFO: Running houdini on merge-0.rs
+2024-09-04 14:10:37 INFO: Working on merge-1.rs
+2024-09-04 14:10:38 INFO: Merged code is better.
+2024-09-04 14:10:38 INFO: Running houdini on merge-1.rs
+2024-09-04 14:10:39 INFO: Working on merge-2.rs
+2024-09-04 14:10:39 INFO: Running houdini on merge-2.rs
+2024-09-04 14:10:40 INFO: Working on merge-3.rs
+2024-09-04 14:10:41 INFO: Running houdini on merge-3.rs
+2024-09-04 14:10:42 WARNING: Non-linear arithmetic detected.
+2024-09-04 14:10:42 WARNING:             forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+2024-09-04 14:10:42 WARNING:             forall|i: int| (n <= i && i < len) ==> a[i] * b[i] < 1000,
+2024-09-04 14:10:42 INFO: refining with constantrefine_inference
+2024-09-04 14:10:45 INFO: Infer time: 2.795888662338257s
+2024-09-04 14:10:45 INFO: 
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            0 <= n <= len,
+            a.len() == b.len(),
+            c.len() <= 100,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|i: int| (n <= i && i < len) ==> a[i] * b[i] < 1000,
+            a.len() <= 100 && a.len() == b.len(),
+            forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+2024-09-04 14:10:49 INFO: Unsafe code change
+2024-09-04 14:10:49 INFO: Refinement did not change the code
+2024-09-04 14:10:49 INFO: refining with arraylen_inference
+2024-09-04 14:10:50 INFO: Infer time: 0.8959596157073975s
+2024-09-04 14:10:50 INFO: 
+        invariant
+            0 <= n <= len,
+            a.len() == b.len(),
+            c.len() <= 100,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|i: int| (n <= i && i < len) ==> a[i] * b[i] < 1000,
+
+2024-09-04 14:10:50 ERROR: Error in comparing code changes: 
+2024-09-04 14:10:50 INFO: Unsafe code change
+2024-09-04 14:10:50 INFO: Refinement did not change the code
+2024-09-04 14:10:50 INFO: refining with arrayrefine_inference
+2024-09-04 14:10:51 INFO: Infer time: 1.0980064868927002s
+2024-09-04 14:10:51 INFO: 
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000), /* Array elements are never modified in the loop */
+        forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i], /* Array elements are never modified in the loop */
+        forall|i: int| (n <= i && i < len) ==> a[i] * b[i] < 1000, /* Array elements are never modified in the loop */
+
+2024-09-04 14:10:51 ERROR: Error in comparing code changes: 
+2024-09-04 14:10:51 INFO: Unsafe code change
+2024-09-04 14:10:51 INFO: Refinement did not change the code
+2024-09-04 14:10:51 INFO: refining with condlooprefine_inference
+2024-09-04 14:10:55 INFO: Infer time: 3.5278427600860596s
+2024-09-04 14:10:55 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            0 <= n <= len,
+            a.len() == b.len(),
+            c.len() <= 100,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|i: int| (n <= i && i < len) ==> a[i] * b[i] < 1000,
+            n > 0 ==> c[n-1] == a[n-1] * b[n-1],
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-04 14:10:55 INFO: New refined code under condloop is not better
+2024-09-04 14:10:55 INFO: refining with nonlinear_inference
+2024-09-04 14:10:56 INFO: Infer time: 0.444690465927124s
+2024-09-04 14:10:56 INFO: 
+assert(c.len() == a.len()) by (nonlinear_arith)
+    requires
+        c.len() == a.len(),
+        {}
+
+2024-09-04 14:10:56 ERROR: Error in comparing code changes: 
+2024-09-04 14:10:56 INFO: Unsafe code change
+2024-09-04 14:10:56 INFO: Refinement did not change the code
+2024-09-04 14:10:56 INFO: refining with nonlbound_inference
+2024-09-04 14:10:59 INFO: Infer time: 3.042631149291992s
+2024-09-04 14:10:59 INFO: 
+use vstd::prelude::*;
+
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            0 <= n <= len,
+            a.len() == b.len(),
+            c.len() <= 100,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            forall|i: int| (n <= i && i < len) ==> a[i] * b[i] < 1000,
+        assert(0 < (a[n] * b[n]) && (a[n] * b[n]) <= 1000 * 1000) by (nonlinear_arith) 
+            requires
+                0 < a[n],
+                a[n] <= 1000,
+                0 < b[n],
+                b[n] <= 1000,
+                {}
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-04 14:10:59 ERROR: Error in comparing code changes: 
+2024-09-04 14:10:59 INFO: Unsafe code change
+2024-09-04 14:10:59 INFO: Refinement did not change the code
+2024-09-04 14:10:59 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 14:10:59 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 14:10:59 INFO: All errors are fixed within 0 steps!!!
+2024-09-04 14:10:59 INFO: Verus succeeded after repair!!
+2024-09-04 14:11:00 INFO: finished!
+Start repair

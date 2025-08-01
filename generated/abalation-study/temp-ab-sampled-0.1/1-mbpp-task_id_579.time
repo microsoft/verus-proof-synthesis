@@ -1,0 +1,498 @@
+2024-09-03 17:09:06 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-03 17:09:06 INFO: Running in generation mode
+2024-09-03 17:09:06 INFO: Repair steps: 10
+2024-09-03 17:09:06 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:09:06 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:09:06 INFO: Generating proof code
+2024-09-03 17:09:06 INFO: Temperature: 0.1
+2024-09-03 17:09:06 INFO: Direct inference attempt 0
+2024-09-03 17:09:20 INFO: Infer time: 13.892447710037231s
+2024-09-03 17:09:20 INFO: Checking candidate 0-0
+2024-09-03 17:09:20 INFO: Checking candidate 0-1
+2024-09-03 17:09:20 INFO: Checking candidate 0-2
+2024-09-03 17:09:21 INFO: Checking candidate 0-3
+2024-09-03 17:09:21 INFO: Checking candidate 0-4
+2024-09-03 17:09:21 INFO: Regenerate...
+2024-09-03 17:09:21 INFO: Direct inference attempt 1
+2024-09-03 17:09:31 INFO: Infer time: 9.798591136932373s
+2024-09-03 17:09:31 INFO: Checking candidate 1-0
+2024-09-03 17:09:31 INFO: Checking candidate 1-1
+2024-09-03 17:09:31 INFO: Checking candidate 1-2
+2024-09-03 17:09:31 INFO: Checking candidate 1-3
+2024-09-03 17:09:31 INFO: Checking candidate 1-4
+2024-09-03 17:09:31 INFO: Regenerate...
+2024-09-03 17:09:31 INFO: Direct inference attempt 2
+2024-09-03 17:09:42 INFO: Infer time: 10.95335578918457s
+2024-09-03 17:09:42 INFO: Checking candidate 2-0
+2024-09-03 17:09:42 INFO: Checking candidate 2-1
+2024-09-03 17:09:43 INFO: Checking candidate 2-2
+2024-09-03 17:09:43 INFO: Checking candidate 2-3
+2024-09-03 17:09:43 INFO: Checking candidate 2-4
+2024-09-03 17:09:43 INFO: Regenerate...
+2024-09-03 17:09:43 ERROR: No valid code found!
+2024-09-03 17:09:47 INFO: refining with constantrefine_inference
+2024-09-03 17:09:54 INFO: Infer time: 6.932777643203735s
+2024-09-03 17:09:55 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut index = 0;
+    while index < arr.len() {
+        invariant(index <= arr.len());
+        if (arr[index] == key) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+fn find_dissimilar(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < arr1.len() ==> (!arr2@.contains(#[trigger] arr1[i]) ==> result@.contains(
+                arr1[i],
+            )),
+        forall|i: int|
+            0 <= i < arr2.len() ==> (!arr1@.contains(#[trigger] arr2[i]) ==> result@.contains(
+                arr2[i],
+            )),
+        forall|i: int, j: int|
+            0 <= i < j < result.len() ==> #[trigger] result[i] != #[trigger] result[j],
+{
+    let mut result = Vec::new();
+    let mut index = 0;
+    while index < arr1.len() {
+        invariant(index <= arr1.len());
+        if (!contains(arr2, arr1[index]) && !contains(&result, arr1[index])) {
+            result.push(arr1[index]);
+
+        }
+        index += 1;
+    }
+    let mut index = 0;
+    while index < arr2.len() {
+        invariant(index <= arr2.len());
+        if (!contains(arr1, arr2[index]) && !contains(&result, arr2[index])) {
+            result.push(arr2[index]);
+        }
+        index += 1;
+    }
+    result
+}
+
+} // verus!
+
+2024-09-03 17:10:01 INFO: Unsafe code change
+2024-09-03 17:10:01 INFO: Refinement did not change the code
+2024-09-03 17:10:01 INFO: refining with arraylen_inference
+2024-09-03 17:10:08 INFO: Infer time: 6.704867601394653s
+2024-09-03 17:10:08 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut index = 0;
+    while index < arr.len() 
+        invariant arr.len() == old(arr.len())
+    {
+        if (arr[index] == key) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+fn find_dissimilar(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < arr1.len() ==> (!arr2@.contains(#[trigger] arr1[i]) ==> result@.contains(
+                arr1[i],
+            )),
+        forall|i: int|
+            0 <= i < arr2.len() ==> (!arr1@.contains(#[trigger] arr2[i]) ==> result@.contains(
+                arr2[i],
+            )),
+        forall|i: int, j: int|
+            0 <= i < j < result.len() ==> #[trigger] result[i] != #[trigger] result[j],
+{
+    let mut result = Vec::new();
+    let mut index = 0;
+    while index < arr1.len()
+        invariant arr1.len() == old(arr1.len())
+    {
+        if (!contains(arr2, arr1[index]) && !contains(&result, arr1[index])) {
+            result.push(arr1[index]);
+
+        }
+        index += 1;
+    }
+    let mut index = 0;
+    while index < arr2.len()
+        invariant arr2.len() == old(arr2.len())
+    {
+        if (!contains(arr1, arr2[index]) && !contains(&result, arr2[index])) {
+            result.push(arr2[index]);
+        }
+        index += 1;
+    }
+    result
+}
+
+} // verus!
+
+2024-09-03 17:10:20 ERROR: Error: 'verified'
+2024-09-03 17:10:20 ERROR: Error: 'errors'
+2024-09-03 17:10:20 INFO: New refined code is worse
+2024-09-03 17:10:20 INFO: refining with arrayrefine_inference
+2024-09-03 17:10:27 INFO: Infer time: 6.815772533416748s
+2024-09-03 17:10:27 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut index = 0;
+    while index < arr.len() {
+        if (arr[index] == key) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+fn find_dissimilar(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < arr1.len() ==> (!arr2@.contains(#[trigger] arr1[i]) ==> result@.contains(
+                arr1[i],
+            )),
+        forall|i: int|
+            0 <= i < arr2.len() ==> (!arr1@.contains(#[trigger] arr2[i]) ==> result@.contains(
+                arr2[i],
+            )),
+        forall|i: int, j: int|
+            0 <= i < j < result.len() ==> #[trigger] result[i] != #[trigger] result[j],
+{
+    let mut result = Vec::new();
+    let mut index = 0;
+    while index < arr1.len() {
+        if (!contains(arr2, arr1[index]) && !contains(&result, arr1[index])) {
+            result.push(arr1[index]);
+
+        }
+        index += 1;
+    }
+    let mut index = 0;
+    while index < arr2.len() {
+        if (!contains(arr1, arr2[index]) && !contains(&result, arr2[index])) {
+            result.push(arr2[index]);
+        }
+        index += 1;
+    }
+    result
+}
+
+} // verus!
+
+2024-09-03 17:10:38 INFO: New refined code is a good repair
+2024-09-03 17:10:38 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut index = 0;
+    while index < arr.len() {
+        if (arr[index] == key) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+fn find_dissimilar(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < arr1.len() ==> (!arr2@.contains(#[trigger] arr1[i]) ==> result@.contains(
+                arr1[i],
+            )),
+        forall|i: int|
+            0 <= i < arr2.len() ==> (!arr1@.contains(#[trigger] arr2[i]) ==> result@.contains(
+                arr2[i],
+            )),
+        forall|i: int, j: int|
+            0 <= i < j < result.len() ==> #[trigger] result[i] != #[trigger] result[j],
+{
+    let mut result = Vec::new();
+    let mut index = 0;
+    while index < arr1.len() {
+        if (!contains(arr2, arr1[index]) && !contains(&result, arr1[index])) {
+            result.push(arr1[index]);
+
+        }
+        index += 1;
+    }
+    let mut index = 0;
+    while index < arr2.len() {
+        if (!contains(arr1, arr2[index]) && !contains(&result, arr2[index])) {
+            result.push(arr2[index]);
+        }
+        index += 1;
+    }
+    result
+}
+
+} // verus!
+
+2024-09-03 17:10:38 INFO: refining with condlooprefine_inference
+2024-09-03 17:10:46 INFO: Infer time: 8.482682466506958s
+2024-09-03 17:10:46 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut index = 0;
+    while index < arr.len() {
+        if (arr[index] == key) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+fn find_dissimilar(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < arr1.len() ==> (!arr2@.contains(#[trigger] arr1[i]) ==> result@.contains(
+                arr1[i],
+            )),
+        forall|i: int|
+            0 <= i < arr2.len() ==> (!arr1@.contains(#[trigger] arr2[i]) ==> result@.contains(
+                arr2[i],
+            )),
+        forall|i: int, j: int|
+            0 <= i < j < result.len() ==> #[trigger] result[i] != #[trigger] result[j],
+{
+    let mut result = Vec::new();
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            index <= arr1.len(),
+            forall|i: int|
+                0 <= i < index ==> (!contains(arr2, arr1[i]) && !contains(&result, arr1[i]) ==> result.contains(( arr1[i] ) as &i32)),
+            index > 0 ==> forall|i: int, j: int|
+                0 <= i < j < result.len() ==> #[trigger] result[i] != #[trigger] result[j],
+    {
+        if (!contains(arr2, arr1[index]) && !contains(&result, arr1[index])) {
+            result.push(arr1[index]);
+        }
+        index += 1;
+    }
+    let mut index = 0;
+    while index < arr2.len()
+        invariant
+            index <= arr2.len(),
+            forall|i: int|
+                0 <= i < index ==> (!contains(arr1, arr2[i]) && !contains(&result, arr2[i]) ==> result.contains(arr2[i])),
+            index > 0 ==> forall|i: int, j: int|
+                0 <= i < j < result.len() ==> #[trigger] result[i] != #[trigger] result[j],
+    {
+        if (!contains(arr1, arr2[index]) && !contains(&result, arr2[index])) {
+            result.push(arr2[index]);
+        }
+        index += 1;
+    }
+    result
+}
+
+} // verus!
+
+
+2024-09-03 17:10:47 INFO: New refined code under condloop is not better
+2024-09-03 17:10:47 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:10:47 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:10:47 INFO: Step 1: VerusErrorType.PostCondFail with num=3.
+2024-09-03 17:10:47 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-09-03 17:10:54 INFO: Infer time: 7.0200817584991455s
+2024-09-03 17:10:54 INFO: repair-1-0 file generated
+2024-09-03 17:10:54 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-09-03 17:10:55 INFO: Step 1: VerusErrorType.PostCondFail is fixed. Proof updated 1-0.
+2024-09-03 17:10:55 INFO: Step 2: VerusErrorType.AssertFail with num=3.
+2024-09-03 17:10:55 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-09-03 17:10:55 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:10:55 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:11:02 INFO: Infer time: 7.542342901229858s
+2024-09-03 17:11:03 INFO: repair-2-0 file generated
+2024-09-03 17:11:03 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 3
+2024-09-03 17:11:03 INFO: Step 2: VerusErrorType.AssertFail is fixed. Proof updated 2-0.
+2024-09-03 17:11:03 INFO: Step 3: VerusErrorType.PostCondFail with num=3.
+2024-09-03 17:11:03 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 3
+2024-09-03 17:11:11 INFO: Infer time: 8.360358476638794s
+2024-09-03 17:11:12 INFO: repair-3-0 file generated
+2024-09-03 17:11:12 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-09-03 17:11:12 INFO: Step 3: VerusErrorType.PostCondFail is fixed. Proof updated 3-0.
+2024-09-03 17:11:12 INFO: Step 4: VerusErrorType.InvFailFront with num=3.
+2024-09-03 17:11:12 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 4
+2024-09-03 17:11:19 INFO: Infer time: 7.2113189697265625s
+2024-09-03 17:11:19 INFO: Here is the quick fix output
+2024-09-03 17:11:20 INFO: [repair_invfail_front] Quick fix is not effective. Move on to more general fix attempts.
+2024-09-03 17:11:20 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 19.000000 seconds
+2024-09-03 17:11:49 INFO: Infer time: 29.580613613128662s
+2024-09-03 17:11:50 INFO: repair-4-0 file generated
+2024-09-03 17:11:50 INFO: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 3
+2024-09-03 17:11:50 INFO: Step 4: VerusErrorType.InvFailFront is fixed. Proof updated 4-0.
+2024-09-03 17:11:50 INFO: Step 5: VerusErrorType.AssertFail with num=3.
+2024-09-03 17:11:50 INFO: Current score: Compilation Error: False, Verified: 2, Errors: 2, Verus Errors: 3
+2024-09-03 17:11:50 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:11:50 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:12:03 INFO: Infer time: 12.917415142059326s
+2024-09-03 17:12:04 INFO: repair-5-0 file generated
+2024-09-03 17:12:04 INFO: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:12:04 INFO: Step 5: VerusErrorType.AssertFail is partially fixed. Proof updated 5-0.
+2024-09-03 17:12:04 INFO: Step 6: VerusErrorType.AssertFail with num=3.
+2024-09-03 17:12:04 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:12:04 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:12:04 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:12:17 INFO: Infer time: 12.066204071044922s
+2024-09-03 17:12:17 INFO: repair-6-0 file generated
+2024-09-03 17:12:17 INFO: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:12:18 INFO: Step 7: VerusErrorType.AssertFail with num=5.
+2024-09-03 17:12:18 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:12:18 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:12:18 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:12:33 INFO: Infer time: 15.693899869918823s
+2024-09-03 17:12:33 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:12:34 INFO: repair-7-0 file generated
+2024-09-03 17:12:34 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-03 17:12:34 INFO: Step 8: VerusErrorType.AssertFail with num=5.
+2024-09-03 17:12:34 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:12:34 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:12:34 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:12:49 INFO: Infer time: 15.239669799804688s
+2024-09-03 17:12:49 INFO: Fix failed due to compilation error: VerusErrorType.Other.
+2024-09-03 17:12:55 INFO: repair-8-0 file generated
+2024-09-03 17:12:55 INFO: Compilation Error: True, Verified: -1, Errors: 999, Verus Errors: 2
+2024-09-03 17:12:56 INFO: Step 9: VerusErrorType.AssertFail with num=5.
+2024-09-03 17:12:56 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:12:56 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:12:56 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:13:11 INFO: Infer time: 15.408810377120972s
+2024-09-03 17:13:12 INFO: repair-9-0 file generated
+2024-09-03 17:13:12 INFO: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:13:12 INFO: Step 9: VerusErrorType.AssertFail is fixed based on finer-grained check.
+2024-09-03 17:13:12 INFO: Step 10: VerusErrorType.AssertFail with num=3.
+2024-09-03 17:13:12 INFO: Current score: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:13:12 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-03 17:13:12 WARNING: Generation initialized with repair_uniform: False
+2024-09-03 17:13:31 INFO: Infer time: 19.16020941734314s
+2024-09-03 17:13:32 INFO: repair-10-0 file generated
+2024-09-03 17:13:32 INFO: Compilation Error: False, Verified: 4, Errors: 2, Verus Errors: 3
+2024-09-03 17:13:33 INFO: Original code is better
+2024-09-03 17:13:34 INFO: finished!
+Start repair
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+#[verifier::loop_isolation(false)]
+
+fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
+    ensures
+        result == (exists|i: int| 0 <= i < arr.len() && (arr[i] == key)),
+{
+    let mut index = 0;
+    while index < arr.len() {
+        if (arr[index] == key) {
+            return true;
+        }
+        index += 1;
+    }
+    false
+}
+
+fn find_dissimilar(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
+    ensures
+        forall|i: int|
+            0 <= i < arr1.len() ==> (!arr2@.contains(#[trigger] arr1[i]) ==> result@.contains(
+                arr1[i],
+            )),
+        forall|i: int|
+            0 <= i < arr2.len() ==> (!arr1@.contains(#[trigger] arr2[i]) ==> result@.contains(
+                arr2[i],
+            )),
+        forall|i: int, j: int|
+            0 <= i < j < result.len() ==> #[trigger] result[i] != #[trigger] result[j],
+{
+    let mut result = Vec::new();
+    let mut index = 0;
+    while index < arr1.len() 
+        invariant
+            forall|i: int, j: int| 0 <= i < j < result.len() ==> result[i] != result[j], // Added by AI
+            index > 0 ==> forall|i: int|
+                0 <= i < arr1.len() ==> (!arr2@.contains(#[trigger] arr1[i]) ==> result@.contains(
+                    arr1[i],
+                )), // Added by AI
+    {
+        if (!contains(arr2, arr1[index]) && !contains(&result, arr1[index])) {
+            result.push(arr1[index]);
+        }
+        index += 1;
+    }
+    let mut index = 0;
+    while index < arr2.len() 
+        invariant
+            forall|i: int, j: int| 0 <= i < j < result.len() ==> result[i] != result[j], // Added by AI
+            index > 0 ==> forall|i: int|
+                0 <= i < arr2.len() ==> (!arr1@.contains(#[trigger] arr2[i]) ==> result@.contains(
+                    arr2[i],
+                )), // Added by AI
+    {
+        if (!contains(arr1, arr2[index]) && !contains(&result, arr2[index])) {
+            result.push(arr2[index]);
+        }
+        index += 1;
+    }
+    result
+}
+
+} // verus!
+
+Warning: a non type error is passed to debug_type_error
+Warning: a non type error is passed to debug_type_error

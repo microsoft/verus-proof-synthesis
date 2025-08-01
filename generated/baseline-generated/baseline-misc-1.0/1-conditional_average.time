@@ -1,0 +1,91 @@
+2024-09-05 08:42:21 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-05 08:42:21 INFO: Running in generation mode
+2024-09-05 08:42:21 INFO: Repair steps: 10
+2024-09-05 08:42:21 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-05 08:42:21 WARNING: Generation initialized with repair_uniform: False
+2024-09-05 08:42:21 INFO: Generating proof code with baseline
+2024-09-05 08:42:21 INFO: Temperature: 1.0
+2024-09-05 08:42:21 INFO: Generate with baseline mode
+2024-09-05 08:42:21 INFO: Direct inference with baseline attempt 0
+2024-09-05 08:42:21 INFO: Direct Full Inference ...
+2024-09-05 08:42:21 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 3.000000 seconds
+2024-09-05 08:42:36 INFO: Infer time: 15.68924880027771s
+2024-09-05 08:42:37 INFO: Direct inference with baseline attempt 1
+2024-09-05 08:42:37 INFO: Direct Full Inference ...
+2024-09-05 08:42:50 INFO: Infer time: 13.004844665527344s
+2024-09-05 08:42:51 INFO: Direct inference with baseline attempt 2
+2024-09-05 08:42:51 INFO: Direct Full Inference ...
+2024-09-05 08:42:59 INFO: Infer time: 8.531707763671875s
+2024-09-05 08:43:00 INFO: Direct inference with baseline attempt 3
+2024-09-05 08:43:00 INFO: Direct Full Inference ...
+2024-09-05 08:43:01 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-05 08:43:14 INFO: Infer time: 13.747373580932617s
+2024-09-05 08:43:15 INFO: Direct inference with baseline attempt 4
+2024-09-05 08:43:15 INFO: Direct Full Inference ...
+2024-09-05 08:43:15 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-05 08:43:30 INFO: Infer time: 14.955610752105713s
+2024-09-05 08:43:31 INFO: Direct inference with baseline attempt 5
+2024-09-05 08:43:31 INFO: Direct Full Inference ...
+2024-09-05 08:43:39 INFO: Infer time: 7.48297643661499s
+2024-09-05 08:43:40 INFO: Direct inference with baseline attempt 6
+2024-09-05 08:43:40 INFO: Direct Full Inference ...
+2024-09-05 08:43:53 INFO: Infer time: 13.371670722961426s
+2024-09-05 08:43:54 INFO: Direct inference with baseline attempt 7
+2024-09-05 08:43:54 INFO: Direct Full Inference ...
+2024-09-05 08:44:09 INFO: Infer time: 15.483462810516357s
+2024-09-05 08:44:10 INFO: Direct inference with baseline attempt 8
+2024-09-05 08:44:10 INFO: Direct Full Inference ...
+2024-09-05 08:44:21 INFO: Infer time: 10.670454740524292s
+2024-09-05 08:44:22 INFO: Direct inference with baseline attempt 9
+2024-09-05 08:44:22 INFO: Direct Full Inference ...
+2024-09-05 08:44:33 INFO: Infer time: 11.036454439163208s
+2024-09-05 08:44:34 INFO: Direct inference with baseline attempt 10
+2024-09-05 08:44:34 INFO: Direct Full Inference ...
+2024-09-05 08:44:44 INFO: Infer time: 9.982309341430664s
+2024-09-05 08:44:45 INFO: Direct inference with baseline attempt 11
+2024-09-05 08:44:45 INFO: Direct Full Inference ...
+2024-09-05 08:44:58 INFO: Infer time: 12.927692651748657s
+2024-09-05 08:44:59 INFO: Direct inference with baseline attempt 12
+2024-09-05 08:44:59 INFO: Direct Full Inference ...
+2024-09-05 08:45:12 INFO: Infer time: 13.411207675933838s
+2024-09-05 08:45:13 INFO: Direct inference with baseline attempt 13
+2024-09-05 08:45:13 INFO: Direct Full Inference ...
+2024-09-05 08:45:26 INFO: Infer time: 12.39624547958374s
+2024-09-05 08:45:27 INFO: Direct inference with baseline attempt 14
+2024-09-05 08:45:27 INFO: Direct Full Inference ...
+2024-09-05 08:45:46 INFO: Infer time: 19.26510787010193s
+2024-09-05 08:45:47 INFO: Direct inference with baseline attempt 15
+2024-09-05 08:45:47 INFO: Direct Full Inference ...
+2024-09-05 08:46:07 INFO: Infer time: 20.35587191581726s
+2024-09-05 08:46:08 INFO: Direct inference with baseline attempt 16
+2024-09-05 08:46:08 INFO: Direct Full Inference ...
+2024-09-05 08:46:23 INFO: Infer time: 14.569112777709961s
+2024-09-05 08:46:23 INFO: Direct inference with baseline attempt 17
+2024-09-05 08:46:23 INFO: Direct Full Inference ...
+2024-09-05 08:46:42 INFO: Infer time: 18.473820447921753s
+2024-09-05 08:46:43 INFO: Direct inference with baseline attempt 18
+2024-09-05 08:46:43 INFO: Direct Full Inference ...
+2024-09-05 08:46:51 INFO: Infer time: 8.243319272994995s
+2024-09-05 08:46:52 INFO: Direct inference with baseline attempt 19
+2024-09-05 08:46:52 INFO: Direct Full Inference ...
+2024-09-05 08:47:10 INFO: Infer time: 18.000020027160645s
+2024-09-05 08:47:11 INFO: Direct inference with baseline attempt 20
+2024-09-05 08:47:11 INFO: Direct Full Inference ...
+2024-09-05 08:47:28 INFO: Infer time: 16.575151443481445s
+2024-09-05 08:47:28 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 08:47:28 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-05 08:47:29 INFO: Direct inference with baseline attempt 21
+2024-09-05 08:47:29 INFO: Direct Full Inference ...
+2024-09-05 08:47:37 INFO: Infer time: 8.838438272476196s
+2024-09-05 08:47:38 ERROR: Error: 'verified'
+2024-09-05 08:47:38 ERROR: Error: 'errors'
+2024-09-05 08:47:38 INFO: Direct inference with baseline attempt 22
+2024-09-05 08:47:38 INFO: Direct Full Inference ...
+2024-09-05 08:47:53 INFO: Infer time: 14.857578992843628s
+2024-09-05 08:47:54 INFO: Direct inference with baseline attempt 23
+2024-09-05 08:47:54 INFO: Direct Full Inference ...
+2024-09-05 08:48:18 INFO: Infer time: 24.22310519218445s
+2024-09-05 08:48:19 INFO: Direct inference with baseline attempt 24
+2024-09-05 08:48:19 INFO: Direct Full Inference ...
+2024-09-05 08:48:31 INFO: Infer time: 12.57228946685791s
+2024-09-05 08:48:33 INFO: finished!

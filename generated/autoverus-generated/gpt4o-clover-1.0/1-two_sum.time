@@ -1,0 +1,26 @@
+2024-08-30 15:55:16 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 15:55:16 INFO: Running in generation mode
+2024-08-30 15:55:16 INFO: Repair steps: 10
+2024-08-30 15:55:16 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 15:55:16 INFO: Generating proof code
+2024-08-30 15:55:16 INFO: Temperature: 1.0
+2024-08-30 15:55:16 INFO: Direct inference attempt 0
+2024-08-30 15:55:17 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 33.000000 seconds
+2024-08-30 15:55:58 INFO: Infer time: 41.49003338813782s
+2024-08-30 15:55:58 INFO: Checking candidate 0-0
+2024-08-30 15:55:58 INFO: 0-0.rs in code pool
+2024-08-30 15:55:58 INFO: 0-0.rs is now the best proof candidate
+2024-08-30 15:55:58 INFO: Checking candidate 0-1
+2024-08-30 15:55:59 INFO: 0-1.rs in code pool
+2024-08-30 15:55:59 INFO: Checking candidate 0-2
+2024-08-30 15:55:59 INFO: 0-2.rs in code pool
+2024-08-30 15:55:59 INFO: Checking candidate 0-3
+2024-08-30 15:56:00 INFO: 0-3.rs in code pool
+2024-08-30 15:56:00 INFO: Working on merge-0.rs
+2024-08-30 15:56:04 INFO: Merged code is better.
+2024-08-30 15:56:04 INFO: Running houdini on merge-0.rs
+2024-08-30 15:56:05 INFO: Working on merge-1.rs
+2024-08-30 15:56:06 INFO: Merged code is better.
+2024-08-30 15:56:06 INFO: Running houdini on merge-1.rs
+2024-08-30 15:56:06 INFO: Merged code with hdn is correct.
+2024-08-30 15:56:11 INFO: finished!

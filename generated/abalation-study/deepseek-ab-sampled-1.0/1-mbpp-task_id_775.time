@@ -1,0 +1,48 @@
+2025-03-24 06:03:25 WARNING: Phase 1 examples: ['3', '6', '7']
+2025-03-24 06:03:25 INFO: Running in generation mode
+2025-03-24 06:03:25 INFO: Repair steps: 10
+2025-03-24 06:03:25 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2025-03-24 06:03:25 WARNING: Generation initialized with repair_uniform: False
+2025-03-24 06:03:25 INFO: Generating proof code
+2025-03-24 06:03:25 INFO: Temperature: 1.0
+2025-03-24 06:03:25 INFO: Direct inference attempt 0
+2025-03-24 06:03:59 INFO: Infer time: 34.15879273414612s
+2025-03-24 06:03:59 INFO: Checking candidate 0-0
+2025-03-24 06:03:59 ERROR: Error in comparing code changes: 
+2025-03-24 06:03:59 INFO: Checking candidate 0-1
+2025-03-24 06:04:00 ERROR: Error in comparing code changes: 
+2025-03-24 06:04:00 INFO: Checking candidate 0-2
+2025-03-24 06:04:00 INFO: Checking candidate 0-3
+2025-03-24 06:04:00 INFO: Verus has succeeded.
+2025-03-24 06:04:00 INFO: Verus succeeded!!
+2025-03-24 06:04:01 INFO: finished!
+Using client 0
+
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn is_odd_at_odd_index(arr: &Vec<usize>) -> (result: bool)
+    ensures
+        result == forall|i: int| 0 <= i < arr.len() ==> ((i % 2) == (arr[i] % 2)),
+{
+    let mut index = 0;
+
+    while index < arr.len()
+        invariant
+            index <= arr.len(),
+            for all |i: int| 0 <= i < index as int
+                (i % 2) == (arr[i] % 2),
+    {
+        if ((index % 2) != (arr[index] % 2)) {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!

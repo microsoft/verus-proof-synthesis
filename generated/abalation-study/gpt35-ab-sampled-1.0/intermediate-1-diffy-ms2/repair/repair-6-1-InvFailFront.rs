@@ -1,0 +1,61 @@
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+    #[verifier::loop_isolation(false)]
+    pub fn myfun(a: &mut Vec<usize>, sum: &mut Vec<usize>, N: usize)
+        requires
+            old(a).len() == N,
+            old(sum).len() == 1,
+            N > 0,
+        ensures
+            sum[0] <= N,
+    {
+        let mut i: usize = 0;
+        while (i < N as usize)
+            invariant
+                0 <= i <= N,
+                a.len() == N,
+                forall|k: int| 0 <= k < i ==> a[k] == k % 2,
+                old(a).len() == N,
+                old(sum).len() == 1,
+                sum.len() == 1,
+                N > 0,
+        {
+            a.set(i, i % 2);
+            i = i + 1;
+        }
+        i = 0;
+        let mut current_sum: usize = 0; // Added by AI
+        while (i < N as usize)
+            invariant
+                0 <= i <= N,
+                a.len() == N,
+                forall|k: int| 0 <= k <= i ==> a[k] == k % 2,
+                old(a).len() == N,
+                old(sum).len() == 1,
+                sum.len() == 1,
+                current_sum <= i, // Modified by AI
+                N > 0,
+        {
+            if (i == 0) {
+                sum.set(0, 0);
+                current_sum = 0; // Added by AI
+            } else {
+                current_sum = current_sum + a[i]; // Modified by AI
+                sum.set(0, current_sum); // Modified by AI
+            }
+            i = i + 1;
+            assert(current_sum <= i); // Modified by AI
+        }
+    }
+}
+
+
+//                 sum[0] <= i,
+//   None: sum[0] <= i
+
+// Compilation Error: False, Verified: 0, Errors: 1, Verus Errors: 2
+// Safe: False

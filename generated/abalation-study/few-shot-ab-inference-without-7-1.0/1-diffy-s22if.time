@@ -1,0 +1,111 @@
+2024-08-31 22:07:44 WARNING: Phase 1 examples: ['3', '6']
+2024-08-31 22:07:44 INFO: Running in generation mode
+2024-08-31 22:07:44 INFO: Repair steps: 0
+2024-08-31 22:07:45 WARNING: Generation initialized with phase1_examples: ['3', '6']
+2024-08-31 22:07:45 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 22:07:45 INFO: Generating proof code
+2024-08-31 22:07:45 INFO: Temperature: 1.0
+2024-08-31 22:07:45 INFO: Direct inference attempt 0
+2024-08-31 22:07:56 INFO: Infer time: 10.926654815673828s
+2024-08-31 22:07:56 INFO: Checking candidate 0-0
+2024-08-31 22:07:56 INFO: 0-0.rs in code pool
+2024-08-31 22:07:56 INFO: 0-0.rs is now the best proof candidate
+2024-08-31 22:07:56 INFO: Checking candidate 0-1
+2024-08-31 22:07:56 INFO: 0-1.rs in code pool
+2024-08-31 22:07:56 INFO: 0-1.rs is now the best proof candidate
+2024-08-31 22:07:56 INFO: Checking candidate 0-2
+2024-08-31 22:07:57 INFO: 0-2.rs in code pool
+2024-08-31 22:07:57 INFO: 0-2.rs is now the best proof candidate
+2024-08-31 22:07:57 INFO: Checking candidate 0-3
+2024-08-31 22:07:58 INFO: 0-3.rs in code pool
+2024-08-31 22:07:58 INFO: 0-3.rs is now the best proof candidate
+2024-08-31 22:07:58 INFO: Working on merge-0.rs
+2024-08-31 22:08:02 INFO: Merged code is better.
+2024-08-31 22:08:02 INFO: Running houdini on merge-0.rs
+2024-08-31 22:08:03 INFO: Working on merge-1.rs
+2024-08-31 22:08:03 INFO: Merged code is better.
+2024-08-31 22:08:03 INFO: Running houdini on merge-1.rs
+2024-08-31 22:08:04 INFO: Working on merge-2.rs
+2024-08-31 22:08:04 INFO: Merged code is better.
+2024-08-31 22:08:04 INFO: Running houdini on merge-2.rs
+2024-08-31 22:08:05 INFO: Working on merge-3.rs
+2024-08-31 22:08:06 INFO: Merged code is better.
+2024-08-31 22:08:06 INFO: Running houdini on merge-3.rs
+2024-08-31 22:08:07 INFO: refining with constantrefine_inference
+2024-08-31 22:08:13 INFO: Infer time: 6.091479539871216s
+2024-08-31 22:08:13 INFO: Verus has succeeded.
+2024-08-31 22:08:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun(a: &mut Vec<i32>, sum: &mut Vec<i32>, N: usize)
+    requires
+        N > 0,
+        old(a).len() == N,
+        old(sum).len() == 1,
+        N < 1000,
+    ensures
+        sum[0] == 3 * N,
+{
+    sum.set(0, 0);
+    let mut i: usize = 0;
+    while (i < N)
+        invariant
+            a.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == 1,
+            forall|j: usize| 0 <= j < i ==> a[(j) as int] == 1,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        a.set(i, 1);
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N)
+        invariant
+            a.len() == N,
+            forall|j: int| 0 <= j < i ==> a[j] == 3,
+            forall|j: int| i <= j < N ==> a[j] == 1,
+            forall|j: usize| 0 <= j < N && j >= i ==> a[(j) as int] == 1,
+            forall|j: usize| 0 <= j < i ==> a[(j) as int] == 3,
+            i <= N,
+            sum.len() == 1,
+            N > 0,
+            N < 1000,
+    {
+        if (a[i] == 1) {
+            a.set(i, a[i] + 2);
+        } else {
+            a.set(i, a[i] - 1);
+        }
+        i = i + 1;
+    }
+    i = 0;
+    while (i < N)
+        invariant
+            a.len() == N,
+            forall|j: int| 0 <= j < N ==> a[j] == 3,
+            forall|j: usize| 0 <= j < N ==> a[(j) as int] == 3,
+            i <= N,
+            sum.len() == 1,
+            sum[0] <= 3 * i <= 3 * N,
+            sum[0] == 3 * i,
+            N > 0,
+            N < 1000,
+    {
+        if (a[i] == 3) {
+            sum.set(0, sum[0] + a[i]);
+        } else {
+            sum.set(0, sum[0] * a[i]);
+        }
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-08-31 22:08:17 INFO: Verus succeeded with refinement!!
+2024-08-31 22:08:18 INFO: finished!

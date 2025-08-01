@@ -1,0 +1,262 @@
+2024-09-02 19:22:36 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:22:36 INFO: Running in generation mode
+2024-09-02 19:22:36 INFO: Repair steps: 0
+2024-09-02 19:22:37 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:22:37 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:22:37 INFO: Generating proof code
+2024-09-02 19:22:37 INFO: Temperature: 1.0
+2024-09-02 19:22:37 WARNING: Disabled ranking
+2024-09-02 19:22:37 INFO: Direct inference attempt 0
+2024-09-02 19:22:43 INFO: Infer time: 5.9301111698150635s
+2024-09-02 19:22:43 INFO: Checking candidate 0-0
+2024-09-02 19:22:43 INFO: 0-0.rs in code pool
+2024-09-02 19:22:43 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:22:43 INFO: Working on merge-0.rs
+2024-09-02 19:22:48 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:22:48 INFO: Running houdini on merge-0.rs
+2024-09-02 19:22:49 WARNING: Non-linear arithmetic detected.
+2024-09-02 19:22:49 WARNING:             forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+2024-09-02 19:22:49 INFO: refining with constantrefine_inference
+2024-09-02 19:22:52 INFO: Infer time: 3.4866905212402344s
+2024-09-02 19:22:52 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+            len <= 100,
+            a.len() == b.len(),
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-02 19:22:57 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:22:57 INFO: refining with arraylen_inference
+2024-09-02 19:23:00 INFO: Infer time: 2.8395700454711914s
+2024-09-02 19:23:00 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == #[trigger] a[i] * #[trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-02 19:23:01 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:23:01 INFO: refining with arrayrefine_inference
+2024-09-02 19:23:04 INFO: Infer time: 3.8045668601989746s
+2024-09-02 19:23:05 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            // Invariant over the entire range of a and b because they are not modified in the loop
+            forall|i: int| (0 <= i && i < len) ==> (a[i] == a[i]) && (b[i] == b[i]),
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+
+2024-09-02 19:23:05 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:23:05 INFO: refining with condlooprefine_inference
+2024-09-02 19:23:09 INFO: Infer time: 4.017511606216431s
+2024-09-02 19:23:09 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+            n > 0 ==> (forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i]),
+    {
+        let product: u32 = a[n] * b[n];
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+2024-09-02 19:23:10 INFO: New refined code under condloop is not better
+2024-09-02 19:23:10 INFO: refining with nonlinear_inference
+2024-09-02 19:23:14 INFO: Infer time: 4.1634416580200195s
+2024-09-02 19:23:14 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+    {
+        let product: u32 = a[n] * b[n];
+        assert!(product == a[n] * b[n]) by (nonlinear_arith)
+            requires
+                a.len() <= 100,
+                a.len() == b.len(),
+                forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+                0 <= n && n < a.len(),
+                {};
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+2024-09-02 19:23:14 ERROR: Error in comparing code changes: 
+2024-09-02 19:23:14 INFO: Unsafe code change
+2024-09-02 19:23:14 INFO: Refinement did not change the code
+2024-09-02 19:23:14 INFO: refining with nonlbound_inference
+2024-09-02 19:23:18 INFO: Infer time: 3.9870355129241943s
+2024-09-02 19:23:19 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
+    requires
+        a.len() <= 100 && a.len() == b.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
+    ensures
+        c@.len() == a@.len(),
+        forall|i: int| (0 <= i && i < a.len()) ==> c[i] == # [trigger] a[i] * # [trigger] b[i],
+{
+    let mut c = Vec::with_capacity(a.len());
+    let mut n: usize = 0;
+    let len: usize = a.len();
+    while n != len
+        invariant
+            a.len() == len,
+            b.len() == len,
+            c.len() == n,
+            forall|i: int| (0 <= i && i < n) ==> c[i] == a[i] * b[i],
+            n <= len,
+    {
+        let product: u32 = a[n] * b[n];
+        assert(0 <= a[( n ) as int] * b[( n ) as int] < 1000) by (nonlinear_arith)
+            requires
+                0 <= a[( n ) as int],
+                a[( n ) as int] <= 4294967295, //u32 max value
+                0 <= b[( n ) as int],
+                b[( n ) as int] <= 4294967295, //u32 max value
+                {}
+        c.push(product);
+        n = n + 1;
+    }
+    c
+}
+
+} // verus!
+
+
+
+
+
+
+
+2024-09-02 19:23:19 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:23:19 INFO: Original code is better
+2024-09-02 19:23:20 INFO: finished!

@@ -1,0 +1,146 @@
+2024-09-02 19:05:16 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:05:16 INFO: Running in generation mode
+2024-09-02 19:05:16 INFO: Repair steps: 0
+2024-09-02 19:05:16 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:05:16 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:05:16 INFO: Generating proof code
+2024-09-02 19:05:16 INFO: Temperature: 1.0
+2024-09-02 19:05:16 WARNING: Disabled ranking
+2024-09-02 19:05:16 INFO: Direct inference attempt 0
+2024-09-02 19:05:20 INFO: Infer time: 3.9041941165924072s
+2024-09-02 19:05:20 INFO: Checking candidate 0-0
+2024-09-02 19:05:20 INFO: 0-0.rs in code pool
+2024-09-02 19:05:20 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:05:20 INFO: Working on merge-0.rs
+2024-09-02 19:05:25 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:05:25 INFO: Running houdini on merge-0.rs
+2024-09-02 19:05:26 INFO: refining with constantrefine_inference
+2024-09-02 19:05:29 INFO: Infer time: 3.2538509368896484s
+2024-09-02 19:05:29 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+            forall|k: int| i <= k < x.len() ==> x[k] == old(x)[k],
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+            i <= xlen,
+            x.len() == xlen,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:05:34 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:05:34 INFO: refining with arraylen_inference
+2024-09-02 19:05:37 INFO: Infer time: 3.4555978775024414s
+2024-09-02 19:05:37 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+            forall|k: int| i <= k < x.len() ==> x[k] == old(x)[k],
+            i <= xlen,
+            x.len() == xlen,
+            x.len() == xlen, // Loop invariant specifying the length of the array x
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:05:38 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:05:38 INFO: refining with arrayrefine_inference
+2024-09-02 19:05:41 INFO: Infer time: 2.9209606647491455s
+2024-09-02 19:05:41 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+            forall|k: int| i <= k < x.len() ==> x[k] == old(x)[k],
+            i <= xlen,
+            x.len() == xlen,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+
+2024-09-02 19:05:42 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:05:42 INFO: refining with condlooprefine_inference
+2024-09-02 19:05:45 INFO: Infer time: 3.2851388454437256s
+2024-09-02 19:05:45 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub fn myfun2(x: &mut Vec<i32>)
+    requires
+        forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+    ensures
+        x@.len() == old(x)@.len(),
+        forall|k: int| 0 <= k < x.len() ==> # [trigger] x@[k] == old(x)@[k] + 4,
+{
+    let mut i: usize = 0;
+    let xlen: usize = x.len();
+    while (i < xlen)
+        invariant
+            forall|k: int| 0 <= k < i ==> x[k] == old(x)[k] + 4,
+            forall|k: int| 0 <= k < old(x).len() ==> old(x)[k] <= 0x7FFF_FFFB,
+            i > 0 ==> forall|k: int| i <= k < x.len() ==> x[k] == old(x)[k],
+            i <= xlen,
+            x.len() == xlen,
+    {
+        x.set(i, x[i] + 4);
+        i = i + 1;
+    }
+}
+
+} // verus!
+2024-09-02 19:05:46 INFO: New refined code under condloop is not better
+2024-09-02 19:05:46 INFO: Original code is better
+2024-09-02 19:05:46 INFO: finished!

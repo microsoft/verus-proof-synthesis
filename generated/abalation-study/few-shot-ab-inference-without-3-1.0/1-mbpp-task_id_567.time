@@ -1,0 +1,248 @@
+2024-08-31 21:13:00 WARNING: Phase 1 examples: ['6', '7']
+2024-08-31 21:13:00 INFO: Running in generation mode
+2024-08-31 21:13:00 INFO: Repair steps: 0
+2024-08-31 21:13:00 WARNING: Generation initialized with phase1_examples: ['6', '7']
+2024-08-31 21:13:00 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:13:00 INFO: Generating proof code
+2024-08-31 21:13:00 INFO: Temperature: 1.0
+2024-08-31 21:13:00 INFO: Direct inference attempt 0
+2024-08-31 21:13:03 INFO: Infer time: 3.018223285675049s
+2024-08-31 21:13:03 INFO: Checking candidate 0-0
+2024-08-31 21:13:03 ERROR: Error: 'verified'
+2024-08-31 21:13:03 ERROR: Error: 'errors'
+2024-08-31 21:13:03 INFO: Checking candidate 0-1
+2024-08-31 21:13:03 ERROR: Error: 'verified'
+2024-08-31 21:13:03 ERROR: Error: 'errors'
+2024-08-31 21:13:03 INFO: Checking candidate 0-2
+2024-08-31 21:13:04 ERROR: Error: 'verified'
+2024-08-31 21:13:04 ERROR: Error: 'errors'
+2024-08-31 21:13:04 INFO: Checking candidate 0-3
+2024-08-31 21:13:04 INFO: 0-3.rs in code pool
+2024-08-31 21:13:04 INFO: 0-3.rs is now the best proof candidate
+2024-08-31 21:13:04 INFO: Checking candidate 0-4
+2024-08-31 21:13:04 ERROR: Error: 'verified'
+2024-08-31 21:13:04 ERROR: Error: 'errors'
+2024-08-31 21:13:04 INFO: Working on merge-0.rs
+2024-08-31 21:13:09 INFO: Merged code is better.
+2024-08-31 21:13:09 INFO: Running houdini on merge-0.rs
+2024-08-31 21:13:10 INFO: refining with constantrefine_inference
+2024-08-31 21:13:13 INFO: Infer time: 2.5402047634124756s
+2024-08-31 21:13:13 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            forall|k: int, l: int| 0 <= k < l < index ==> (arr[k] <= arr[l]),
+            index <= arr.len() - 1,
+            arr.len() > 0,
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:13:17 INFO: New refined code is a good repair
+2024-08-31 21:13:17 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            forall|k: int, l: int| 0 <= k < l < index ==> (arr[k] <= arr[l]),
+            index <= arr.len() - 1,
+            arr.len() > 0,
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:13:17 INFO: refining with arraylen_inference
+2024-08-31 21:13:20 INFO: Infer time: 2.1500978469848633s
+2024-08-31 21:13:20 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            forall|k: int, l: int| 0 <= k < l < index ==> (arr[k] <= arr[l]),
+            index <= arr.len() - 1,
+            arr.len() > 0,
+            arr.len() == arr.len(),
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:13:20 INFO: New refined code is a good repair
+2024-08-31 21:13:20 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            forall|k: int, l: int| 0 <= k < l < index ==> (arr[k] <= arr[l]),
+            index <= arr.len() - 1,
+            arr.len() > 0,
+            arr.len() == arr.len(),
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:13:20 INFO: refining with arrayrefine_inference
+2024-08-31 21:13:22 INFO: Infer time: 2.183138847351074s
+2024-08-31 21:13:23 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            // The loop does not modify the array `arr`, hence the invariant should cover all elements in the array.
+            forall|k: int, l: int| 0 <= k < l < arr.len() ==> (arr[k] <= arr[l]),
+            index <= arr.len() - 1,
+            arr.len() > 0,
+            arr.len() == arr.len(),
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:13:23 INFO: New refined code is a good repair
+2024-08-31 21:13:23 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            // The loop does not modify the array `arr`, hence the invariant should cover all elements in the array.
+            forall|k: int, l: int| 0 <= k < l < arr.len() ==> (arr[k] <= arr[l]),
+            index <= arr.len() - 1,
+            arr.len() > 0,
+            arr.len() == arr.len(),
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:13:23 INFO: refining with condlooprefine_inference
+2024-08-31 21:13:26 INFO: Infer time: 3.091290235519409s
+2024-08-31 21:13:26 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn is_sorted(arr: &Vec<i32>) -> (is_sorted: bool)
+    requires
+        arr.len() > 0,
+    ensures
+        is_sorted == (forall|i: int, j: int| 0 <= i < j < arr.len() ==> (arr[i] <= arr[j])),
+{
+    let mut index = 0;
+    while index < arr.len() - 1
+        invariant
+            // The loop does not modify the array `arr`, hence the invariant should cover all elements in the array.
+            forall|k: int, l: int| 0 <= k < l < arr.len() ==> (arr[k] <= arr[l]),
+            index <= arr.len() - 1,
+            arr.len() > 0,
+            arr.len() == arr.len(),
+            index > 0 ==> (forall|k: int, l: int| 0 <= k < l < arr.len() ==> (arr[k] <= arr[l])),
+    {
+        if arr[index] > arr[index + 1] {
+            return false;
+        }
+        index += 1;
+    }
+    true
+}
+
+} // verus!
+
+2024-08-31 21:13:27 INFO: New refined code under condloop is not better
+2024-08-31 21:13:27 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-31 21:13:27 WARNING: Generation initialized with repair_uniform: False
+2024-08-31 21:13:28 INFO: Original code is better
+2024-08-31 21:13:28 INFO: finished!
+Start repair

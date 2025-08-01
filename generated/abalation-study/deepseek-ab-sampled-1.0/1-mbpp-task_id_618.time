@@ -1,0 +1,248 @@
+2025-03-24 05:45:05 WARNING: Phase 1 examples: ['3', '6', '7']
+2025-03-24 05:45:05 INFO: Running in generation mode
+2025-03-24 05:45:05 INFO: Repair steps: 10
+2025-03-24 05:45:06 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2025-03-24 05:45:06 WARNING: Generation initialized with repair_uniform: False
+2025-03-24 05:45:06 INFO: Generating proof code
+2025-03-24 05:45:06 INFO: Temperature: 1.0
+2025-03-24 05:45:06 INFO: Direct inference attempt 0
+2025-03-24 05:45:49 INFO: Infer time: 43.577004194259644s
+2025-03-24 05:45:49 INFO: Checking candidate 0-0
+2025-03-24 05:45:54 INFO: Checking candidate 0-1
+2025-03-24 05:46:02 ERROR: Error in comparing code changes: 
+2025-03-24 05:46:02 INFO: Checking candidate 0-2
+2025-03-24 05:46:11 INFO: Checking candidate 0-3
+2025-03-24 05:46:19 INFO: Checking candidate 0-4
+2025-03-24 05:46:28 INFO: Regenerate...
+2025-03-24 05:46:28 INFO: Direct inference attempt 1
+2025-03-24 05:47:24 INFO: Infer time: 56.66239595413208s
+2025-03-24 05:47:24 INFO: Checking candidate 1-0
+2025-03-24 05:47:25 INFO: Checking candidate 1-1
+2025-03-24 05:47:25 INFO: Checking candidate 1-2
+2025-03-24 05:47:25 ERROR: Error: 'verified'
+2025-03-24 05:47:25 ERROR: Error: 'errors'
+2025-03-24 05:47:25 INFO: Checking candidate 1-3
+2025-03-24 05:47:26 INFO: Checking candidate 1-4
+2025-03-24 05:47:26 INFO: 1-4.rs in code pool
+2025-03-24 05:47:26 INFO: 1-4.rs is now the best proof candidate
+2025-03-24 05:47:26 INFO: Regenerate...
+2025-03-24 05:47:26 INFO: Direct inference attempt 2
+2025-03-24 05:48:14 INFO: Infer time: 48.249248027801514s
+2025-03-24 05:48:14 INFO: Checking candidate 2-0
+2025-03-24 05:48:15 INFO: 2-0.rs in code pool
+2025-03-24 05:48:15 INFO: 2-0.rs is now the best proof candidate
+2025-03-24 05:48:15 INFO: Checking candidate 2-1
+2025-03-24 05:48:15 ERROR: Error in comparing code changes: 
+2025-03-24 05:48:15 INFO: Checking candidate 2-2
+2025-03-24 05:48:15 INFO: Checking candidate 2-3
+2025-03-24 05:48:16 INFO: 2-3.rs in code pool
+2025-03-24 05:48:16 INFO: 2-3.rs is now the best proof candidate
+2025-03-24 05:48:16 INFO: Checking candidate 2-4
+2025-03-24 05:48:16 INFO: 2-4.rs in code pool
+2025-03-24 05:48:16 INFO: 2-4.rs is now the best proof candidate
+2025-03-24 05:48:16 INFO: Regenerate...
+2025-03-24 05:48:16 INFO: Working on merge-0.rs
+2025-03-24 05:48:29 INFO: Merged code is better.
+2025-03-24 05:48:29 INFO: Running houdini on merge-0.rs
+2025-03-24 05:48:30 INFO: Working on merge-1.rs
+2025-03-24 05:48:46 INFO: Running houdini on merge-1.rs
+2025-03-24 05:48:48 INFO: Working on merge-2.rs
+2025-03-24 05:49:03 INFO: Running houdini on merge-2.rs
+2025-03-24 05:49:04 INFO: Working on merge-3.rs
+2025-03-24 05:49:04 INFO: Merged code is better.
+2025-03-24 05:49:04 INFO: Running houdini on merge-3.rs
+2025-03-24 05:49:05 WARNING: Non-linear arithmetic detected.
+2025-03-24 05:49:05 WARNING:             forall|i: int|
+                0 <= i < index as int ==> output_arr[i as int] == arr1[i as int] / arr2[i as int],
+2025-03-24 05:49:05 INFO: refining with constantrefine_inference
+2025-03-24 05:49:36 INFO: Infer time: 30.307911157608032s
+2025-03-24 05:49:36 INFO: Verus has succeeded.
+2025-03-24 05:49:36 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_divide(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] / arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+            forall|i: int|
+                (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+            forall|i: int|
+                0 <= i < index as int ==> output_arr[i as int] == arr1[i as int] / arr2[i as int],
+            index <= arr1.len(),
+            output_arr.len() == index,
+    {
+        output_arr.push((arr1[index] / arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2025-03-24 05:49:36 INFO: Verus succeeded with refinement!!
+2025-03-24 05:49:36 INFO: finished!
+Using client 0
+
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn element_wise_divide(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= #[trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> #[trigger] result[i] == #[trigger] (arr1[i] / arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while (index < arr1.len()) {
+        output_arr.push(arr1[index] / arr2[index]);
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+Using client 0
+
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn element_wise_divide(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= #[trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> #[trigger] result[i] == #[trigger] (arr1[i] / arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while (index < arr1.len())
+        invariant
+            index <= arr1.len(),
+            arr1.len() == arr2.len(),
+            output_arr.len() == index,
+            forall |i: int| 0 <= i < index ==> output_arr[i] == arr1[i] / arr2[i],
+    {
+        output_arr.push((arr1[index] / arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+Using client 0
+
+
+use vstd::prelude::*;
+
+fn main() {}
+
+verus! {
+
+fn element_wise_divide(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= #[trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> #[trigger] result[i] == #[trigger] (arr1[i] / arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            0 <= index <= arr1.len(),
+            output_arr.len() == index,
+            forall|i: int| 0 <= i < output_arr.len() ==>
+                output_arr[i] == (arr1[i] / arr2[i]),
+            forall|i: int| 0 <= i < index ==>
+                arr2[i] != 0,
+            0 < arr1.len() < 1000,
+    {
+        output_arr.push((arr1[index] / arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+Using client 0
+
+
+To ensure the correctness of the code, we copied the function's preconditions into each loop's invariant. This helps Verus verify that the properties hold throughout the loop's execution.
+
+Here is the modified code with the preconditions included in the loop invariant:
+
+```rust
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_divide(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] / arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            arr1.len() == arr2.len(),
+            forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+            forall|i: int|
+                (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] / arr2[i]) <= i32::MAX),
+            forall|i: int|
+                0 <= i < index as int ==> output_arr[i as int] == arr1[i as int] / arr2[i as int],
+            index <= arr1.len(),
+            output_arr.len() == index,
+    {
+        output_arr.push((arr1[index] / arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+```

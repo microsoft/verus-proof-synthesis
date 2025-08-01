@@ -1,0 +1,53 @@
+2024-09-02 17:55:09 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 17:55:09 INFO: Running in generation mode
+2024-09-02 17:55:09 INFO: Repair steps: 0
+2024-09-02 17:55:09 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 17:55:09 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 17:55:09 INFO: Generating proof code
+2024-09-02 17:55:09 INFO: Temperature: 1.0
+2024-09-02 17:55:09 INFO: Generate with uniform refinement mode
+2024-09-02 17:55:09 INFO: Direct inference attempt 0
+2024-09-02 17:55:09 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:55:14 INFO: Infer time: 4.928553104400635s
+2024-09-02 17:55:14 INFO: Checking candidate 0-0
+2024-09-02 17:55:15 INFO: Checking candidate 0-1
+2024-09-02 17:55:15 ERROR: Error in comparing code changes: 
+2024-09-02 17:55:15 INFO: Checking candidate 0-2
+2024-09-02 17:55:15 INFO: 0-2.rs in code pool
+2024-09-02 17:55:15 INFO: 0-2.rs is now the best proof candidate
+2024-09-02 17:55:15 INFO: Checking candidate 0-3
+2024-09-02 17:55:15 INFO: Checking candidate 0-4
+2024-09-02 17:55:16 ERROR: Error in comparing code changes: 
+2024-09-02 17:55:16 INFO: Regenerate...
+2024-09-02 17:55:16 INFO: Direct inference attempt 1
+2024-09-02 17:55:16 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:55:20 INFO: Infer time: 4.467555046081543s
+2024-09-02 17:55:20 INFO: Checking candidate 1-0
+2024-09-02 17:55:20 INFO: Checking candidate 1-1
+2024-09-02 17:55:21 INFO: Checking candidate 1-2
+2024-09-02 17:55:21 ERROR: Error in comparing code changes: 
+2024-09-02 17:55:21 INFO: Checking candidate 1-3
+2024-09-02 17:55:21 INFO: Checking candidate 1-4
+2024-09-02 17:55:22 INFO: Regenerate...
+2024-09-02 17:55:22 INFO: Direct inference attempt 2
+2024-09-02 17:55:22 WARNING: Direct Inference unified with Refinement ...
+2024-09-02 17:55:27 INFO: Infer time: 5.0157575607299805s
+2024-09-02 17:55:27 INFO: Checking candidate 2-0
+2024-09-02 17:55:27 INFO: 2-0.rs in code pool
+2024-09-02 17:55:27 INFO: 2-0.rs is now the best proof candidate
+2024-09-02 17:55:27 INFO: Checking candidate 2-1
+2024-09-02 17:55:27 INFO: 2-1.rs in code pool
+2024-09-02 17:55:27 INFO: 2-1.rs is now the best proof candidate
+2024-09-02 17:55:27 INFO: Checking candidate 2-2
+2024-09-02 17:55:27 INFO: Checking candidate 2-3
+2024-09-02 17:55:28 ERROR: Error in comparing code changes: 
+2024-09-02 17:55:28 INFO: Checking candidate 2-4
+2024-09-02 17:55:28 INFO: 2-4.rs in code pool
+2024-09-02 17:55:28 INFO: Regenerate...
+2024-09-02 17:55:28 INFO: Working on merge-0.rs
+2024-09-02 17:55:32 INFO: Running houdini on merge-0.rs
+2024-09-02 17:55:33 INFO: Working on merge-1.rs
+2024-09-02 17:55:33 INFO: Merged code is better.
+2024-09-02 17:55:33 INFO: Running houdini on merge-1.rs
+2024-09-02 17:55:34 INFO: Merged code with hdn is correct.
+2024-09-02 17:55:38 INFO: finished!

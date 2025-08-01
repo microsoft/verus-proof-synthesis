@@ -1,0 +1,205 @@
+2024-08-30 15:47:24 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-08-30 15:47:24 INFO: Running in generation mode
+2024-08-30 15:47:24 INFO: Repair steps: 10
+2024-08-30 15:47:24 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-08-30 15:47:24 INFO: Generating proof code
+2024-08-30 15:47:24 INFO: Temperature: 1.0
+2024-08-30 15:47:24 INFO: Direct inference attempt 0
+2024-08-30 15:47:29 INFO: Infer time: 5.105363845825195s
+2024-08-30 15:47:29 INFO: Checking candidate 0-0
+2024-08-30 15:47:29 ERROR: Error: 'verified'
+2024-08-30 15:47:29 ERROR: Error: 'errors'
+2024-08-30 15:47:30 INFO: Checking candidate 0-1
+2024-08-30 15:47:30 ERROR: Error: 'verified'
+2024-08-30 15:47:30 ERROR: Error: 'errors'
+2024-08-30 15:47:30 INFO: Checking candidate 0-2
+2024-08-30 15:47:30 ERROR: Error: 'verified'
+2024-08-30 15:47:30 ERROR: Error: 'errors'
+2024-08-30 15:47:30 INFO: Checking candidate 0-3
+2024-08-30 15:47:31 INFO: Checking candidate 0-4
+2024-08-30 15:47:31 ERROR: Error: 'verified'
+2024-08-30 15:47:31 ERROR: Error: 'errors'
+2024-08-30 15:47:31 INFO: Regenerate...
+2024-08-30 15:47:31 INFO: Direct inference attempt 1
+2024-08-30 15:47:36 INFO: Infer time: 4.803145885467529s
+2024-08-30 15:47:36 INFO: Checking candidate 1-0
+2024-08-30 15:47:36 ERROR: Error: 'verified'
+2024-08-30 15:47:36 ERROR: Error: 'errors'
+2024-08-30 15:47:36 INFO: Checking candidate 1-1
+2024-08-30 15:47:36 ERROR: Error: 'verified'
+2024-08-30 15:47:36 ERROR: Error: 'errors'
+2024-08-30 15:47:36 INFO: Checking candidate 1-2
+2024-08-30 15:47:36 ERROR: Error: 'verified'
+2024-08-30 15:47:36 ERROR: Error: 'errors'
+2024-08-30 15:47:36 INFO: Checking candidate 1-3
+2024-08-30 15:47:37 ERROR: Error: 'verified'
+2024-08-30 15:47:37 ERROR: Error: 'errors'
+2024-08-30 15:47:37 INFO: Checking candidate 1-4
+2024-08-30 15:47:37 ERROR: Error: 'verified'
+2024-08-30 15:47:37 ERROR: Error: 'errors'
+2024-08-30 15:47:37 INFO: Regenerate...
+2024-08-30 15:47:37 INFO: Direct inference attempt 2
+2024-08-30 15:47:37 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 48.000000 seconds
+2024-08-30 15:48:30 INFO: Infer time: 53.03441882133484s
+2024-08-30 15:48:30 INFO: Checking candidate 2-0
+2024-08-30 15:48:30 ERROR: Error: 'verified'
+2024-08-30 15:48:30 ERROR: Error: 'errors'
+2024-08-30 15:48:30 INFO: Checking candidate 2-1
+2024-08-30 15:48:31 ERROR: Error: 'verified'
+2024-08-30 15:48:31 ERROR: Error: 'errors'
+2024-08-30 15:48:31 INFO: Checking candidate 2-2
+2024-08-30 15:48:31 ERROR: Error: 'verified'
+2024-08-30 15:48:31 ERROR: Error: 'errors'
+2024-08-30 15:48:31 INFO: Checking candidate 2-3
+2024-08-30 15:48:31 ERROR: Error: 'verified'
+2024-08-30 15:48:31 ERROR: Error: 'errors'
+2024-08-30 15:48:31 INFO: Checking candidate 2-4
+2024-08-30 15:48:31 ERROR: Error: 'verified'
+2024-08-30 15:48:31 ERROR: Error: 'errors'
+2024-08-30 15:48:31 INFO: Regenerate...
+2024-08-30 15:48:31 ERROR: No valid code found!
+2024-08-30 15:48:36 INFO: refining with constantrefine_inference
+2024-08-30 15:48:41 INFO: Infer time: 4.807534217834473s
+2024-08-30 15:48:41 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+verus! {
+
+spec fn is_ascii_digit_spec(c: char) -> bool {
+    c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7'
+        || c == '8' || c == '9'
+}
+
+fn is_ascii_digit(c: char) -> (r: bool)
+    ensures
+        r == is_ascii_digit_spec(c),
+{
+    c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7'
+        || c == '8' || c == '9'
+}
+
+spec fn all_digits_spec(s: Seq<char>) -> bool {
+    forall|i: nat| #![auto] i < s.len() ==> is_ascii_digit_spec(s[i as int])
+}
+
+fn all_digits(s: String) -> (result: bool)
+    requires
+        s.is_ascii(),
+    ensures
+        all_digits_spec(s@) == result,
+{
+    let mut result = true;
+    let mut i = 0;
+    while i < s.as_str().unicode_len() 
+        invariant s.is_ascii(), 
+        invariant i <= s.as_str().unicode_len(),
+    {
+        if !is_ascii_digit(s.as_str().get_char(i)) {
+            return false;
+        }
+        i += 1; // Added increment to avoid infinite loop
+    }
+    true
+}
+
+} // verus!
+
+2024-08-30 15:48:45 ERROR: Error in comparing code changes: 
+2024-08-30 15:48:45 INFO: Unsafe code change
+2024-08-30 15:48:45 INFO: Refinement did not change the code
+2024-08-30 15:48:45 INFO: refining with arraylen_inference
+2024-08-30 15:48:49 INFO: Infer time: 4.2131781578063965s
+2024-08-30 15:48:49 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+verus! {
+
+spec fn is_ascii_digit_spec(c: char) -> bool {
+    c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7'
+        || c == '8' || c == '9'
+}
+
+fn is_ascii_digit(c: char) -> (r: bool)
+    ensures
+        r == is_ascii_digit_spec(c),
+{
+    c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7'
+        || c == '8' || c == '9'
+}
+
+spec fn all_digits_spec(s: Seq<char>) -> bool {
+    forall|i: nat| #![auto] i < s.len() ==> is_ascii_digit_spec(s[i as int])
+}
+
+fn all_digits(s: String) -> (result: bool)
+    requires
+        s.is_ascii(),
+    ensures
+        all_digits_spec(s@) == result,
+{
+    let mut result = true;
+    let mut i = 0;
+    while i < s.as_str().unicode_len()
+        invariant
+            s.len() == s.as_str().len(),
+    {
+        if !is_ascii_digit(s.as_str().get_char(i)) {
+            return false;
+        }
+    }
+    true
+}
+
+} // verus!
+
+2024-08-30 15:48:49 ERROR: Error: 'verified'
+2024-08-30 15:48:49 ERROR: Error: 'errors'
+2024-08-30 15:48:49 INFO: New refined code is worse
+2024-08-30 15:48:49 INFO: refining with arrayrefine_inference
+2024-08-30 15:48:53 INFO: Infer time: 3.3895649909973145s
+2024-08-30 15:48:53 INFO: Verus has succeeded.
+2024-08-30 15:48:53 INFO: 
+use vstd::prelude::*;
+
+fn main() {}
+verus! {
+
+spec fn is_ascii_digit_spec(c: char) -> bool {
+    c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7'
+        || c == '8' || c == '9'
+}
+
+fn is_ascii_digit(c: char) -> (r: bool)
+    ensures
+        r == is_ascii_digit_spec(c),
+{
+    c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7'
+        || c == '8' || c == '9'
+}
+
+spec fn all_digits_spec(s: Seq<char>) -> bool {
+    forall|i: nat| #![auto] i < s.len() ==> is_ascii_digit_spec(s[i as int])
+}
+
+fn all_digits(s: String) -> (result: bool)
+    requires
+        s.is_ascii(),
+    ensures
+        all_digits_spec(s@) == result,
+{
+    let mut result = true;
+    let mut i = 0;
+    while i < s.as_str().unicode_len() {
+        if !is_ascii_digit(s.as_str().get_char(i)) {
+            return false;
+        }
+    }
+    true
+}
+
+} // verus!
+
+2024-08-30 15:48:53 INFO: Verus succeeded with refinement!!
+2024-08-30 15:48:53 INFO: finished!

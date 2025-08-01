@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  verus-proof-synthesis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: verus-proof-synthesis:latest
+    container_name: verus-proof-synthesis
+    
+    # Environment variables - you can override these in a .env file
+    environment:
+      - PYTHONPATH=/app/code
+      - RUST_BACKTRACE=1
+      # Add your API keys and configuration here
+      # - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      # - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+    
+    # Mount volumes for development (optional)
+    volumes:
+      # Uncomment to mount local code for development
+      # - ./code:/app/code
+      # - ./benchmarks:/app/benchmarks
+      # Mount a volume for persistent output
+      - ./output:/app/code/_output
+    
+    # Working directory
+    working_dir: /app
+    
+    # Default command (you can override this)
+    command: ["python", "code/main.py"]
+    
+    # Uncomment if your application needs network access
+    # ports:
+    #   - "8000:8000"
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Resource limits (optional)
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 1G
+
+# Optional: Add a volume for persistent data
+volumes:
+  output_data:
+    driver: local
+
+# Optional: Add network configuration if needed
+# networks:
+#   verus_network:
+#     driver: bridge 

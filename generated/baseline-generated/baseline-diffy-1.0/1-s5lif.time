@@ -1,0 +1,133 @@
+2024-09-04 17:33:20 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-04 17:33:20 INFO: Running in generation mode
+2024-09-04 17:33:20 INFO: Repair steps: 10
+2024-09-04 17:33:20 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-04 17:33:20 WARNING: Generation initialized with repair_uniform: False
+2024-09-04 17:33:20 INFO: Generating proof code with baseline
+2024-09-04 17:33:20 INFO: Temperature: 1.0
+2024-09-04 17:33:20 INFO: Generate with baseline mode
+2024-09-04 17:33:20 INFO: Direct inference with baseline attempt 0
+2024-09-04 17:33:20 INFO: Direct Full Inference ...
+2024-09-04 17:33:21 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 10.000000 seconds
+2024-09-04 17:33:40 INFO: Infer time: 19.33081865310669s
+2024-09-04 17:33:40 INFO: Direct inference with baseline attempt 1
+2024-09-04 17:33:40 INFO: Direct Full Inference ...
+2024-09-04 17:33:41 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-04 17:34:07 INFO: Infer time: 26.233769416809082s
+2024-09-04 17:34:07 INFO: Direct inference with baseline attempt 2
+2024-09-04 17:34:07 INFO: Direct Full Inference ...
+2024-09-04 17:34:14 INFO: Infer time: 7.067461729049683s
+2024-09-04 17:34:15 INFO: Direct inference with baseline attempt 3
+2024-09-04 17:34:15 INFO: Direct Full Inference ...
+2024-09-04 17:34:15 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 17.000000 seconds
+2024-09-04 17:34:40 INFO: Infer time: 25.40454888343811s
+2024-09-04 17:34:41 INFO: Direct inference with baseline attempt 4
+2024-09-04 17:34:41 INFO: Direct Full Inference ...
+2024-09-04 17:34:41 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-04 17:35:04 INFO: Infer time: 23.38067054748535s
+2024-09-04 17:35:05 INFO: Direct inference with baseline attempt 5
+2024-09-04 17:35:05 INFO: Direct Full Inference ...
+2024-09-04 17:35:05 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 3.000000 seconds
+2024-09-04 17:35:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 24.000000 seconds
+2024-09-04 17:35:40 INFO: Infer time: 35.18108057975769s
+2024-09-04 17:35:40 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-04 17:35:40 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-04 17:35:40 INFO: Direct inference with baseline attempt 6
+2024-09-04 17:35:40 INFO: Direct Full Inference ...
+2024-09-04 17:35:41 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 17.000000 seconds
+2024-09-04 17:36:05 INFO: Infer time: 24.60250210762024s
+2024-09-04 17:36:06 INFO: Direct inference with baseline attempt 7
+2024-09-04 17:36:06 INFO: Direct Full Inference ...
+2024-09-04 17:36:06 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 3.000000 seconds
+2024-09-04 17:36:09 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 24.000000 seconds
+2024-09-04 17:36:41 INFO: Infer time: 35.92116117477417s
+2024-09-04 17:36:42 INFO: Direct inference with baseline attempt 8
+2024-09-04 17:36:42 INFO: Direct Full Inference ...
+2024-09-04 17:36:42 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-04 17:37:06 INFO: Infer time: 23.72492790222168s
+2024-09-04 17:37:07 INFO: Direct inference with baseline attempt 9
+2024-09-04 17:37:07 INFO: Direct Full Inference ...
+2024-09-04 17:37:07 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 22.000000 seconds
+2024-09-04 17:37:29 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 4.000000 seconds
+2024-09-04 17:37:40 INFO: Infer time: 33.12531280517578s
+2024-09-04 17:37:40 INFO: Direct inference with baseline attempt 10
+2024-09-04 17:37:40 INFO: Direct Full Inference ...
+2024-09-04 17:37:40 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 19.000000 seconds
+2024-09-04 17:38:00 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-04 17:38:13 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 21.000000 seconds
+2024-09-04 17:38:42 INFO: Infer time: 61.39074635505676s
+2024-09-04 17:38:42 ERROR: Error: 'verified'
+2024-09-04 17:38:42 ERROR: Error: 'errors'
+2024-09-04 17:38:42 INFO: Direct inference with baseline attempt 11
+2024-09-04 17:38:42 INFO: Direct Full Inference ...
+2024-09-04 17:38:42 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 18.000000 seconds
+2024-09-04 17:39:01 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-04 17:39:21 INFO: Infer time: 38.45147180557251s
+2024-09-04 17:39:21 ERROR: Error: 'verified'
+2024-09-04 17:39:21 ERROR: Error: 'errors'
+2024-09-04 17:39:21 INFO: Direct inference with baseline attempt 12
+2024-09-04 17:39:21 INFO: Direct Full Inference ...
+2024-09-04 17:39:21 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-04 17:39:43 INFO: Infer time: 21.599291801452637s
+2024-09-04 17:39:43 ERROR: Error: 'verified'
+2024-09-04 17:39:43 ERROR: Error: 'errors'
+2024-09-04 17:39:43 INFO: Direct inference with baseline attempt 13
+2024-09-04 17:39:43 INFO: Direct Full Inference ...
+2024-09-04 17:39:51 INFO: Infer time: 7.048598527908325s
+2024-09-04 17:39:51 ERROR: Error: 'verified'
+2024-09-04 17:39:51 ERROR: Error: 'errors'
+2024-09-04 17:39:51 ERROR: Error: 'verified'
+2024-09-04 17:39:51 ERROR: Error: 'errors'
+2024-09-04 17:39:51 INFO: Direct inference with baseline attempt 14
+2024-09-04 17:39:51 INFO: Direct Full Inference ...
+2024-09-04 17:39:51 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-04 17:40:08 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 7.000000 seconds
+2024-09-04 17:40:23 INFO: Infer time: 31.657021284103394s
+2024-09-04 17:40:23 INFO: Direct inference with baseline attempt 15
+2024-09-04 17:40:23 INFO: Direct Full Inference ...
+2024-09-04 17:40:23 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 12.000000 seconds
+2024-09-04 17:40:46 INFO: Infer time: 22.57362151145935s
+2024-09-04 17:40:46 ERROR: Error: 'verified'
+2024-09-04 17:40:46 ERROR: Error: 'errors'
+2024-09-04 17:40:47 INFO: Direct inference with baseline attempt 16
+2024-09-04 17:40:47 INFO: Direct Full Inference ...
+2024-09-04 17:40:47 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-04 17:41:07 INFO: Infer time: 20.117820739746094s
+2024-09-04 17:41:07 INFO: Direct inference with baseline attempt 17
+2024-09-04 17:41:07 INFO: Direct Full Inference ...
+2024-09-04 17:41:07 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 8.000000 seconds
+2024-09-04 17:41:22 INFO: Infer time: 15.072757005691528s
+2024-09-04 17:41:23 ERROR: Error: 'verified'
+2024-09-04 17:41:23 ERROR: Error: 'errors'
+2024-09-04 17:41:23 INFO: Direct inference with baseline attempt 18
+2024-09-04 17:41:23 INFO: Direct Full Inference ...
+2024-09-04 17:41:23 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-04 17:41:44 INFO: Infer time: 20.97886323928833s
+2024-09-04 17:41:45 INFO: Direct inference with baseline attempt 19
+2024-09-04 17:41:45 INFO: Direct Full Inference ...
+2024-09-04 17:41:45 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 15.000000 seconds
+2024-09-04 17:42:00 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 1.000000 seconds
+2024-09-04 17:42:09 INFO: Infer time: 24.57580852508545s
+2024-09-04 17:42:10 INFO: Direct inference with baseline attempt 20
+2024-09-04 17:42:10 INFO: Direct Full Inference ...
+2024-09-04 17:42:10 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 6.000000 seconds
+2024-09-04 17:42:24 INFO: Infer time: 14.556057691574097s
+2024-09-04 17:42:25 INFO: Direct inference with baseline attempt 21
+2024-09-04 17:42:25 INFO: Direct Full Inference ...
+2024-09-04 17:42:25 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 12.000000 seconds
+2024-09-04 17:42:44 INFO: Infer time: 18.94936966896057s
+2024-09-04 17:42:44 INFO: Direct inference with baseline attempt 22
+2024-09-04 17:42:44 INFO: Direct Full Inference ...
+2024-09-04 17:42:45 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 2.000000 seconds
+2024-09-04 17:42:47 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 15.000000 seconds
+2024-09-04 17:43:02 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 15.000000 seconds
+2024-09-04 17:43:24 INFO: Infer time: 39.292877435684204s
+2024-09-04 17:43:24 INFO: Direct inference with baseline attempt 23
+2024-09-04 17:43:24 INFO: Direct Full Inference ...
+2024-09-04 17:43:24 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 13.000000 seconds
+2024-09-04 17:43:45 INFO: Infer time: 20.78519916534424s
+2024-09-04 17:43:46 INFO: Direct inference with baseline attempt 24
+2024-09-04 17:43:46 INFO: Direct Full Inference ...
+2024-09-04 17:43:46 INFO: Retrying request to /deployments/gpt-4o/chat/completions in 16.000000 seconds
+2024-09-04 17:44:10 INFO: Infer time: 24.787533044815063s
+2024-09-04 17:44:16 INFO: finished!

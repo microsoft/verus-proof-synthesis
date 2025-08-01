@@ -1,0 +1,274 @@
+2024-09-02 19:29:58 WARNING: Phase 1 examples: ['3', '6', '7']
+2024-09-02 19:29:58 INFO: Running in generation mode
+2024-09-02 19:29:58 INFO: Repair steps: 0
+2024-09-02 19:29:58 WARNING: Generation initialized with phase1_examples: ['3', '6', '7']
+2024-09-02 19:29:58 WARNING: Generation initialized with repair_uniform: False
+2024-09-02 19:29:58 INFO: Generating proof code
+2024-09-02 19:29:58 INFO: Temperature: 1.0
+2024-09-02 19:29:58 WARNING: Disabled ranking
+2024-09-02 19:29:58 INFO: Direct inference attempt 0
+2024-09-02 19:30:04 INFO: Infer time: 5.666535377502441s
+2024-09-02 19:30:04 INFO: Checking candidate 0-0
+2024-09-02 19:30:04 INFO: 0-0.rs in code pool
+2024-09-02 19:30:04 INFO: 0-0.rs is now the best proof candidate
+2024-09-02 19:30:04 INFO: Working on merge-0.rs
+2024-09-02 19:30:09 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:30:09 INFO: Running houdini on merge-0.rs
+2024-09-02 19:30:09 WARNING: Non-linear arithmetic detected.
+2024-09-02 19:30:09 WARNING:             forall|k: int|
+                0 <= k < index ==> # [trigger] output_arr[k] == # [trigger] (arr1[k] % arr2[k]),
+2024-09-02 19:30:09 INFO: refining with constantrefine_inference
+2024-09-02 19:30:15 INFO: Infer time: 5.61463475227356s
+2024-09-02 19:30:15 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_module(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] % arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] % arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|k: int|
+                0 <= k < index ==> # [trigger] output_arr[k] == # [trigger] (arr1[k] % arr2[k]),
+            output_arr.len() == index,
+            forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+            forall|i: int|
+                (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] % arr2[i]) <= i32::MAX),
+    {
+        output_arr.push((arr1[index] % arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 19:30:20 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:30:20 INFO: refining with arraylen_inference
+2024-09-02 19:30:24 INFO: Infer time: 4.148975133895874s
+2024-09-02 19:30:24 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_module(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] % arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] % arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|k: int|
+                0 <= k < index ==> # [trigger] output_arr[k] == # [trigger] (arr1[k] % arr2[k]),
+            output_arr.len() == index,
+            arr1.len() == arr2.len(),
+            arr1.len() == arr1.len(), // Length invariant
+    {
+        output_arr.push((arr1[index] % arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 19:30:24 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:30:24 INFO: refining with arrayrefine_inference
+2024-09-02 19:30:28 INFO: Infer time: 3.5803513526916504s
+2024-09-02 19:30:28 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_module(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] % arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] % arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|k: int|
+                0 <= k < index ==> # [trigger] output_arr[k] == # [trigger] (arr1[k] % arr2[k]),
+            // arr1 is never changed in the loop, ensuring the property for all elements
+            forall|k: int|
+                0 <= k < arr1.len() ==> (i32::MIN <= # [trigger] (arr1[k] % arr2[k]) <= i32::MAX), 
+            output_arr.len() == index,
+    {
+        output_arr.push((arr1[index] % arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+2024-09-02 19:30:28 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:30:28 INFO: refining with condlooprefine_inference
+2024-09-02 19:30:32 INFO: Infer time: 3.9448397159576416s
+2024-09-02 19:30:33 INFO: use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_module(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int| 
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] % arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] % arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|k: int| 
+                0 <= k < index ==> # [trigger] output_arr[k] == # [trigger] (arr1[k] % arr2[k]),
+            output_arr.len() == index,
+            index > 0 ==> forall|k: int| 0 <= k < index ==> # [trigger] output_arr[k] == # [trigger] (arr1[k] % arr2[k]),
+    {
+        output_arr.push((arr1[index] % arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+2024-09-02 19:30:33 INFO: New refined code under condloop is not better
+2024-09-02 19:30:33 INFO: refining with nonlinear_inference
+2024-09-02 19:30:37 INFO: Infer time: 4.253845930099487s
+2024-09-02 19:30:38 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_module(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] % arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] % arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|k: int|
+                0 <= k < index ==> # [trigger] output_arr[k] == # [trigger] (arr1[k] % arr2[k]),
+            output_arr.len() == index,
+    {
+        assert((arr1[( index ) as int] % arr2[( index ) as int]) == (arr1[( index ) as int] - (arr1[index] / arr2[index]) * arr2[index])) by (nonlinear_arith)
+            requires
+                arr2[( index ) as int] != 0,
+                arr1[( index ) as int] >= 0,
+                arr2[( index ) as int] > 0,
+                arr1[( index ) as int] >= arr1[( index ) as int] / arr2[( index ) as int] * arr2[( index ) as int],
+                {};
+        output_arr.push((arr1[index] % arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+
+
+
+
+
+
+
+
+
+
+2024-09-02 19:30:38 INFO: Disabled ranking and the code is not correct.
+2024-09-02 19:30:38 INFO: refining with nonlbound_inference
+2024-09-02 19:30:43 INFO: Infer time: 4.519808292388916s
+2024-09-02 19:30:43 INFO: Verus has succeeded.
+2024-09-02 19:30:43 INFO: 
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+fn element_wise_module(arr1: &Vec<u32>, arr2: &Vec<u32>) -> (result: Vec<u32>)
+    requires
+        arr1.len() == arr2.len(),
+        forall|i: int| 0 <= i < arr2.len() ==> arr2[i] != 0,
+        forall|i: int|
+            (0 <= i < arr1.len()) ==> (i32::MIN <= # [trigger] (arr1[i] % arr2[i]) <= i32::MAX),
+    ensures
+        result@.len() == arr1@.len(),
+        forall|i: int|
+            0 <= i < result.len() ==> # [trigger] result[i] == # [trigger] (arr1[i] % arr2[i]),
+{
+    let mut output_arr = Vec::with_capacity(arr1.len());
+    let mut index = 0;
+    while index < arr1.len()
+        invariant
+            0 <= index <= arr1.len(),
+            forall|k: int|
+                0 <= k < index ==> # [trigger] output_arr[k] == # [trigger] (arr1[k] % arr2[k]),
+            output_arr.len() == index,
+    {
+        assert(0 <= arr1[( index ) as int] % arr2[( index ) as int] <= u32::MAX) by (nonlinear_arith)
+            requires
+                arr1[( index ) as int] != u32::MAX + 1,
+                arr2[( index ) as int] != 0,
+                {}
+
+        output_arr.push((arr1[index] % arr2[index]));
+        index += 1;
+    }
+    output_arr
+}
+
+} // verus!
+
+
+
+
+
+2024-09-02 19:30:44 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-02 19:30:44 ERROR: Error: 'NoneType' object is not subscriptable
+2024-09-02 19:30:44 INFO: Verus succeeded with refinement and Houdini!
+2024-09-02 19:30:44 INFO: finished!
