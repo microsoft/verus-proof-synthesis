@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import json
 from enum import Enum
+import shutil
 
 
 class VerusErrorType(Enum):
@@ -85,7 +86,7 @@ class Verus:
 
 
 verus = Verus()
-
+verus.set_verus_path(shutil.which("verus"))
 
 class ErrorText:
     def __init__(self, text):

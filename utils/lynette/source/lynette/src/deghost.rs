@@ -261,11 +261,14 @@ fn remove_ghost_sig(
         paren_token: sig.paren_token.clone(),
         inputs: sig.inputs.clone(),
         variadic: sig.variadic.clone(),
-        output: match &sig.output {
-            syn_verus::ReturnType::Type(_, _, _, ty) => {
-                syn_verus::ReturnType::Type(Default::default(), None, None, ty.clone())
+        output: match mode.sig_output {
+            true => sig.output.clone(),
+            false => match &sig.output {
+                syn_verus::ReturnType::Type(_, _, _, ty) => {
+                    syn_verus::ReturnType::Type(Default::default(), None, None, ty.clone())
+                }
+                syn_verus::ReturnType::Default => syn_verus::ReturnType::Default,
             }
-            syn_verus::ReturnType::Default => syn_verus::ReturnType::Default,
         },
         prover: sig.prover.clone(), // Removed
         // TODO: This fix needs to be propagated to other places using `Specification`
