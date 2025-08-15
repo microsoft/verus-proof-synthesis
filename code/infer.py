@@ -10,6 +10,7 @@ from azure.identity import (
 )
 import time
 import random
+import os
 
 
 def is_reasoning_model(model_name):
