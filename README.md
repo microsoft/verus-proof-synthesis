@@ -123,3 +123,21 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 # Trademarks 
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow Microsoft’s Trademark & Brand Guidelines. Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party’s policies.
+
+---
+
+## Citation
+
+If you find this work useful, please consider citing:
+
+```bibtex
+@article{autoverus,
+  title={Autoverus: Automated Proof Generation for Rust Code},
+  author={Chenyuan Yang and Xuheng Li and Md Rakib Hossain Misu and Jianan Yao and Weidong Cui and Yeyun Gong and Chris Hawblitzel and Shuvendu K. Lahiri and Jacob R. Lorch and Shuai Lu and Fan Yang and Ziqiao Zhou and Shan Lu},
+  journal={Proceedings of the ACM on Programming Languages},
+  volume={9},
+  number={OOPSLA2},
+  year={2025},
+  publisher={ACM New York, NY, USA}
+}
+```
