@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     pkg-config \
     libssl-dev \
-    # Git for fetching dependencies
+    # Git (still needed for some build processes)
     git \
     vim \
     unzip \
@@ -56,14 +56,13 @@ RUN git checkout 33269ac6a0ea33a08109eefe5016c1fdd0ce9fbd
 WORKDIR /home/appuser/verus/source
 RUN bash -c "source ../tools/activate && ./tools/get-z3.sh && vargo build --release"
 
-# Set working directory back to app
+# Copy application source code
 WORKDIR /home/appuser
-RUN git clone https://github.com/microsoft/verus-proof-synthesis.git
+COPY --chown=appuser:appuser . /home/appuser/verus-proof-synthesis/
 
 WORKDIR /home/appuser/verus-proof-synthesis
 # Create virtual environment and install Python dependencies
 RUN python3.10 -m venv /home/appuser/venv
-RUN git checkout artifact
 ENV PATH="/home/appuser/venv/bin:/home/appuser/verus/source/target-verus/release:$PATH"
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
