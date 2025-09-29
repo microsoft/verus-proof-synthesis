@@ -51,7 +51,7 @@ python verify.py --name gpt4o-ab-sampled --config-file config-artifact-openai.js
    git clone https://github.com/verus-lang/verus.git
    cd verus
    git checkout 33269ac6a0ea33a08109eefe5016c1fdd0ce9fbd
-   ./tools/get-z3.sh && source tools/activate
+   ./source/tools/get-z3.sh && source tools/activate
    vargo build --release
    ```
 
