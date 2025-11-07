@@ -1,5 +1,3 @@
-use std::os::windows::io::InvalidHandleError;
-
 use vstd::prelude::*;
 fn main() {}
 verus!{
