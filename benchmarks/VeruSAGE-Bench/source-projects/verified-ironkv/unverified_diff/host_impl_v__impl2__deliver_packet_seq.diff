@@ -1,0 +1,26 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/host_impl_v__impl2__deliver_packet_seq.rs
+
++++ benchmarks/verified-ironkv/unverified/host_impl_v__impl2__deliver_packet_seq.rs
+
+@@ -470,6 +470,20 @@
+
+     Message { seqno: nat, dst: AbstractEndPoint, m: MT },
+     Ack { ack_seqno: nat },
+     InvalidMessage {  },
++}
++
++#[verifier::external_body]
++pub proof fn lemma_if_everything_in_seq_satisfies_filter_then_filter_is_identity<A>(
++    s: Seq<A>,
++    pred: spec_fn(A) -> bool,
++)
++    requires
++        forall|i: int| 0 <= i && i < s.len() ==> pred(s[i]),
++    ensures
++        s.filter(pred) == s,
++    decreases s.len(),
++{
++    unimplemented!()
+ }
+ 
+ #[verifier::opaque]

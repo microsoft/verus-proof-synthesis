@@ -1,0 +1,123 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/marshal_ironsht_specific_v__impl2__lemma_serialization_is_not_a_prefix_of.rs
+
++++ benchmarks/verified-ironkv/unverified/marshal_ironsht_specific_v__impl2__lemma_serialization_is_not_a_prefix_of.rs
+
+@@ -17,6 +17,18 @@
+
+     #[verifier(external_body)]
+     #[verifier(when_used_as_spec(spec_to_vec))]
+     pub fn to_vec(&self) -> (res: Vec<CKeyKV>) {
++        unimplemented!()
++    }
++
++    #[verifier::external_body]
++    pub proof fn lemma_to_vec_view(self, other: Self)
++        ensures
++            (self@ == other@ <==> self.spec_to_vec()@ == other.spec_to_vec()@) && (self@ == other@
++                <==> (self.spec_to_vec().len() == other.spec_to_vec().len() && forall|i: int|
++                #![auto]
++                0 <= i < self.spec_to_vec().len() ==> self.spec_to_vec()[i]@
++                    == other.spec_to_vec()[i]@)),
++    {
+         unimplemented!()
+     }
+ }
+@@ -86,6 +98,11 @@
+
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         spec_u64_to_le_bytes(*self)
+     }
++
++    #[verifier::external_body]
++    proof fn lemma_serialization_is_not_a_prefix_of(&self, other: &Self) {
++        unimplemented!()
++    }
+ }
+ 
+ impl Marshalable for usize {
+@@ -99,6 +116,11 @@
+
+ 
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         (*self as u64).ghost_serialize()
++    }
++
++    #[verifier::external_body]
++    proof fn lemma_serialization_is_not_a_prefix_of(&self, other: &Self) {
++        unimplemented!()
+     }
+ }
+ 
+@@ -114,6 +136,11 @@
+
+ 
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         (self@.len() as usize).ghost_serialize() + self@
++    }
++
++    #[verifier::external_body]
++    proof fn lemma_serialization_is_not_a_prefix_of(&self, other: &Self) {
++        unimplemented!()
+     }
+ }
+ 
+@@ -140,6 +167,11 @@
+
+             |acc: Seq<u8>, x: T| acc + x.ghost_serialize(),
+         )
+     }
++
++    #[verifier::external_body]
++    proof fn lemma_serialization_is_not_a_prefix_of(&self, other: &Self) {
++        unimplemented!()
++    }
+ }
+ 
+ impl<T: Marshalable, U: Marshalable> Marshalable for (T, U) {
+@@ -156,24 +188,29 @@
+
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         self.0.ghost_serialize() + self.1.ghost_serialize()
+     }
+-}
++
++    #[verifier::external_body]
++    proof fn lemma_serialization_is_not_a_prefix_of(&self, other: &Self) {
++        unimplemented!()
++    }
++}
++
++macro_rules! derive_marshalable_for_struct { {
++    $(#[$attr : meta])* $pub : vis struct $newstruct : ident $(< $($poly : ident :
++    Marshalable),+ $(,)? >)? { $($fieldvis : vis $field : ident : $fieldty : ty),+ $(,)?
++    } } => { ::builtin_macros::verus! { impl $(< $($poly : Marshalable),* >)? Marshalable
++    for $newstruct $(< $($poly),* >)? { open spec fn view_equal(& self, other : & Self)
++    -> bool { $(&&& self.$field .view_equal(& other.$field))* } open spec fn
++    is_marshalable(& self) -> bool { $(&&& self.$field .is_marshalable())* &&& 0 $(+ self
++    .$field .ghost_serialize().len())* <= usize::MAX } open spec fn ghost_serialize(&
++    self) -> Seq < u8 > { Seq::empty() $(+ self.$field .ghost_serialize())* }
++    #[verifier::external_body] proof fn lemma_serialization_is_not_a_prefix_of(self : &
++    Self, other : & Self) { unimplemented!() } } } } }
+ 
+ macro_rules!
+-    derive_marshalable_for_struct { { $(#[$attr : meta])* $pub : vis struct $newstruct :
+-    ident $(< $($poly : ident : Marshalable),+ $(,)? >)? { $($fieldvis : vis $field :
+-    ident : $fieldty : ty),+ $(,)? } } => { ::builtin_macros::verus! { impl $(< $($poly :
+-    Marshalable),* >)? Marshalable for $newstruct $(< $($poly),* >)? { open spec fn
+-    view_equal(& self, other : & Self) -> bool { $(&&& self.$field .view_equal(& other
+-    .$field))* } open spec fn is_marshalable(& self) -> bool { $(&&& self.$field
+-    .is_marshalable())* &&& 0 $(+ self.$field .ghost_serialize().len())* <= usize::MAX }
+-    open spec fn ghost_serialize(& self) -> Seq < u8 > { Seq::empty() $(+ self.$field
+-    .ghost_serialize())* } #[verifier::external_body] proof fn
+-    lemma_serialization_is_not_a_prefix_of(self : & Self, other : & Self) {
+-    unimplemented!() } } } } }
+-
+-macro_rules! marshalable_by_bijection { { [$type : ty] <->
+-    [$marshalable : ty]; forward($self : ident) $forward : expr; backward($m : ident)
+-    $backward : expr; } => { ::builtin_macros::verus! { impl $type { pub open spec fn
++    marshalable_by_bijection { { [$type : ty] <-> [$marshalable : ty]; forward($self :
++    ident) $forward : expr; backward($m : ident) $backward : expr; } => {
++    ::builtin_macros::verus! { impl $type { pub open spec fn
+     forward_bijection_for_view_equality_do_not_use_for_anything_else($self : Self) ->
+     $marshalable { $forward } } impl Marshalable for $type { open spec fn view_equal(&
+     self, other : & Self) -> bool { self

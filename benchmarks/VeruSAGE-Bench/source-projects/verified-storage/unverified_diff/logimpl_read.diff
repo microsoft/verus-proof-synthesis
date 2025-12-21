@@ -1,0 +1,135 @@
+--- benchmarks/verified-storage/unverified_nolemma/logimpl_read.rs
+
++++ benchmarks/verified-storage/unverified/logimpl_read.rs
+
+@@ -546,6 +546,49 @@
+
+         self.state@
+     }
+ 
++    #[verifier::external_body]
++    proof fn lemma_read_of_continuous_range(
++        &self,
++        pm_region_view: PersistentMemoryRegionView,
++        log_id: u128,
++        pos: int,
++        len: int,
++        addr: int,
++    )
++        requires
++            len > 0,
++            metadata_consistent_with_info(pm_region_view, log_id, self.cdb, self.info),
++            info_consistent_with_log_area_in_region(pm_region_view, self.info, self.state@),
++            ({
++                let info = self.info;
++                let max_len_without_wrapping = info.log_area_len
++                    - relative_log_pos_to_log_area_offset(
++                    pos - info.head,
++                    info.head_log_area_offset as int,
++                    info.log_area_len as int,
++                );
++                &&& pos >= info.head
++                &&& pos + len <= info.head + info.log_length
++                &&& len <= max_len_without_wrapping
++                &&& addr == ABSOLUTE_POS_OF_LOG_AREA + relative_log_pos_to_log_area_offset(
++                    pos - info.head as int,
++                    info.head_log_area_offset as int,
++                    info.log_area_len as int,
++                )
++            }),
++        ensures
++            ({
++                let log = self@;
++                &&& pm_region_view.no_outstanding_writes_in_range(addr, addr + len)
++                &&& pm_region_view.committed().subrange(addr, addr + len) == log.log.subrange(
++                    pos - log.head,
++                    pos + len - log.head,
++                )
++            }),
++    {
++        unimplemented!()
++    }
++
+     #[verifier::auto_ext_equal(assert, assert_by, ensures)]
+     pub exec fn read<Perm, PMRegion>(
+         &self,
+@@ -695,6 +738,39 @@
+
+     }
+ }
+ 
++
++
++pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
++
++}
++
++pub trait PmCopyHelper: PmCopy {
++    spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
++
++    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
++
++    spec fn spec_crc(self) -> u64;
++}
++
++impl<T> PmCopyHelper for T where T: PmCopy {
++    closed spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    #[verifier::external_body]
++    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
++        unimplemented!()
++    }
++
++    open spec fn spec_crc(self) -> u64 {
++        spec_crc_u64(self.spec_to_bytes())
++    }
++
++    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
++        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
++    }
++}
++
+ #[verifier::external_body]
+ pub proof fn axiom_bytes_len<S: PmCopy>(s: S)
+     ensures
+@@ -709,37 +785,6 @@
+
+         s == #[trigger] S::spec_from_bytes(s.spec_to_bytes()),
+ {
+     unimplemented!()
+-}
+-
+-pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
+-
+-}
+-
+-pub trait PmCopyHelper: PmCopy {
+-    spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
+-
+-    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
+-
+-    spec fn spec_crc(self) -> u64;
+-}
+-
+-impl<T> PmCopyHelper for T where T: PmCopy {
+-    closed spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    #[verifier::external_body]
+-    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
+-        unimplemented!()
+-    }
+-
+-    open spec fn spec_crc(self) -> u64 {
+-        spec_crc_u64(self.spec_to_bytes())
+-    }
+-
+-    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
+-        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
+-    }
+ }
+ 
+ impl PmCopy for u64 {

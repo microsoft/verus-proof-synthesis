@@ -1,0 +1,1 @@
+../../verusys-unverified-task/NR__spec_t__os_invariant__lemma_init_implies_empty_map.rs

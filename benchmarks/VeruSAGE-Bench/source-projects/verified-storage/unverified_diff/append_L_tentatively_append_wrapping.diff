@@ -1,0 +1,70 @@
+--- benchmarks/verified-storage/unverified_nolemma/append_L_tentatively_append_wrapping.rs
+
++++ benchmarks/verified-storage/unverified/append_L_tentatively_append_wrapping.rs
+
+@@ -1,6 +1,7 @@
+
+ use builtin::*;
+ use builtin_macros::*;
+ use vstd::prelude::*;
++
+ verus! {
+ 
+ pub struct AbstractLogState {
+@@ -142,6 +143,55 @@
+
+     pub open spec fn no_outstanding_writes_in_range(self, i: int, j: int) -> bool {
+         forall|k| i <= k < j ==> (#[trigger] self.state[k].outstanding_write).is_none()
+     }
++}
++
++#[verifier::external_body]
++pub proof fn lemma_tentatively_append(
++    pm_region_view: PersistentMemoryRegionView,
++    bytes_to_append: Seq<u8>,
++    prev_info: LogInfo,
++    prev_state: AbstractLogState,
++)
++    requires
++        pm_region_view.len() == prev_info.log_area_len,
++        info_consistent_with_log_area(pm_region_view, prev_info, prev_state),
++        ({
++            let log_area_len = prev_info.log_area_len;
++            let num_bytes = bytes_to_append.len();
++            let max_len_without_wrapping = log_area_len - relative_log_pos_to_log_area_offset(
++                prev_info.log_plus_pending_length as int,
++                prev_info.head_log_area_offset as int,
++                log_area_len as int,
++            );
++            &&& 0 < num_bytes <= max_len_without_wrapping
++            &&& prev_info.log_plus_pending_length + num_bytes <= log_area_len
++            &&& prev_info.head + prev_info.log_plus_pending_length + num_bytes <= u128::MAX
++        }),
++    ensures
++        ({
++            let log_area_len = prev_info.log_area_len;
++            let num_bytes = bytes_to_append.len();
++            let new_info = prev_info.tentatively_append(num_bytes as u64);
++            let new_state = prev_state.tentatively_append(bytes_to_append);
++            let write_addr = relative_log_pos_to_log_area_offset(
++                prev_info.log_plus_pending_length as int,
++                prev_info.head_log_area_offset as int,
++                log_area_len as int,
++            );
++            let pm_region_view2 = pm_region_view.write(write_addr, bytes_to_append);
++            &&& pm_region_view.no_outstanding_writes_in_range(write_addr, write_addr + num_bytes)
++            &&& forall|log_area_offset: int|
++                write_addr <= log_area_offset < write_addr + num_bytes
++                    ==> log_area_offset_unreachable_during_recovery(
++                    prev_info.head_log_area_offset as int,
++                    prev_info.log_area_len as int,
++                    prev_info.log_length as int,
++                    log_area_offset,
++                )
++            &&& info_consistent_with_log_area(pm_region_view2, new_info, new_state)
++        }),
++{
++    unimplemented!()
+ }
+ 
+ fn main() {

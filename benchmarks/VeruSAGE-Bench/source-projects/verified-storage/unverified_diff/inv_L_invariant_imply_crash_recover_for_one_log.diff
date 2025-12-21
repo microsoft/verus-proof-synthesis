@@ -1,0 +1,111 @@
+--- benchmarks/verified-storage/unverified_nolemma/inv_L_invariant_imply_crash_recover_for_one_log.rs
+
++++ benchmarks/verified-storage/unverified/inv_L_invariant_imply_crash_recover_for_one_log.rs
+
+@@ -337,6 +337,16 @@
+
+     }
+ }
+ 
++#[verifier::external_body]
++pub proof fn lemma_establish_subrange_equivalence(mem1: Seq<u8>, mem2: Seq<u8>)
++    ensures
++        forall|i: int, j: int|
++            mem1.subrange(i, j) =~= mem2.subrange(i, j) ==> #[trigger] mem1.subrange(i, j)
++                == #[trigger] mem2.subrange(i, j),
++{
++    unimplemented!()
++}
++
+ pub struct LogInfo {
+     pub log_area_len: u64,
+     pub head: u128,
+@@ -359,6 +369,32 @@
+
+     }
+ }
+ 
++
++
++pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
++
++}
++
++pub trait PmCopyHelper: PmCopy {
++    spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
++
++    spec fn spec_crc(self) -> u64;
++}
++
++impl<T> PmCopyHelper for T where T: PmCopy {
++    closed spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
++        choose|x: T| x.spec_to_bytes() == bytes
++    }
++
++    open spec fn spec_crc(self) -> u64 {
++        spec_crc_u64(self.spec_to_bytes())
++    }
++}
++
+ #[verifier::external_body]
+ pub proof fn axiom_bytes_len<S: PmCopy>(s: S)
+     ensures
+@@ -373,30 +409,6 @@
+
+         s == #[trigger] S::spec_from_bytes(s.spec_to_bytes()),
+ {
+     unimplemented!()
+-}
+-
+-pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
+-
+-}
+-
+-pub trait PmCopyHelper: PmCopy {
+-    spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
+-
+-    spec fn spec_crc(self) -> u64;
+-}
+-
+-impl<T> PmCopyHelper for T where T: PmCopy {
+-    closed spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
+-        choose|x: T| x.spec_to_bytes() == bytes
+-    }
+-
+-    open spec fn spec_crc(self) -> u64 {
+-        spec_crc_u64(self.spec_to_bytes())
+-    }
+ }
+ 
+ impl PmCopy for u64 {
+@@ -515,6 +527,21 @@
+
+ 
+ pub open spec fn extract_bytes(bytes: Seq<u8>, pos: nat, len: nat) -> Seq<u8> {
+     bytes.subrange(pos as int, (pos + len) as int)
++}
++
++#[verifier::external_body]
++pub proof fn lemma_wherever_no_outstanding_writes_persistent_memory_view_can_only_crash_as_committed(
++    pm_region_view: PersistentMemoryRegionView,
++)
++    ensures
++        forall|s, addr: int|
++            {
++                &&& pm_region_view.can_crash_as(s)
++                &&& 0 <= addr < s.len()
++                &&& pm_region_view.state[addr].outstanding_write.is_none()
++            } ==> #[trigger] s[addr] == pm_region_view.committed()[addr],
++{
++    unimplemented!()
+ }
+ 
+ pub open spec fn get_subregion_view(

@@ -1,0 +1,1 @@
+std::result::Result<(RoleRefView, std::option::Option<vstd::seq::Seq<SubjectView>>), ()>

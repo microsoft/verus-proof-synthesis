@@ -1,0 +1,22 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/host_impl_v__impl2__host_model_next_receive_message.rs
+
++++ benchmarks/verified-ironkv/unverified/host_impl_v__impl2__host_model_next_receive_message.rs
+
+@@ -269,6 +269,16 @@
+
+ 
+     #[verifier::external_body]
+     pub closed spec fn valid(self) -> bool {
++        unimplemented!()
++    }
++
++    #[verifier::external_body]
++    pub proof fn valid_implies_complete(&self)
++        requires
++            self.valid(),
++        ensures
++            self@.dom().is_full(),
++    {
+         unimplemented!()
+     }
+ }

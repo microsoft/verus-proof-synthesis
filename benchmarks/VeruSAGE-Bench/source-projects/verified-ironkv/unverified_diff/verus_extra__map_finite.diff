@@ -1,0 +1,34 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/verus_extra__map_finite.rs
+
++++ benchmarks/verified-ironkv/unverified/verus_extra__map_finite.rs
+
+@@ -26,6 +26,28 @@
+
+     set_fold(s, Set::empty(), |s1: Set<B>, a: A| s1.insert(f(a)))
+ }
+ 
++#[verifier::external_body]
++proof fn map_fold_ok<A, B>(s: Set<A>, f: spec_fn(A) -> B)
++    requires
++        s.finite(),
++    ensures
++        map_fold(s, f) =~= s.map(f),
++    decreases s.len(),
++{
++    unimplemented!()
++}
++
++#[verifier::external_body]
++proof fn map_fold_finite<A, B>(s: Set<A>, f: spec_fn(A) -> B)
++    requires
++        s.finite(),
++    ensures
++        map_fold(s, f).finite(),
++    decreases s.len(),
++{
++    unimplemented!()
++}
++
+ pub proof fn map_finite<A, B>(s: Set<A>, f: spec_fn(A) -> B)
+     requires
+         s.finite(),

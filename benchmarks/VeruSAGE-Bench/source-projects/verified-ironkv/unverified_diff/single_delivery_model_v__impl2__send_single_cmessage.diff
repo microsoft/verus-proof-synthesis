@@ -1,0 +1,246 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/single_delivery_model_v__impl2__send_single_cmessage.rs
+
++++ benchmarks/verified-ironkv/unverified/single_delivery_model_v__impl2__send_single_cmessage.rs
+
+@@ -151,6 +151,11 @@
+
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         spec_u64_to_le_bytes(*self)
+     }
++
++    #[verifier::external_body]
++    proof fn lemma_same_views_serialize_the_same(self: &Self, other: &Self) {
++        unimplemented!()
++    }
+ }
+ 
+ impl Marshalable for usize {
+@@ -165,6 +170,11 @@
+
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         (*self as u64).ghost_serialize()
+     }
++
++    #[verifier::external_body]
++    proof fn lemma_same_views_serialize_the_same(self: &Self, other: &Self) {
++        unimplemented!()
++    }
+ }
+ 
+ impl Marshalable for Vec<u8> {
+@@ -179,6 +189,11 @@
+
+ 
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         (self@.len() as usize).ghost_serialize() + self@
++    }
++
++    #[verifier::external_body]
++    proof fn lemma_same_views_serialize_the_same(self: &Self, other: &Self) {
++        unimplemented!()
+     }
+ }
+ 
+@@ -203,6 +218,11 @@
+
+             None => seq![0],
+             Some(x) => seq![1] + x.ghost_serialize(),
+         }
++    }
++
++    #[verifier::external_body]
++    proof fn lemma_same_views_serialize_the_same(self: &Self, other: &Self) {
++        unimplemented!()
+     }
+ }
+ 
+@@ -229,6 +249,11 @@
+
+             |acc: Seq<u8>, x: T| acc + x.ghost_serialize(),
+         )
+     }
++
++    #[verifier::external_body]
++    proof fn lemma_same_views_serialize_the_same(self: &Self, other: &Self) {
++        unimplemented!()
++    }
+ }
+ 
+ impl<T: Marshalable, U: Marshalable> Marshalable for (T, U) {
+@@ -245,43 +270,47 @@
+
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         self.0.ghost_serialize() + self.1.ghost_serialize()
+     }
+-}
++
++    #[verifier::external_body]
++    proof fn lemma_same_views_serialize_the_same(self: &Self, other: &Self) {
++        unimplemented!()
++    }
++}
++
++macro_rules! derive_marshalable_for_struct { { $(#[$attr : meta])* $pub : vis
++    struct $newstruct : ident $(< $($poly : ident : Marshalable),+ $(,)? >)? {
++    $($fieldvis : vis $field : ident : $fieldty : ty),+ $(,)? } } => {
++    ::builtin_macros::verus! { impl $(< $($poly : Marshalable),* >)? Marshalable for
++    $newstruct $(< $($poly),* >)? { open spec fn view_equal(& self, other : & Self) ->
++    bool { $(&&& self.$field .view_equal(& other.$field))* } open spec fn
++    is_marshalable(& self) -> bool { $(&&& self.$field .is_marshalable())* &&& 0 $(+ self
++    .$field .ghost_serialize().len())* <= usize::MAX } open spec fn ghost_serialize(&
++    self) -> Seq < u8 > { Seq::empty() $(+ self.$field .ghost_serialize())* }
++    #[verifier::external_body] proof fn lemma_same_views_serialize_the_same(self : &
++    Self, other : & Self) { unimplemented!() } } } } }
+ 
+ macro_rules!
+-    derive_marshalable_for_struct { { $(#[$attr : meta])* $pub : vis struct $newstruct :
+-    ident $(< $($poly : ident : Marshalable),+ $(,)? >)? { $($fieldvis : vis $field :
+-    ident : $fieldty : ty),+ $(,)? } } => { ::builtin_macros::verus! { impl $(< $($poly :
+-    Marshalable),* >)? Marshalable for $newstruct $(< $($poly),* >)? { open spec fn
+-    view_equal(& self, other : & Self) -> bool { $(&&& self.$field .view_equal(& other
+-    .$field))* } open spec fn is_marshalable(& self) -> bool { $(&&& self.$field
+-    .is_marshalable())* &&& 0 $(+ self.$field .ghost_serialize().len())* <= usize::MAX }
+-    open spec fn ghost_serialize(& self) -> Seq < u8 > { Seq::empty() $(+ self.$field
+-    .ghost_serialize())* } #[verifier::external_body] proof fn
+-    lemma_same_views_serialize_the_same(self : & Self, other : & Self) { unimplemented!()
+-    } } } } }
+-
+-macro_rules! derive_marshalable_for_enum { { $(#[$attr : meta])* $pub : vis
++    derive_marshalable_for_enum { { $(#[$attr : meta])* $pub : vis enum $newenum : ident
++    $(< $($poly : ident : Marshalable),+ $(,)? >)? { $(#[tag = $tag : literal] $variant :
++    ident $({ $(#[o =$memother : ident] $member : ident : $memberty : ty),* $(,)? })?),+
++    $(,)? } $([rlimit attr = $rlimitattr : meta])? } => { ::builtin_macros::verus! { impl
++    $(< $($poly : Marshalable),+ >)? Marshalable for $newenum $(< $($poly),+ >)? { open
++    spec fn view_equal(& self, other : & Self) -> bool { &&& match (self, other) {
++    $(($newenum ::$variant $({ $($member),* })?, $newenum ::$variant $({ $($member :
++    $memother),* })?) => { $($(&&& $member .view_equal($memother))*)? &&& true }),+ _ =>
++    false, } } open spec fn is_marshalable(& self) -> bool { &&& match self { $($newenum
++    ::$variant $({ $($member),* })? => { $($(&&& $member .is_marshalable())*)? &&& 1
++    $($(+ $member .ghost_serialize().len())*)? <= usize::MAX }),+ } } open spec fn
++    ghost_serialize(& self) -> Seq < u8 > { match self { $($newenum ::$variant $({
++    $($member),* })? => { seq![$tag] $($(+ $member .ghost_serialize())*)? }),* } }
++    #[verifier::external_body] proof fn lemma_same_views_serialize_the_same(self : &
++    Self, other : & Self) { unimplemented!() } } } } }
++
++#[allow(unused_macros)]
++    macro_rules! define_enum_and_derive_marshalable { { $(#[$attr : meta])* $pub : vis
+     enum $newenum : ident $(< $($poly : ident : Marshalable),+ $(,)? >)? { $(#[tag = $tag
+     : literal] $variant : ident $({ $(#[o =$memother : ident] $member : ident : $memberty
+     : ty),* $(,)? })?),+ $(,)? } $([rlimit attr = $rlimitattr : meta])? } => {
+-    ::builtin_macros::verus! { impl $(< $($poly : Marshalable),+ >)? Marshalable for
+-    $newenum $(< $($poly),+ >)? { open spec fn view_equal(& self, other : & Self) -> bool
+-    { &&& match (self, other) { $(($newenum ::$variant $({ $($member),* })?, $newenum
+-    ::$variant $({ $($member : $memother),* })?) => { $($(&&& $member
+-    .view_equal($memother))*)? &&& true }),+ _ => false, } } open spec fn
+-    is_marshalable(& self) -> bool { &&& match self { $($newenum ::$variant $({
+-    $($member),* })? => { $($(&&& $member .is_marshalable())*)? &&& 1 $($(+ $member
+-    .ghost_serialize().len())*)? <= usize::MAX }),+ } } open spec fn ghost_serialize(&
+-    self) -> Seq < u8 > { match self { $($newenum ::$variant $({ $($member),* })? => {
+-    seq![$tag] $($(+ $member .ghost_serialize())*)? }),* } } #[verifier::external_body]
+-    proof fn lemma_same_views_serialize_the_same(self : & Self, other : & Self) {
+-    unimplemented!() } } } } }
+-
+-#[allow(unused_macros)] macro_rules!
+-    define_enum_and_derive_marshalable { { $(#[$attr : meta])* $pub : vis enum $newenum :
+-    ident $(< $($poly : ident : Marshalable),+ $(,)? >)? { $(#[tag = $tag : literal]
+-    $variant : ident $({ $(#[o =$memother : ident] $member : ident : $memberty : ty),*
+-    $(,)? })?),+ $(,)? } $([rlimit attr = $rlimitattr : meta])? } => {
+     ::builtin_macros::verus! { $(#[$attr])* $pub enum $newenum $(< $($poly :
+     Marshalable),+ >)? { $($variant $({ $($member : $memberty),* })?),+ } }
+     derive_marshalable_for_enum! { $(#[$attr])* $pub enum $newenum $(< $($poly :
+@@ -405,6 +434,18 @@
+
+     pub open spec fn valid(&self, dst: AbstractEndPoint) -> bool {
+         &&& self.abstractable()
+         &&& Self::valid_list(self.un_acked@, self.num_packets_acked as int, dst)
++    }
++
++    #[verifier::external_body]
++    pub proof fn lemma_seqno_in_un_acked_list(&self, dst: AbstractEndPoint, k: int)
++        requires
++            self.valid(dst),
++            0 <= k < self.un_acked@.len(),
++        ensures
++            self.un_acked@[k].arrow_Message_seqno() == self.num_packets_acked + k + 1,
++        decreases k,
++    {
++        unimplemented!()
+     }
+ }
+ 
+@@ -788,6 +829,11 @@
+
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         self.to_vec().ghost_serialize()
+     }
++
++    #[verifier::external_body]
++    proof fn lemma_same_views_serialize_the_same(self: &Self, other: &Self) {
++        unimplemented!()
++    }
+ }
+ 
+ pub open spec fn max_val_len() -> int {
+@@ -826,10 +872,10 @@
+
+ 
+ }
+ 
+-define_enum_and_derive_marshalable! { pub enum CSingleMessage { #[tag = 0] Message {
+-    #[o = o0] seqno : u64, #[o = o1] dst : EndPoint, #[o = o2] m : CMessage }, #[tag = 1]
+-    Ack { #[o = o0] ack_seqno : u64 }, #[tag = 2] InvalidMessage, } [rlimit attr =
+-    verifier::rlimit(25)] }
++define_enum_and_derive_marshalable! { pub enum
++    CSingleMessage { #[tag = 0] Message { #[o = o0] seqno : u64, #[o = o1] dst :
++    EndPoint, #[o = o2] m : CMessage }, #[tag = 1] Ack { #[o = o0] ack_seqno : u64 },
++    #[tag = 2] InvalidMessage, } [rlimit attr = verifier::rlimit(25)] }
+ 
+ pub type AbstractKey = SHTKey;
+ 
+@@ -841,20 +887,20 @@
+
+ 
+ type ID = EndPoint;
+ 
+-derive_marshalable_for_enum! { pub enum CMessage { #[tag =
+-    0] GetRequest { #[o = o0] k : CKey }, #[tag = 1] SetRequest { #[o = o0] k : CKey, #[o
+-    = o1] v : Option::< Vec < u8 >> }, #[tag = 2] Reply { #[o = o0] k : CKey, #[o = o1] v
+-    : Option::< Vec::< u8 >> }, #[tag = 3] Redirect { #[o = o0] k : CKey, #[o = o1] id :
+-    EndPoint }, #[tag = 4] Shard { #[o = o0] kr : KeyRange::< CKey >, #[o = o1] recipient
+-    : EndPoint }, #[tag = 5] Delegate { #[o = o0] range : KeyRange::< CKey >, #[o = o1] h
+-    : CKeyHashMap }, } [rlimit attr = verifier::rlimit(20)] }
+-
+-marshalable_by_bijection! {
+-    [KeyRange::< CKey >] <-> [(Option::< u64 >, Option::< u64 >)]; forward(self) { (match
+-    & self.lo.k { None => None, Some(x) => Some(x.ukey), }, match & self.hi.k { None =>
+-    None, Some(x) => Some(x.ukey), },) }; backward(x) { KeyRange { lo : KeyIterator { k :
+-    match x.0 { None => None, Some(x) => Some(SHTKey { ukey : x }), } }, hi : KeyIterator
+-    { k : match x.1 { None => None, Some(x) => Some(SHTKey { ukey : x }), } }, } }; }
++derive_marshalable_for_enum! { pub enum CMessage { #[tag = 0] GetRequest { #[o = o0]
++    k : CKey }, #[tag = 1] SetRequest { #[o = o0] k : CKey, #[o = o1] v : Option::< Vec <
++    u8 >> }, #[tag = 2] Reply { #[o = o0] k : CKey, #[o = o1] v : Option::< Vec::< u8 >>
++    }, #[tag = 3] Redirect { #[o = o0] k : CKey, #[o = o1] id : EndPoint }, #[tag = 4]
++    Shard { #[o = o0] kr : KeyRange::< CKey >, #[o = o1] recipient : EndPoint }, #[tag =
++    5] Delegate { #[o = o0] range : KeyRange::< CKey >, #[o = o1] h : CKeyHashMap }, }
++    [rlimit attr = verifier::rlimit(20)] }
++
++marshalable_by_bijection! { [KeyRange::< CKey
++    >] <-> [(Option::< u64 >, Option::< u64 >)]; forward(self) { (match & self.lo.k {
++    None => None, Some(x) => Some(x.ukey), }, match & self.hi.k { None => None, Some(x)
++    => Some(x.ukey), },) }; backward(x) { KeyRange { lo : KeyIterator { k : match x.0 {
++    None => None, Some(x) => Some(SHTKey { ukey : x }), } }, hi : KeyIterator { k : match
++    x.1 { None => None, Some(x) => Some(SHTKey { ukey : x }), } }, } }; }
+ 
+ marshalable_by_bijection! { [EndPoint] <-> [Vec::< u8 >]; forward(self) self.id;
+     backward(x) EndPoint { id : x }; }
+@@ -931,8 +977,7 @@
+
+         self.send_state.cack_state_swap(&dst, &mut local_state, default);
+         local_state.un_acked.push(sm_new.clone_up_to_view());
+         self.send_state.put(&dst, local_state);
+-        let ret = Some(sm_new);
+-        ret
++        Some(sm_new)
+     }
+ }
+ 

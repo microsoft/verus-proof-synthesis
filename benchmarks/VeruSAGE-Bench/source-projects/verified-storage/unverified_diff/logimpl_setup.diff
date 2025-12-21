@@ -1,0 +1,116 @@
+--- benchmarks/verified-storage/unverified_nolemma/logimpl_setup.rs
+
++++ benchmarks/verified-storage/unverified/logimpl_setup.rs
+
+@@ -515,6 +515,39 @@
+
+     }
+ }
+ 
++
++
++pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
++
++}
++
++pub trait PmCopyHelper: PmCopy {
++    spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
++
++    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
++
++    spec fn spec_crc(self) -> u64;
++}
++
++impl<T> PmCopyHelper for T where T: PmCopy {
++    closed spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    #[verifier::external_body]
++    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
++        unimplemented!()
++    }
++
++    open spec fn spec_crc(self) -> u64 {
++        spec_crc_u64(self.spec_to_bytes())
++    }
++
++    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
++        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
++    }
++}
++
+ #[verifier::external_body]
+ pub proof fn axiom_bytes_len<S: PmCopy>(s: S)
+     ensures
+@@ -529,37 +562,6 @@
+
+         s == #[trigger] S::spec_from_bytes(s.spec_to_bytes()),
+ {
+     unimplemented!()
+-}
+-
+-pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
+-
+-}
+-
+-pub trait PmCopyHelper: PmCopy {
+-    spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
+-
+-    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
+-
+-    spec fn spec_crc(self) -> u64;
+-}
+-
+-impl<T> PmCopyHelper for T where T: PmCopy {
+-    closed spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    #[verifier::external_body]
+-    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
+-        unimplemented!()
+-    }
+-
+-    open spec fn spec_crc(self) -> u64 {
+-        spec_crc_u64(self.spec_to_bytes())
+-    }
+-
+-    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
+-        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
+-    }
+ }
+ 
+ impl PmCopy for u64 {
+@@ -751,6 +753,30 @@
+
+     bytes.subrange(pos as int, (pos + len) as int)
+ }
+ 
++#[verifier::external_body]
++pub proof fn lemma_if_no_outstanding_writes_then_persistent_memory_view_can_only_crash_as_committed(
++    pm_region_view: PersistentMemoryRegionView,
++)
++    requires
++        pm_region_view.no_outstanding_writes(),
++    ensures
++        forall|s| pm_region_view.can_crash_as(s) ==> s == pm_region_view.committed(),
++{
++    unimplemented!()
++}
++
++#[verifier::external_body]
++pub proof fn lemma_if_no_outstanding_writes_to_region_then_flush_is_idempotent(
++    region_view: PersistentMemoryRegionView,
++)
++    requires
++        region_view.no_outstanding_writes(),
++    ensures
++        region_view.flush() == region_view,
++{
++    unimplemented!()
++}
++
+ #[verifier::external_trait_specification]
+ pub trait ExPmSized: SpecPmSized {
+     type ExternalTraitSpecificationFor: PmSized;

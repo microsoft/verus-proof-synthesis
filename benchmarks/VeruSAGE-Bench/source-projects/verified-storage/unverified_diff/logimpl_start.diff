@@ -1,0 +1,154 @@
+--- benchmarks/verified-storage/unverified_nolemma/logimpl_start.rs
+
++++ benchmarks/verified-storage/unverified/logimpl_start.rs
+
+@@ -179,6 +179,47 @@
+
+         &&& u64::bytes_parseable(extract_bytes(mem, crc_pos as nat, u64::spec_size_of()))
+         &&& crc == spec_crc_u64(metadata.spec_to_bytes())
+     }
++}
++
++#[verifier::external_body]
++pub proof fn lemma_invariants_imply_crash_recover_forall(
++    pm_region_view: PersistentMemoryRegionView,
++    log_id: u128,
++    cdb: bool,
++    info: LogInfo,
++    state: AbstractLogState,
++)
++    requires
++        memory_matches_deserialized_cdb(pm_region_view, cdb),
++        metadata_consistent_with_info(pm_region_view, log_id, cdb, info),
++        info_consistent_with_log_area_in_region(pm_region_view, info, state),
++        metadata_types_set(pm_region_view.committed()),
++    ensures
++        forall|mem| #[trigger]
++            pm_region_view.can_crash_as(mem) ==> {
++                &&& recover_cdb(mem) == Some(cdb)
++                &&& recover_state(mem, log_id) == Some(state.drop_pending_appends())
++                &&& metadata_types_set(mem)
++            },
++{
++    unimplemented!()
++}
++
++#[verifier::external_body]
++pub proof fn lemma_metadata_set_after_crash(pm_region_view: PersistentMemoryRegionView, cdb: bool)
++    requires
++        no_outstanding_writes_to_active_metadata(pm_region_view, cdb),
++        metadata_types_set(pm_region_view.committed()),
++        memory_matches_deserialized_cdb(pm_region_view, cdb),
++    ensures
++        forall|s|
++            #![auto]
++            {
++                &&& pm_region_view.can_crash_as(s)
++                &&& 0 <= ABSOLUTE_POS_OF_GLOBAL_METADATA < ABSOLUTE_POS_OF_LOG_AREA < s.len()
++            } ==> metadata_types_set(s),
++{
++    unimplemented!()
+ }
+ 
+ pub const ABSOLUTE_POS_OF_GLOBAL_METADATA: u64 = 0;
+@@ -482,6 +523,19 @@
+
+         Some(cdb) => recover_given_cdb(mem, log_id, cdb),
+         None => None,
+     }
++}
++
++#[verifier::external_body]
++pub proof fn lemma_recovered_state_is_crash_idempotent(mem: Seq<u8>, log_id: u128)
++    requires
++        recover_state(mem, log_id).is_Some(),
++    ensures
++        ({
++            let state = recover_state(mem, log_id).unwrap();
++            state == state.drop_pending_appends()
++        }),
++{
++    unimplemented!()
+ }
+ 
+ pub open spec fn can_only_crash_as_state(
+@@ -701,6 +755,39 @@
+
+     }
+ }
+ 
++
++
++pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
++
++}
++
++pub trait PmCopyHelper: PmCopy {
++    spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
++
++    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
++
++    spec fn spec_crc(self) -> u64;
++}
++
++impl<T> PmCopyHelper for T where T: PmCopy {
++    closed spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    #[verifier::external_body]
++    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
++        unimplemented!()
++    }
++
++    open spec fn spec_crc(self) -> u64 {
++        spec_crc_u64(self.spec_to_bytes())
++    }
++
++    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
++        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
++    }
++}
++
+ #[verifier::external_body]
+ pub proof fn axiom_bytes_len<S: PmCopy>(s: S)
+     ensures
+@@ -715,37 +802,6 @@
+
+         s == #[trigger] S::spec_from_bytes(s.spec_to_bytes()),
+ {
+     unimplemented!()
+-}
+-
+-pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
+-
+-}
+-
+-pub trait PmCopyHelper: PmCopy {
+-    spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
+-
+-    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
+-
+-    spec fn spec_crc(self) -> u64;
+-}
+-
+-impl<T> PmCopyHelper for T where T: PmCopy {
+-    closed spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    #[verifier::external_body]
+-    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
+-        unimplemented!()
+-    }
+-
+-    open spec fn spec_crc(self) -> u64 {
+-        spec_crc_u64(self.spec_to_bytes())
+-    }
+-
+-    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
+-        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
+-    }
+ }
+ 
+ impl PmCopy for u64 {

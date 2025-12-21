@@ -1,0 +1,32 @@
+Here we have 80+ stand-alone Verus programs that can be verified. 
+
+They come from the Verified Storage project
+https://github.com/microsoft/verified-storage
+
+Each verifiable function (i.e., proof or exec) in the following folders of the
+original Verified Storage project are extracted together with all its 
+dependencies needed for verification into a stand-alone file.
+* storage_node/src/log/*_v 
+* storage_node/src/pmem/*_v
+
+There might be some files whose names start with ``note''.
+Those files include comments explaining how to figure out the proof step by
+step.
+
+All the verifiable functions from file X in the original project are put into
+folder D_X here, with D representing the original folder X is located (e.g.,
+log or pmem). The file name is based on the name of the verifiable function in
+the original project. When the function is a proof/lemma function, a letter
+"L" is used in the file name; otherwise, if the original function is an
+executable function, no "L" is used.
+
+To get the statistics of all or part of these files, you can run get_stats.ps1
+
+./get_stats.ps1 -dir <optional sub-directory name> -name <optional name
+substring>
+
+To verify all or part of these files, you can run verify_all.ps1
+
+./verify_all.ps1 -dir <optional sub-directory name> -name <optional name
+substring>
+

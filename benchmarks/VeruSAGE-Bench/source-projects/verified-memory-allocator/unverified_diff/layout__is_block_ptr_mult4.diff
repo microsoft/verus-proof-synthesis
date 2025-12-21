@@ -1,0 +1,51 @@
+--- benchmarks/verified-memory-allocator/unverified_nolemma/layout__is_block_ptr_mult4.rs
+
++++ benchmarks/verified-memory-allocator/unverified/layout__is_block_ptr_mult4.rs
+
+@@ -20,6 +20,10 @@
+
+ }
+ 
+ pub type Metadata<T> = <T as core::ptr::Pointee>::Metadata;
++-----
++vstd::layout
++-----
++pub uninterp fn size_of<V>() -> nat;
+ -----
+ */
+ 
+@@ -76,6 +80,14 @@
+
+ pub struct Node {
+     pub ptr: *mut Node,
+ }
++
++	#[verifier::external_body]
++pub proof fn size_of_node()
++    ensures size_of::<Node>() == 8
++        && align_of::<Node>() == 8
++	{
++		unimplemented!()
++	}
+ 
+ pub ghost struct SegmentId {
+     pub id: nat,
+@@ -162,8 +174,16 @@
+
+ 
+     // The block size must be a multiple of the word size
+     &&& block_id.block_size >= size_of::<Node>()
+-    &&& block_id.block_size % size_of::<Node>() == 0
++    &&& block_id.block_size % size_of::<Node>() as nat == 0
+ }
++
++	#[verifier::external_body]
++pub proof fn block_ptr_aligned_to_word()
++    ensures forall |p, block_id| is_block_ptr(p, block_id) ==>
++        p as int % align_of::<Node>() as int == 0
++	{
++		unimplemented!()
++	}
+ 
+ pub proof fn is_block_ptr_mult4(ptr: *mut u8, block_id: BlockId)
+     requires is_block_ptr(ptr, block_id),

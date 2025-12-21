@@ -1,0 +1,16 @@
+[package]
+name = "storage_node"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+builtin_macros = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+builtin = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+vstd = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+deps_hack = { path = "../deps_hack" }
+pmsafe = { path = "../pmsafe" }
+
+[package.metadata.verus.ide]
+extra_args = "--crate-type=lib --expand-errors -L dependency=../deps_hack/target/debug/deps --extern=deps_hack=../deps_hack/target/debug/libdeps_hack.rlib"

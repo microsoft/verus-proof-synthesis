@@ -1,0 +1,24 @@
+--- benchmarks/verified-storage/unverified_nolemma/pmemutil_L_ifnooutstandingwritesthenpersistentmemoryregionsviewcanonlycrashascommitted.rs
+
++++ benchmarks/verified-storage/unverified/pmemutil_L_ifnooutstandingwritesthenpersistentmemoryregionsviewcanonlycrashascommitted.rs
+
+@@ -103,6 +103,18 @@
+
+ 
+ }
+ 
++#[verifier::external_body]
++pub proof fn lemma_if_no_outstanding_writes_then_persistent_memory_view_can_only_crash_as_committed(
++    pm_region_view: PersistentMemoryRegionView,
++)
++    requires
++        pm_region_view.no_outstanding_writes(),
++    ensures
++        forall|s| pm_region_view.can_crash_as(s) ==> s == pm_region_view.committed(),
++{
++    unimplemented!()
++}
++
+ pub fn main() {
+ }
+ 

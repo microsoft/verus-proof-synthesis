@@ -1,0 +1,28 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/marshal_v__impl4__serialize.rs
+
++++ benchmarks/verified-ironkv/unverified/marshal_v__impl4__serialize.rs
+
+@@ -2,6 +2,22 @@
+
+ use vstd::prelude::*;
+ fn main() {}
+ verus! {
++
++#[verifier::external_body]
++pub proof fn lemma_seq_fold_left_append_right<A, B>(
++    s: Seq<A>,
++    prefix: Seq<B>,
++    f: spec_fn(A) -> Seq<B>,
++)
++    requires
++        s.len() > 0,
++    ensures
++        s.subrange(0, s.len() - 1).fold_left(prefix, |sb: Seq<B>, a: A| sb + f(a)) + f(
++            s[s.len() - 1],
++        ) == s.fold_left(prefix, |sb: Seq<B>, a: A| sb + f(a)),
++{
++    unimplemented!()
++}
+ 
+ pub trait Marshalable: Sized {
+     spec fn is_marshalable(&self) -> bool;

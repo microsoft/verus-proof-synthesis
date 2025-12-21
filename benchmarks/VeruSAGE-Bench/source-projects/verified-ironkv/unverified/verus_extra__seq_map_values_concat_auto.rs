@@ -1,0 +1,20 @@
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+#[verifier::external_body]
+pub proof fn seq_map_values_concat<A, B>(s1: Seq<A>, s2: Seq<A>, f: spec_fn(A) -> B)
+    ensures
+        (s1 + s2).map_values(f) == s1.map_values(f) + s2.map_values(f),
+{
+    unimplemented!()
+}
+
+pub proof fn seq_map_values_concat_auto<A, B>()
+    ensures
+        forall|s1: Seq<A>, s2: Seq<A>, f: spec_fn(A) -> B| #[trigger]
+            (s1 + s2).map_values(f) == s1.map_values(f) + s2.map_values(f),
+{
+}
+
+} // verus!

@@ -1,0 +1,47 @@
+--- benchmarks/verified-storage/unverified_nolemma/subregion_new_with_condition.rs
+
++++ benchmarks/verified-storage/unverified/subregion_new_with_condition.rs
+
+@@ -147,6 +147,41 @@
+
+                 is_writable_absolute_addr_fn,
+             )
+         } ==> condition(s2)
++}
++
++#[verifier::external_body]
++pub proof fn lemma_condition_sufficient_to_create_wrpm_subregion<Perm>(
++    region_view: PersistentMemoryRegionView,
++    perm: &Perm,
++    start: u64,
++    len: nat,
++    is_writable_absolute_addr_fn: spec_fn(int) -> bool,
++    condition: spec_fn(Seq<u8>) -> bool,
++) where Perm: CheckPermission<Seq<u8>>
++    requires
++        condition_sufficient_to_create_wrpm_subregion(
++            region_view,
++            perm,
++            start,
++            len,
++            is_writable_absolute_addr_fn,
++            condition,
++        ),
++    ensures
++        forall|alt_region_view: PersistentMemoryRegionView, alt_crash_state: Seq<u8>|
++            {
++                &&& #[trigger] alt_region_view.can_crash_as(alt_crash_state)
++                &&& region_view.len() == alt_region_view.len()
++                &&& views_differ_only_where_subregion_allows(
++                    region_view,
++                    alt_region_view,
++                    start as nat,
++                    len,
++                    is_writable_absolute_addr_fn,
++                )
++            } ==> perm.check_permission(alt_crash_state),
++{
++    unimplemented!()
+ }
+ 
+ pub struct WriteRestrictedPersistentMemorySubregion {

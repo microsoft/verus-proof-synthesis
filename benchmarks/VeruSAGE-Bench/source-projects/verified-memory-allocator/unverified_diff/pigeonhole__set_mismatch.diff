@@ -1,0 +1,25 @@
+--- benchmarks/verified-memory-allocator/unverified_nolemma/pigeonhole__set_mismatch.rs
+
++++ benchmarks/verified-memory-allocator/unverified/pigeonhole__set_mismatch.rs
+
+@@ -4,6 +4,19 @@
+
+ fn main(){}
+ 
+ verus! {
++
++#[verifier::external_body]
++proof fn singleton_set_unique_elt<T>(s: Set<T>, a:T, b:T)
++    requires
++        s.finite(),
++        s.len() == 1,
++        s.contains(a),
++        s.contains(b),
++    ensures
++        a == b,
++	{
++		unimplemented!()
++	}
+ 
+ proof fn set_mismatch(s1:Set<nat>, s2:Set<nat>, missing:nat)
+     requires

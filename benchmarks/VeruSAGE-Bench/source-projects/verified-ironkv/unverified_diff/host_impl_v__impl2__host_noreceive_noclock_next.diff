@@ -1,0 +1,68 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/host_impl_v__impl2__host_noreceive_noclock_next.rs
+
++++ benchmarks/verified-ironkv/unverified/host_impl_v__impl2__host_noreceive_noclock_next.rs
+
+@@ -261,6 +261,16 @@
+
+ 
+     #[verifier::external_body]
+     pub closed spec fn valid(self) -> bool {
++        unimplemented!()
++    }
++
++    #[verifier::external_body]
++    pub proof fn valid_implies_complete(&self)
++        requires
++            self.valid(),
++        ensures
++            self@.dom().is_full(),
++    {
+         unimplemented!()
+     }
+ }
+@@ -1643,6 +1653,20 @@
+
+     InvalidMessage {  },
+ }
+ 
++#[verifier::external_body]
++pub proof fn lemma_if_everything_in_seq_satisfies_filter_then_filter_is_identity<A>(
++    s: Seq<A>,
++    pred: spec_fn(A) -> bool,
++)
++    requires
++        forall|i: int| 0 <= i && i < s.len() ==> pred(s[i]),
++    ensures
++        s.filter(pred) == s,
++    decreases s.len(),
++{
++    unimplemented!()
++}
++
+ pub open spec fn flatten_sets<A>(sets: Set<Set<A>>) -> Set<A> {
+     Set::new(|a: A| (exists|s: Set<A>| sets.contains(s) && s.contains(a)))
+ }
+@@ -2007,14 +2031,15 @@
+
+ 
+     #[verifier::external_body]
+     proof fn empty_event_results() -> (event_results: EventResults)
+-    ensures
+-        event_results.well_typed_events(),
+-        event_results.ios =~= event_results.event_seq(),
+-        event_results.ios == Seq::<NetEvent>::empty(),
++        ensures
++            event_results.well_typed_events(),
++            event_results.ios =~= event_results.event_seq(),
++            event_results.ios == Seq::<NetEvent>::empty(),
+     {
+-		unimplemented!()
+-    }
+-
++        unimplemented!()
++    }
++
++    #[verifier(spinoff_prover)]
+     pub fn host_noreceive_noclock_next(&mut self, netc: &mut NetClient) -> (rc: (
+         bool,
+         Ghost<EventResults>,

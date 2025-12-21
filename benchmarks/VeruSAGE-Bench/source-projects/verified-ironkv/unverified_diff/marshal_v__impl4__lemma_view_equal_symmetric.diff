@@ -1,0 +1,35 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/marshal_v__impl4__lemma_view_equal_symmetric.rs
+
++++ benchmarks/verified-ironkv/unverified/marshal_v__impl4__lemma_view_equal_symmetric.rs
+
+@@ -1,4 +1,6 @@
+
++use vstd::bytes::*;
+ use vstd::prelude::*;
++use vstd::slice::*;
+ fn main() {}
+ verus! {
+ 
+@@ -18,11 +20,21 @@
+
+     open spec fn view_equal(&self, other: &Self) -> bool {
+         self@ === other@
+     }
++
++    #[verifier::external_body]
++    proof fn lemma_view_equal_symmetric(&self, other: &Self) {
++        unimplemented!()
++    }
+ }
+ 
+ impl Marshalable for Vec<u8> {
+     open spec fn view_equal(&self, other: &Self) -> bool {
+         self@ === other@
++    }
++
++    #[verifier::external_body]
++    proof fn lemma_view_equal_symmetric(&self, other: &Self) {
++        unimplemented!()
+     }
+ }
+ 

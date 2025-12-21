@@ -1,0 +1,25 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/net_sht_v__send_packet-poly.rs
+
++++ benchmarks/verified-ironkv/unverified/net_sht_v__send_packet-poly.rs
+
+@@ -282,6 +282,19 @@
+
+ {
+     let v = choose|v: CSingleMessage| v.is_marshalable() && v.ghost_serialize() == data;
+     v
++}
++
++#[verifier::external_body]
++#[verifier(spinoff_prover)]
++pub proof fn sht_marshal_data_injective(a: &CSingleMessage, b: &CSingleMessage)
++    requires
++        a.is_marshalable(),
++        b.is_marshalable(),
++        a.ghost_serialize() == b.ghost_serialize(),
++    ensures
++        a@ == b@,
++{
++    unimplemented!()
+ }
+ 
+ pub open spec fn abstractify_net_packet_to_lsht_packet(net: NetPacket) -> LSHTPacket

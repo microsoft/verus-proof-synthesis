@@ -1,0 +1,23 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/single_delivery_state_v__impl0__truncate.rs
+
++++ benchmarks/verified-ironkv/unverified/single_delivery_state_v__impl0__truncate.rs
+
+@@ -238,6 +238,17 @@
+
+     pub open spec fn valid(&self, dst: AbstractEndPoint) -> bool {
+         &&& self.abstractable()
+         &&& Self::valid_list(self.un_acked@, self.num_packets_acked as int, dst)
++    }
++
++    #[verifier::external_body]
++    proof fn abstractify_distributes_over_skip(cm: Seq<CSingleMessage>, i: int)
++        requires
++            0 <= i <= cm.len(),
++        ensures
++            abstractify_cmessage_seq(cm.skip(i)) =~= abstractify_cmessage_seq(cm).skip(i),
++        decreases i,
++    {
++        unimplemented!()
+     }
+ 
+     pub fn truncate(&mut self, seqno_acked: u64, Ghost(dst): Ghost<AbstractEndPoint>)

@@ -1,0 +1,115 @@
+use vstd::prelude::*;
+
+fn main() {}
+pub type ReqId=nat;
+pub type NodeId=nat;
+pub type LogIdx=nat;
+
+verus!{
+
+// File: spec/unbounded_log.rs
+#[is_variant]
+pub ghost enum CombinerState {
+    Ready,
+    Placed { queued_ops: Seq<ReqId> },
+    LoadedLocalVersion { queued_ops: Seq<ReqId>, lversion: LogIdx },
+    Loop {
+        /// sequence of request ids of the local node
+        queued_ops: Seq<ReqId>,
+        /// version of the local replica
+        lversion: LogIdx,
+        /// index into the queued ops
+        idx: nat,
+        /// the global tail we'v read
+        tail: LogIdx,
+    },
+    UpdatedVersion { queued_ops: Seq<ReqId>, tail: LogIdx },
+}
+
+impl CombinerState {
+
+    pub open spec fn queued_ops(self) -> Seq<ReqId> {
+        match self {
+            CombinerState::Ready => Seq::empty(),
+            CombinerState::Placed { queued_ops } => queued_ops,
+            CombinerState::LoadedLocalVersion { queued_ops, .. } => queued_ops,
+            CombinerState::Loop { queued_ops, .. } => queued_ops,
+            CombinerState::UpdatedVersion { queued_ops, .. } => queued_ops,
+        }
+    }
+
+}
+
+#[via_fn]
+proof fn combiner_request_ids_decreases(combiners: Map<NodeId, CombinerState>) {
+    if combiners.dom().finite() {
+        if combiners.dom().len() == 0 {
+        } else {
+            let node_id = combiners.dom().choose();
+            assert(combiners.remove(node_id).dom().len() < combiners.dom().len());  // INCOMPLETENESS weird incompleteness
+        }
+    } else {
+    }
+}
+
+pub open spec fn combiner_request_ids(combiners: Map<NodeId, CombinerState>) -> Set<ReqId>
+    decreases combiners.dom().len(),
+    when (combiners.dom().finite() && combiners.dom().len() >= 0)
+    via combiner_request_ids_decreases
+{
+    if combiners.dom().finite() {
+        if combiners.dom().len() == 0 {
+            Set::empty()
+        } else {
+            let node_id = combiners.dom().choose();
+            let req_ids = combiner_request_ids(combiners.remove(node_id));
+            req_ids + seq_to_set(combiners[node_id].queued_ops())
+        }
+    } else {
+        arbitrary()
+    }
+}
+
+pub open spec fn combiner_request_id_fresh(
+    combiners: Map<NodeId, CombinerState>,
+    rid: ReqId,
+) -> bool {
+    forall|n| (#[trigger] combiners.contains_key(n)) ==> !combiners[n].queued_ops().contains(rid)
+}
+
+pub proof fn combiner_request_ids_not_contains(combiners: Map<NodeId, CombinerState>, rid: ReqId)
+    requires
+        combiners.dom().finite(),
+    ensures
+        combiner_request_id_fresh(combiners, rid) <==> !combiner_request_ids(combiners).contains(
+            rid,
+        ),
+    decreases combiners.dom().len(),
+{
+    if !(combiners.dom() =~= Set::empty()) {
+        let node_id = combiners.dom().choose();
+        combiner_request_ids_not_contains(combiners.remove(node_id), rid);
+        assert(combiner_request_id_fresh(combiners.remove(node_id), rid) <==> !combiner_request_ids(
+            combiners.remove(node_id),
+        ).contains(rid));
+        if !combiners[node_id].queued_ops().contains(rid) {
+            if combiner_request_id_fresh(combiners.remove(node_id), rid) {
+                assert forall|n|
+                    (#[trigger] combiners.contains_key(
+                        n,
+                    )) implies !combiners[n].queued_ops().contains(rid) by {
+                    if n != node_id {
+                        assert(combiners.remove(node_id).contains_key(n));
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+// File: spec/utils.rs
+pub open spec fn seq_to_set<A>(seq: Seq<A>) -> Set<A> {
+    Set::new(|a: A| seq.contains(a))
+}
+}

@@ -1,0 +1,38 @@
+--- benchmarks/verified-memory-allocator/unverified_nolemma/commit_mask__impl__next_run.rs
+
++++ benchmarks/verified-memory-allocator/unverified/commit_mask__impl__next_run.rs
+
+@@ -5,7 +5,6 @@
+
+ fn main() {}
+ 
+ verus! {
+-
+     global size_of usize==8;
+ 
+ pub const INTPTR_SHIFT: u64 = 3;
+@@ -47,6 +46,23 @@
+
+                  && is_bit_set(self.mask[t.0], t.1)
+         ).map(|t: (int, usize)| t.0 * 64 + t.1)
+     }
++
++	#[verifier::external_body]
++    proof fn lemma_view(&self)
++        ensures
++        // forall|i: int| self@.contains(i) ==> i < 512,
++        // TODO: this isn't currently used but probably will need it (-> check later)
++        (forall|i: int| self@.contains(i) ==> {
++            let a = i / usize::BITS as int;
++            let b = (i % usize::BITS as int) as usize;
++            &&& a * 64 + b == i
++            &&& is_bit_set(self.mask[a], b)
++        }),
++        forall|a: int, b: usize| 0 <= a < 8 && b < 64 && is_bit_set(self.mask[a], b)
++            ==> #[trigger] self@.contains(a * 64 + b),
++	{
++		unimplemented!()
++	}
+ 
+     pub fn next_run(&self, idx: usize) -> (res: (usize, usize))
+         requires 0 <= idx < COMMIT_MASK_BITS,

@@ -1,0 +1,30 @@
+use vstd::prelude::*;
+
+
+fn main () {}
+
+verus! {
+
+#[verifier::external_body]
+proof fn two_mul_with_bit0(x1: int, y1: int)
+    requires y1 != 0,
+    ensures (2 * x1) / (2 * y1) == x1 / y1
+	{
+		unimplemented!()
+	}
+
+	#[verifier::external_body]
+proof fn two_mul_with_bit1(x1: int, y1: int)
+    requires y1 != 0,
+    ensures (2 * x1 + 1) / (2 * y1) == x1 / y1
+	{
+		unimplemented!()
+	}
+
+proof fn bitand_with_mask_gives_rounding(x: usize, y: usize)
+    requires y != 0, y & sub(y, 1) == 0,
+    ensures x & !sub(y, 1) == (x / y) * y,
+{
+}
+
+}

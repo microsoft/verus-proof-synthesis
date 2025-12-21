@@ -1,0 +1,10 @@
+	Total	Dir
+AL	106	benchmarks/verified-anvil/unverified
+AC	63	benchmarks/verified-anvil/unverified_advanced
+IR	118	benchmarks/verified-ironkv/unverified_nontrivial
+MA	89	benchmarks/verified-memory-allocator/unverified
+NO	29	benchmarks/verified-node-replication/unverified
+NR	204	benchmarks/verified-nrkernel/unverified
+OS	160	benchmarks/verified-atmo/unverified-normal
+ST	63	benchmarks/verified-storage/unverified
+VE	22	benchmarks/verified-vest/unverified

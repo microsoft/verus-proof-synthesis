@@ -1,0 +1,1 @@
+../../verusys-unverified-task/AC__vreplicaset_controller__proof__liveness__api_actions__lemma_get_then_delete_matching_pod_request_deletes_matching_pod_and_returns_ok.rs

@@ -1,0 +1,22 @@
+--- benchmarks/verified-memory-allocator/unverified_nolemma/commit_mask__lemma_obtain_bit_index_2.rs
+
++++ benchmarks/verified-memory-allocator/unverified/commit_mask__lemma_obtain_bit_index_2.rs
+
+@@ -12,6 +12,16 @@
+
+     a & (1usize << b) == (1usize << b)
+ }
+ 
++	#[verifier::external_body]
++proof fn lemma_obtain_bit_index_1(a: usize) -> (b: usize)
++    requires a != 0
++    ensures
++        b < 64,
++        is_bit_set(a, b)
++	{
++		unimplemented!()
++	}
++
+ proof fn lemma_obtain_bit_index_2(a: usize) -> (b: usize)
+     requires a != !0usize
+     ensures

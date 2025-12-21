@@ -1,0 +1,87 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/delegation_map_v__impl4__almost_all_keys_agree.rs
+
++++ benchmarks/verified-ironkv/unverified/delegation_map_v__impl4__almost_all_keys_agree.rs
+
+@@ -24,6 +24,7 @@
+
+ 
+ type ID = EndPoint;
+ 
++pub trait VerusClone: Sized {}
+ 
+ pub enum Ordering {
+     Less,
+@@ -52,8 +53,6 @@
+
+         !matches!(self, Ordering::Greater)
+     }
+ }
+-
+-pub trait VerusClone: Sized {}
+ 
+ pub trait KeyTrait: Sized {
+     spec fn zero_spec() -> Self where Self: std::marker::Sized;
+@@ -80,7 +79,6 @@
+
+     ;
+ }
+ 
+-
+ spec fn sorted<K: KeyTrait>(s: Seq<K>) -> bool {
+     forall|i, j| #![auto] 0 <= i < j < s.len() ==> s[i].cmp_spec(s[j]).lt()
+ }
+@@ -140,6 +138,7 @@
+
+         unimplemented!()
+     }
+ }
++
+ 
+ struct StrictlyOrderedVec<K: KeyTrait> {
+     v: Vec<K>,
+@@ -218,7 +217,35 @@
+
+         dst: &ID,
+     ) -> bool {
+         forall|k|
+-            KeyIterator::between(*lo, KeyIterator::new_spec(k), *hi) ==> (#[trigger] self@[k]) == dst@
++            KeyIterator::between(*lo, KeyIterator::new_spec(k), *hi) ==> (#[trigger] self@[k])
++                == dst@
++    }
++
++    #[verifier::external_body]
++    proof fn extend_range_consistent(
++        self,
++        x: &KeyIterator<K>,
++        y: &KeyIterator<K>,
++        z: &KeyIterator<K>,
++        dst: &ID,
++    )
++        requires
++            self.range_consistent(x, y, dst),
++            self.range_consistent(y, z, dst),
++        ensures
++            self.range_consistent(x, z, dst),
++    {
++        unimplemented!()
++    }
++
++    #[verifier::external_body]
++    proof fn empty_key_range_is_consistent(&self, lo: &KeyIterator<K>, hi: &KeyIterator<K>, id: &ID)
++        requires
++            lo.geq_spec(*hi),
++        ensures
++            self.range_consistent(lo, hi, id),
++    {
++        unimplemented!()
+     }
+ 
+     proof fn almost_all_keys_agree(&self, lo: usize, hi: usize, id: &ID)
+@@ -235,6 +262,4 @@
+
+     {
+     }
+ }
+-
+-
+ } // verus!

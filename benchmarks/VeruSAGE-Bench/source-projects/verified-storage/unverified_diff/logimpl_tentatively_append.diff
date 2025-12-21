@@ -1,0 +1,243 @@
+--- benchmarks/verified-storage/unverified_nolemma/logimpl_tentatively_append.rs
+
++++ benchmarks/verified-storage/unverified/logimpl_tentatively_append.rs
+
+@@ -227,6 +227,104 @@
+
+ ) -> bool {
+     log_area_offset_to_relative_log_pos(log_area_offset, head_log_area_offset, log_area_len)
+         >= log_length
++}
++
++#[verifier::external_body]
++pub proof fn lemma_if_view_differs_only_in_log_area_parts_not_accessed_by_recovery_then_recover_state_matches(
++    v1: PersistentMemoryRegionView,
++    v2: PersistentMemoryRegionView,
++    crash_state: Seq<u8>,
++    log_id: u128,
++    cdb: bool,
++    info: LogInfo,
++    state: AbstractLogState,
++    is_writable_absolute_addr: spec_fn(int) -> bool,
++)
++    requires
++        no_outstanding_writes_to_metadata(v1),
++        memory_matches_deserialized_cdb(v1, cdb),
++        metadata_consistent_with_info(v1, log_id, cdb, info),
++        info_consistent_with_log_area_in_region(v1, info, state),
++        ABSOLUTE_POS_OF_LOG_AREA + info.log_area_len <= v1.len(),
++        v2.can_crash_as(crash_state),
++        v1.len() == v2.len(),
++        forall|addr: int| #[trigger]
++            is_writable_absolute_addr(addr) <==> log_area_offset_unreachable_during_recovery(
++                info.head_log_area_offset as int,
++                info.log_area_len as int,
++                info.log_length as int,
++                addr - ABSOLUTE_POS_OF_LOG_AREA,
++            ),
++        views_differ_only_where_subregion_allows(
++            v1,
++            v2,
++            ABSOLUTE_POS_OF_LOG_AREA as nat,
++            info.log_area_len as nat,
++            is_writable_absolute_addr,
++        ),
++    ensures
++        v1.can_crash_as(v1.committed()),
++        recover_state(crash_state, log_id) == recover_state(v1.committed(), log_id),
++{
++    unimplemented!()
++}
++
++#[verifier::external_body]
++pub proof fn lemma_metadata_set_after_crash(pm_region_view: PersistentMemoryRegionView, cdb: bool)
++    requires
++        no_outstanding_writes_to_active_metadata(pm_region_view, cdb),
++        metadata_types_set(pm_region_view.committed()),
++        memory_matches_deserialized_cdb(pm_region_view, cdb),
++    ensures
++        forall|s|
++            #![auto]
++            {
++                &&& pm_region_view.can_crash_as(s)
++                &&& 0 <= ABSOLUTE_POS_OF_GLOBAL_METADATA < ABSOLUTE_POS_OF_LOG_AREA < s.len()
++            } ==> metadata_types_set(s),
++{
++    unimplemented!()
++}
++
++#[verifier::external_body]
++pub proof fn lemma_metadata_matches_implies_metadata_types_set(
++    pm1: PersistentMemoryRegionView,
++    pm2: PersistentMemoryRegionView,
++    cdb: bool,
++)
++    requires
++        no_outstanding_writes_to_active_metadata(pm1, cdb),
++        no_outstanding_writes_to_active_metadata(pm2, cdb),
++        metadata_types_set(pm1.committed()),
++        memory_matches_deserialized_cdb(pm1, cdb),
++        0 < ABSOLUTE_POS_OF_LOG_AREA < pm1.committed().len(),
++        0 < ABSOLUTE_POS_OF_LOG_AREA < pm2.committed().len(),
++        active_metadata_is_equal(pm1, pm2),
++        pm1.len() == pm2.len(),
++    ensures
++        metadata_types_set(pm2.committed()),
++{
++    unimplemented!()
++}
++
++#[verifier::external_body]
++pub proof fn lemma_header_bytes_equal_implies_active_metadata_bytes_equal(
++    mem1: Seq<u8>,
++    mem2: Seq<u8>,
++)
++    requires
++        ABSOLUTE_POS_OF_LOG_AREA <= mem1.len(),
++        ABSOLUTE_POS_OF_LOG_AREA <= mem2.len(),
++        mem1.subrange(ABSOLUTE_POS_OF_GLOBAL_METADATA as int, ABSOLUTE_POS_OF_LOG_AREA as int)
++            =~= mem2.subrange(
++            ABSOLUTE_POS_OF_GLOBAL_METADATA as int,
++            ABSOLUTE_POS_OF_LOG_AREA as int,
++        ),
++        deserialize_and_check_log_cdb(mem1) is Some,
++    ensures
++        active_metadata_bytes_are_equal(mem1, mem2),
++{
++    unimplemented!()
+ }
+ 
+ pub const ABSOLUTE_POS_OF_GLOBAL_METADATA: u64 = 0;
+@@ -542,6 +640,16 @@
+
+         Some(cdb) => recover_given_cdb(mem, log_id, cdb),
+         None => None,
+     }
++}
++
++#[verifier::external_body]
++pub proof fn lemma_establish_subrange_equivalence(mem1: Seq<u8>, mem2: Seq<u8>)
++    ensures
++        forall|i: int, j: int|
++            mem1.subrange(i, j) =~= mem2.subrange(i, j) ==> #[trigger] mem1.subrange(i, j)
++                == #[trigger] mem2.subrange(i, j),
++{
++    unimplemented!()
+ }
+ 
+ pub open spec fn can_only_crash_as_state(
+@@ -794,6 +902,39 @@
+
+     }
+ }
+ 
++
++
++pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
++
++}
++
++pub trait PmCopyHelper: PmCopy {
++    spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
++
++    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
++
++    spec fn spec_crc(self) -> u64;
++}
++
++impl<T> PmCopyHelper for T where T: PmCopy {
++    closed spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    #[verifier::external_body]
++    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
++        unimplemented!()
++    }
++
++    open spec fn spec_crc(self) -> u64 {
++        spec_crc_u64(self.spec_to_bytes())
++    }
++
++    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
++        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
++    }
++}
++
+ #[verifier::external_body]
+ pub proof fn axiom_bytes_len<S: PmCopy>(s: S)
+     ensures
+@@ -808,37 +949,6 @@
+
+         s == #[trigger] S::spec_from_bytes(s.spec_to_bytes()),
+ {
+     unimplemented!()
+-}
+-
+-pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
+-
+-}
+-
+-pub trait PmCopyHelper: PmCopy {
+-    spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
+-
+-    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
+-
+-    spec fn spec_crc(self) -> u64;
+-}
+-
+-impl<T> PmCopyHelper for T where T: PmCopy {
+-    closed spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    #[verifier::external_body]
+-    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self {
+-        unimplemented!()
+-    }
+-
+-    open spec fn spec_crc(self) -> u64 {
+-        spec_crc_u64(self.spec_to_bytes())
+-    }
+-
+-    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
+-        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
+-    }
+ }
+ 
+ impl PmCopy for u64 {
+@@ -1121,6 +1231,33 @@
+
+         &&& self.view(wrpm).len() == self.len()
+         &&& self.opaque_inv(wrpm, perm)
+     }
++
++    #[verifier::external_body]
++    pub proof fn lemma_reveal_opaque_inv<Perm, PMRegion>(
++        self,
++        wrpm: &WriteRestrictedPersistentMemoryRegion<Perm, PMRegion>,
++        perm: &Perm,
++    ) where Perm: CheckPermission<Seq<u8>>, PMRegion: PersistentMemoryRegion
++        requires
++            self.inv(wrpm, perm),
++        ensures
++            wrpm.inv(),
++            wrpm.constants() == self.constants(),
++            wrpm@.len() == self.initial_region_view().len(),
++            views_differ_only_where_subregion_allows(
++                self.initial_region_view(),
++                wrpm@,
++                self.start(),
++                self.len(),
++                self.is_writable_absolute_addr_fn(),
++            ),
++            self.view(wrpm) == get_subregion_view(wrpm@, self.start(), self.len()),
++            forall|addr: int|
++                0 <= addr < self.len() ==> #[trigger] self.view(wrpm).state[addr]
++                    == wrpm@.state[addr + self.start()],
++    {
++        unimplemented!()
++    }
+ }
+ 
+ pub trait CheckPermission<State> {

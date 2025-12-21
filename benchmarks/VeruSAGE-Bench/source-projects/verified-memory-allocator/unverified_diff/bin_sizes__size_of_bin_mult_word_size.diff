@@ -1,0 +1,20 @@
+--- benchmarks/verified-memory-allocator/unverified_nolemma/bin_sizes__size_of_bin_mult_word_size.rs
+
++++ benchmarks/verified-memory-allocator/unverified/bin_sizes__size_of_bin_mult_word_size.rs
+
+@@ -44,6 +44,14 @@
+
+     }
+ }
+ 
++#[verifier::external_body]
++proof fn mod8(x:int, y:int)
++    requires x == 8 * y,
++    ensures  x % 8 == 0,
++	{
++		unimplemented!()
++	}
++
+ pub proof fn size_of_bin_mult_word_size(bin_idx: int)
+     ensures size_of_bin(bin_idx) % 8 == 0
+ {

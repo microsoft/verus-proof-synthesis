@@ -1,0 +1,17 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/marshal_v__impl1__lemma_same_views_serialize_the_same.rs
+
++++ benchmarks/verified-ironkv/unverified/marshal_v__impl1__lemma_same_views_serialize_the_same.rs
+
+@@ -41,6 +41,11 @@
+
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         spec_u64_to_le_bytes(*self)
+     }
++
++    #[verifier::external_body]
++    proof fn lemma_same_views_serialize_the_same(self: &Self, other: &Self) {
++        unimplemented!()
++    }
+ }
+ 
+ impl Marshalable for usize {

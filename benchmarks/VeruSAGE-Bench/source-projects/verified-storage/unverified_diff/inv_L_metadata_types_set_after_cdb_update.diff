@@ -1,0 +1,84 @@
+--- benchmarks/verified-storage/unverified_nolemma/inv_L_metadata_types_set_after_cdb_update.rs
+
++++ benchmarks/verified-storage/unverified/inv_L_metadata_types_set_after_cdb_update.rs
+
+@@ -84,6 +84,16 @@
+
+     }
+ }
+ 
++#[verifier::external_body]
++pub proof fn lemma_auto_smaller_range_of_seq_is_subrange(mem1: Seq<u8>)
++    ensures
++        forall|i: int, j, k: int, l: int|
++            0 <= i <= k <= l <= j <= mem1.len() ==> mem1.subrange(i, j).subrange(k - i, l - i)
++                == mem1.subrange(k, l),
++{
++    unimplemented!()
++}
++
+ pub const ABSOLUTE_POS_OF_GLOBAL_METADATA: u64 = 0;
+ 
+ pub const ABSOLUTE_POS_OF_GLOBAL_CRC: u64 = 32;
+@@ -188,6 +198,30 @@
+
+     }
+ }
+ 
++
++
++pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
++
++}
++
++pub trait PmCopyHelper: PmCopy {
++    spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
++
++    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
++}
++
++impl<T> PmCopyHelper for T where T: PmCopy {
++    closed spec fn spec_to_bytes(self) -> Seq<u8>;
++
++    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
++
++    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
++        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
++    }
++}
++
+ #[verifier::external_body]
+ pub proof fn axiom_bytes_len<S: PmCopy>(s: S)
+     ensures
+@@ -202,28 +236,6 @@
+
+         s == #[trigger] S::spec_from_bytes(s.spec_to_bytes()),
+ {
+     unimplemented!()
+-}
+-
+-pub trait PmCopy: PmSized + SpecPmSized + Sized + Copy {
+-
+-}
+-
+-pub trait PmCopyHelper: PmCopy {
+-    spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
+-
+-    spec fn bytes_parseable(bytes: Seq<u8>) -> bool;
+-}
+-
+-impl<T> PmCopyHelper for T where T: PmCopy {
+-    closed spec fn spec_to_bytes(self) -> Seq<u8>;
+-
+-    closed spec fn spec_from_bytes(bytes: Seq<u8>) -> Self;
+-
+-    open spec fn bytes_parseable(bytes: Seq<u8>) -> bool {
+-        Self::spec_from_bytes(bytes).spec_to_bytes() == bytes
+-    }
+ }
+ 
+ global size_of usize == 8;

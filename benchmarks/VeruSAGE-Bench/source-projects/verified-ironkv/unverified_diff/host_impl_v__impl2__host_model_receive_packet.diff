@@ -1,0 +1,28 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/host_impl_v__impl2__host_model_receive_packet.rs
+
++++ benchmarks/verified-ironkv/unverified/host_impl_v__impl2__host_model_receive_packet.rs
+
+@@ -859,6 +859,22 @@
+
+     Message { seqno: nat, dst: AbstractEndPoint, m: MT },
+     Ack { ack_seqno: nat },
+     InvalidMessage {  },
++}
++
++#[verifier::external_body]
++pub proof fn lemma_to_set_singleton_auto<A>()
++    ensures
++        forall|x: A| #[trigger] seq![x].to_set() == set![x],
++{
++    unimplemented!()
++}
++
++#[verifier::external_body]
++pub proof fn lemma_map_values_singleton_auto<A, B>()
++    ensures
++        forall|x: A, f: spec_fn(A) -> B| #[trigger] seq![x].map_values(f) =~= seq![f(x)],
++{
++    unimplemented!()
+ }
+ 
+ #[verifier::opaque]

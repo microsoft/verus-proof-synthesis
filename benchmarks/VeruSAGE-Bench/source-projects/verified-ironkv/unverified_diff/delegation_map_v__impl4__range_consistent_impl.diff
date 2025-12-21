@@ -1,0 +1,162 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/delegation_map_v__impl4__range_consistent_impl.rs
+
++++ benchmarks/verified-ironkv/unverified/delegation_map_v__impl4__range_consistent_impl.rs
+
+@@ -1,5 +1,7 @@
+
+ use vstd::prelude::*;
++
+ fn main() {}
++
+ verus! {
+ 
+ pub trait VerusClone : Sized {}
+@@ -29,7 +31,7 @@
+
+ }
+ 
+ type ID = EndPoint;  // this code was trying to be too generic, but we need to know how to clone IDs. So we specialize.
+-
++ 
+ pub enum Ordering {
+     Less,
+     Equal,
+@@ -186,9 +188,9 @@
+
+ 
+     #[verifier::external_body]
+     pub fn lt(&self, other: &Self) -> (b: bool)
+-    ensures b == self.lt_spec(*other),
+-    {
+-        unimplemented!()
++        ensures b == self.lt_spec(*other),
++    {
++	unimplemented!()
+     }
+ 
+     spec fn above_spec(&self, k: K) -> bool {
+@@ -233,7 +235,6 @@
+
+ 
+ 
+ #[verifier::reject_recursive_types(K)]
+-
+ struct StrictlyOrderedMap<K: KeyTrait + VerusClone> {
+     keys: StrictlyOrderedVec<K>,
+     vals: Vec<ID>,
+@@ -264,7 +265,7 @@
+
+         forall |ki| lo.lt_spec(ki) && ki.lt_spec(hi) ==> !(#[trigger] self@.contains_key(*ki.get()))
+     }
+ 
+-    #[verifier::external_body]
++	#[verifier::external_body]
+     fn keys_in_index_range_agree(&self, lo: usize, hi: usize, v: &ID) -> (ret:(bool, bool))
+         requires 
+             self.valid(),
+@@ -295,13 +296,11 @@
+
+             0 <= index < self.keys@.len(),
+             self.greatest_lower_bound_spec(*iter, KeyIterator::new_spec(self.keys@[index as int])),
+     {
+-		unimplemented!()
+-    }
+-}
+-
++        unimplemented!()
++    }
++}
+ 
+ #[verifier::reject_recursive_types(K)]
+-
+ pub struct DelegationMap<K: KeyTrait + VerusClone> {
+     // Our efficient implementation based on ranges
+     lows: StrictlyOrderedMap<K>,
+@@ -309,6 +308,7 @@
+
+     m: Ghost<Map<K, AbstractEndPoint>>,
+ 
+ }
++
+ impl<K: KeyTrait + VerusClone> DelegationMap<K> {
+ 
+     pub closed spec fn view(self) -> Map<K,AbstractEndPoint> {
+@@ -330,6 +330,77 @@
+
+     pub open spec fn range_consistent(self, lo: &KeyIterator<K>, hi: &KeyIterator<K>, dst: &ID) -> bool {
+         forall |k| KeyIterator::between(*lo, KeyIterator::new_spec(k), *hi) ==> (#[trigger] self@[k]) == dst@
+     }
++
++	#[verifier::external_body]
++    proof fn not_range_consistent(self, lo: &KeyIterator<K>, hi: &KeyIterator<K>, dst: &ID, bad: &KeyIterator<K>)
++        requires
++            KeyIterator::between(*lo, *bad, *hi),
++            self@.contains_key(*bad.get()),
++            self@[*bad.get()] != dst@,
++        ensures
++            !self.range_consistent(lo, hi, dst),
++	{
++		unimplemented!()
++	}
++
++	#[verifier::external_body]
++    proof fn extend_range_consistent(self, x: &KeyIterator<K>, y: &KeyIterator<K>, z: &KeyIterator<K>, dst: &ID) 
++        requires 
++            self.range_consistent(x, y, dst),
++            self.range_consistent(y, z, dst),
++        ensures
++            self.range_consistent(x, z, dst),
++	{
++		unimplemented!()
++	}
++
++	#[verifier::external_body]
++    proof fn range_consistent_subset(self, x: &KeyIterator<K>, y: &KeyIterator<K>, x_inner: &KeyIterator<K>, y_inner: &KeyIterator<K>, dst: &ID) 
++        requires 
++            self.range_consistent(x, y, dst),
++            x_inner.geq_spec(*x),
++            !y.lt_spec(*y_inner),
++        ensures
++            self.range_consistent(x_inner, y_inner, dst),
++	{
++		unimplemented!()
++	}
++
++	#[verifier::external_body]
++    proof fn empty_key_range_is_consistent(&self, lo: &KeyIterator<K>, hi: &KeyIterator<K>, id: &ID)
++        requires
++            lo.geq_spec(*hi),
++        ensures 
++            self.range_consistent(lo, hi, id),
++	{
++		unimplemented!()
++	}
++
++	#[verifier::external_body]
++    proof fn all_keys_agree(&self, lo: usize, hi: usize, id: &ID)
++        requires
++            self.valid(),
++            0 <= lo <= hi < self.lows.keys@.len(),
++            forall |i| #![auto] lo <= i <= hi ==> self.lows@[self.lows.keys@[i]]@ == id@,
++        ensures
++            self.range_consistent(&KeyIterator::new_spec(self.lows.keys@[lo as int]), &KeyIterator::new_spec(self.lows.keys@[hi as int]), id),
++        decreases hi - lo,
++	{
++		unimplemented!()
++	}
++
++	#[verifier::external_body]
++    proof fn almost_all_keys_agree(&self, lo: usize, hi: usize, id: &ID)
++        requires
++            self.valid(),
++            0 <= lo <= hi < self.lows.keys@.len(),
++            forall |i| #![auto] lo <= i < hi ==> self.lows@[self.lows.keys@[i]]@ == id@,
++        ensures
++            self.range_consistent(&KeyIterator::new_spec(self.lows.keys@[lo as int]), &KeyIterator::new_spec(self.lows.keys@[hi as int]), id),
++        decreases hi - lo,
++	{
++		unimplemented!()
++	}
+ 
+     pub fn range_consistent_impl(&self, lo: &KeyIterator<K>, hi: &KeyIterator<K>, dst: &ID) -> (b: bool)
+         requires

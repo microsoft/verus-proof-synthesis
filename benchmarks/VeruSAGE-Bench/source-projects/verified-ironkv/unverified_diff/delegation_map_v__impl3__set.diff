@@ -1,0 +1,70 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/delegation_map_v__impl3__set.rs
+
++++ benchmarks/verified-ironkv/unverified/delegation_map_v__impl3__set.rs
+
+@@ -69,7 +69,6 @@
+
+     ;
+ }
+ 
+-
+ pub struct KeyIterator<K: KeyTrait + VerusClone> {
+     pub k: Option<K>,
+ }
+@@ -122,12 +121,13 @@
+
+     }
+ }
+ 
++
++struct StrictlyOrderedVec<K: KeyTrait> {
++    v: Vec<K>,
++}
++
+ spec fn sorted<K: KeyTrait>(s: Seq<K>) -> bool {
+     forall|i, j| #![auto] 0 <= i < j < s.len() ==> s[i].cmp_spec(s[j]).lt()
+-}
+-
+-struct StrictlyOrderedVec<K: KeyTrait> {
+-    v: Vec<K>,
+ }
+ 
+ impl<K: KeyTrait + VerusClone> StrictlyOrderedVec<K> {
+@@ -183,6 +183,36 @@
+
+ 
+     spec fn gap(self, lo: KeyIterator<K>, hi: KeyIterator<K>) -> bool {
+         forall|ki| lo.lt_spec(ki) && ki.lt_spec(hi) ==> !(#[trigger] self@.contains_key(*ki.get()))
++    }
++
++    #[verifier::external_body]
++    proof fn mind_the_gap(self)
++        ensures
++            forall|w, x, y, z|
++                self.gap(w, x) && self.gap(y, z) && #[trigger] y.lt_spec(x) ==> #[trigger] self.gap(
++                    w,
++                    z,
++                ),
++            forall|w, x, y: KeyIterator<K>, z| #[trigger]
++                self.gap(w, x) && y.geq_spec(w) && x.geq_spec(z) ==> #[trigger] self.gap(y, z),
++            forall|l: KeyIterator<K>, k, m| #[trigger]
++                self.gap(k, m) ==> !(k.lt_spec(l) && l.lt_spec(m) && #[trigger] self@.contains_key(
++                    *l.get(),
++                )),
++    {
++        unimplemented!()
++    }
++
++    #[verifier::external_body]
++    proof fn gap_means_empty(self, lo: KeyIterator<K>, hi: KeyIterator<K>, k: KeyIterator<K>)
++        requires
++            self.gap(lo, hi),
++            lo.lt_spec(k) && k.lt_spec(hi),
++            self@.contains_key(*k.get()),
++        ensures
++            false,
++    {
++        unimplemented!()
+     }
+ 
+     #[verifier::external_body]

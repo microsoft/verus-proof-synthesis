@@ -1,0 +1,1 @@
+../../verusys-unverified-task/MA__commit_mask__lemma_obtain_bit_index_1_aux.rs

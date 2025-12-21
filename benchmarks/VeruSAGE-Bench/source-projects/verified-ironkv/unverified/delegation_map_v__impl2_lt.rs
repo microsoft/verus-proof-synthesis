@@ -1,0 +1,101 @@
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub struct AbstractEndPoint {
+    pub id: Seq<u8>,
+}
+
+impl Ordering {
+    pub open spec fn lt(self) -> bool {
+        matches!(self, Ordering::Less)
+    }
+
+    #[verifier::external_body]
+    pub const fn is_lt(self) -> (b: bool)
+        ensures
+            b == self.lt(),
+    {
+        unimplemented!()
+    }
+}
+
+struct StrictlyOrderedVec<K: KeyTrait> {
+    v: Vec<K>,
+}
+
+#[verifier::reject_recursive_types(K)]
+struct StrictlyOrderedMap<K: KeyTrait + VerusClone> {
+    keys: StrictlyOrderedVec<K>,
+    vals: Vec<ID>,
+    m: Ghost<Map<K, ID>>,
+}
+
+#[verifier::reject_recursive_types(K)]
+pub struct DelegationMap<K: KeyTrait + VerusClone> {
+    lows: StrictlyOrderedMap<K>,
+    m: Ghost<Map<K, AbstractEndPoint>>,
+}
+
+pub struct EndPoint {
+    pub id: Vec<u8>,
+}
+
+type ID = EndPoint;
+
+pub trait KeyTrait: Sized {
+    spec fn cmp_spec(self, other: Self) -> Ordering;
+
+    fn cmp(&self, other: &Self) -> (o: Ordering)
+        requires
+            true,
+        ensures
+            o == self.cmp_spec(*other),
+    ;
+}
+
+pub enum Ordering {
+    Less,
+    Equal,
+    Greater,
+}
+
+pub struct KeyIterator<K: KeyTrait + VerusClone> {
+    pub k: Option<K>,
+}
+
+impl<K: KeyTrait + VerusClone> KeyIterator<K> {
+    pub open spec fn lt_spec(self, other: Self) -> bool {
+        (!self.k.is_None() && other.k.is_None()) || (!self.k.is_None() && !other.k.is_None()
+            && self.k.get_Some_0().cmp_spec(other.k.get_Some_0()).lt())
+    }
+}
+
+pub trait VerusClone: Sized {
+
+}
+
+impl<K: KeyTrait + VerusClone> KeyIterator<K> {
+    pub open spec fn is_end_spec(&self) -> bool {
+        self.k.is_None()
+    }
+
+    #[verifier::external_body]
+    pub fn is_end(&self) -> (b: bool)
+        ensures
+            b == self.is_end_spec(),
+    {
+        unimplemented!()
+    }
+
+    pub fn lt(&self, other: &Self) -> (b: bool)
+        ensures
+            b == self.lt_spec(*other),
+    {
+        let ret = (!self.is_end() && other.is_end()) || (!self.is_end() && !other.is_end()
+            && self.k.as_ref().unwrap().cmp(&other.k.as_ref().unwrap()).is_lt());
+        ret
+    }
+}
+
+} // verus!

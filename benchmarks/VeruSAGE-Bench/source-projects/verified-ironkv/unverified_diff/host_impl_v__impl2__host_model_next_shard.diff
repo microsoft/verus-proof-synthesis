@@ -1,0 +1,110 @@
+--- benchmarks/verified-ironkv/unverified_nolemma/host_impl_v__impl2__host_model_next_shard.rs
+
++++ benchmarks/verified-ironkv/unverified/host_impl_v__impl2__host_model_next_shard.rs
+
+@@ -314,6 +314,16 @@
+
+     }
+ 
+     #[verifier::external_body]
++    pub proof fn valid_implies_complete(&self)
++        requires
++            self.valid(),
++        ensures
++            self@.dom().is_full(),
++    {
++        unimplemented!()
++    }
++
++    #[verifier::external_body]
+     pub fn set(&mut self, lo: &KeyIterator<K>, hi: &KeyIterator<K>, dst: &ID)
+         requires
+             old(self).valid(),
+@@ -352,7 +362,31 @@
+
+ }
+ 
+ impl DelegationMap<CKey> {
+-
++    #[verifier::external_body]
++    pub proof fn lemma_set_is_update(
++        pre: Self,
++        post: Self,
++        lo: KeyIterator<CKey>,
++        hi: KeyIterator<CKey>,
++        dst: &ID,
++    )
++        requires
++            pre.valid(),
++            dst@.valid_physical_address(),
++            post.valid(),
++            forall|ki: KeyIterator<CKey>| #[trigger]
++                KeyIterator::between(lo, ki, hi) ==> post@[*ki.get()] == dst@,
++            forall|ki: KeyIterator<CKey>|
++                !ki.is_end_spec() && !(#[trigger] KeyIterator::between(lo, ki, hi))
++                    ==> post@[*ki.get()] == pre@[*ki.get()],
++        ensures
++            AbstractDelegationMap(post@) =~= AbstractDelegationMap(pre@).update(
++                KeyRange { lo, hi },
++                dst@,
++            ),
++    {
++        unimplemented!()
++    }
+ }
+ 
+ pub struct Constants {
+@@ -1017,6 +1051,22 @@
+
+     }
+ }
+ 
++#[verifier::external_body]
++pub proof fn lemma_to_set_singleton_auto<A>()
++    ensures
++        forall|x: A| #[trigger] seq![x].to_set() == set![x],
++{
++    unimplemented!()
++}
++
++#[verifier::external_body]
++pub proof fn lemma_map_values_singleton_auto<A, B>()
++    ensures
++        forall|x: A, f: spec_fn(A) -> B| #[trigger] seq![x].map_values(f) =~= seq![f(x)],
++{
++    unimplemented!()
++}
++
+ #[verifier::opaque]
+ pub open spec fn ckeyhashmap_max_serialized_size() -> usize {
+     0x100000
+@@ -1031,6 +1081,17 @@
+
+     open spec fn ghost_serialize(&self) -> Seq<u8> {
+         self.to_vec().ghost_serialize()
+     }
++}
++
++#[verifier::external_body]
++#[allow(non_snake_case)]
++pub proof fn lemma_is_marshalable_CKeyHashMap(h: CKeyHashMap)
++    requires
++        valid_hashtable(h@),
++    ensures
++        h.is_marshalable(),
++{
++    unimplemented!()
+ }
+ 
+ pub open spec fn outbound_packet_is_valid(cpacket: &CPacket) -> bool {
+@@ -1053,7 +1114,8 @@
+
+ #[verifier::opaque]
+ pub open spec fn seq_is_unique<T>(s: Seq<T>) -> bool {
+     forall|i: int, j: int|
+-        #![trigger s[i], s[j]]
++        #![trigger
++    s[i], s[j]]
+         0 <= i && i < s.len() && 0 <= j && j < s.len() && s[i] == s[j] ==> i == j
+ }
+ 
