@@ -168,6 +168,33 @@ pub open spec fn log_area_offset_unreachable_during_recovery(
         >= log_length
 }
 
+
+#[verifier::external_body]
+pub proof fn lemma_addresses_in_log_area_subregion_correspond_to_relative_log_positions(
+        pm_region_view: PersistentMemoryRegionView,
+        info: LogInfo
+    )
+        requires
+            pm_region_view.len() == info.log_area_len,
+            info.head_log_area_offset < info.log_area_len,
+            info.log_area_len > 0,
+        ensures
+            forall |log_area_offset: int| #![trigger pm_region_view.state[log_area_offset]]
+                0 <= log_area_offset < info.log_area_len ==> {
+                    let pos_relative_to_head =
+                        if log_area_offset >= info.head_log_area_offset {
+                            log_area_offset - info.head_log_area_offset
+                        }
+                        else {
+                            log_area_offset - info.head_log_area_offset + info.log_area_len
+                        };
+                    &&& 0 <= pos_relative_to_head < info.log_area_len
+                    &&& log_area_offset ==
+                           relative_log_pos_to_log_area_offset(pos_relative_to_head, info.head_log_area_offset as int,
+                                                               info.log_area_len as int)
+                }
+{}
+
 /**********log\append_v.rs*********************/
 
 pub proof fn lemma_tentatively_append(
@@ -218,6 +245,23 @@ pub proof fn lemma_tentatively_append(
             &&& info_consistent_with_log_area(pm_region_view2, new_info, new_state)
         }),
 {
+        let new_state = prev_state.tentatively_append(bytes_to_append);
+
+        // We need extensional equality to reason that the old and new
+        // abstract states are the same after dropping pending appends.
+
+        assert(new_state.drop_pending_appends() =~= prev_state.drop_pending_appends());
+
+        // To prove that there are no outstanding writes in the range
+        // where we plan to write, we need to reason about how
+        // addresses in the log area correspond to relative log
+        // positions. This is because the invariant talks about
+        // relative log positions but we're trying to prove something
+        // about addresses in the log area (that there are no
+        // outstanding writes to certain of them).
+
+        lemma_addresses_in_log_area_subregion_correspond_to_relative_log_positions(pm_region_view, prev_info);
+
 }
 
 } // verus!

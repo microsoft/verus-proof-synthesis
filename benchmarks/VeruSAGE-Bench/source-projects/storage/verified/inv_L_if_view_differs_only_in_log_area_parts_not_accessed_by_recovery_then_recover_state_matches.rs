@@ -414,6 +414,17 @@ pub open spec fn recover_state(mem: Seq<u8>, log_id: u128) -> Option<AbstractLog
     }
 }
 
+#[verifier::external_body]
+pub proof fn lemma_establish_subrange_equivalence(
+        mem1: Seq<u8>,
+        mem2: Seq<u8>,
+    )
+        ensures
+            forall |i: int, j: int| mem1.subrange(i, j) =~= mem2.subrange(i, j) ==>
+                #[trigger] mem1.subrange(i, j) == #[trigger] mem2.subrange(i, j)
+{}
+
+
 /********log\logimpl_v.rs*/
 
 pub struct LogInfo {
@@ -574,6 +585,19 @@ pub const fn padding_needed(offset: usize, align: usize) -> (out: usize)
         0
     }
 }
+
+/*pmem\pmemutil_v.rs*/
+#[verifier::external_body]
+pub proof fn lemma_wherever_no_outstanding_writes_persistent_memory_view_can_only_crash_as_committed(
+        pm_region_view: PersistentMemoryRegionView,
+    )
+        ensures
+            forall |s, addr: int| {
+                &&& pm_region_view.can_crash_as(s)
+                &&& 0 <= addr < s.len()
+                &&& pm_region_view.state[addr].outstanding_write.is_none()
+            } ==> #[trigger] s[addr] == pm_region_view.committed()[addr]
+{}
 
 /*pmem\pmemspec_t.rs*/
 
