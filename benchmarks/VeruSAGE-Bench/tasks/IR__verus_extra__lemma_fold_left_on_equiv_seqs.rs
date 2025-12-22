@@ -1,0 +1,21 @@
+use vstd::prelude::*;
+fn main() {}
+verus! {
+
+pub proof fn lemma_fold_left_on_equiv_seqs<A, B>(
+    s1: Seq<A>,
+    s2: Seq<A>,
+    eq: spec_fn(A, A) -> bool,
+    init: B,
+    f: spec_fn(B, A) -> B,
+)
+    requires
+        s1.len() == s2.len(),
+        (forall|i: int| 0 <= i < s1.len() ==> eq(s1[i], s2[i])),
+        (forall|b: B, a1: A, a2: A| #[trigger] eq(a1, a2) ==> #[trigger] f(b, a1) == f(b, a2)),
+    ensures
+        s1.fold_left(init, f) == s2.fold_left(init, f),
+{
+}
+
+} // verus!
