@@ -8,7 +8,7 @@ verus! {
 
 pub open spec fn is_block_ptr(ptr: *mut u8, block_id: BlockId) -> bool {
     &&& ptr@.provenance == block_id.page_id.segment_id.provenance
-    &&& ptr@.metadata == Metadata::Thin
+    &&& ptr@.metadata == ()
     &&& is_block_ptr1(ptr as int, block_id)
 }
 

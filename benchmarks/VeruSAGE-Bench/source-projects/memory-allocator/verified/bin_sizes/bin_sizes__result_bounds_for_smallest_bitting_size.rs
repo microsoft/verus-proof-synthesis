@@ -83,7 +83,12 @@ proof fn result_bounds_for_smallest_bitting_size(size_start:int, size_end:int)
         check_bounds_for_smallest_bitting_size(size_start, size_end) ==>
             (forall |size| size_start <= size < size_end ==>
                  property_bounds_for_smallest_bitting_size(size)),
+    decreases size_end - size_start,
 {
+   if size_start >= size_end {
+   } else {
+       result_bounds_for_smallest_bitting_size(size_start + 1, size_end);
+   }
 }
 
 pub const BIN_HUGE: u64 = 73;

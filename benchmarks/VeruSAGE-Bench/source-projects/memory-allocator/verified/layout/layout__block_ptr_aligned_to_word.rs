@@ -7,6 +7,8 @@ fn main() {}
 
 verus! {
 
+/**config.rs**/
+
 pub const INTPTR_SHIFT: u64 = 3;
 
 pub const INTPTR_SIZE: u64 = 8;
@@ -21,10 +23,63 @@ pub const SEGMENT_SIZE: u64 = (1 << SEGMENT_SHIFT);
 
 pub const SLICES_PER_SEGMENT: u64 = (SEGMENT_SIZE / SLICE_SIZE);
 
+pub const SMALL_PAGE_SHIFT: u64 = SLICE_SHIFT;
+
+pub const MEDIUM_PAGE_SHIFT: u64 = 3 + SMALL_PAGE_SHIFT;
+
+pub const SMALL_PAGE_SIZE: u64 = 1u64 << SMALL_PAGE_SHIFT;
+
+pub const MEDIUM_PAGE_SIZE: u64 = 1u64 << MEDIUM_PAGE_SHIFT;
+
+pub const SMALL_OBJ_SIZE_MAX: u64 = (SMALL_PAGE_SIZE / 4);
+
+pub const MEDIUM_OBJ_SIZE_MAX: u64 = MEDIUM_PAGE_SIZE / 4;
+
+pub const MEDIUM_OBJ_WSIZE_MAX: u64 = MEDIUM_OBJ_SIZE_MAX / (usize::BITS as u64 / 8);
+
+pub const LARGE_OBJ_SIZE_MAX: u64 = (SEGMENT_SIZE / 2);
+
+pub const SMALL_WSIZE_MAX: usize = 128;
+
+pub const SMALL_SIZE_MAX: usize = SMALL_WSIZE_MAX * INTPTR_SIZE as usize;
+
 pub const MAX_ALIGN_SIZE: usize = 16;
 
 pub const MAX_ALIGN_GUARANTEE: usize = 8 * MAX_ALIGN_SIZE;
 
+pub const SIZEOF_SEGMENT_HEADER: usize = 264;
+
+pub const SIZEOF_PAGE_HEADER: usize = 80;
+
+pub const SIZEOF_HEAP: usize = 2904;
+
+pub const SIZEOF_TLD: usize = 552;
+
+pub const COMMIT_MASK_BITS: u64 = SLICES_PER_SEGMENT;
+
+pub const COMMIT_MASK_FIELD_COUNT: u64 = COMMIT_MASK_BITS / (usize::BITS as u64);
+
+	#[verifier::external_body]
+pub proof fn const_facts()
+    ensures SLICE_SIZE == 65536,
+        SEGMENT_SIZE == 33554432,
+        SLICES_PER_SEGMENT == 512,
+        SMALL_PAGE_SIZE == 65536,
+        MEDIUM_PAGE_SIZE == 524288,
+
+        SMALL_OBJ_SIZE_MAX == 16384,
+        MEDIUM_OBJ_SIZE_MAX == 131072,
+        MEDIUM_OBJ_WSIZE_MAX == 16384,
+        SMALL_SIZE_MAX == 1024,
+        LARGE_OBJ_SIZE_MAX == 16777216,
+
+        COMMIT_MASK_FIELD_COUNT == 8,
+	{
+		unimplemented!()
+
+	}
+
+/**layout.rs**/
 
 pub closed spec fn segment_start(segment_id: SegmentId) -> int {
     segment_id.id * (SEGMENT_SIZE as int)
@@ -59,7 +114,6 @@ pub open spec fn is_block_ptr(ptr: *mut u8, block_id: BlockId) -> bool {
     &&& is_block_ptr1(ptr as int, block_id)
 }
 
-#[verifier::opaque]
 pub open spec fn is_block_ptr1(ptr: int, block_id: BlockId) -> bool {
     // ptr should be in the range (segment start, segment end]
     // Yes, that's open at the start and closed at the end
@@ -88,17 +142,52 @@ pub open spec fn is_block_ptr1(ptr: int, block_id: BlockId) -> bool {
     &&& block_id.block_size % size_of::<Node>() == 0
 }
 
-pub proof fn block_size_ge_word()
+pub proof fn block_ptr_aligned_to_word()
     ensures forall |p, block_id| is_block_ptr(p, block_id) ==>
-        block_id.block_size >= size_of::<Node>()
+        p as int % align_of::<Node>() as int == 0
 {
-    reveal(is_block_ptr1);
+    assert forall |p, block_id| is_block_ptr(p, block_id) implies
+        p as int % align_of::<Node>() as int == 0
+    by {
+        const_facts();
+        reveal(is_block_ptr1);
+        size_of_node();
+        let page_id = block_id.page_id;
+        assert(segment_start(page_id.segment_id) % 8 == 0);
+        assert(SLICE_SIZE % 8 == 0);
+        assert(page_start(page_id) % 8 == 0);
+        let block_size = block_id.block_size;
+        assert(start_offset(block_size as int) % 8 == 0);
+        assert(block_size % 8 == 0);
+        let block_idx = block_id.idx as int;
+        mod_mul(block_idx, block_size as int, 8);
+        assert((block_idx * block_size) % 8 == 0);
+        assert(block_start(block_id) % 8 == 0);
+        assert(p as int % 8 == 0);
+    }
 }
 
+	#[verifier::external_body]
+pub proof fn mod_mul(a: int, b: int, c: int)
+    requires b % c == 0, c != 0
+    ensures (a * b) % c == 0,
+	{
+		unimplemented!()
+	}
+
+/**linked_list.rs**/
 
 pub struct Node {
     pub ptr: *mut Node,
 }
+
+	#[verifier::external_body]
+pub proof fn size_of_node()
+    ensures size_of::<Node>() == 8
+        && align_of::<Node>() == 8
+	{
+		unimplemented!()
+	}
 
 pub ghost struct SegmentId {
     pub id: nat,
@@ -125,5 +214,4 @@ pub ghost struct BlockId {
 
     pub block_size: nat,
 }
-
 }

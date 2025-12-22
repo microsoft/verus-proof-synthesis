@@ -98,5 +98,8 @@ pub proof fn const_facts()
     assert(SMALL_PAGE_SIZE == 65536) by (compute);
     assert(MEDIUM_PAGE_SIZE == 524288) by (compute);
     assert(COMMIT_MASK_FIELD_COUNT == 8) by (compute);
+
+    assert(MEDIUM_OBJ_WSIZE_MAX == 16384u64) by (compute_only); //added
+
 }
 }

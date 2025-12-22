@@ -16,7 +16,12 @@ pub open spec fn pow2(i: int) -> nat
 
 proof fn pow2_positive(e:int)
     ensures pow2(e) > 0,
+    decreases e,
 {
+    if e <= 0 {
+    } else {
+        pow2_positive(e - 1);
+    }
 }
 
 }
