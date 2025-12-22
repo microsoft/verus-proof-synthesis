@@ -1008,7 +1008,7 @@ impl WrappedTokenView {
         forall|r| self.regions.contains_key(r) ==> #[trigger] self.regions[r] == Seq::new(512, |i: int| self.pt_mem.mem[(r.base + i * 8) as usize])
     }
 
-    #[verifier(spinoff_prover)]
+    #[verifier::rlimit(200)]
     pub proof fn lemma_interps_match_aux1(self, pt: PTDir)
         requires
             PT::inv(self, pt),

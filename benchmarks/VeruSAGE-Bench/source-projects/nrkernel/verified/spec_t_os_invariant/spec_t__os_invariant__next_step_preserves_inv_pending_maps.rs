@@ -1886,7 +1886,7 @@ pub open spec fn candidate_mapping_overlaps_inflight_pmem(
             | CoreState::UnmapOpDone { ult_id, vaddr, result, .. }
             | CoreState::UnmapShootdownWaiting { ult_id, vaddr, result, .. } => {
                 &&& result is Ok
-                &&& overlap(candidate.frame, result.get_Ok_0().frame)
+                &&& overlap(candidate.frame, result->Ok_0.frame)
             },
             CoreState::Idle => false,
         }
@@ -1913,7 +1913,7 @@ pub open spec fn inflight_vmem_region(pt: Map<nat, PTE>, core_state: CoreState) 
         CoreState::UnmapExecuting { ult_id: ult_id2, vaddr, result: Some(result) }
         | CoreState::UnmapOpDone { ult_id: ult_id2, vaddr, result }
         | CoreState::UnmapShootdownWaiting { ult_id: ult_id2, vaddr, result } => {
-            let size = if result is Ok { result.get_Ok_0().frame.size } else { 0 };
+            let size = if result is Ok { result->Ok_0.frame.size } else { 0 };
             MemRegion { base: vaddr, size: size }
         }
     }
@@ -2417,7 +2417,7 @@ impl CoreState {
             CoreState::UnmapExecuting { result: Some(result), .. }
             | CoreState::UnmapOpDone { result, .. }
             | CoreState::UnmapShootdownWaiting { result, .. } => {
-                if result is Ok { result.get_Ok_0().frame.size } else { 0 }
+                if result is Ok { result->Ok_0.frame.size } else { 0 }
             },
             CoreState::Idle => arbitrary(),
         }
@@ -3250,6 +3250,7 @@ pub enum RLbl {
 }
 
 // File: spec_t/os_invariant.rs
+#[verifier::rlimit(200)]
 pub proof fn next_step_preserves_inv_pending_maps(c: os::Constants, s1: os::State, s2: os::State, step: os::Step, lbl: RLbl)
     requires
         s1.inv(c),

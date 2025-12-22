@@ -1870,7 +1870,7 @@ pub open spec fn candidate_mapping_overlaps_inflight_pmem(
             | CoreState::UnmapOpDone { ult_id, vaddr, result, .. }
             | CoreState::UnmapShootdownWaiting { ult_id, vaddr, result, .. } => {
                 &&& result is Ok
-                &&& overlap(candidate.frame, result.get_Ok_0().frame)
+                &&& overlap(candidate.frame, result->Ok_0.frame)
             },
             CoreState::Idle => false,
         }
@@ -1897,7 +1897,7 @@ pub open spec fn inflight_vmem_region(pt: Map<nat, PTE>, core_state: CoreState) 
         CoreState::UnmapExecuting { ult_id: ult_id2, vaddr, result: Some(result) }
         | CoreState::UnmapOpDone { ult_id: ult_id2, vaddr, result }
         | CoreState::UnmapShootdownWaiting { ult_id: ult_id2, vaddr, result } => {
-            let size = if result is Ok { result.get_Ok_0().frame.size } else { 0 };
+            let size = if result is Ok { result->Ok_0.frame.size } else { 0 };
             MemRegion { base: vaddr, size: size }
         }
     }
@@ -2405,7 +2405,7 @@ impl CoreState {
             CoreState::UnmapExecuting { result: Some(result), .. }
             | CoreState::UnmapOpDone { result, .. }
             | CoreState::UnmapShootdownWaiting { result, .. } => {
-                if result is Ok { result.get_Ok_0().frame.size } else { 0 }
+                if result is Ok { result->Ok_0.frame.size } else { 0 }
             },
             CoreState::Idle => arbitrary(),
         }
@@ -3337,7 +3337,7 @@ proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Con
 		unimplemented!()
 	}
 
-#[verifier(spinoff_prover)]
+#[verifier::rlimit(200)]
 pub proof fn lemma_concurrent_trs(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat)
     requires
         concurrent_trs(pre, post, c, core, pidx),

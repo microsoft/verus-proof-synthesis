@@ -1,4 +1,5 @@
 use vstd::prelude::*;
+use vstd::assert_by_contradiction;
 
 fn main() {}
 
@@ -298,7 +299,7 @@ impl Directory {
     {
         self.lemma_interp_of_entry_key_between(idx, vaddr);
         assert(self.entry_base(idx) <= vaddr < self.next_entry_base(idx));
-        indexing::lemma_entry_base_from_index(self.base_vaddr, idx, self.entry_size());
+        lemma_entry_base_from_index(self.base_vaddr, idx, self.entry_size());
         if i >= self.entries.len() {
         } else {
             let rem1 = self.interp_aux(i + 1);
@@ -323,7 +324,7 @@ impl Directory {
                 assert_by_contradiction!(!entry_i1.contains_key(vaddr), {
                     self.lemma_interp_of_entry_key_between(i, vaddr);
                     assert(self.entry_base(i) <= vaddr < self.next_entry_base(i));
-                    indexing::lemma_entry_base_from_index(self.base_vaddr, i, self.entry_size());
+                    lemma_entry_base_from_index(self.base_vaddr, i, self.entry_size());
                 });
                 assert(rem2.union_prefer_right(entry_i2) =~= rem1.union_prefer_right(entry_i1).remove(vaddr));
             }

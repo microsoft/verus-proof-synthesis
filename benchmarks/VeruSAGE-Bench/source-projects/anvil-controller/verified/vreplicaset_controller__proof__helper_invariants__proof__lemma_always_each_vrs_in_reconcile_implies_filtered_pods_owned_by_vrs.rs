@@ -4584,7 +4584,7 @@ impl Marshallable for VReplicaSetReconcileState {
 	#[verifier::external_body]
     #[verifier(external_body)]
     proof fn marshal_preserves_integrity()
-        ensures forall |o: Self| Self::unmarshal(#[trigger] o.marshal()) is Ok && o == Self::unmarshal(o.marshal()).get_Ok_0()
+        ensures forall |o: Self| Self::unmarshal(#[trigger] o.marshal()) is Ok && o == Self::unmarshal(o.marshal())->Ok_0
 	{
 		unimplemented!()
 	}
@@ -4714,7 +4714,7 @@ macro_rules! combine_with_next_internal {
 }
 
 // File: controllers/vreplicaset_controller/proof/helper_invariants/proof.rs
-#[verifier(rlimit(100))]
+#[verifier(rlimit(200))]
 pub proof fn lemma_always_each_vrs_in_reconcile_implies_filtered_pods_owned_by_vrs(
     spec: TempPred<ClusterState>, cluster: Cluster, controller_id: int,
 )

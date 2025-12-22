@@ -1,5 +1,5 @@
 use vstd::prelude::*;
-use state_machines_macros::*;
+use verus_state_machines_macros::*;
 
 fn main() {}
 pub type ReqId = nat;
