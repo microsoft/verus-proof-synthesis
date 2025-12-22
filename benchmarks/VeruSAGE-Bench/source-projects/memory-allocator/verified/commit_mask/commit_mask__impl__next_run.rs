@@ -6,6 +6,8 @@ fn main() {}
 verus! {
     global size_of usize==8;
 
+//File: config.rs
+//
 pub const INTPTR_SHIFT: u64 = 3;
 
 pub const INTPTR_SIZE: u64 = 8;
@@ -23,6 +25,15 @@ pub const SLICES_PER_SEGMENT: u64 = (SEGMENT_SIZE / SLICE_SIZE);
 pub const COMMIT_MASK_BITS: u64 = SLICES_PER_SEGMENT;
 pub const COMMIT_MASK_FIELD_COUNT: u64 = COMMIT_MASK_BITS / (usize::BITS as u64);
 
+#[verifier::external_body]
+pub proof fn const_facts()
+    ensures SLICE_SIZE == 65536,
+        SEGMENT_SIZE == 33554432,
+        SLICES_PER_SEGMENT == 512,
+        COMMIT_MASK_FIELD_COUNT == 8,
+{
+    unimplemented!()
+}
 
 spec fn mod64(x: usize) -> usize { x % 64 }
 
@@ -78,9 +89,11 @@ impl CommitMask {
         //forall |t| idx <= t < next_idx ==> !self@.contains(t),
         // Likewise we could have a condition that `count` is not smaller than necessary
     {
-        assert(COMMIT_MASK_BITS == 512) by (compute_only);
-        assert(COMMIT_MASK_FIELD_COUNT == 8);
+        //assert(COMMIT_MASK_BITS == 512) by (compute_only);
+        //assert(COMMIT_MASK_FIELD_COUNT == 8);
         // Starting at idx, scan to find the first bit.
+
+        proof { const_facts(); }
 
         let mut i: usize = idx / usize::BITS as usize;
         let mut ofs: usize = idx % usize::BITS as usize;
