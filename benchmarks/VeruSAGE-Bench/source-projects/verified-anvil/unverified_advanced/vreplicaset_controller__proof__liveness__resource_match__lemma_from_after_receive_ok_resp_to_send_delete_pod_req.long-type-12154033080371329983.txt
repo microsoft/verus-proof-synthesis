@@ -1,1 +1,0 @@
-std::result::Result<std::option::Option<vstd::map::Map<vstd::seq::Seq<char>, vstd::seq::Seq<char>>>, ()>

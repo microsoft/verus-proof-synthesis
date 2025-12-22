@@ -23,7 +23,7 @@ verus_tasks = [json.loads(l) for l in open("Verus-Bench/tasks.jsonl")]
 | **Focus** | Classic algorithms, loops | Systems verification |
 | **Complexity** | Single functions | Multi-file dependencies |
 | **Sources** | 4 curated sources | 8 real-world projects |
-| **Ground Truth** | Included | In source-projects/ |
+| **Ground Truth** | Included | Included |
 | **Best For** | Basic proof synthesis | Advanced agentic systems |
 
 ## Choose Your Benchmark
@@ -99,6 +99,7 @@ Both benchmarks provide `tasks.jsonl` for programmatic access:
   "module": "rules",
   "target_function": "always_double",
   "task": "...",           // Unverified code (INPUT)
+  "ground_truth": "...",   // Verified code (ANSWER)
   "file_path": "tasks/AL__always_double.rs"
 }
 ```

@@ -77,7 +77,7 @@ VeruSAGE-Bench/
 
 ## Data Format (JSONL)
 
-For programmatic access and ML pipelines, we provide `tasks.jsonl` containing all tasks:
+For programmatic access and ML pipelines, we provide `tasks.jsonl` containing all 849 tasks. This format aligns with other Verus benchmarks like Verus-Bench.
 
 ```python
 import json
@@ -92,7 +92,8 @@ tasks = [json.loads(line) for line in open("tasks.jsonl")]
 #   "project_name": "Anvil",
 #   "module": "rules",
 #   "target_function": "always_double",
-#   "task": "use vstd::prelude::*;\n...",  # The unverified code (INPUT)
+#   "task": "use vstd::prelude::*;\n...",        # The unverified code (INPUT)
+#   "ground_truth": "use vstd::prelude::*;\n...", # The verified solution (GROUND TRUTH)
 #   "file_path": "tasks/AL__always_double.rs"
 # }
 
@@ -110,7 +111,8 @@ print(f"NRKernel tasks: {len(nr_tasks)}")
 | `project_name` | string | Full project name |
 | `module` | string | Module path within the project |
 | `target_function` | string | The proof function to be synthesized |
-| `task` | string | The unverified Rust/Verus code (INPUT to your system) |
+| `task` | string | The unverified Rust/Verus code (INPUT). The body of the target function is stripped. |
+| `ground_truth` | string | The fully verified Rust/Verus code (REFERENCE). |
 | `file_path` | string | Relative path to the .rs file |
 
 ## Task Format

@@ -1,0 +1,4142 @@
+diff --git a/deps_hack/rust-toolchain.toml b/deps_hack/rust-toolchain.toml
+index 7ecf910e..c27b6e86 100644
+--- a/deps_hack/rust-toolchain.toml
++++ b/deps_hack/rust-toolchain.toml
+@@ -1,2 +1,2 @@
+ [toolchain]
+-channel = "1.79"
+\ No newline at end of file
++channel = "1.88"
+\ No newline at end of file
+diff --git a/pmemlog/Cargo.toml b/pmemlog/Cargo.toml
+index 1d3e4433..b503fbe1 100644
+--- a/pmemlog/Cargo.toml
++++ b/pmemlog/Cargo.toml
+@@ -6,7 +6,5 @@ edition = "2021"
+ # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+ 
+ [dependencies]
+-builtin_macros = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+-builtin = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+ vstd = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+ crc64fast = "1.0.0"
+diff --git a/pmemlog/src/infinitelog_t.rs b/pmemlog/src/infinitelog_t.rs
+index 78cd34c5..10e10d58 100644
+--- a/pmemlog/src/infinitelog_t.rs
++++ b/pmemlog/src/infinitelog_t.rs
+@@ -1,43 +1,41 @@
+-/*
+-
+-  This file models the abstraction of an infinite log that our log
+-  implementation is supposed to implement.
+-
+-*/
+-
+-use crate::pmemspec_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+-use vstd::prelude::*;
+-use vstd::set::*;
+-
+-verus! {
+-    #[verifier::ext_equal]
+-    pub struct AbstractInfiniteLogState {
+-        pub head: int,
+-        pub log: Seq<u8>,
+-        pub capacity: int,
+-    }
+-
+-    impl AbstractInfiniteLogState {
+-        pub open spec fn initialize(capacity: int) -> Self {
+-            Self{ head: 0int, log: Seq::<u8>::empty(), capacity: capacity }
+-        }
+-
+-        pub open spec fn append(self, bytes: Seq<u8>) -> Self {
+-            Self{ head: self.head, log: self.log + bytes, capacity: self.capacity }
+-        }
+-
+-        pub open spec fn advance_head(self, new_head: int) -> Self
+-        {
+-            if self.head <= new_head <= self.head + self.log.len() {
+-                let new_log = self.log.subrange(new_head - self.head, self.log.len() as int);
+-                Self{ head: new_head, log: new_log, capacity: self.capacity }
+-            }
+-            else {
+-                self
+-            }
+-        }
+-    }
+-
+-}
++/*
++
++  This file models the abstraction of an infinite log that our log
++  implementation is supposed to implement.
++
++*/
++
++use crate::pmemspec_t::*;
++use vstd::prelude::*;
++use vstd::set::*;
++
++verus! {
++    #[verifier::ext_equal]
++    pub struct AbstractInfiniteLogState {
++        pub head: int,
++        pub log: Seq<u8>,
++        pub capacity: int,
++    }
++
++    impl AbstractInfiniteLogState {
++        pub open spec fn initialize(capacity: int) -> Self {
++            Self{ head: 0int, log: Seq::<u8>::empty(), capacity: capacity }
++        }
++
++        pub open spec fn append(self, bytes: Seq<u8>) -> Self {
++            Self{ head: self.head, log: self.log + bytes, capacity: self.capacity }
++        }
++
++        pub open spec fn advance_head(self, new_head: int) -> Self
++        {
++            if self.head <= new_head <= self.head + self.log.len() {
++                let new_log = self.log.subrange(new_head - self.head, self.log.len() as int);
++                Self{ head: new_head, log: new_log, capacity: self.capacity }
++            }
++            else {
++                self
++            }
++        }
++    }
++
++}
+diff --git a/pmemlog/src/logimpl_v.rs b/pmemlog/src/logimpl_v.rs
+index cd2f0f54..d4de9cbb 100644
+--- a/pmemlog/src/logimpl_v.rs
++++ b/pmemlog/src/logimpl_v.rs
+@@ -3,8 +3,6 @@ use crate::main_t::*;
+ use crate::math::*;
+ use crate::pmemspec_t::*;
+ use crate::sccf::CheckPermission;
+-use builtin::*;
+-use builtin_macros::*;
+ use core::convert::TryInto;
+ use std::f32::consts::E;
+ use std::fmt::Write;
+diff --git a/pmemlog/src/main.rs b/pmemlog/src/main.rs
+index ce48606c..12d7b0b2 100644
+--- a/pmemlog/src/main.rs
++++ b/pmemlog/src/main.rs
+@@ -1,6 +1,4 @@
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ use vstd::slice::*;
+ 
+diff --git a/pmemlog/src/main_t.rs b/pmemlog/src/main_t.rs
+index 9250aa25..c7c4fbe0 100644
+--- a/pmemlog/src/main_t.rs
++++ b/pmemlog/src/main_t.rs
+@@ -4,8 +4,6 @@ use crate::infinitelog_t::*;
+ use crate::logimpl_v::*;
+ use crate::pmemspec_t::*;
+ use crate::sccf::CheckPermission;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ use vstd::set::*;
+ use vstd::slice::*;
+diff --git a/pmemlog/src/math.rs b/pmemlog/src/math.rs
+index 903ff328..e04d5470 100644
+--- a/pmemlog/src/math.rs
++++ b/pmemlog/src/math.rs
+@@ -1,6 +1,4 @@
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/pmemlog/src/pmemmock_t.rs b/pmemlog/src/pmemmock_t.rs
+index a231bac8..434471b9 100644
+--- a/pmemlog/src/pmemmock_t.rs
++++ b/pmemlog/src/pmemmock_t.rs
+@@ -1,59 +1,57 @@
+-use builtin::*;
+-use builtin_macros::*;
+-use crate::pmemspec_t::*;
+-use std::convert::*;
+-use vstd::prelude::*;
+-
+-verus! {
+-
+-    pub struct VolatileMemoryMockingPersistentMemory
+-    {
+-        contents: Vec<u8>
+-    }
+-
+-    impl VolatileMemoryMockingPersistentMemory {
+-        #[verifier::external_body]
+-        pub fn new(device_size: u64) -> (result: Result<Self, ()>)
+-            ensures
+-                match result {
+-                    Ok(pm) => pm@.len() == device_size && pm.inv(),
+-                    Err(_) => true
+-                }
+-        {
+-            Ok(Self {contents: vec![0; device_size as usize]})
+-        }
+-    }
+-
+-    impl PersistentMemory for VolatileMemoryMockingPersistentMemory {
+-        closed spec fn view(self) -> Seq<u8>
+-        {
+-            self.contents@
+-        }
+-
+-        closed spec fn inv(self) -> bool
+-        {
+-            self.contents.len() <= u64::MAX
+-        }
+-
+-        closed spec fn constants(self) -> PersistentMemoryConstants
+-        {
+-            PersistentMemoryConstants { impervious_to_corruption: true }
+-        }
+-
+-        #[verifier::external_body]
+-        fn read(&self, addr: u64, num_bytes: u64) -> Vec<u8>
+-        {
+-            let addr_usize: usize = addr.try_into().unwrap();
+-            let num_bytes_usize: usize = num_bytes.try_into().unwrap();
+-            self.contents[addr_usize..addr_usize+num_bytes_usize].to_vec()
+-        }
+-
+-        #[verifier::external_body]
+-        fn write(&mut self, addr: u64, bytes: &[u8])
+-        {
+-            let addr_usize: usize = addr.try_into().unwrap();
+-            self.contents.splice(addr_usize..addr_usize+bytes.len(), bytes.iter().cloned());
+-        }
+-    }
+-
+-}
++use crate::pmemspec_t::*;
++use std::convert::*;
++use vstd::prelude::*;
++
++verus! {
++
++    pub struct VolatileMemoryMockingPersistentMemory
++    {
++        contents: Vec<u8>
++    }
++
++    impl VolatileMemoryMockingPersistentMemory {
++        #[verifier::external_body]
++        pub fn new(device_size: u64) -> (result: Result<Self, ()>)
++            ensures
++                match result {
++                    Ok(pm) => pm@.len() == device_size && pm.inv(),
++                    Err(_) => true
++                }
++        {
++            Ok(Self {contents: vec![0; device_size as usize]})
++        }
++    }
++
++    impl PersistentMemory for VolatileMemoryMockingPersistentMemory {
++        closed spec fn view(self) -> Seq<u8>
++        {
++            self.contents@
++        }
++
++        closed spec fn inv(self) -> bool
++        {
++            self.contents.len() <= u64::MAX
++        }
++
++        closed spec fn constants(self) -> PersistentMemoryConstants
++        {
++            PersistentMemoryConstants { impervious_to_corruption: true }
++        }
++
++        #[verifier::external_body]
++        fn read(&self, addr: u64, num_bytes: u64) -> Vec<u8>
++        {
++            let addr_usize: usize = addr.try_into().unwrap();
++            let num_bytes_usize: usize = num_bytes.try_into().unwrap();
++            self.contents[addr_usize..addr_usize+num_bytes_usize].to_vec()
++        }
++
++        #[verifier::external_body]
++        fn write(&mut self, addr: u64, bytes: &[u8])
++        {
++            let addr_usize: usize = addr.try_into().unwrap();
++            self.contents.splice(addr_usize..addr_usize+bytes.len(), bytes.iter().cloned());
++        }
++    }
++
++}
+diff --git a/pmemlog/src/pmemspec_t.rs b/pmemlog/src/pmemspec_t.rs
+index 89fec4b0..9ad4f3b9 100644
+--- a/pmemlog/src/pmemspec_t.rs
++++ b/pmemlog/src/pmemspec_t.rs
+@@ -8,8 +8,6 @@
+ */
+ 
+ use crate::sccf::CheckPermission;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+ use vstd::set::*;
+diff --git a/pmemlog/src/sccf.rs b/pmemlog/src/sccf.rs
+index d0fe077d..4cb82051 100644
+--- a/pmemlog/src/sccf.rs
++++ b/pmemlog/src/sccf.rs
+@@ -2,8 +2,6 @@
+   Simple crash-consistency framework (open source)
+ */
+ 
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/pmsafe/src/pmsafe_macros.rs b/pmsafe/src/pmsafe_macros.rs
+index 9b01c717..525b12da 100644
+--- a/pmsafe/src/pmsafe_macros.rs
++++ b/pmsafe/src/pmsafe_macros.rs
+@@ -178,7 +178,7 @@ pub fn generate_pmsized(ast: &syn::DeriveInput) -> TokenStream {
+     let mut spec_tokens_vec = Vec::new();
+     for ty in types.iter() {
+         let new_tokens = quote! {
+-            let offset: ::builtin::nat = offset + <#ty>::spec_size_of() + spec_padding_needed(offset, <#ty>::spec_align_of()); 
++            let offset: nat = offset + <#ty>::spec_size_of() + spec_padding_needed(offset, <#ty>::spec_align_of()); 
+         };
+         spec_tokens_vec.push(new_tokens);
+     }
+@@ -214,17 +214,17 @@ pub fn generate_pmsized(ast: &syn::DeriveInput) -> TokenStream {
+     let align_check = syn::Ident::new(&format!("ALIGN_CHECK_{}", name.to_string().to_uppercase()), name.span());
+ 
+     let gen = quote! {
+-        ::builtin_macros::verus!(
++        verus!(
+ 
+             impl SpecPmSized for #name {
+-                open spec fn spec_size_of() -> ::builtin::nat 
++                open spec fn spec_size_of() -> nat 
+                 {
+-                    let offset: ::builtin::nat = 0;
++                    let offset: nat = 0;
+                     #( #spec_tokens_vec )*
+                     offset
+                 }      
+ 
+-                open spec fn spec_align_of() -> ::builtin::nat 
++                open spec fn spec_align_of() -> nat 
+                 {
+                     #spec_alignment
+                 }
+@@ -335,10 +335,10 @@ pub fn generate_pmsized_primitive(ty: &syn::Type) -> TokenStream {
+ 
+     // Primitive types have hardcoded size and alignment values
+     let gen = quote!{
+-        ::builtin_macros::verus!(
++        verus!(
+             impl SpecPmSized for #ty {
+-                open spec fn spec_size_of() -> ::builtin::nat { #size as ::builtin::nat }
+-                open spec fn spec_align_of() -> ::builtin::nat { #align as ::builtin::nat }
++                open spec fn spec_size_of() -> nat { #size as nat }
++                open spec fn spec_align_of() -> nat { #align as nat }
+             }
+         );
+ 
+diff --git a/storage_node/Cargo.toml b/storage_node/Cargo.toml
+index 4570b6d5..133c05e7 100644
+--- a/storage_node/Cargo.toml
++++ b/storage_node/Cargo.toml
+@@ -6,8 +6,6 @@ edition = "2021"
+ # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+ 
+ [dependencies]
+-builtin_macros = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+-builtin = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+ vstd = { git = "https://github.com/verus-lang/verus.git", rev="a53f39271666ac7dc9f455b6267da4c49a5f75c6" }
+ deps_hack = { path = "../deps_hack" }
+ pmsafe = { path = "../pmsafe" }
+diff --git a/storage_node/src/kv/durable/durableimpl_v.rs b/storage_node/src/kv/durable/durableimpl_v.rs
+index c397e2c1..eb438f40 100644
+--- a/storage_node/src/kv/durable/durableimpl_v.rs
++++ b/storage_node/src/kv/durable/durableimpl_v.rs
+@@ -2,8 +2,6 @@
+ //! durable component of the KV store.
+ 
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ use crate::kv::durable::durablespec_t::*;
+diff --git a/storage_node/src/kv/durable/durablespec_t.rs b/storage_node/src/kv/durable/durablespec_t.rs
+index 59232eed..800e8e5b 100644
+--- a/storage_node/src/kv/durable/durablespec_t.rs
++++ b/storage_node/src/kv/durable/durablespec_t.rs
+@@ -7,8 +7,6 @@
+ //! up to the overall KV store
+ 
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ use crate::kv::kvimpl_t::*;
+diff --git a/storage_node/src/kv/inv_v.rs b/storage_node/src/kv/inv_v.rs
+index 7444fb76..ba8e88cd 100644
+--- a/storage_node/src/kv/inv_v.rs
++++ b/storage_node/src/kv/inv_v.rs
+@@ -2,8 +2,6 @@
+ //! of the high-level KV store.
+ 
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ use vstd::set::*;
+ use vstd::set_lib::*;
+diff --git a/storage_node/src/kv/kvimpl_t.rs b/storage_node/src/kv/kvimpl_t.rs
+index 9fce5914..32fd5439 100644
+--- a/storage_node/src/kv/kvimpl_t.rs
++++ b/storage_node/src/kv/kvimpl_t.rs
+@@ -19,8 +19,6 @@
+ //! TODO: handle errors properly in postconditions
+ 
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ use super::durable::durableimpl_v::*;
+diff --git a/storage_node/src/kv/kvimpl_v.rs b/storage_node/src/kv/kvimpl_v.rs
+index 7df3382b..663145ab 100644
+--- a/storage_node/src/kv/kvimpl_v.rs
++++ b/storage_node/src/kv/kvimpl_v.rs
+@@ -10,8 +10,6 @@
+ //! of its current volatile and durable components.
+ 
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ use vstd::seq::*;
+ 
+diff --git a/storage_node/src/kv/kvspec_t.rs b/storage_node/src/kv/kvspec_t.rs
+index 918d71ab..4ebc9caf 100644
+--- a/storage_node/src/kv/kvspec_t.rs
++++ b/storage_node/src/kv/kvspec_t.rs
+@@ -5,8 +5,6 @@
+ //! This file should be audited for correctness.
+ 
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ use crate::pmem::wrpm_t::*;
+diff --git a/storage_node/src/kv/volatile/volatileimpl_v.rs b/storage_node/src/kv/volatile/volatileimpl_v.rs
+index 7b53c2c8..94d8dfa0 100644
+--- a/storage_node/src/kv/volatile/volatileimpl_v.rs
++++ b/storage_node/src/kv/volatile/volatileimpl_v.rs
+@@ -2,8 +2,6 @@
+ //! volatile component of the KV store.
+ 
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ use crate::kv::kvimpl_t::*;
+diff --git a/storage_node/src/kv/volatile/volatilespec_t.rs b/storage_node/src/kv/volatile/volatilespec_t.rs
+index 5cd66af8..e15b48a1 100644
+--- a/storage_node/src/kv/volatile/volatilespec_t.rs
++++ b/storage_node/src/kv/volatile/volatilespec_t.rs
+@@ -4,8 +4,6 @@
+ //! associated with that key.
+ 
+ #![allow(unused_imports)]
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ use crate::kv::kvimpl_t::*;
+diff --git a/storage_node/src/lib.rs b/storage_node/src/lib.rs
+index e553cb80..e01953e9 100644
+--- a/storage_node/src/lib.rs
++++ b/storage_node/src/lib.rs
+@@ -4,8 +4,6 @@
+ #![feature(new_uninit)]
+ #![allow(unused_imports)]
+ 
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::pervasive::runtime_assert;
+ use vstd::prelude::*;
+ 
+diff --git a/storage_node/src/log/append_v.rs b/storage_node/src/log/append_v.rs
+index 5ee0ed3d..a9cafe62 100644
+--- a/storage_node/src/log/append_v.rs
++++ b/storage_node/src/log/append_v.rs
+@@ -10,8 +10,6 @@ use crate::log::logimpl_v::LogInfo;
+ use crate::log::logspec_t::AbstractLogState;
+ use crate::pmem::pmemspec_t::PersistentMemoryRegionView;
+ use crate::pmem::subregion_v::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/storage_node/src/log/inv_v.rs b/storage_node/src/log/inv_v.rs
+index 7bba3a20..f34094b2 100644
+--- a/storage_node/src/log/inv_v.rs
++++ b/storage_node/src/log/inv_v.rs
+@@ -12,8 +12,6 @@ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmemutil_v::*;
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::subregion_v::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/storage_node/src/log/layout_v.rs b/storage_node/src/log/layout_v.rs
+index 64fea8c1..a5ae37bb 100644
+--- a/storage_node/src/log/layout_v.rs
++++ b/storage_node/src/log/layout_v.rs
+@@ -59,8 +59,6 @@ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::traits_t::{size_of, PmSized, ConstPmSized, UnsafeSpecPmSized, PmSafe};
+ use crate::util_v::*;
+ use deps_hack::{PmSafe, PmSized};
+-use builtin::*;
+-use builtin_macros::*;
+ use core::fmt::Debug;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/log/logimpl_t.rs b/storage_node/src/log/logimpl_t.rs
+index 84f4ed74..02687656 100644
+--- a/storage_node/src/log/logimpl_t.rs
++++ b/storage_node/src/log/logimpl_t.rs
+@@ -1,487 +1,485 @@
+-//! This file contains the trusted implementation of a `LogImpl`.
+-//! Although the verifier is run on this file, it needs to be
+-//! carefully read and audited to be confident of the correctness of
+-//! this log implementation.
+-//!
+-//! Fortunately, it delegates most of its work to an untrusted struct
+-//! `UntrustedLogImpl`, which doesn't need to be read or audited. It
+-//! forces the `UntrustedLogImpl` to satisfy certain postconditions,
+-//! and also places restrictions on what `UntrustedLogImpl` can do to
+-//! persistent memory. These restrictions ensure that even if the
+-//! system or process crashes in the middle of an operation, the
+-//! system will still recover to a consistent state.
+-//!
+-//! It requires `UntrustedLogImpl` to implement routines that do the
+-//! various log operations like read and commit.
+-//!
+-//! It also requires `UntrustedLogImpl` to provide a function
+-//! `UntrustedLogImpl::recover`, which specifies what its `start`
+-//! routine will do to recover after a crash. It requires its `start`
+-//! routine to satisfy that specification. It also uses it to limit
+-//! how `UntrustedLogImpl` writes to memory: It can only perform
+-//! updates that, if incompletely performed before a crash, still
+-//! leave the system in a valid state. The `recover` function takes a
+-//! second parameter, the `log_id` which is passed to the start
+-//! routine.
+-//!
+-//! It also requires `UntrustedLogImpl` to provide a function `view`
+-//! that converts the current state into an abstract log. It requires
+-//! that performing a certain operation on the `UntrustedLogImpl`
+-//! causes a corresponding update to its abstract view. For instance,
+-//! calling the `u.commit()` method should cause the resulting
+-//! `u.view()` to become `old(u).view().commit()`.
+-//!
+-//! It also permits `UntrustedLogImpl` to provide a function `inv`
+-//! that encodes any invariants `UntrustedLogImpl` wants maintained
+-//! across invocations of its functions. This implementation will then
+-//! guarantee that `inv` holds on any call to an `UntrustedLogImpl`
+-//! method, and demand that the method preserve that invariant.
+-
+-use std::fmt::Write;
+-
+-use crate::log::logimpl_v::UntrustedLogImpl;
+-use crate::log::logspec_t::AbstractLogState;
+-use crate::pmem::pmemspec_t::*;
+-use crate::pmem::wrpm_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+-use vstd::prelude::*;
+-
+-use deps_hack::rand::Rng;
+-
+-verus! {
+-
+-    // This is the specification that `LogImpl` provides for data
+-    // bytes it reads. It says that those bytes are correct unless
+-    // there was corruption on the persistent memory between the last
+-    // write and this read.
+-    pub open spec fn read_correct_modulo_corruption(bytes: Seq<u8>, true_bytes: Seq<u8>,
+-                                                    impervious_to_corruption: bool) -> bool
+-    {
+-        if impervious_to_corruption {
+-            // If the region is impervious to corruption, the bytes read
+-            // must match the true bytes, i.e., the bytes last written.
+-
+-            bytes == true_bytes
+-        }
+-        else {
+-            // Otherwise, there must exist a sequence of distinct
+-            // addresses `addrs` such that the nth byte of `bytes` is
+-            // a possibly corrupted version of the nth byte of
+-            // `true_bytes` read from the nth address in `addrs`.  We
+-            // don't require the sequence of addresses to be
+-            // contiguous because the data might not be contiguous on
+-            // disk (e.g., if it wrapped around the log area).
+-
+-            exists |addrs: Seq<int>| {
+-                &&& all_elements_unique(addrs)
+-                &&& #[trigger] maybe_corrupted(bytes, true_bytes, addrs)
+-            }
+-        }
+-    }
+-
+-    // This specification function indicates whether a given view of
+-    // memory can only crash in a way that, after recovery, leads to a
+-    // certain abstract state.
+-    pub open spec fn can_only_crash_as_state(
+-        pm_region_view: PersistentMemoryRegionView,
+-        log_id: u128,
+-        state: AbstractLogState,
+-    ) -> bool
+-    {
+-        forall |s| #[trigger] pm_region_view.can_crash_as(s) ==>
+-            UntrustedLogImpl::recover(s, log_id) == Some(state)
+-    }
+-
+-    // A `TrustedPermission` is the type of a tracked object
+-    // indicating permission to update memory. It restricts updates so
+-    // that if a crash happens, the resulting memory `mem` satisfies
+-    // `is_state_allowable(mem)`.
+-    //
+-    // The struct is defined in this file, and it has a non-public
+-    // field, so the only code that can create one is in this file.
+-    // So untrusted code in other files can't create one, and we can
+-    // rely on it to restrict access to persistent memory.
+-    #[allow(dead_code)]
+-    pub struct TrustedPermission {
+-        ghost is_state_allowable: spec_fn(Seq<u8>) -> bool
+-    }
+-
+-    impl CheckPermission<Seq<u8>> for TrustedPermission {
+-        closed spec fn check_permission(&self, state: Seq<u8>) -> bool {
+-            (self.is_state_allowable)(state)
+-        }
+-    }
+-
+-    impl TrustedPermission {
+-
+-        // This is one of two constructors for `TrustedPermission`.
+-        // It conveys permission to do any update as long as a
+-        // subsequent crash and recovery can only lead to given
+-        // abstract state `state`.
+-        proof fn new_one_possibility(log_id: u128, state: AbstractLogState) -> (tracked perm: Self)
+-            ensures
+-                forall |s| #[trigger] perm.check_permission(s) <==>
+-                    UntrustedLogImpl::recover(s, log_id) == Some(state)
+-        {
+-            Self {
+-                is_state_allowable: |s| UntrustedLogImpl::recover(s, log_id) == Some(state)
+-            }
+-        }
+-
+-        // This is the second of two constructors for
+-        // `TrustedPermission`.  It conveys permission to do any
+-        // update as long as a subsequent crash and recovery can only
+-        // lead to one of two given abstract states `state1` and
+-        // `state2`.
+-        proof fn new_two_possibilities(
+-            log_id: u128,
+-            state1: AbstractLogState,
+-            state2: AbstractLogState
+-        ) -> (tracked perm: Self)
+-            ensures
+-                forall |s| #[trigger] perm.check_permission(s) <==> {
+-                    ||| UntrustedLogImpl::recover(s, log_id) == Some(state1)
+-                    ||| UntrustedLogImpl::recover(s, log_id) == Some(state2)
+-                }
+-        {
+-            Self {
+-                is_state_allowable: |s| {
+-                    ||| UntrustedLogImpl::recover(s, log_id) == Some(state1)
+-                    ||| UntrustedLogImpl::recover(s, log_id) == Some(state2)
+-                }
+-            }
+-        }
+-    }
+-
+-    // This enumeration represents the various errors that can be
+-    // returned from log operations. They're self-explanatory.
+-    // TODO: make `PmemErr` and `LogErr` handling cleaner
+-    #[derive(Debug)]
+-    pub enum LogErr {
+-        InsufficientSpaceForSetup { required_space: u64 },
+-        StartFailedDueToLogIDMismatch { log_id_expected: u128, log_id_read: u128 },
+-        StartFailedDueToRegionSizeMismatch { region_size_expected: u64, region_size_read: u64 },
+-        StartFailedDueToProgramVersionNumberUnsupported { version_number: u64, max_supported: u64 },
+-        StartFailedDueToInvalidMemoryContents,
+-        CRCMismatch,
+-        InsufficientSpaceForAppend { available_space: u64 },
+-        CantReadBeforeHead { head: u128 },
+-        CantReadPastTail { tail: u128 },
+-        CantAdvanceHeadPositionBeforeHead { head: u128 },
+-        CantAdvanceHeadPositionBeyondTail { tail: u128 },
+-        PmemErr { err: PmemError } // janky workaround so that callers can handle PmemErrors as LogErrors
+-    }
+-
+-    // This executable method can be called to compute a random GUID.
+-    // It uses the external `rand` crate.
+-    #[verifier::external_body]
+-    pub exec fn generate_fresh_log_id() -> (out: u128)
+-    {
+-        deps_hack::rand::thread_rng().gen::<u128>()
+-    }
+-
+-    /// A `LogImpl` wraps one `UntrustedLogImpl` and one persistent
+-    /// memory region to provide the executable interface that turns
+-    /// the persistent memory region into a log.
+-    ///
+-    /// The `untrusted_log_impl` field is the wrapped
+-    /// `UntrustedLogImpl`.
+-    ///
+-    /// The `log_id` field is the log ID. It's ghost.
+-    ///
+-    /// The `wrpm_region` field contains the write-restricted persistent
+-    /// memory. This memory will only allow updates allowed by a
+-    /// tracked `TrustedPermission`. So we can pass `wrpm_region` to an
+-    /// untrusted method, along with a restricting
+-    /// `TrustedPermission`, to limit what it's allowed to do.
+-
+-    pub struct LogImpl<PMRegion: PersistentMemoryRegion> {
+-        untrusted_log_impl: UntrustedLogImpl,
+-        log_id: Ghost<u128>,
+-        wrpm_region: WriteRestrictedPersistentMemoryRegion<TrustedPermission, PMRegion>
+-    }
+-
+-    impl <PMRegion: PersistentMemoryRegion> LogImpl<PMRegion> {
+-        // The view of a `LogImpl` is whatever the
+-        // `UntrustedLogImpl` it wraps says it is.
+-        pub closed spec fn view(self) -> AbstractLogState
+-        {
+-            self.untrusted_log_impl@
+-        }
+-
+-        // The constants of a `LogImpl` are whatever the
+-        // persistent memory it wraps says they are.
+-        pub closed spec fn constants(&self) -> PersistentMemoryConstants {
+-            self.wrpm_region.constants()
+-        }
+-
+-        // This is the validity condition that is maintained between
+-        // calls to methods on `self`.
+-        //
+-        // That is, each of the trusted wrappers on untrusted methods
+-        // below (e.g., `commit`, `advance_head`) can count on `valid`
+-        // holding because it demands that each untrusted method
+-        // maintains it.
+-        //
+-        // One element of `valid` is that the untrusted `inv` function
+-        // holds.
+-        //
+-        // The other element of `valid` is that the persistent memory,
+-        // if it crashes and recovers, must represent the current
+-        // abstract state with pending tentative appends dropped.
+-        pub closed spec fn valid(self) -> bool {
+-            &&& self.untrusted_log_impl.inv(&self.wrpm_region, self.log_id@)
+-            &&& can_only_crash_as_state(self.wrpm_region@, self.log_id@, self@.drop_pending_appends())
+-        }
+-
+-        // The `setup` method sets up persistent memory regions
+-        // `pm_region` to store an initial empty log. It returns a
+-        // vector listing the capacity of the log as well as a
+-        // fresh log ID to uniquely identify it. See `README.md`
+-        // for more documentation.
+-        pub exec fn setup(pm_region: &mut PMRegion) -> (result: Result<(u64, u128), LogErr>)
+-            requires
+-                old(pm_region).inv(),
+-            ensures
+-                pm_region.inv(),
+-                pm_region@.no_outstanding_writes(),
+-                match result {
+-                    Ok((log_capacity, log_id)) => {
+-                        let state = AbstractLogState::initialize(log_capacity as int);
+-                        &&& log_capacity <= pm_region@.len()
+-                        &&& pm_region@.len() == old(pm_region)@.len()
+-                        &&& can_only_crash_as_state(pm_region@, log_id, state)
+-                        &&& UntrustedLogImpl::recover(pm_region@.committed(), log_id) == Some(state)
+-                        // Required by the `start` function's precondition. Putting this in the
+-                        // postcond of `setup` ensures that the trusted caller doesn't have to prove it
+-                        &&& UntrustedLogImpl::recover(pm_region@.flush().committed(), log_id) == Some(state)
+-                        &&& state == state.drop_pending_appends()
+-                    },
+-                    Err(LogErr::InsufficientSpaceForSetup { required_space }) => {
+-                        &&& pm_region@ == old(pm_region)@.flush()
+-                        &&& pm_region@.len() < required_space
+-                    },
+-                    _ => false
+-                }
+-        {
+-            let log_id = generate_fresh_log_id();
+-            let capacities = UntrustedLogImpl::setup(pm_region, log_id)?;
+-            Ok((capacities, log_id))
+-        }
+-
+-        // The `start` method creates an `UntrustedLogImpl` out of a
+-        // persistent memory region. It's assumed that the region was
+-        // initialized with `setup` and then only log operations were
+-        // allowed to mutate them. See `README.md` for more
+-        // documentation and an example of use.
+-        pub exec fn start(pm_region: PMRegion, log_id: u128) -> (result: Result<LogImpl<PMRegion>, LogErr>)
+-            requires
+-                pm_region.inv(),
+-                UntrustedLogImpl::recover(pm_region@.flush().committed(), log_id).is_Some(),
+-            ensures
+-                match result {
+-                    Ok(trusted_log_impl) => {
+-                        &&& trusted_log_impl.valid()
+-                        &&& trusted_log_impl.constants() == pm_region.constants()
+-                        &&& Some(trusted_log_impl@) == UntrustedLogImpl::recover(pm_region@.flush().committed(),
+-                                                                               log_id)
+-                    },
+-                    Err(LogErr::CRCMismatch) => !pm_region.constants().impervious_to_corruption,
+-                    Err(e) => e == LogErr::PmemErr{ err: PmemError::AccessOutOfRange },
+-                }
+-        {
+-            // We allow the untrusted `start` method to update memory
+-            // as part of its initialization. But, to avoid bugs
+-            // stemming from crashes in the middle of this routine, we
+-            // must restrict how it updates memory. We must only let
+-            // it write such that, if a crash happens in the middle,
+-            // it doesn't change the persistent state.
+-
+-            let ghost state = UntrustedLogImpl::recover(pm_region@.flush().committed(), log_id).get_Some_0();
+-            let mut wrpm_region = WriteRestrictedPersistentMemoryRegion::new(pm_region);
+-            let tracked perm = TrustedPermission::new_one_possibility(log_id, state);
+-            let untrusted_log_impl =
+-                UntrustedLogImpl::start(&mut wrpm_region, log_id, Tracked(&perm), Ghost(state))?;
+-            Ok(
+-                LogImpl {
+-                    untrusted_log_impl,
+-                    log_id:  Ghost(log_id),
+-                    wrpm_region
+-                },
+-            )
+-        }
+-
+-        // The `tentatively_append` method tentatively appends
+-        // `bytes_to_append` to the end of the log. It's tentative in
+-        // that crashes will undo the appends, and reads aren't
+-        // allowed in the tentative part of the log. See `README.md` for
+-        // more documentation and examples of use.
+-        pub exec fn tentatively_append(&mut self, bytes_to_append: &[u8]) -> (result: Result<u128, LogErr>)
+-            requires
+-                old(self).valid(),
+-            ensures
+-                self.valid(),
+-                self.constants() == old(self).constants(),
+-                match result {
+-                    Ok(offset) => {
+-                        let state = old(self)@;
+-                        &&& offset == state.head + state.log.len() + state.pending.len()
+-                        &&& self@ == old(self)@.tentatively_append(bytes_to_append@)
+-                    },
+-                    Err(LogErr::InsufficientSpaceForAppend { available_space }) => {
+-                        &&& self@ == old(self)@
+-                        &&& available_space < bytes_to_append@.len()
+-                        &&& {
+-                               ||| available_space == self@.capacity - self@.log.len() - self@.pending.len()
+-                               ||| available_space == u128::MAX - self@.head - self@.log.len() - self@.pending.len()
+-                           }
+-                    },
+-                    _ => false
+-                }
+-        {
+-            // For crash safety, we must restrict the untrusted code's
+-            // writes to persistent memory. We must only let it write
+-            // such that, if a crash happens in the middle of a write,
+-            // the view of the persistent state is the current
+-            // state with pending appends dropped.
+-            let tracked perm = TrustedPermission::new_one_possibility(self.log_id@, self@.drop_pending_appends());
+-            self.untrusted_log_impl.tentatively_append(&mut self.wrpm_region, bytes_to_append,
+-                                                       self.log_id, Tracked(&perm))
+-        }
+-
+-        // The `commit` method atomically commits all tentative
+-        // appends that have been done to `self` since the last
+-        // commit. The commit is atomic in that even if there's a
+-        // crash in the middle, the recovered-to state either reflects
+-        // all those tentative appends or none of them. See `README.md`
+-        // for more documentation and examples of use.
+-        pub exec fn commit(&mut self) -> (result: Result<(), LogErr>)
+-            requires
+-                old(self).valid(),
+-            ensures
+-                self.valid(),
+-                self.constants() == old(self).constants(),
+-                match result {
+-                    Ok(()) => self@ == old(self)@.commit(),
+-                    _ => false
+-                }
+-        {
+-            // For crash safety, we must restrict the untrusted code's
+-            // writes to persistent memory. We must only let it write
+-            // such that, if a crash happens in the middle of a write,
+-            // the view of the persistent state is either the current
+-            // state with all pending appends dropped or the current
+-            // state with all uncommitted appends committed.
+-            let tracked perm = TrustedPermission::new_two_possibilities(self.log_id@, self@.drop_pending_appends(),
+-                                                                        self@.commit().drop_pending_appends());
+-            self.untrusted_log_impl.commit(&mut self.wrpm_region, self.log_id, Tracked(&perm))
+-        }
+-
+-        // The `advance_head` method advances the head of the log to
+-        // virtual new head position `new_head`. It doesn't do this
+-        // tentatively; it completes it durably before returning.
+-        // However, `advance_head` doesn't commit tentative appends;
+-        // to do that, you need a separate call to `commit`. See
+-        // `README.md` for more documentation and examples of use.
+-        pub exec fn advance_head(&mut self, new_head: u128) -> (result: Result<(), LogErr>)
+-            requires
+-                old(self).valid(),
+-            ensures
+-                self.valid(),
+-                self.constants() == old(self).constants(),
+-                match result {
+-                    Ok(()) => {
+-                        let state = old(self)@;
+-                        &&& state.head <= new_head <= state.head + state.log.len()
+-                        &&& self@ == old(self)@.advance_head(new_head as int)
+-                    },
+-                    Err(LogErr::CantAdvanceHeadPositionBeforeHead { head }) => {
+-                        &&& self@ == old(self)@
+-                        &&& head == self@.head
+-                        &&& new_head < head
+-                    },
+-                    Err(LogErr::CantAdvanceHeadPositionBeyondTail { tail }) => {
+-                        &&& self@ == old(self)@
+-                        &&& tail == self@.head + self@.log.len()
+-                        &&& new_head > tail
+-                    },
+-                    _ => false,
+-                }
+-        {
+-            // For crash safety, we must restrict the untrusted code's
+-            // writes to persistent memory. We must only let it write
+-            // such that, if a crash happens in the middle of a write,
+-            // the view of the persistent state is either the current
+-            // state or the current state with the head advanced.
+-            let tracked perm = TrustedPermission::new_two_possibilities(
+-                self.log_id@,
+-                self@.drop_pending_appends(),
+-                self@.advance_head(new_head as int).drop_pending_appends()
+-            );
+-            self.untrusted_log_impl.advance_head(&mut self.wrpm_region, new_head,
+-                                                 self.log_id, Tracked(&perm))
+-        }
+-
+-        // The `read` method reads `len` bytes from the log starting
+-        // at virtual position `pos`. It isn't allowed to read earlier
+-        // than the head or past the committed tail. See `README.md` for
+-        // more documentation and examples of use.
+-        pub exec fn read(&self, pos: u128, len: u64) -> (result: Result<Vec<u8>, LogErr>)
+-            requires
+-                self.valid(),
+-                pos + len <= u128::MAX,
+-            ensures
+-                ({
+-                    let state = self@;
+-                    let head = state.head;
+-                    let log = state.log;
+-                    match result {
+-                        Ok(bytes) => {
+-                            let true_bytes = self@.read(pos as int, len as int);
+-                            &&& pos >= head
+-                            &&& pos + len <= head + log.len()
+-                            &&& read_correct_modulo_corruption(bytes@, true_bytes,
+-                                                             self.constants().impervious_to_corruption)
+-                        },
+-                        Err(LogErr::CantReadBeforeHead{ head: head_pos }) => {
+-                            &&& pos < head
+-                            &&& head_pos == head
+-                        },
+-                        Err(LogErr::CantReadPastTail{ tail }) => {
+-                            &&& pos + len > tail
+-                            &&& tail == head + log.len()
+-                        },
+-                        Err(e) => e == LogErr::PmemErr{ err: PmemError::AccessOutOfRange },
+-                    }
+-                })
+-        {
+-            let (bytes, addrs) = self.untrusted_log_impl.read(&self.wrpm_region, pos, len, self.log_id)?;
+-            Ok(bytes)
+-        }
+-
+-        // The `get_head_tail_and_capacity` method returns three
+-        // pieces of metadata about the log: the virtual head
+-        // position, the virtual tail position, and the capacity. The
+-        // capacity is the maximum number of bytes there can be in the
+-        // log past the head, including bytes in tentative appends
+-        // that haven't been committed yet. See `README.md` for more
+-        // documentation and examples of use.
+-        pub exec fn get_head_tail_and_capacity(&self) -> (result: Result<(u128, u128, u64), LogErr>)
+-            requires
+-                self.valid()
+-            ensures
+-                match result {
+-                    Ok((result_head, result_tail, result_capacity)) => {
+-                        &&& result_head == self@.head
+-                        &&& result_tail == self@.head + self@.log.len()
+-                        &&& result_capacity == self@.capacity
+-                    },
+-                    _ => false
+-                }
+-        {
+-            self.untrusted_log_impl.get_head_tail_and_capacity(&self.wrpm_region, self.log_id)
+-        }
+-    }
+-
+-}
++//! This file contains the trusted implementation of a `LogImpl`.
++//! Although the verifier is run on this file, it needs to be
++//! carefully read and audited to be confident of the correctness of
++//! this log implementation.
++//!
++//! Fortunately, it delegates most of its work to an untrusted struct
++//! `UntrustedLogImpl`, which doesn't need to be read or audited. It
++//! forces the `UntrustedLogImpl` to satisfy certain postconditions,
++//! and also places restrictions on what `UntrustedLogImpl` can do to
++//! persistent memory. These restrictions ensure that even if the
++//! system or process crashes in the middle of an operation, the
++//! system will still recover to a consistent state.
++//!
++//! It requires `UntrustedLogImpl` to implement routines that do the
++//! various log operations like read and commit.
++//!
++//! It also requires `UntrustedLogImpl` to provide a function
++//! `UntrustedLogImpl::recover`, which specifies what its `start`
++//! routine will do to recover after a crash. It requires its `start`
++//! routine to satisfy that specification. It also uses it to limit
++//! how `UntrustedLogImpl` writes to memory: It can only perform
++//! updates that, if incompletely performed before a crash, still
++//! leave the system in a valid state. The `recover` function takes a
++//! second parameter, the `log_id` which is passed to the start
++//! routine.
++//!
++//! It also requires `UntrustedLogImpl` to provide a function `view`
++//! that converts the current state into an abstract log. It requires
++//! that performing a certain operation on the `UntrustedLogImpl`
++//! causes a corresponding update to its abstract view. For instance,
++//! calling the `u.commit()` method should cause the resulting
++//! `u.view()` to become `old(u).view().commit()`.
++//!
++//! It also permits `UntrustedLogImpl` to provide a function `inv`
++//! that encodes any invariants `UntrustedLogImpl` wants maintained
++//! across invocations of its functions. This implementation will then
++//! guarantee that `inv` holds on any call to an `UntrustedLogImpl`
++//! method, and demand that the method preserve that invariant.
++
++use std::fmt::Write;
++
++use crate::log::logimpl_v::UntrustedLogImpl;
++use crate::log::logspec_t::AbstractLogState;
++use crate::pmem::pmemspec_t::*;
++use crate::pmem::wrpm_t::*;
++use vstd::prelude::*;
++
++use deps_hack::rand::Rng;
++
++verus! {
++
++    // This is the specification that `LogImpl` provides for data
++    // bytes it reads. It says that those bytes are correct unless
++    // there was corruption on the persistent memory between the last
++    // write and this read.
++    pub open spec fn read_correct_modulo_corruption(bytes: Seq<u8>, true_bytes: Seq<u8>,
++                                                    impervious_to_corruption: bool) -> bool
++    {
++        if impervious_to_corruption {
++            // If the region is impervious to corruption, the bytes read
++            // must match the true bytes, i.e., the bytes last written.
++
++            bytes == true_bytes
++        }
++        else {
++            // Otherwise, there must exist a sequence of distinct
++            // addresses `addrs` such that the nth byte of `bytes` is
++            // a possibly corrupted version of the nth byte of
++            // `true_bytes` read from the nth address in `addrs`.  We
++            // don't require the sequence of addresses to be
++            // contiguous because the data might not be contiguous on
++            // disk (e.g., if it wrapped around the log area).
++
++            exists |addrs: Seq<int>| {
++                &&& all_elements_unique(addrs)
++                &&& #[trigger] maybe_corrupted(bytes, true_bytes, addrs)
++            }
++        }
++    }
++
++    // This specification function indicates whether a given view of
++    // memory can only crash in a way that, after recovery, leads to a
++    // certain abstract state.
++    pub open spec fn can_only_crash_as_state(
++        pm_region_view: PersistentMemoryRegionView,
++        log_id: u128,
++        state: AbstractLogState,
++    ) -> bool
++    {
++        forall |s| #[trigger] pm_region_view.can_crash_as(s) ==>
++            UntrustedLogImpl::recover(s, log_id) == Some(state)
++    }
++
++    // A `TrustedPermission` is the type of a tracked object
++    // indicating permission to update memory. It restricts updates so
++    // that if a crash happens, the resulting memory `mem` satisfies
++    // `is_state_allowable(mem)`.
++    //
++    // The struct is defined in this file, and it has a non-public
++    // field, so the only code that can create one is in this file.
++    // So untrusted code in other files can't create one, and we can
++    // rely on it to restrict access to persistent memory.
++    #[allow(dead_code)]
++    pub struct TrustedPermission {
++        ghost is_state_allowable: spec_fn(Seq<u8>) -> bool
++    }
++
++    impl CheckPermission<Seq<u8>> for TrustedPermission {
++        closed spec fn check_permission(&self, state: Seq<u8>) -> bool {
++            (self.is_state_allowable)(state)
++        }
++    }
++
++    impl TrustedPermission {
++
++        // This is one of two constructors for `TrustedPermission`.
++        // It conveys permission to do any update as long as a
++        // subsequent crash and recovery can only lead to given
++        // abstract state `state`.
++        proof fn new_one_possibility(log_id: u128, state: AbstractLogState) -> (tracked perm: Self)
++            ensures
++                forall |s| #[trigger] perm.check_permission(s) <==>
++                    UntrustedLogImpl::recover(s, log_id) == Some(state)
++        {
++            Self {
++                is_state_allowable: |s| UntrustedLogImpl::recover(s, log_id) == Some(state)
++            }
++        }
++
++        // This is the second of two constructors for
++        // `TrustedPermission`.  It conveys permission to do any
++        // update as long as a subsequent crash and recovery can only
++        // lead to one of two given abstract states `state1` and
++        // `state2`.
++        proof fn new_two_possibilities(
++            log_id: u128,
++            state1: AbstractLogState,
++            state2: AbstractLogState
++        ) -> (tracked perm: Self)
++            ensures
++                forall |s| #[trigger] perm.check_permission(s) <==> {
++                    ||| UntrustedLogImpl::recover(s, log_id) == Some(state1)
++                    ||| UntrustedLogImpl::recover(s, log_id) == Some(state2)
++                }
++        {
++            Self {
++                is_state_allowable: |s| {
++                    ||| UntrustedLogImpl::recover(s, log_id) == Some(state1)
++                    ||| UntrustedLogImpl::recover(s, log_id) == Some(state2)
++                }
++            }
++        }
++    }
++
++    // This enumeration represents the various errors that can be
++    // returned from log operations. They're self-explanatory.
++    // TODO: make `PmemErr` and `LogErr` handling cleaner
++    #[derive(Debug)]
++    pub enum LogErr {
++        InsufficientSpaceForSetup { required_space: u64 },
++        StartFailedDueToLogIDMismatch { log_id_expected: u128, log_id_read: u128 },
++        StartFailedDueToRegionSizeMismatch { region_size_expected: u64, region_size_read: u64 },
++        StartFailedDueToProgramVersionNumberUnsupported { version_number: u64, max_supported: u64 },
++        StartFailedDueToInvalidMemoryContents,
++        CRCMismatch,
++        InsufficientSpaceForAppend { available_space: u64 },
++        CantReadBeforeHead { head: u128 },
++        CantReadPastTail { tail: u128 },
++        CantAdvanceHeadPositionBeforeHead { head: u128 },
++        CantAdvanceHeadPositionBeyondTail { tail: u128 },
++        PmemErr { err: PmemError } // janky workaround so that callers can handle PmemErrors as LogErrors
++    }
++
++    // This executable method can be called to compute a random GUID.
++    // It uses the external `rand` crate.
++    #[verifier::external_body]
++    pub exec fn generate_fresh_log_id() -> (out: u128)
++    {
++        deps_hack::rand::thread_rng().gen::<u128>()
++    }
++
++    /// A `LogImpl` wraps one `UntrustedLogImpl` and one persistent
++    /// memory region to provide the executable interface that turns
++    /// the persistent memory region into a log.
++    ///
++    /// The `untrusted_log_impl` field is the wrapped
++    /// `UntrustedLogImpl`.
++    ///
++    /// The `log_id` field is the log ID. It's ghost.
++    ///
++    /// The `wrpm_region` field contains the write-restricted persistent
++    /// memory. This memory will only allow updates allowed by a
++    /// tracked `TrustedPermission`. So we can pass `wrpm_region` to an
++    /// untrusted method, along with a restricting
++    /// `TrustedPermission`, to limit what it's allowed to do.
++
++    pub struct LogImpl<PMRegion: PersistentMemoryRegion> {
++        untrusted_log_impl: UntrustedLogImpl,
++        log_id: Ghost<u128>,
++        wrpm_region: WriteRestrictedPersistentMemoryRegion<TrustedPermission, PMRegion>
++    }
++
++    impl <PMRegion: PersistentMemoryRegion> LogImpl<PMRegion> {
++        // The view of a `LogImpl` is whatever the
++        // `UntrustedLogImpl` it wraps says it is.
++        pub closed spec fn view(self) -> AbstractLogState
++        {
++            self.untrusted_log_impl@
++        }
++
++        // The constants of a `LogImpl` are whatever the
++        // persistent memory it wraps says they are.
++        pub closed spec fn constants(&self) -> PersistentMemoryConstants {
++            self.wrpm_region.constants()
++        }
++
++        // This is the validity condition that is maintained between
++        // calls to methods on `self`.
++        //
++        // That is, each of the trusted wrappers on untrusted methods
++        // below (e.g., `commit`, `advance_head`) can count on `valid`
++        // holding because it demands that each untrusted method
++        // maintains it.
++        //
++        // One element of `valid` is that the untrusted `inv` function
++        // holds.
++        //
++        // The other element of `valid` is that the persistent memory,
++        // if it crashes and recovers, must represent the current
++        // abstract state with pending tentative appends dropped.
++        pub closed spec fn valid(self) -> bool {
++            &&& self.untrusted_log_impl.inv(&self.wrpm_region, self.log_id@)
++            &&& can_only_crash_as_state(self.wrpm_region@, self.log_id@, self@.drop_pending_appends())
++        }
++
++        // The `setup` method sets up persistent memory regions
++        // `pm_region` to store an initial empty log. It returns a
++        // vector listing the capacity of the log as well as a
++        // fresh log ID to uniquely identify it. See `README.md`
++        // for more documentation.
++        pub exec fn setup(pm_region: &mut PMRegion) -> (result: Result<(u64, u128), LogErr>)
++            requires
++                old(pm_region).inv(),
++            ensures
++                pm_region.inv(),
++                pm_region@.no_outstanding_writes(),
++                match result {
++                    Ok((log_capacity, log_id)) => {
++                        let state = AbstractLogState::initialize(log_capacity as int);
++                        &&& log_capacity <= pm_region@.len()
++                        &&& pm_region@.len() == old(pm_region)@.len()
++                        &&& can_only_crash_as_state(pm_region@, log_id, state)
++                        &&& UntrustedLogImpl::recover(pm_region@.committed(), log_id) == Some(state)
++                        // Required by the `start` function's precondition. Putting this in the
++                        // postcond of `setup` ensures that the trusted caller doesn't have to prove it
++                        &&& UntrustedLogImpl::recover(pm_region@.flush().committed(), log_id) == Some(state)
++                        &&& state == state.drop_pending_appends()
++                    },
++                    Err(LogErr::InsufficientSpaceForSetup { required_space }) => {
++                        &&& pm_region@ == old(pm_region)@.flush()
++                        &&& pm_region@.len() < required_space
++                    },
++                    _ => false
++                }
++        {
++            let log_id = generate_fresh_log_id();
++            let capacities = UntrustedLogImpl::setup(pm_region, log_id)?;
++            Ok((capacities, log_id))
++        }
++
++        // The `start` method creates an `UntrustedLogImpl` out of a
++        // persistent memory region. It's assumed that the region was
++        // initialized with `setup` and then only log operations were
++        // allowed to mutate them. See `README.md` for more
++        // documentation and an example of use.
++        pub exec fn start(pm_region: PMRegion, log_id: u128) -> (result: Result<LogImpl<PMRegion>, LogErr>)
++            requires
++                pm_region.inv(),
++                UntrustedLogImpl::recover(pm_region@.flush().committed(), log_id).is_Some(),
++            ensures
++                match result {
++                    Ok(trusted_log_impl) => {
++                        &&& trusted_log_impl.valid()
++                        &&& trusted_log_impl.constants() == pm_region.constants()
++                        &&& Some(trusted_log_impl@) == UntrustedLogImpl::recover(pm_region@.flush().committed(),
++                                                                               log_id)
++                    },
++                    Err(LogErr::CRCMismatch) => !pm_region.constants().impervious_to_corruption,
++                    Err(e) => e == LogErr::PmemErr{ err: PmemError::AccessOutOfRange },
++                }
++        {
++            // We allow the untrusted `start` method to update memory
++            // as part of its initialization. But, to avoid bugs
++            // stemming from crashes in the middle of this routine, we
++            // must restrict how it updates memory. We must only let
++            // it write such that, if a crash happens in the middle,
++            // it doesn't change the persistent state.
++
++            let ghost state = UntrustedLogImpl::recover(pm_region@.flush().committed(), log_id).get_Some_0();
++            let mut wrpm_region = WriteRestrictedPersistentMemoryRegion::new(pm_region);
++            let tracked perm = TrustedPermission::new_one_possibility(log_id, state);
++            let untrusted_log_impl =
++                UntrustedLogImpl::start(&mut wrpm_region, log_id, Tracked(&perm), Ghost(state))?;
++            Ok(
++                LogImpl {
++                    untrusted_log_impl,
++                    log_id:  Ghost(log_id),
++                    wrpm_region
++                },
++            )
++        }
++
++        // The `tentatively_append` method tentatively appends
++        // `bytes_to_append` to the end of the log. It's tentative in
++        // that crashes will undo the appends, and reads aren't
++        // allowed in the tentative part of the log. See `README.md` for
++        // more documentation and examples of use.
++        pub exec fn tentatively_append(&mut self, bytes_to_append: &[u8]) -> (result: Result<u128, LogErr>)
++            requires
++                old(self).valid(),
++            ensures
++                self.valid(),
++                self.constants() == old(self).constants(),
++                match result {
++                    Ok(offset) => {
++                        let state = old(self)@;
++                        &&& offset == state.head + state.log.len() + state.pending.len()
++                        &&& self@ == old(self)@.tentatively_append(bytes_to_append@)
++                    },
++                    Err(LogErr::InsufficientSpaceForAppend { available_space }) => {
++                        &&& self@ == old(self)@
++                        &&& available_space < bytes_to_append@.len()
++                        &&& {
++                               ||| available_space == self@.capacity - self@.log.len() - self@.pending.len()
++                               ||| available_space == u128::MAX - self@.head - self@.log.len() - self@.pending.len()
++                           }
++                    },
++                    _ => false
++                }
++        {
++            // For crash safety, we must restrict the untrusted code's
++            // writes to persistent memory. We must only let it write
++            // such that, if a crash happens in the middle of a write,
++            // the view of the persistent state is the current
++            // state with pending appends dropped.
++            let tracked perm = TrustedPermission::new_one_possibility(self.log_id@, self@.drop_pending_appends());
++            self.untrusted_log_impl.tentatively_append(&mut self.wrpm_region, bytes_to_append,
++                                                       self.log_id, Tracked(&perm))
++        }
++
++        // The `commit` method atomically commits all tentative
++        // appends that have been done to `self` since the last
++        // commit. The commit is atomic in that even if there's a
++        // crash in the middle, the recovered-to state either reflects
++        // all those tentative appends or none of them. See `README.md`
++        // for more documentation and examples of use.
++        pub exec fn commit(&mut self) -> (result: Result<(), LogErr>)
++            requires
++                old(self).valid(),
++            ensures
++                self.valid(),
++                self.constants() == old(self).constants(),
++                match result {
++                    Ok(()) => self@ == old(self)@.commit(),
++                    _ => false
++                }
++        {
++            // For crash safety, we must restrict the untrusted code's
++            // writes to persistent memory. We must only let it write
++            // such that, if a crash happens in the middle of a write,
++            // the view of the persistent state is either the current
++            // state with all pending appends dropped or the current
++            // state with all uncommitted appends committed.
++            let tracked perm = TrustedPermission::new_two_possibilities(self.log_id@, self@.drop_pending_appends(),
++                                                                        self@.commit().drop_pending_appends());
++            self.untrusted_log_impl.commit(&mut self.wrpm_region, self.log_id, Tracked(&perm))
++        }
++
++        // The `advance_head` method advances the head of the log to
++        // virtual new head position `new_head`. It doesn't do this
++        // tentatively; it completes it durably before returning.
++        // However, `advance_head` doesn't commit tentative appends;
++        // to do that, you need a separate call to `commit`. See
++        // `README.md` for more documentation and examples of use.
++        pub exec fn advance_head(&mut self, new_head: u128) -> (result: Result<(), LogErr>)
++            requires
++                old(self).valid(),
++            ensures
++                self.valid(),
++                self.constants() == old(self).constants(),
++                match result {
++                    Ok(()) => {
++                        let state = old(self)@;
++                        &&& state.head <= new_head <= state.head + state.log.len()
++                        &&& self@ == old(self)@.advance_head(new_head as int)
++                    },
++                    Err(LogErr::CantAdvanceHeadPositionBeforeHead { head }) => {
++                        &&& self@ == old(self)@
++                        &&& head == self@.head
++                        &&& new_head < head
++                    },
++                    Err(LogErr::CantAdvanceHeadPositionBeyondTail { tail }) => {
++                        &&& self@ == old(self)@
++                        &&& tail == self@.head + self@.log.len()
++                        &&& new_head > tail
++                    },
++                    _ => false,
++                }
++        {
++            // For crash safety, we must restrict the untrusted code's
++            // writes to persistent memory. We must only let it write
++            // such that, if a crash happens in the middle of a write,
++            // the view of the persistent state is either the current
++            // state or the current state with the head advanced.
++            let tracked perm = TrustedPermission::new_two_possibilities(
++                self.log_id@,
++                self@.drop_pending_appends(),
++                self@.advance_head(new_head as int).drop_pending_appends()
++            );
++            self.untrusted_log_impl.advance_head(&mut self.wrpm_region, new_head,
++                                                 self.log_id, Tracked(&perm))
++        }
++
++        // The `read` method reads `len` bytes from the log starting
++        // at virtual position `pos`. It isn't allowed to read earlier
++        // than the head or past the committed tail. See `README.md` for
++        // more documentation and examples of use.
++        pub exec fn read(&self, pos: u128, len: u64) -> (result: Result<Vec<u8>, LogErr>)
++            requires
++                self.valid(),
++                pos + len <= u128::MAX,
++            ensures
++                ({
++                    let state = self@;
++                    let head = state.head;
++                    let log = state.log;
++                    match result {
++                        Ok(bytes) => {
++                            let true_bytes = self@.read(pos as int, len as int);
++                            &&& pos >= head
++                            &&& pos + len <= head + log.len()
++                            &&& read_correct_modulo_corruption(bytes@, true_bytes,
++                                                             self.constants().impervious_to_corruption)
++                        },
++                        Err(LogErr::CantReadBeforeHead{ head: head_pos }) => {
++                            &&& pos < head
++                            &&& head_pos == head
++                        },
++                        Err(LogErr::CantReadPastTail{ tail }) => {
++                            &&& pos + len > tail
++                            &&& tail == head + log.len()
++                        },
++                        Err(e) => e == LogErr::PmemErr{ err: PmemError::AccessOutOfRange },
++                    }
++                })
++        {
++            let (bytes, addrs) = self.untrusted_log_impl.read(&self.wrpm_region, pos, len, self.log_id)?;
++            Ok(bytes)
++        }
++
++        // The `get_head_tail_and_capacity` method returns three
++        // pieces of metadata about the log: the virtual head
++        // position, the virtual tail position, and the capacity. The
++        // capacity is the maximum number of bytes there can be in the
++        // log past the head, including bytes in tentative appends
++        // that haven't been committed yet. See `README.md` for more
++        // documentation and examples of use.
++        pub exec fn get_head_tail_and_capacity(&self) -> (result: Result<(u128, u128, u64), LogErr>)
++            requires
++                self.valid()
++            ensures
++                match result {
++                    Ok((result_head, result_tail, result_capacity)) => {
++                        &&& result_head == self@.head
++                        &&& result_tail == self@.head + self@.log.len()
++                        &&& result_capacity == self@.capacity
++                    },
++                    _ => false
++                }
++        {
++            self.untrusted_log_impl.get_head_tail_and_capacity(&self.wrpm_region, self.log_id)
++        }
++    }
++
++}
+diff --git a/storage_node/src/log/logimpl_v.rs b/storage_node/src/log/logimpl_v.rs
+index e112b6fc..031b5f5a 100644
+--- a/storage_node/src/log/logimpl_v.rs
++++ b/storage_node/src/log/logimpl_v.rs
+@@ -18,8 +18,6 @@ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::subregion_v::*;
+ use crate::pmem::wrpm_t::*;
+ use crate::pmem::traits_t::size_of;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::arithmetic::div_mod::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/log/logspec_t.rs b/storage_node/src/log/logspec_t.rs
+index a1bb4e5e..0e74b1ce 100644
+--- a/storage_node/src/log/logspec_t.rs
++++ b/storage_node/src/log/logspec_t.rs
+@@ -32,8 +32,6 @@
+ //! explicitly invoked by clients; it's a model of what clients should
+ //! consider to have happened during a crash.
+ 
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/storage_node/src/log/setup_v.rs b/storage_node/src/log/setup_v.rs
+index 960fa6ca..c22ffc05 100644
+--- a/storage_node/src/log/setup_v.rs
++++ b/storage_node/src/log/setup_v.rs
+@@ -13,8 +13,6 @@ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::pmemutil_v::*;
+ use crate::pmem::traits_t::size_of;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+ 
+diff --git a/storage_node/src/log/start_v.rs b/storage_node/src/log/start_v.rs
+index 6390b7ee..c43ead03 100644
+--- a/storage_node/src/log/start_v.rs
++++ b/storage_node/src/log/start_v.rs
+@@ -16,8 +16,6 @@ use crate::pmem::pmemutil_v::{check_cdb, check_crc};
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::subregion_v::*;
+ use crate::pmem::traits_t::size_of;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::arithmetic::div_mod::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/multilog/append_v.rs b/storage_node/src/multilog/append_v.rs
+index 4727f695..91350187 100644
+--- a/storage_node/src/multilog/append_v.rs
++++ b/storage_node/src/multilog/append_v.rs
+@@ -11,8 +11,6 @@ use crate::multilog::multilogimpl_v::LogInfo;
+ use crate::multilog::multilogspec_t::AbstractMultiLogState;
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::pmemspec_t::PersistentMemoryRegionsView;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/storage_node/src/multilog/inv_v.rs b/storage_node/src/multilog/inv_v.rs
+index 330b92f0..f48ef90c 100644
+--- a/storage_node/src/multilog/inv_v.rs
++++ b/storage_node/src/multilog/inv_v.rs
+@@ -13,8 +13,6 @@ use crate::multilog::multilogspec_t::{AbstractLogState, AbstractMultiLogState};
+ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmemutil_v::*;
+ use crate::pmem::pmcopy_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/storage_node/src/multilog/layout_v.rs b/storage_node/src/multilog/layout_v.rs
+index 160f4a96..65dddd02 100644
+--- a/storage_node/src/multilog/layout_v.rs
++++ b/storage_node/src/multilog/layout_v.rs
+@@ -62,8 +62,6 @@ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::traits_t::*;
+ use crate::util_v::*;
+ use deps_hack::{PmSafe, PmSized};
+-use builtin::*;
+-use builtin_macros::*;
+ use core::fmt::Debug;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/multilog/multilogimpl_t.rs b/storage_node/src/multilog/multilogimpl_t.rs
+index 564b4b3b..ad8cd38c 100644
+--- a/storage_node/src/multilog/multilogimpl_t.rs
++++ b/storage_node/src/multilog/multilogimpl_t.rs
+@@ -1,561 +1,559 @@
+-//! This file contains the trusted implementation of a `MultiLogImpl`.
+-//! Although the verifier is run on this file, it needs to be
+-//! carefully read and audited to be confident of the correctness of
+-//! this multilog implementation.
+-//!
+-//! Fortunately, it delegates most of its work to an untrusted struct
+-//! `UntrustedMultiLogImpl`, which doesn't need to be read or audited.
+-//! It forces the `UntrustedMultiLogImpl` to satisfy certain
+-//! postconditions, and also places restrictions on what
+-//! `UntrustedMultiLogImpl` can do to persistent memory. These
+-//! restrictions ensure that even if the system or process crashes in
+-//! the middle of an operation, the system will still recover to a
+-//! consistent state.
+-//!
+-//! It requires `UntrustedMultiLogImpl` to implement routines that do the
+-//! various multilog operations like read and commit.
+-//!
+-//! It also requires `UntrustedMultiLogImpl` to provide a function
+-//! `UntrustedMultiLogImpl::recover`, which specifies what its `start`
+-//! routine will do to recover after a crash. It requires its `start`
+-//! routine to satisfy that specification. It also uses it to limit
+-//! how `UntrustedMultiLogImpl` writes to memory: It can only perform
+-//! updates that, if incompletely performed before a crash, still
+-//! leave the system in a valid state. The `recover` function takes a
+-//! second parameter, the `multilog_id` which is passed to the start
+-//! routine.
+-//!
+-//! It also requires `UntrustedMultiLogImpl` to provide a function `view`
+-//! that converts the current state into an abstract log. It requires that
+-//! performing a certain operation on the `UntrustedMultiLogImpl` causes a
+-//! corresponding update to its abstract view. For instance, calling
+-//! the `u.commit()` method should cause the resulting `u.view()` to
+-//! become `old(u).view().commit()`.
+-//!
+-//! It also permits `UntrustedMultiLogImpl` to provide a function `inv`
+-//! that encodes any invariants `UntrustedMultiLogImpl` wants maintained
+-//! across invocations of its functions. This implementation will then
+-//! guarantee that `inv` holds on any call to an `UntrustedMultiLogImpl`
+-//! method, and demand that the method preserve that invariant.
+-
+-use std::fmt::Write;
+-
+-use crate::multilog::multilogimpl_v::UntrustedMultiLogImpl;
+-use crate::multilog::multilogspec_t::AbstractMultiLogState;
+-use crate::pmem::pmemspec_t::*;
+-use crate::pmem::wrpm_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+-use vstd::prelude::*;
+-
+-use deps_hack::rand::Rng;
+-
+-verus! {
+-
+-    // This is the specification that `MultiLogImpl` provides for data
+-    // bytes it reads. It says that those bytes are correct unless
+-    // there was corruption on the persistent memory between the last
+-    // write and this read.
+-    pub open spec fn read_correct_modulo_corruption(bytes: Seq<u8>, true_bytes: Seq<u8>,
+-                                                    impervious_to_corruption: bool) -> bool
+-    {
+-        if impervious_to_corruption {
+-            // If the region is impervious to corruption, the bytes read
+-            // must match the true bytes, i.e., the bytes last written.
+-
+-            bytes == true_bytes
+-        }
+-        else {
+-            // Otherwise, there must exist a sequence of distinct
+-            // addresses `addrs` such that the nth byte of `bytes` is
+-            // a possibly corrupted version of the nth byte of
+-            // `true_bytes` read from the nth address in `addrs`.  We
+-            // don't require the sequence of addresses to be
+-            // contiguous because the data might not be contiguous on
+-            // disk (e.g., if it wrapped around the log area).
+-
+-            exists |addrs: Seq<int>| {
+-                &&& all_elements_unique(addrs)
+-                &&& #[trigger] maybe_corrupted(bytes, true_bytes, addrs)
+-            }
+-        }
+-    }
+-
+-    // This specification function indicates whether a given view of
+-    // memory can only crash in a way that, after recovery, leads to a
+-    // certain abstract state.
+-    pub open spec fn can_only_crash_as_state(
+-        pm_regions_view: PersistentMemoryRegionsView,
+-        multilog_id: u128,
+-        state: AbstractMultiLogState,
+-    ) -> bool
+-    {
+-        forall |s| #[trigger] pm_regions_view.can_crash_as(s) ==>
+-            UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state)
+-    }
+-
+-    // A `TrustedMultiLogPermission` is the type of a tracked object
+-    // indicating permission to update memory. It restricts updates so
+-    // that if a crash happens, the resulting memory `mem` satisfies
+-    // `is_state_allowable(mem)`.
+-    //
+-    // The struct is defined in this file, and it has a non-public
+-    // field, so the only code that can create one is in this file.
+-    // So untrusted code in other files can't create one, and we can
+-    // rely on it to restrict access to persistent memory.
+-    #[allow(dead_code)]
+-    pub struct TrustedMultiLogPermission {
+-        ghost is_state_allowable: spec_fn(Seq<Seq<u8>>) -> bool
+-    }
+-
+-    impl CheckPermission<Seq<Seq<u8>>> for TrustedMultiLogPermission {
+-        closed spec fn check_permission(&self, state: Seq<Seq<u8>>) -> bool {
+-            (self.is_state_allowable)(state)
+-        }
+-    }
+-
+-    impl TrustedMultiLogPermission {
+-
+-        // This is one of two constructors for `TrustedMultiLogPermission`.
+-        // It conveys permission to do any update as long as a
+-        // subsequent crash and recovery can only lead to given
+-        // abstract state `state`.
+-        proof fn new_one_possibility(multilog_id: u128, state: AbstractMultiLogState) -> (tracked perm: Self)
+-            ensures
+-                forall |s| #[trigger] perm.check_permission(s) <==>
+-                    UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state)
+-        {
+-            Self {
+-                is_state_allowable: |s| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state)
+-            }
+-        }
+-
+-        // This is the second of two constructors for
+-        // `TrustedMultiLogPermission`.  It conveys permission to do any
+-        // update as long as a subsequent crash and recovery can only
+-        // lead to one of two given abstract states `state1` and
+-        // `state2`.
+-        proof fn new_two_possibilities(
+-            multilog_id: u128,
+-            state1: AbstractMultiLogState,
+-            state2: AbstractMultiLogState
+-        ) -> (tracked perm: Self)
+-            ensures
+-                forall |s| #[trigger] perm.check_permission(s) <==> {
+-                    ||| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state1)
+-                    ||| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state2)
+-                }
+-        {
+-            Self {
+-                is_state_allowable: |s| {
+-                    ||| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state1)
+-                    ||| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state2)
+-                }
+-            }
+-        }
+-    }
+-
+-    // This enumeration represents the various errors that can be
+-    // returned from multilog operations. They're self-explanatory.
+-    #[derive(Debug)]
+-    pub enum MultiLogErr {
+-        CantSetupWithFewerThanOneRegion { },
+-        CantSetupWithMoreThanU32MaxRegions { },
+-        InsufficientSpaceForSetup { which_log: u32, required_space: u64 },
+-        StartFailedDueToMultilogIDMismatch { which_log: u32, multilog_id_expected: u128, multilog_id_read: u128 },
+-        StartFailedDueToRegionSizeMismatch { which_log: u32, region_size_expected: u64, region_size_read: u64 },
+-        StartFailedDueToProgramVersionNumberUnsupported { which_log: u32, version_number: u64, max_supported: u64 },
+-        StartFailedDueToInvalidMemoryContents { which_log: u32 },
+-        CRCMismatch,
+-        InvalidLogIndex { },
+-        InsufficientSpaceForAppend { available_space: u64 },
+-        CantReadBeforeHead { head: u128 },
+-        CantReadPastTail { tail: u128 },
+-        CantAdvanceHeadPositionBeforeHead { head: u128 },
+-        CantAdvanceHeadPositionBeyondTail { tail: u128 },
+-        PmemErr { err: PmemError }
+-    }
+-
+-    // This executable method can be called to compute a random GUID.
+-    // It uses the external `rand` crate.
+-    #[verifier::external_body]
+-    pub exec fn generate_fresh_multilog_id() -> (out: u128)
+-    {
+-        deps_hack::rand::thread_rng().gen::<u128>()
+-    }
+-
+-    /// A `MultiLogImpl` wraps one `UntrustedMultiLogImpl` and a
+-    /// collection of persistent memory regions to provide the
+-    /// executable interface that turns the persistent memory regions
+-    /// into a set of logs in which any subset of logs can be updated
+-    /// atomically.
+-    ///
+-    /// The `untrusted_log_impl` field is the wrapped
+-    /// `UntrustedMultiLogImpl`.
+-    ///
+-    /// The `multilog_id` field is the multilog ID. It's ghost.
+-    ///
+-    /// The `wrpm_regions` field contains the write-restricted persistent
+-    /// memory. This memory will only allow updates allowed by a
+-    /// tracked `TrustedMultiLogPermission`. So we can pass `wrpm_regions` to an
+-    /// untrusted method, along with a restricting
+-    /// `TrustedMultiLogPermission`, to limit what it's allowed to do.
+-
+-    pub struct MultiLogImpl<PMRegions: PersistentMemoryRegions> {
+-        untrusted_log_impl: UntrustedMultiLogImpl,
+-        multilog_id: Ghost<u128>,
+-        wrpm_regions: WriteRestrictedPersistentMemoryRegions<TrustedMultiLogPermission, PMRegions>
+-    }
+-
+-    impl <PMRegions: PersistentMemoryRegions> MultiLogImpl<PMRegions> {
+-        // The view of a `MultiLogImpl` is whatever the
+-        // `UntrustedMultiLogImpl` it wraps says it is.
+-        pub closed spec fn view(self) -> AbstractMultiLogState
+-        {
+-            self.untrusted_log_impl@
+-        }
+-
+-        // The constants of a `MultiLogImpl` are whatever the
+-        // persistent memory it wraps says they are.
+-        pub closed spec fn constants(&self) -> PersistentMemoryConstants {
+-            self.wrpm_regions.constants()
+-        }
+-
+-        // This is the validity condition that is maintained between
+-        // calls to methods on `self`.
+-        //
+-        // That is, each of the trusted wrappers on untrusted methods
+-        // below (e.g., `commit`, `advance_head`) can count on `valid`
+-        // holding because it demands that each untrusted method
+-        // maintains it.
+-        //
+-        // One element of `valid` is that the untrusted `inv` function
+-        // holds.
+-        //
+-        // The other element of `valid` is that the persistent memory,
+-        // if it crashes and recovers, must represent the current
+-        // abstract state with pending tentative appends dropped.
+-        pub closed spec fn valid(self) -> bool {
+-            &&& self.untrusted_log_impl.inv(&self.wrpm_regions, self.multilog_id@)
+-            &&& can_only_crash_as_state(self.wrpm_regions@, self.multilog_id@, self@.drop_pending_appends())
+-        }
+-
+-        proof fn lemma_valid_implies_wrpm_inv(self)
+-            requires
+-                self.valid()
+-            ensures
+-                self.wrpm_regions.inv()
+-        {
+-            self.untrusted_log_impl.lemma_inv_implies_wrpm_inv(&self.wrpm_regions, self.multilog_id@);
+-        }
+-
+-        proof fn lemma_untrusted_log_inv_implies_valid(self)
+-            requires
+-                self.untrusted_log_impl.inv(&self.wrpm_regions, self.multilog_id@)
+-            ensures
+-                self.valid()
+-        {
+-            self.untrusted_log_impl.lemma_inv_implies_can_only_crash_as(&self.wrpm_regions, self.multilog_id@);
+-        }
+-
+-        // The `setup` method sets up persistent memory regions `pm_regions`
+-        // to store an initial empty multilog. It returns a vector
+-        // listing the capacities of the logs as well as a fresh
+-        // multilog ID to uniquely identify it. See `README.md` for more
+-        // documentation.
+-        pub exec fn setup(pm_regions: &mut PMRegions) -> (result: Result<(Vec<u64>, u128), MultiLogErr>)
+-            requires
+-                old(pm_regions).inv(),
+-            ensures
+-                pm_regions.inv(),
+-                pm_regions@.no_outstanding_writes(),
+-                match result {
+-                    Ok((log_capacities, multilog_id)) => {
+-                        let state = AbstractMultiLogState::initialize(log_capacities@);
+-                        &&& pm_regions@.len() == old(pm_regions)@.len()
+-                        &&& pm_regions@.len() >= 1
+-                        &&& pm_regions@.len() <= u32::MAX
+-                        &&& log_capacities@.len() == pm_regions@.len()
+-                        &&& forall |i: int| 0 <= i < pm_regions@.len() ==>
+-                               #[trigger] log_capacities@[i] <= pm_regions@[i].len()
+-                        &&& forall |i: int| 0 <= i < pm_regions@.len() ==>
+-                               #[trigger] pm_regions@[i].len() == old(pm_regions)@[i].len()
+-                        &&& can_only_crash_as_state(pm_regions@, multilog_id, state)
+-                        &&& UntrustedMultiLogImpl::recover(pm_regions@.committed(), multilog_id) == Some(state)
+-                        // Required by the `start` function's precondition. Putting this in the
+-                        // postcond of `setup` ensures that the trusted caller doesn't have to prove it
+-                        &&& UntrustedMultiLogImpl::recover(pm_regions@.flush().committed(), multilog_id) == Some(state)
+-                        &&& state == state.drop_pending_appends()
+-                    },
+-                    Err(MultiLogErr::InsufficientSpaceForSetup { which_log, required_space }) => {
+-                        let flushed_regions = old(pm_regions)@.flush();
+-                        &&& pm_regions@ == flushed_regions
+-                        &&& pm_regions@[which_log as int].len() < required_space
+-                    },
+-                    Err(MultiLogErr::CantSetupWithFewerThanOneRegion { }) => {
+-                        let flushed_regions = old(pm_regions)@.flush();
+-                        &&& pm_regions@ == flushed_regions
+-                        &&& pm_regions@.len() < 1
+-                    },
+-                    Err(MultiLogErr::CantSetupWithMoreThanU32MaxRegions { }) => {
+-                        let flushed_regions = old(pm_regions)@.flush();
+-                        &&& pm_regions@ == flushed_regions
+-                        &&& pm_regions@.len() > u32::MAX
+-                    },
+-                    _ => false
+-                }
+-        {
+-            let multilog_id = generate_fresh_multilog_id();
+-            let capacities = UntrustedMultiLogImpl::setup(pm_regions, multilog_id)?;
+-            Ok((capacities, multilog_id))
+-        }
+-
+-        // The `start` method creates an `UntrustedMultiLogImpl` out
+-        // of a set of persistent memory regions. It's assumed that
+-        // those regions were initialized with `setup` and then only
+-        // multilog operations were allowed to mutate them. See
+-        // `README.md` for more documentation and an example of use.
+-        pub exec fn start(pm_regions: PMRegions, multilog_id: u128)
+-                          -> (result: Result<MultiLogImpl<PMRegions>, MultiLogErr>)
+-            requires
+-                pm_regions.inv(),
+-                UntrustedMultiLogImpl::recover(pm_regions@.flush().committed(), multilog_id).is_Some(),
+-            ensures
+-                match result {
+-                    Ok(trusted_log_impl) => {
+-                        &&& trusted_log_impl.valid()
+-                        &&& trusted_log_impl.constants() == pm_regions.constants()
+-                        &&& Some(trusted_log_impl@) == UntrustedMultiLogImpl::recover(pm_regions@.flush().committed(),
+-                                                                                     multilog_id)
+-                    },
+-                    Err(MultiLogErr::CRCMismatch) => !pm_regions.constants().impervious_to_corruption,
+-                    Err(MultiLogErr::InsufficientSpaceForSetup { which_log, required_space }) => {
+-                        let flushed_regions = pm_regions@.flush();
+-                        &&& 0 <= which_log < flushed_regions.len()
+-                        &&& pm_regions@[which_log as int].len() < required_space
+-                    },
+-                    _ => false
+-                }
+-        {
+-            // We allow the untrusted `start` method to update memory
+-            // as part of its initialization. But, to avoid bugs
+-            // stemming from crashes in the middle of this routine, we
+-            // must restrict how it updates memory. We must only let
+-            // it write such that, if a crash happens in the middle,
+-            // it doesn't change the persistent state.
+-
+-            let ghost state = UntrustedMultiLogImpl::recover(pm_regions@.flush().committed(), multilog_id).get_Some_0();
+-            let mut wrpm_regions = WriteRestrictedPersistentMemoryRegions::new(pm_regions);
+-            let tracked perm = TrustedMultiLogPermission::new_one_possibility(multilog_id, state);
+-            let untrusted_log_impl =
+-                UntrustedMultiLogImpl::start(&mut wrpm_regions, multilog_id, Tracked(&perm), Ghost(state))?;
+-            Ok(
+-                MultiLogImpl {
+-                    untrusted_log_impl,
+-                    multilog_id:  Ghost(multilog_id),
+-                    wrpm_regions
+-                },
+-            )
+-        }
+-
+-        // The `tentatively_append` method tentatively appends
+-        // `bytes_to_append` to the end of log number `which_log` in
+-        // the multilog. It's tentative in that crashes will undo the
+-        // appends, and reads aren't allowed in the tentative part of
+-        // the log. See `README.md` for more documentation and examples
+-        // of use.
+-        pub exec fn tentatively_append(&mut self, which_log: u32, bytes_to_append: &[u8])
+-                                       -> (result: Result<u128, MultiLogErr>)
+-            requires
+-                old(self).valid(),
+-            ensures
+-                self.valid(),
+-                self.constants() == old(self).constants(),
+-                match result {
+-                    Ok(offset) => {
+-                        let state = old(self)@[which_log as int];
+-                        &&& which_log < old(self)@.num_logs()
+-                        &&& offset == state.head + state.log.len() + state.pending.len()
+-                        &&& self@ == old(self)@.tentatively_append(which_log as int, bytes_to_append@)
+-                    },
+-                    Err(MultiLogErr::InvalidLogIndex { }) => {
+-                        &&& which_log >= self@.num_logs()
+-                        &&& self@ == old(self)@
+-                    },
+-                    Err(MultiLogErr::InsufficientSpaceForAppend { available_space }) => {
+-                        &&& self@ == old(self)@
+-                        &&& which_log < self@.num_logs()
+-                        &&& available_space < bytes_to_append@.len()
+-                        &&& {
+-                               let state = self@[which_log as int];
+-                               ||| available_space == state.capacity - state.log.len() - state.pending.len()
+-                               ||| available_space == u128::MAX - state.head - state.log.len() - state.pending.len()
+-                           }
+-                    },
+-                    _ => false
+-                }
+-        {
+-            // For crash safety, we must restrict the untrusted code's
+-            // writes to persistent memory. We must only let it write
+-            // such that, if a crash happens in the middle of a write,
+-            // the view of the persistent state is the current
+-            // state with pending appends dropped.
+-            let tracked perm = TrustedMultiLogPermission::new_one_possibility(self.multilog_id@, self@.drop_pending_appends());
+-            self.untrusted_log_impl.tentatively_append(&mut self.wrpm_regions, which_log, bytes_to_append,
+-                                                       self.multilog_id, Tracked(&perm))
+-        }
+-
+-        // The `commit` method atomically commits all tentative
+-        // appends that have been done to `self` since the last
+-        // commit. The commit is atomic in that even if there's a
+-        // crash in the middle, the recovered-to state either reflects
+-        // all those tentative appends or none of them. See `README.md`
+-        // for more documentation and examples of use.
+-        pub exec fn commit(&mut self) -> (result: Result<(), MultiLogErr>)
+-            requires
+-                old(self).valid(),
+-            ensures
+-                self.valid(),
+-                self.constants() == old(self).constants(),
+-                match result {
+-                    Ok(()) => self@ == old(self)@.commit(),
+-                    _ => false,
+-                }
+-        {
+-            // For crash safety, we must restrict the untrusted code's
+-            // writes to persistent memory. We must only let it write
+-            // such that, if a crash happens in the middle of a write,
+-            // the view of the persistent state is either the current
+-            // state with all pending appends dropped or the current
+-            // state with all uncommitted appends committed.
+-            let tracked perm = TrustedMultiLogPermission::new_two_possibilities(self.multilog_id@, self@.drop_pending_appends(),
+-                                                                        self@.commit().drop_pending_appends());
+-            self.untrusted_log_impl.commit(&mut self.wrpm_regions, self.multilog_id, Tracked(&perm))
+-        }
+-
+-        // The `advance_head` method advances the head of log number
+-        // `which_log` to virtual new head position `new_head`. It
+-        // doesn't do this tentatively; it completes it durably before
+-        // returning. However, `advance_head` doesn't commit tentative
+-        // appends; to do that, you need a separate call to
+-        // `commit`. See `README.md` for more documentation and examples
+-        // of use.
+-        pub exec fn advance_head(&mut self, which_log: u32, new_head: u128) -> (result: Result<(), MultiLogErr>)
+-            requires
+-                old(self).valid(),
+-            ensures
+-                self.valid(),
+-                self.constants() == old(self).constants(),
+-                match result {
+-                    Ok(()) => {
+-                        let w = which_log as int;
+-                        &&& which_log < self@.num_logs()
+-                        &&& old(self)@[w].head <= new_head <= old(self)@[w].head + old(self)@[w].log.len()
+-                        &&& self@ == old(self)@.advance_head(w, new_head as int)
+-                    },
+-                    Err(MultiLogErr::InvalidLogIndex{ }) => {
+-                        &&& which_log >= self@.num_logs()
+-                        &&& self@ == old(self)@
+-                    },
+-                    Err(MultiLogErr::CantAdvanceHeadPositionBeforeHead { head }) => {
+-                        &&& self@ == old(self)@
+-                        &&& which_log < self@.num_logs()
+-                        &&& head == self@[which_log as int].head
+-                        &&& new_head < head
+-                    },
+-                    Err(MultiLogErr::CantAdvanceHeadPositionBeyondTail { tail }) => {
+-                        &&& self@ == old(self)@
+-                        &&& which_log < self@.num_logs()
+-                        &&& tail == self@[which_log as int].head + self@[which_log as int].log.len()
+-                        &&& new_head > tail
+-                    },
+-                    _ => false,
+-                }
+-        {
+-            // For crash safety, we must restrict the untrusted code's
+-            // writes to persistent memory. We must only let it write
+-            // such that, if a crash happens in the middle of a write,
+-            // the view of the persistent state is either the current
+-            // state or the current state with the head advanced.
+-            let tracked perm = TrustedMultiLogPermission::new_two_possibilities(
+-                self.multilog_id@,
+-                self@.drop_pending_appends(),
+-                self@.advance_head(which_log as int, new_head as int).drop_pending_appends()
+-            );
+-            self.untrusted_log_impl.advance_head(&mut self.wrpm_regions, which_log, new_head,
+-                                                 self.multilog_id, Tracked(&perm))
+-        }
+-
+-        // The `read` method reads `len` bytes from log number
+-        // `which_log` starting at virtual position `pos`. It isn't
+-        // allowed to read earlier than the head or past the committed
+-        // tail. See `README.md` for more documentation and examples of
+-        // use.
+-        pub exec fn read(&self, which_log: u32, pos: u128, len: u64) -> (result: Result<Vec<u8>, MultiLogErr>)
+-            requires
+-                self.valid(),
+-                pos + len <= u128::MAX,
+-            ensures
+-                ({
+-                    let state = self@[which_log as int];
+-                    let head = state.head;
+-                    let log = state.log;
+-                    match result {
+-                        Ok(bytes) => {
+-                            let true_bytes = self@.read(which_log as int, pos as int, len as int);
+-                            &&& which_log < self@.num_logs()
+-                            &&& pos >= head
+-                            &&& pos + len <= head + log.len()
+-                            &&& read_correct_modulo_corruption(bytes@, true_bytes,
+-                                                             self.constants().impervious_to_corruption)
+-                        },
+-                        Err(MultiLogErr::InvalidLogIndex { }) => {
+-                            which_log >= self@.num_logs()
+-                        },
+-                        Err(MultiLogErr::CantReadBeforeHead{ head: head_pos }) => {
+-                            &&& which_log < self@.num_logs()
+-                            &&& pos < head
+-                            &&& head_pos == head
+-                        },
+-                        Err(MultiLogErr::CantReadPastTail{ tail }) => {
+-                            &&& which_log < self@.num_logs()
+-                            &&& pos + len > tail
+-                            &&& tail == head + log.len()
+-                        },
+-                        _ => false
+-                    }
+-                })
+-        {
+-            self.untrusted_log_impl.read(&self.wrpm_regions, which_log, pos, len, self.multilog_id)
+-        }
+-
+-        // The `get_head_tail_and_capacity` method returns three
+-        // pieces of metadata about log number `which_log`: the
+-        // virtual head position, the virtual tail position, and the
+-        // capacity. The capacity is the maximum number of bytes there
+-        // can be in the log past the head, including bytes in
+-        // tentative appends that haven't been committed yet. See
+-        // `README.md` for more documentation and examples of use.
+-        pub exec fn get_head_tail_and_capacity(&self, which_log: u32) -> (result: Result<(u128, u128, u64), MultiLogErr>)
+-            requires
+-                self.valid()
+-            ensures
+-                match result {
+-                    Ok((result_head, result_tail, result_capacity)) => {
+-                        let inf_log = self@[which_log as int];
+-                        &&& which_log < self@.num_logs()
+-                        &&& result_head == inf_log.head
+-                        &&& result_tail == inf_log.head + inf_log.log.len()
+-                        &&& result_capacity == inf_log.capacity
+-                    },
+-                    Err(MultiLogErr::InvalidLogIndex{ }) => {
+-                        which_log >= self@.num_logs()
+-                    },
+-                    _ => false
+-                }
+-        {
+-            self.untrusted_log_impl.get_head_tail_and_capacity(&self.wrpm_regions, which_log, self.multilog_id)
+-        }
+-    }
+-
+-}
++//! This file contains the trusted implementation of a `MultiLogImpl`.
++//! Although the verifier is run on this file, it needs to be
++//! carefully read and audited to be confident of the correctness of
++//! this multilog implementation.
++//!
++//! Fortunately, it delegates most of its work to an untrusted struct
++//! `UntrustedMultiLogImpl`, which doesn't need to be read or audited.
++//! It forces the `UntrustedMultiLogImpl` to satisfy certain
++//! postconditions, and also places restrictions on what
++//! `UntrustedMultiLogImpl` can do to persistent memory. These
++//! restrictions ensure that even if the system or process crashes in
++//! the middle of an operation, the system will still recover to a
++//! consistent state.
++//!
++//! It requires `UntrustedMultiLogImpl` to implement routines that do the
++//! various multilog operations like read and commit.
++//!
++//! It also requires `UntrustedMultiLogImpl` to provide a function
++//! `UntrustedMultiLogImpl::recover`, which specifies what its `start`
++//! routine will do to recover after a crash. It requires its `start`
++//! routine to satisfy that specification. It also uses it to limit
++//! how `UntrustedMultiLogImpl` writes to memory: It can only perform
++//! updates that, if incompletely performed before a crash, still
++//! leave the system in a valid state. The `recover` function takes a
++//! second parameter, the `multilog_id` which is passed to the start
++//! routine.
++//!
++//! It also requires `UntrustedMultiLogImpl` to provide a function `view`
++//! that converts the current state into an abstract log. It requires that
++//! performing a certain operation on the `UntrustedMultiLogImpl` causes a
++//! corresponding update to its abstract view. For instance, calling
++//! the `u.commit()` method should cause the resulting `u.view()` to
++//! become `old(u).view().commit()`.
++//!
++//! It also permits `UntrustedMultiLogImpl` to provide a function `inv`
++//! that encodes any invariants `UntrustedMultiLogImpl` wants maintained
++//! across invocations of its functions. This implementation will then
++//! guarantee that `inv` holds on any call to an `UntrustedMultiLogImpl`
++//! method, and demand that the method preserve that invariant.
++
++use std::fmt::Write;
++
++use crate::multilog::multilogimpl_v::UntrustedMultiLogImpl;
++use crate::multilog::multilogspec_t::AbstractMultiLogState;
++use crate::pmem::pmemspec_t::*;
++use crate::pmem::wrpm_t::*;
++use vstd::prelude::*;
++
++use deps_hack::rand::Rng;
++
++verus! {
++
++    // This is the specification that `MultiLogImpl` provides for data
++    // bytes it reads. It says that those bytes are correct unless
++    // there was corruption on the persistent memory between the last
++    // write and this read.
++    pub open spec fn read_correct_modulo_corruption(bytes: Seq<u8>, true_bytes: Seq<u8>,
++                                                    impervious_to_corruption: bool) -> bool
++    {
++        if impervious_to_corruption {
++            // If the region is impervious to corruption, the bytes read
++            // must match the true bytes, i.e., the bytes last written.
++
++            bytes == true_bytes
++        }
++        else {
++            // Otherwise, there must exist a sequence of distinct
++            // addresses `addrs` such that the nth byte of `bytes` is
++            // a possibly corrupted version of the nth byte of
++            // `true_bytes` read from the nth address in `addrs`.  We
++            // don't require the sequence of addresses to be
++            // contiguous because the data might not be contiguous on
++            // disk (e.g., if it wrapped around the log area).
++
++            exists |addrs: Seq<int>| {
++                &&& all_elements_unique(addrs)
++                &&& #[trigger] maybe_corrupted(bytes, true_bytes, addrs)
++            }
++        }
++    }
++
++    // This specification function indicates whether a given view of
++    // memory can only crash in a way that, after recovery, leads to a
++    // certain abstract state.
++    pub open spec fn can_only_crash_as_state(
++        pm_regions_view: PersistentMemoryRegionsView,
++        multilog_id: u128,
++        state: AbstractMultiLogState,
++    ) -> bool
++    {
++        forall |s| #[trigger] pm_regions_view.can_crash_as(s) ==>
++            UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state)
++    }
++
++    // A `TrustedMultiLogPermission` is the type of a tracked object
++    // indicating permission to update memory. It restricts updates so
++    // that if a crash happens, the resulting memory `mem` satisfies
++    // `is_state_allowable(mem)`.
++    //
++    // The struct is defined in this file, and it has a non-public
++    // field, so the only code that can create one is in this file.
++    // So untrusted code in other files can't create one, and we can
++    // rely on it to restrict access to persistent memory.
++    #[allow(dead_code)]
++    pub struct TrustedMultiLogPermission {
++        ghost is_state_allowable: spec_fn(Seq<Seq<u8>>) -> bool
++    }
++
++    impl CheckPermission<Seq<Seq<u8>>> for TrustedMultiLogPermission {
++        closed spec fn check_permission(&self, state: Seq<Seq<u8>>) -> bool {
++            (self.is_state_allowable)(state)
++        }
++    }
++
++    impl TrustedMultiLogPermission {
++
++        // This is one of two constructors for `TrustedMultiLogPermission`.
++        // It conveys permission to do any update as long as a
++        // subsequent crash and recovery can only lead to given
++        // abstract state `state`.
++        proof fn new_one_possibility(multilog_id: u128, state: AbstractMultiLogState) -> (tracked perm: Self)
++            ensures
++                forall |s| #[trigger] perm.check_permission(s) <==>
++                    UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state)
++        {
++            Self {
++                is_state_allowable: |s| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state)
++            }
++        }
++
++        // This is the second of two constructors for
++        // `TrustedMultiLogPermission`.  It conveys permission to do any
++        // update as long as a subsequent crash and recovery can only
++        // lead to one of two given abstract states `state1` and
++        // `state2`.
++        proof fn new_two_possibilities(
++            multilog_id: u128,
++            state1: AbstractMultiLogState,
++            state2: AbstractMultiLogState
++        ) -> (tracked perm: Self)
++            ensures
++                forall |s| #[trigger] perm.check_permission(s) <==> {
++                    ||| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state1)
++                    ||| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state2)
++                }
++        {
++            Self {
++                is_state_allowable: |s| {
++                    ||| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state1)
++                    ||| UntrustedMultiLogImpl::recover(s, multilog_id) == Some(state2)
++                }
++            }
++        }
++    }
++
++    // This enumeration represents the various errors that can be
++    // returned from multilog operations. They're self-explanatory.
++    #[derive(Debug)]
++    pub enum MultiLogErr {
++        CantSetupWithFewerThanOneRegion { },
++        CantSetupWithMoreThanU32MaxRegions { },
++        InsufficientSpaceForSetup { which_log: u32, required_space: u64 },
++        StartFailedDueToMultilogIDMismatch { which_log: u32, multilog_id_expected: u128, multilog_id_read: u128 },
++        StartFailedDueToRegionSizeMismatch { which_log: u32, region_size_expected: u64, region_size_read: u64 },
++        StartFailedDueToProgramVersionNumberUnsupported { which_log: u32, version_number: u64, max_supported: u64 },
++        StartFailedDueToInvalidMemoryContents { which_log: u32 },
++        CRCMismatch,
++        InvalidLogIndex { },
++        InsufficientSpaceForAppend { available_space: u64 },
++        CantReadBeforeHead { head: u128 },
++        CantReadPastTail { tail: u128 },
++        CantAdvanceHeadPositionBeforeHead { head: u128 },
++        CantAdvanceHeadPositionBeyondTail { tail: u128 },
++        PmemErr { err: PmemError }
++    }
++
++    // This executable method can be called to compute a random GUID.
++    // It uses the external `rand` crate.
++    #[verifier::external_body]
++    pub exec fn generate_fresh_multilog_id() -> (out: u128)
++    {
++        deps_hack::rand::thread_rng().gen::<u128>()
++    }
++
++    /// A `MultiLogImpl` wraps one `UntrustedMultiLogImpl` and a
++    /// collection of persistent memory regions to provide the
++    /// executable interface that turns the persistent memory regions
++    /// into a set of logs in which any subset of logs can be updated
++    /// atomically.
++    ///
++    /// The `untrusted_log_impl` field is the wrapped
++    /// `UntrustedMultiLogImpl`.
++    ///
++    /// The `multilog_id` field is the multilog ID. It's ghost.
++    ///
++    /// The `wrpm_regions` field contains the write-restricted persistent
++    /// memory. This memory will only allow updates allowed by a
++    /// tracked `TrustedMultiLogPermission`. So we can pass `wrpm_regions` to an
++    /// untrusted method, along with a restricting
++    /// `TrustedMultiLogPermission`, to limit what it's allowed to do.
++
++    pub struct MultiLogImpl<PMRegions: PersistentMemoryRegions> {
++        untrusted_log_impl: UntrustedMultiLogImpl,
++        multilog_id: Ghost<u128>,
++        wrpm_regions: WriteRestrictedPersistentMemoryRegions<TrustedMultiLogPermission, PMRegions>
++    }
++
++    impl <PMRegions: PersistentMemoryRegions> MultiLogImpl<PMRegions> {
++        // The view of a `MultiLogImpl` is whatever the
++        // `UntrustedMultiLogImpl` it wraps says it is.
++        pub closed spec fn view(self) -> AbstractMultiLogState
++        {
++            self.untrusted_log_impl@
++        }
++
++        // The constants of a `MultiLogImpl` are whatever the
++        // persistent memory it wraps says they are.
++        pub closed spec fn constants(&self) -> PersistentMemoryConstants {
++            self.wrpm_regions.constants()
++        }
++
++        // This is the validity condition that is maintained between
++        // calls to methods on `self`.
++        //
++        // That is, each of the trusted wrappers on untrusted methods
++        // below (e.g., `commit`, `advance_head`) can count on `valid`
++        // holding because it demands that each untrusted method
++        // maintains it.
++        //
++        // One element of `valid` is that the untrusted `inv` function
++        // holds.
++        //
++        // The other element of `valid` is that the persistent memory,
++        // if it crashes and recovers, must represent the current
++        // abstract state with pending tentative appends dropped.
++        pub closed spec fn valid(self) -> bool {
++            &&& self.untrusted_log_impl.inv(&self.wrpm_regions, self.multilog_id@)
++            &&& can_only_crash_as_state(self.wrpm_regions@, self.multilog_id@, self@.drop_pending_appends())
++        }
++
++        proof fn lemma_valid_implies_wrpm_inv(self)
++            requires
++                self.valid()
++            ensures
++                self.wrpm_regions.inv()
++        {
++            self.untrusted_log_impl.lemma_inv_implies_wrpm_inv(&self.wrpm_regions, self.multilog_id@);
++        }
++
++        proof fn lemma_untrusted_log_inv_implies_valid(self)
++            requires
++                self.untrusted_log_impl.inv(&self.wrpm_regions, self.multilog_id@)
++            ensures
++                self.valid()
++        {
++            self.untrusted_log_impl.lemma_inv_implies_can_only_crash_as(&self.wrpm_regions, self.multilog_id@);
++        }
++
++        // The `setup` method sets up persistent memory regions `pm_regions`
++        // to store an initial empty multilog. It returns a vector
++        // listing the capacities of the logs as well as a fresh
++        // multilog ID to uniquely identify it. See `README.md` for more
++        // documentation.
++        pub exec fn setup(pm_regions: &mut PMRegions) -> (result: Result<(Vec<u64>, u128), MultiLogErr>)
++            requires
++                old(pm_regions).inv(),
++            ensures
++                pm_regions.inv(),
++                pm_regions@.no_outstanding_writes(),
++                match result {
++                    Ok((log_capacities, multilog_id)) => {
++                        let state = AbstractMultiLogState::initialize(log_capacities@);
++                        &&& pm_regions@.len() == old(pm_regions)@.len()
++                        &&& pm_regions@.len() >= 1
++                        &&& pm_regions@.len() <= u32::MAX
++                        &&& log_capacities@.len() == pm_regions@.len()
++                        &&& forall |i: int| 0 <= i < pm_regions@.len() ==>
++                               #[trigger] log_capacities@[i] <= pm_regions@[i].len()
++                        &&& forall |i: int| 0 <= i < pm_regions@.len() ==>
++                               #[trigger] pm_regions@[i].len() == old(pm_regions)@[i].len()
++                        &&& can_only_crash_as_state(pm_regions@, multilog_id, state)
++                        &&& UntrustedMultiLogImpl::recover(pm_regions@.committed(), multilog_id) == Some(state)
++                        // Required by the `start` function's precondition. Putting this in the
++                        // postcond of `setup` ensures that the trusted caller doesn't have to prove it
++                        &&& UntrustedMultiLogImpl::recover(pm_regions@.flush().committed(), multilog_id) == Some(state)
++                        &&& state == state.drop_pending_appends()
++                    },
++                    Err(MultiLogErr::InsufficientSpaceForSetup { which_log, required_space }) => {
++                        let flushed_regions = old(pm_regions)@.flush();
++                        &&& pm_regions@ == flushed_regions
++                        &&& pm_regions@[which_log as int].len() < required_space
++                    },
++                    Err(MultiLogErr::CantSetupWithFewerThanOneRegion { }) => {
++                        let flushed_regions = old(pm_regions)@.flush();
++                        &&& pm_regions@ == flushed_regions
++                        &&& pm_regions@.len() < 1
++                    },
++                    Err(MultiLogErr::CantSetupWithMoreThanU32MaxRegions { }) => {
++                        let flushed_regions = old(pm_regions)@.flush();
++                        &&& pm_regions@ == flushed_regions
++                        &&& pm_regions@.len() > u32::MAX
++                    },
++                    _ => false
++                }
++        {
++            let multilog_id = generate_fresh_multilog_id();
++            let capacities = UntrustedMultiLogImpl::setup(pm_regions, multilog_id)?;
++            Ok((capacities, multilog_id))
++        }
++
++        // The `start` method creates an `UntrustedMultiLogImpl` out
++        // of a set of persistent memory regions. It's assumed that
++        // those regions were initialized with `setup` and then only
++        // multilog operations were allowed to mutate them. See
++        // `README.md` for more documentation and an example of use.
++        pub exec fn start(pm_regions: PMRegions, multilog_id: u128)
++                          -> (result: Result<MultiLogImpl<PMRegions>, MultiLogErr>)
++            requires
++                pm_regions.inv(),
++                UntrustedMultiLogImpl::recover(pm_regions@.flush().committed(), multilog_id).is_Some(),
++            ensures
++                match result {
++                    Ok(trusted_log_impl) => {
++                        &&& trusted_log_impl.valid()
++                        &&& trusted_log_impl.constants() == pm_regions.constants()
++                        &&& Some(trusted_log_impl@) == UntrustedMultiLogImpl::recover(pm_regions@.flush().committed(),
++                                                                                     multilog_id)
++                    },
++                    Err(MultiLogErr::CRCMismatch) => !pm_regions.constants().impervious_to_corruption,
++                    Err(MultiLogErr::InsufficientSpaceForSetup { which_log, required_space }) => {
++                        let flushed_regions = pm_regions@.flush();
++                        &&& 0 <= which_log < flushed_regions.len()
++                        &&& pm_regions@[which_log as int].len() < required_space
++                    },
++                    _ => false
++                }
++        {
++            // We allow the untrusted `start` method to update memory
++            // as part of its initialization. But, to avoid bugs
++            // stemming from crashes in the middle of this routine, we
++            // must restrict how it updates memory. We must only let
++            // it write such that, if a crash happens in the middle,
++            // it doesn't change the persistent state.
++
++            let ghost state = UntrustedMultiLogImpl::recover(pm_regions@.flush().committed(), multilog_id).get_Some_0();
++            let mut wrpm_regions = WriteRestrictedPersistentMemoryRegions::new(pm_regions);
++            let tracked perm = TrustedMultiLogPermission::new_one_possibility(multilog_id, state);
++            let untrusted_log_impl =
++                UntrustedMultiLogImpl::start(&mut wrpm_regions, multilog_id, Tracked(&perm), Ghost(state))?;
++            Ok(
++                MultiLogImpl {
++                    untrusted_log_impl,
++                    multilog_id:  Ghost(multilog_id),
++                    wrpm_regions
++                },
++            )
++        }
++
++        // The `tentatively_append` method tentatively appends
++        // `bytes_to_append` to the end of log number `which_log` in
++        // the multilog. It's tentative in that crashes will undo the
++        // appends, and reads aren't allowed in the tentative part of
++        // the log. See `README.md` for more documentation and examples
++        // of use.
++        pub exec fn tentatively_append(&mut self, which_log: u32, bytes_to_append: &[u8])
++                                       -> (result: Result<u128, MultiLogErr>)
++            requires
++                old(self).valid(),
++            ensures
++                self.valid(),
++                self.constants() == old(self).constants(),
++                match result {
++                    Ok(offset) => {
++                        let state = old(self)@[which_log as int];
++                        &&& which_log < old(self)@.num_logs()
++                        &&& offset == state.head + state.log.len() + state.pending.len()
++                        &&& self@ == old(self)@.tentatively_append(which_log as int, bytes_to_append@)
++                    },
++                    Err(MultiLogErr::InvalidLogIndex { }) => {
++                        &&& which_log >= self@.num_logs()
++                        &&& self@ == old(self)@
++                    },
++                    Err(MultiLogErr::InsufficientSpaceForAppend { available_space }) => {
++                        &&& self@ == old(self)@
++                        &&& which_log < self@.num_logs()
++                        &&& available_space < bytes_to_append@.len()
++                        &&& {
++                               let state = self@[which_log as int];
++                               ||| available_space == state.capacity - state.log.len() - state.pending.len()
++                               ||| available_space == u128::MAX - state.head - state.log.len() - state.pending.len()
++                           }
++                    },
++                    _ => false
++                }
++        {
++            // For crash safety, we must restrict the untrusted code's
++            // writes to persistent memory. We must only let it write
++            // such that, if a crash happens in the middle of a write,
++            // the view of the persistent state is the current
++            // state with pending appends dropped.
++            let tracked perm = TrustedMultiLogPermission::new_one_possibility(self.multilog_id@, self@.drop_pending_appends());
++            self.untrusted_log_impl.tentatively_append(&mut self.wrpm_regions, which_log, bytes_to_append,
++                                                       self.multilog_id, Tracked(&perm))
++        }
++
++        // The `commit` method atomically commits all tentative
++        // appends that have been done to `self` since the last
++        // commit. The commit is atomic in that even if there's a
++        // crash in the middle, the recovered-to state either reflects
++        // all those tentative appends or none of them. See `README.md`
++        // for more documentation and examples of use.
++        pub exec fn commit(&mut self) -> (result: Result<(), MultiLogErr>)
++            requires
++                old(self).valid(),
++            ensures
++                self.valid(),
++                self.constants() == old(self).constants(),
++                match result {
++                    Ok(()) => self@ == old(self)@.commit(),
++                    _ => false,
++                }
++        {
++            // For crash safety, we must restrict the untrusted code's
++            // writes to persistent memory. We must only let it write
++            // such that, if a crash happens in the middle of a write,
++            // the view of the persistent state is either the current
++            // state with all pending appends dropped or the current
++            // state with all uncommitted appends committed.
++            let tracked perm = TrustedMultiLogPermission::new_two_possibilities(self.multilog_id@, self@.drop_pending_appends(),
++                                                                        self@.commit().drop_pending_appends());
++            self.untrusted_log_impl.commit(&mut self.wrpm_regions, self.multilog_id, Tracked(&perm))
++        }
++
++        // The `advance_head` method advances the head of log number
++        // `which_log` to virtual new head position `new_head`. It
++        // doesn't do this tentatively; it completes it durably before
++        // returning. However, `advance_head` doesn't commit tentative
++        // appends; to do that, you need a separate call to
++        // `commit`. See `README.md` for more documentation and examples
++        // of use.
++        pub exec fn advance_head(&mut self, which_log: u32, new_head: u128) -> (result: Result<(), MultiLogErr>)
++            requires
++                old(self).valid(),
++            ensures
++                self.valid(),
++                self.constants() == old(self).constants(),
++                match result {
++                    Ok(()) => {
++                        let w = which_log as int;
++                        &&& which_log < self@.num_logs()
++                        &&& old(self)@[w].head <= new_head <= old(self)@[w].head + old(self)@[w].log.len()
++                        &&& self@ == old(self)@.advance_head(w, new_head as int)
++                    },
++                    Err(MultiLogErr::InvalidLogIndex{ }) => {
++                        &&& which_log >= self@.num_logs()
++                        &&& self@ == old(self)@
++                    },
++                    Err(MultiLogErr::CantAdvanceHeadPositionBeforeHead { head }) => {
++                        &&& self@ == old(self)@
++                        &&& which_log < self@.num_logs()
++                        &&& head == self@[which_log as int].head
++                        &&& new_head < head
++                    },
++                    Err(MultiLogErr::CantAdvanceHeadPositionBeyondTail { tail }) => {
++                        &&& self@ == old(self)@
++                        &&& which_log < self@.num_logs()
++                        &&& tail == self@[which_log as int].head + self@[which_log as int].log.len()
++                        &&& new_head > tail
++                    },
++                    _ => false,
++                }
++        {
++            // For crash safety, we must restrict the untrusted code's
++            // writes to persistent memory. We must only let it write
++            // such that, if a crash happens in the middle of a write,
++            // the view of the persistent state is either the current
++            // state or the current state with the head advanced.
++            let tracked perm = TrustedMultiLogPermission::new_two_possibilities(
++                self.multilog_id@,
++                self@.drop_pending_appends(),
++                self@.advance_head(which_log as int, new_head as int).drop_pending_appends()
++            );
++            self.untrusted_log_impl.advance_head(&mut self.wrpm_regions, which_log, new_head,
++                                                 self.multilog_id, Tracked(&perm))
++        }
++
++        // The `read` method reads `len` bytes from log number
++        // `which_log` starting at virtual position `pos`. It isn't
++        // allowed to read earlier than the head or past the committed
++        // tail. See `README.md` for more documentation and examples of
++        // use.
++        pub exec fn read(&self, which_log: u32, pos: u128, len: u64) -> (result: Result<Vec<u8>, MultiLogErr>)
++            requires
++                self.valid(),
++                pos + len <= u128::MAX,
++            ensures
++                ({
++                    let state = self@[which_log as int];
++                    let head = state.head;
++                    let log = state.log;
++                    match result {
++                        Ok(bytes) => {
++                            let true_bytes = self@.read(which_log as int, pos as int, len as int);
++                            &&& which_log < self@.num_logs()
++                            &&& pos >= head
++                            &&& pos + len <= head + log.len()
++                            &&& read_correct_modulo_corruption(bytes@, true_bytes,
++                                                             self.constants().impervious_to_corruption)
++                        },
++                        Err(MultiLogErr::InvalidLogIndex { }) => {
++                            which_log >= self@.num_logs()
++                        },
++                        Err(MultiLogErr::CantReadBeforeHead{ head: head_pos }) => {
++                            &&& which_log < self@.num_logs()
++                            &&& pos < head
++                            &&& head_pos == head
++                        },
++                        Err(MultiLogErr::CantReadPastTail{ tail }) => {
++                            &&& which_log < self@.num_logs()
++                            &&& pos + len > tail
++                            &&& tail == head + log.len()
++                        },
++                        _ => false
++                    }
++                })
++        {
++            self.untrusted_log_impl.read(&self.wrpm_regions, which_log, pos, len, self.multilog_id)
++        }
++
++        // The `get_head_tail_and_capacity` method returns three
++        // pieces of metadata about log number `which_log`: the
++        // virtual head position, the virtual tail position, and the
++        // capacity. The capacity is the maximum number of bytes there
++        // can be in the log past the head, including bytes in
++        // tentative appends that haven't been committed yet. See
++        // `README.md` for more documentation and examples of use.
++        pub exec fn get_head_tail_and_capacity(&self, which_log: u32) -> (result: Result<(u128, u128, u64), MultiLogErr>)
++            requires
++                self.valid()
++            ensures
++                match result {
++                    Ok((result_head, result_tail, result_capacity)) => {
++                        let inf_log = self@[which_log as int];
++                        &&& which_log < self@.num_logs()
++                        &&& result_head == inf_log.head
++                        &&& result_tail == inf_log.head + inf_log.log.len()
++                        &&& result_capacity == inf_log.capacity
++                    },
++                    Err(MultiLogErr::InvalidLogIndex{ }) => {
++                        which_log >= self@.num_logs()
++                    },
++                    _ => false
++                }
++        {
++            self.untrusted_log_impl.get_head_tail_and_capacity(&self.wrpm_regions, which_log, self.multilog_id)
++        }
++    }
++
++}
+diff --git a/storage_node/src/multilog/multilogimpl_v.rs b/storage_node/src/multilog/multilogimpl_v.rs
+index 555e4211..d19f0432 100644
+--- a/storage_node/src/multilog/multilogimpl_v.rs
++++ b/storage_node/src/multilog/multilogimpl_v.rs
+@@ -22,8 +22,6 @@ use crate::pmem::pmemutil_v::*;
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::wrpm_t::*;
+ use crate::pmem::traits_t::size_of;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::arithmetic::div_mod::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/multilog/multilogspec_t.rs b/storage_node/src/multilog/multilogspec_t.rs
+index d30161f6..ccf1a777 100644
+--- a/storage_node/src/multilog/multilogspec_t.rs
++++ b/storage_node/src/multilog/multilogspec_t.rs
+@@ -37,8 +37,6 @@
+ //! explicitly invoked by clients; it's a model of what clients should
+ //! consider to have happened during a crash.
+ 
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/storage_node/src/multilog/setup_v.rs b/storage_node/src/multilog/setup_v.rs
+index 155bbcce..05529f1a 100644
+--- a/storage_node/src/multilog/setup_v.rs
++++ b/storage_node/src/multilog/setup_v.rs
+@@ -15,8 +15,6 @@ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmemutil_v::*;
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::traits_t::size_of;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+ 
+diff --git a/storage_node/src/multilog/start_v.rs b/storage_node/src/multilog/start_v.rs
+index 3355e4b6..62b6ac19 100644
+--- a/storage_node/src/multilog/start_v.rs
++++ b/storage_node/src/multilog/start_v.rs
+@@ -15,8 +15,6 @@ use crate::pmem::pmemspec_t::{extract_bytes, PersistentMemoryRegions};
+ use crate::pmem::pmemutil_v::{check_cdb, check_crc};
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::traits_t::size_of;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::arithmetic::div_mod::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/pmem/crc_t.rs b/storage_node/src/pmem/crc_t.rs
+index 3917734c..d66b4968 100644
+--- a/storage_node/src/pmem/crc_t.rs
++++ b/storage_node/src/pmem/crc_t.rs
+@@ -1,7 +1,5 @@
+ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmcopy_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+ 
+diff --git a/storage_node/src/pmem/linux_pmemfile_t.rs b/storage_node/src/pmem/linux_pmemfile_t.rs
+index 24602e75..8707081b 100644
+--- a/storage_node/src/pmem/linux_pmemfile_t.rs
++++ b/storage_node/src/pmem/linux_pmemfile_t.rs
+@@ -4,8 +4,6 @@ use core::ffi::c_void;
+ use core::slice;
+ use std::{cell::RefCell, convert::TryInto, ffi::CString, rc::Rc};
+ 
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ use deps_hack::{
+diff --git a/storage_node/src/pmem/pmcopy_t.rs b/storage_node/src/pmem/pmcopy_t.rs
+index eaeb54dc..3a9600eb 100644
+--- a/storage_node/src/pmem/pmcopy_t.rs
++++ b/storage_node/src/pmem/pmcopy_t.rs
+@@ -24,8 +24,6 @@
+ //! axioms for dealing with such structures.
+ 
+ use crate::pmem::pmemspec_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::bytes;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/pmem/pmemmock_t.rs b/storage_node/src/pmem/pmemmock_t.rs
+index 5a04a766..7144ba8a 100644
+--- a/storage_node/src/pmem/pmemmock_t.rs
++++ b/storage_node/src/pmem/pmemmock_t.rs
+@@ -8,8 +8,6 @@
+ 
+ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmcopy_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use deps_hack::rand::Rng;
+ use std::convert::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/pmem/pmemspec_t.rs b/storage_node/src/pmem/pmemspec_t.rs
+index 5c62189f..ec642ca1 100644
+--- a/storage_node/src/pmem/pmemspec_t.rs
++++ b/storage_node/src/pmem/pmemspec_t.rs
+@@ -33,8 +33,6 @@
+ //! as showing evidence of an absence of corruption.
+ 
+ use crate::pmem::pmcopy_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use core::fmt::Debug;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/pmem/pmemutil_v.rs b/storage_node/src/pmem/pmemutil_v.rs
+index a627faed..a6e7cb4b 100644
+--- a/storage_node/src/pmem/pmemutil_v.rs
++++ b/storage_node/src/pmem/pmemutil_v.rs
+@@ -8,8 +8,6 @@
+ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::crc_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::bytes::*;
+ use vstd::prelude::*;
+ 
+diff --git a/storage_node/src/pmem/subregion_v.rs b/storage_node/src/pmem/subregion_v.rs
+index c5069b8c..34a6c3bf 100644
+--- a/storage_node/src/pmem/subregion_v.rs
++++ b/storage_node/src/pmem/subregion_v.rs
+@@ -1,8 +1,6 @@
+ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmcopy_t::*;
+ use crate::pmem::wrpm_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::bytes::*;
+ use vstd::invariant::*;
+ use vstd::prelude::*;
+diff --git a/storage_node/src/pmem/traits_t.rs b/storage_node/src/pmem/traits_t.rs
+index 3dfe74f5..ea417e3e 100644
+--- a/storage_node/src/pmem/traits_t.rs
++++ b/storage_node/src/pmem/traits_t.rs
+@@ -21,8 +21,6 @@
+ //! that the calculated size is correct, which helps us ensure 
+ //! that proofs use the correct size for structures. 
+ 
+-use builtin_macros::*;
+-use builtin::*;
+ use vstd::prelude::*;
+ use deps_hack::PmSafe;
+ 
+diff --git a/storage_node/src/pmem/windows_pmemfile_t.rs b/storage_node/src/pmem/windows_pmemfile_t.rs
+index f0ea6a13..d220e3bf 100644
+--- a/storage_node/src/pmem/windows_pmemfile_t.rs
++++ b/storage_node/src/pmem/windows_pmemfile_t.rs
+@@ -1,633 +1,631 @@
+-//! This file contains the trusted implementation for
+-//! `FileBackedPersistentMemoryRegions`, a collection of persistent
+-//! memory regions backed by files. It implements trait
+-//! `PersistentMemoryRegions`.
+-
+-use builtin::*;
+-use builtin_macros::*;
+-use crate::pmem::pmemspec_t::{
+-    copy_from_slice, maybe_corrupted, PersistentMemoryByte, PersistentMemoryConstants, PersistentMemoryRegion,
+-    PersistentMemoryRegionView, PersistentMemoryRegions, PersistentMemoryRegionsView,
+-    PmemError,
+-};
+-use crate::pmem::pmcopy_t::*;
+-use deps_hack::rand::Rng;
+-use deps_hack::winapi::ctypes::c_void;
+-use deps_hack::winapi::shared::winerror::SUCCEEDED;
+-use deps_hack::winapi::um::errhandlingapi::GetLastError;
+-use deps_hack::winapi::um::fileapi::{CreateFileA, CREATE_NEW, DeleteFileA, OPEN_EXISTING};
+-use deps_hack::winapi::um::handleapi::{CloseHandle, INVALID_HANDLE_VALUE};
+-use deps_hack::winapi::um::memoryapi::{FILE_MAP_ALL_ACCESS, FlushViewOfFile, MapViewOfFile, UnmapViewOfFile};
+-use deps_hack::winapi::um::winbase::CreateFileMappingA;
+-use deps_hack::winapi::um::winnt::{
+-    FILE_ATTRIBUTE_NORMAL, FILE_ATTRIBUTE_TEMPORARY, FILE_SHARE_DELETE, FILE_SHARE_READ,
+-    FILE_SHARE_WRITE, GENERIC_READ, GENERIC_WRITE, HANDLE, PAGE_READWRITE, ULARGE_INTEGER,
+-};
+-use std::cell::RefCell;
+-use std::convert::*;
+-use std::ffi::CString;
+-use std::rc::Rc;
+-use std::slice;
+-use vstd::prelude::*;
+-
+-#[cfg(target_arch = "x86_64")]
+-use core::arch::x86_64::_mm_clflush;
+-#[cfg(target_arch = "x86_64")]
+-use core::arch::x86_64::_mm_sfence;
+-    
+-// The `MemoryMappedFile` struct represents a memory-mapped file.
+-
+-pub struct MemoryMappedFile {
+-    media_type: MemoryMappedFileMediaType,  // type of media on which the file is stored
+-    size: usize,                            // number of bytes in the file
+-    h_file: HANDLE,                         // handle to the file
+-    h_map_file: HANDLE,                     // handle to the mapping
+-    h_map_addr: HANDLE,                     // address of the first byte of the mapping
+-    num_bytes_sectioned: usize,             // how many bytes allocated to `MemoryMappedFileSection`s
+-}
+-
+-impl MemoryMappedFile {
+-    // The function `from_file` memory-maps a file and returns a
+-    // `MemoryMappedFile` to represent it.
+-
+-    fn from_file(path: &str, size: usize, media_type: MemoryMappedFileMediaType,
+-                 open_behavior: FileOpenBehavior, close_behavior: FileCloseBehavior)
+-                 -> Result<Self, PmemError>
+-    {
+-        unsafe {
+-            // Since str in rust is not null terminated, we need to convert it to a null-terminated string.
+-            let path_cstr = match std::ffi::CString::new(path) {
+-                Ok(p) => p,
+-                Err(_) => {
+-                    eprintln!("Could not convert path {} to string", path);
+-                    return Err(PmemError::InvalidFileName);
+-                }
+-            };
+-
+-            // Windows can only create files with size < 2^64 so we need to convert `size` to a `u64`.
+-            let size_as_u64: u64 =
+-                match size.try_into() {
+-                    Ok(sz) => sz,
+-                    Err(_) => {
+-                        eprintln!("Could not convert size {} into u64", size);
+-                        return Err(PmemError::CannotOpenPmFile);
+-                    }
+-                };
+-
+-            let create_or_open = match open_behavior {
+-                FileOpenBehavior::CreateNew => CREATE_NEW,
+-                FileOpenBehavior::OpenExisting => OPEN_EXISTING,
+-            };
+-            let attributes = match close_behavior {
+-                FileCloseBehavior::TestingSoDeleteOnClose => FILE_ATTRIBUTE_TEMPORARY,
+-                FileCloseBehavior::Persistent => FILE_ATTRIBUTE_NORMAL,
+-            };
+-
+-            // Open or create the file with `CreateFileA`.
+-            let h_file = CreateFileA(
+-                path_cstr.as_ptr(),
+-                GENERIC_READ | GENERIC_WRITE,
+-                FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE,
+-                core::ptr::null_mut(),
+-                create_or_open,
+-                attributes,
+-                core::ptr::null_mut()
+-            );
+-
+-            if h_file.is_null() || h_file == INVALID_HANDLE_VALUE {
+-                let error_code = GetLastError();
+-                match open_behavior {
+-                    FileOpenBehavior::CreateNew =>
+-                        eprintln!("Could not create new file {}. err={}", path, error_code),
+-                    FileOpenBehavior::OpenExisting =>
+-                        eprintln!("Could not open existing file {}. err={}", path, error_code),
+-                };
+-                return Err(PmemError::CannotOpenPmFile);
+-            }
+-
+-            let mut li: ULARGE_INTEGER = std::mem::zeroed();
+-            *li.QuadPart_mut() = size_as_u64;
+-
+-            // Create a file mapping object backed by the file
+-            let h_map_file = CreateFileMappingA(
+-                h_file,
+-                core::ptr::null_mut(),
+-                PAGE_READWRITE,
+-                li.u().HighPart,
+-                li.u().LowPart,
+-                core::ptr::null_mut()
+-            );
+-
+-            if h_map_file.is_null() {
+-                eprintln!("Could not create file mapping object for {}.", path);
+-                return Err(PmemError::CannotOpenPmFile);
+-            }
+-
+-            // Map a view of the file mapping into the address space of the process
+-            let h_map_addr = MapViewOfFile(
+-                h_map_file,
+-                FILE_MAP_ALL_ACCESS,
+-                0,
+-                0,
+-                size,
+-            );
+-
+-            if h_map_addr.is_null() {
+-                let err = GetLastError();
+-                eprintln!("Could not map view of file, got error {}", err);
+-                return Err(PmemError::CannotOpenPmFile);
+-            }
+-
+-            if let FileCloseBehavior::TestingSoDeleteOnClose = close_behavior {
+-                // After opening the file, mark it for deletion when the file is closed.
+-                // Obviously, we should only do this during testing!
+-                DeleteFileA(path_cstr.as_ptr());
+-            }
+-
+-            let mmf = MemoryMappedFile {
+-                media_type,
+-                size,
+-                h_file,
+-                h_map_file,
+-                h_map_addr,
+-                num_bytes_sectioned: 0,
+-            };
+-            Ok(mmf)
+-        }
+-    }
+-}
+-
+-impl Drop for MemoryMappedFile {
+-    fn drop(&mut self)
+-    {
+-        unsafe {
+-            UnmapViewOfFile(self.h_map_addr);
+-            CloseHandle(self.h_map_file);
+-            CloseHandle(self.h_file);
+-        }
+-    }
+-}
+-
+-// The `MemoryMappedFileSection` struct represents a section of a memory-mapped file.
+-// It contains a reference to the `MemoryMappedFile` it's a section of so that the
+-// `MemoryMappedFile` isn't dropped until this `MemoryMappedFileSection1 is dropped.
+-
+-#[verifier::external_body]
+-pub struct MemoryMappedFileSection {
+-    mmf: Rc<RefCell<MemoryMappedFile>>,     // the memory-mapped file this is a section of
+-    media_type: MemoryMappedFileMediaType,  // type of media on which the file is stored
+-    size: usize,                            // number of bytes in the section
+-    h_map_addr: HANDLE,                     // address of the first byte of the section
+-}
+-
+-impl MemoryMappedFileSection {
+-    fn new(mmf: Rc<RefCell<MemoryMappedFile>>, len: usize) -> Result<Self, PmemError>
+-    {
+-        let mut mmf_borrowed = mmf.borrow_mut();
+-        let offset = mmf_borrowed.num_bytes_sectioned;
+-        let offset_as_isize: isize = match offset.try_into() {
+-            Ok(off) => off,
+-            Err(_) => {
+-                eprintln!("Can't express offset {} as isize", offset);
+-                return Err(PmemError::AccessOutOfRange)
+-            },
+-        };
+-
+-        if offset + len > mmf_borrowed.size {
+-            eprintln!("Can't allocate {} bytes because only {} remain", len, mmf_borrowed.size - offset);
+-            return Err(PmemError::AccessOutOfRange);
+-        }
+-        
+-        let h_map_addr = unsafe { (mmf_borrowed.h_map_addr as *mut u8).offset(offset_as_isize) };
+-
+-        mmf_borrowed.num_bytes_sectioned += len;
+-        let media_type = mmf_borrowed.media_type.clone();
+-
+-        std::mem::drop(mmf_borrowed);
+-        
+-        let section = Self {
+-            mmf,
+-            media_type,
+-            size: len,
+-            h_map_addr: h_map_addr as HANDLE,
+-        };
+-        Ok(section)
+-    }
+-
+-    // The function `flush` flushes updated parts of the
+-    // memory-mapped file back to the media.
+-
+-    fn flush(&mut self) {
+-        unsafe {
+-            match self.media_type {
+-                MemoryMappedFileMediaType::BatteryBackedDRAM => {
+-                    // If using battery-backed DRAM, there's no need
+-                    // to flush cache lines, since those will be
+-                    // flushed during the battery-enabled graceful
+-                    // shutdown after power loss.
+-                    _mm_sfence();
+-                },
+-                _ => {
+-                    let hr = FlushViewOfFile(
+-                        self.h_map_addr as *const c_void,
+-                        self.size
+-                    );
+-
+-                    if !SUCCEEDED(hr) {
+-                        panic!("Failed to flush view of file. err={}", hr);
+-                    }
+-                },
+-            }
+-        }
+-    }
+-}
+-
+-verus! {
+-
+-// The `MemoryMappedFileMediaType` enum represents a type of media
+-// from which a file can be memory-mapped.
+-
+-#[derive(Clone)]
+-pub enum MemoryMappedFileMediaType {
+-    HDD,
+-    SSD,
+-    BatteryBackedDRAM,
+-}
+-
+-#[derive(Clone, Copy)]
+-pub enum FileOpenBehavior {
+-    CreateNew,
+-    OpenExisting,
+-}
+-
+-#[derive(Clone, Copy)]
+-pub enum FileCloseBehavior {
+-    TestingSoDeleteOnClose,
+-    Persistent,
+-}
+-
+-// The `FileBackedPersistentMemoryRegion` struct represents a
+-// persistent-memory region backed by a memory-mapped file.
+-
+-#[allow(dead_code)]
+-pub struct FileBackedPersistentMemoryRegion
+-{
+-    section: MemoryMappedFileSection,
+-}
+-
+-impl FileBackedPersistentMemoryRegion
+-{
++//! This file contains the trusted implementation for
++//! `FileBackedPersistentMemoryRegions`, a collection of persistent
++//! memory regions backed by files. It implements trait
++//! `PersistentMemoryRegions`.
++
++use crate::pmem::pmemspec_t::{
++    copy_from_slice, maybe_corrupted, PersistentMemoryByte, PersistentMemoryConstants, PersistentMemoryRegion,
++    PersistentMemoryRegionView, PersistentMemoryRegions, PersistentMemoryRegionsView,
++    PmemError,
++};
++use crate::pmem::pmcopy_t::*;
++use deps_hack::rand::Rng;
++use deps_hack::winapi::ctypes::c_void;
++use deps_hack::winapi::shared::winerror::SUCCEEDED;
++use deps_hack::winapi::um::errhandlingapi::GetLastError;
++use deps_hack::winapi::um::fileapi::{CreateFileA, CREATE_NEW, DeleteFileA, OPEN_EXISTING};
++use deps_hack::winapi::um::handleapi::{CloseHandle, INVALID_HANDLE_VALUE};
++use deps_hack::winapi::um::memoryapi::{FILE_MAP_ALL_ACCESS, FlushViewOfFile, MapViewOfFile, UnmapViewOfFile};
++use deps_hack::winapi::um::winbase::CreateFileMappingA;
++use deps_hack::winapi::um::winnt::{
++    FILE_ATTRIBUTE_NORMAL, FILE_ATTRIBUTE_TEMPORARY, FILE_SHARE_DELETE, FILE_SHARE_READ,
++    FILE_SHARE_WRITE, GENERIC_READ, GENERIC_WRITE, HANDLE, PAGE_READWRITE, ULARGE_INTEGER,
++};
++use std::cell::RefCell;
++use std::convert::*;
++use std::ffi::CString;
++use std::rc::Rc;
++use std::slice;
++use vstd::prelude::*;
++
++#[cfg(target_arch = "x86_64")]
++use core::arch::x86_64::_mm_clflush;
++#[cfg(target_arch = "x86_64")]
++use core::arch::x86_64::_mm_sfence;
++    
++// The `MemoryMappedFile` struct represents a memory-mapped file.
++
++pub struct MemoryMappedFile {
++    media_type: MemoryMappedFileMediaType,  // type of media on which the file is stored
++    size: usize,                            // number of bytes in the file
++    h_file: HANDLE,                         // handle to the file
++    h_map_file: HANDLE,                     // handle to the mapping
++    h_map_addr: HANDLE,                     // address of the first byte of the mapping
++    num_bytes_sectioned: usize,             // how many bytes allocated to `MemoryMappedFileSection`s
++}
++
++impl MemoryMappedFile {
++    // The function `from_file` memory-maps a file and returns a
++    // `MemoryMappedFile` to represent it.
++
++    fn from_file(path: &str, size: usize, media_type: MemoryMappedFileMediaType,
++                 open_behavior: FileOpenBehavior, close_behavior: FileCloseBehavior)
++                 -> Result<Self, PmemError>
++    {
++        unsafe {
++            // Since str in rust is not null terminated, we need to convert it to a null-terminated string.
++            let path_cstr = match std::ffi::CString::new(path) {
++                Ok(p) => p,
++                Err(_) => {
++                    eprintln!("Could not convert path {} to string", path);
++                    return Err(PmemError::InvalidFileName);
++                }
++            };
++
++            // Windows can only create files with size < 2^64 so we need to convert `size` to a `u64`.
++            let size_as_u64: u64 =
++                match size.try_into() {
++                    Ok(sz) => sz,
++                    Err(_) => {
++                        eprintln!("Could not convert size {} into u64", size);
++                        return Err(PmemError::CannotOpenPmFile);
++                    }
++                };
++
++            let create_or_open = match open_behavior {
++                FileOpenBehavior::CreateNew => CREATE_NEW,
++                FileOpenBehavior::OpenExisting => OPEN_EXISTING,
++            };
++            let attributes = match close_behavior {
++                FileCloseBehavior::TestingSoDeleteOnClose => FILE_ATTRIBUTE_TEMPORARY,
++                FileCloseBehavior::Persistent => FILE_ATTRIBUTE_NORMAL,
++            };
++
++            // Open or create the file with `CreateFileA`.
++            let h_file = CreateFileA(
++                path_cstr.as_ptr(),
++                GENERIC_READ | GENERIC_WRITE,
++                FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE,
++                core::ptr::null_mut(),
++                create_or_open,
++                attributes,
++                core::ptr::null_mut()
++            );
++
++            if h_file.is_null() || h_file == INVALID_HANDLE_VALUE {
++                let error_code = GetLastError();
++                match open_behavior {
++                    FileOpenBehavior::CreateNew =>
++                        eprintln!("Could not create new file {}. err={}", path, error_code),
++                    FileOpenBehavior::OpenExisting =>
++                        eprintln!("Could not open existing file {}. err={}", path, error_code),
++                };
++                return Err(PmemError::CannotOpenPmFile);
++            }
++
++            let mut li: ULARGE_INTEGER = std::mem::zeroed();
++            *li.QuadPart_mut() = size_as_u64;
++
++            // Create a file mapping object backed by the file
++            let h_map_file = CreateFileMappingA(
++                h_file,
++                core::ptr::null_mut(),
++                PAGE_READWRITE,
++                li.u().HighPart,
++                li.u().LowPart,
++                core::ptr::null_mut()
++            );
++
++            if h_map_file.is_null() {
++                eprintln!("Could not create file mapping object for {}.", path);
++                return Err(PmemError::CannotOpenPmFile);
++            }
++
++            // Map a view of the file mapping into the address space of the process
++            let h_map_addr = MapViewOfFile(
++                h_map_file,
++                FILE_MAP_ALL_ACCESS,
++                0,
++                0,
++                size,
++            );
++
++            if h_map_addr.is_null() {
++                let err = GetLastError();
++                eprintln!("Could not map view of file, got error {}", err);
++                return Err(PmemError::CannotOpenPmFile);
++            }
++
++            if let FileCloseBehavior::TestingSoDeleteOnClose = close_behavior {
++                // After opening the file, mark it for deletion when the file is closed.
++                // Obviously, we should only do this during testing!
++                DeleteFileA(path_cstr.as_ptr());
++            }
++
++            let mmf = MemoryMappedFile {
++                media_type,
++                size,
++                h_file,
++                h_map_file,
++                h_map_addr,
++                num_bytes_sectioned: 0,
++            };
++            Ok(mmf)
++        }
++    }
++}
++
++impl Drop for MemoryMappedFile {
++    fn drop(&mut self)
++    {
++        unsafe {
++            UnmapViewOfFile(self.h_map_addr);
++            CloseHandle(self.h_map_file);
++            CloseHandle(self.h_file);
++        }
++    }
++}
++
++// The `MemoryMappedFileSection` struct represents a section of a memory-mapped file.
++// It contains a reference to the `MemoryMappedFile` it's a section of so that the
++// `MemoryMappedFile` isn't dropped until this `MemoryMappedFileSection1 is dropped.
++
++#[verifier::external_body]
++pub struct MemoryMappedFileSection {
++    mmf: Rc<RefCell<MemoryMappedFile>>,     // the memory-mapped file this is a section of
++    media_type: MemoryMappedFileMediaType,  // type of media on which the file is stored
++    size: usize,                            // number of bytes in the section
++    h_map_addr: HANDLE,                     // address of the first byte of the section
++}
++
++impl MemoryMappedFileSection {
++    fn new(mmf: Rc<RefCell<MemoryMappedFile>>, len: usize) -> Result<Self, PmemError>
++    {
++        let mut mmf_borrowed = mmf.borrow_mut();
++        let offset = mmf_borrowed.num_bytes_sectioned;
++        let offset_as_isize: isize = match offset.try_into() {
++            Ok(off) => off,
++            Err(_) => {
++                eprintln!("Can't express offset {} as isize", offset);
++                return Err(PmemError::AccessOutOfRange)
++            },
++        };
++
++        if offset + len > mmf_borrowed.size {
++            eprintln!("Can't allocate {} bytes because only {} remain", len, mmf_borrowed.size - offset);
++            return Err(PmemError::AccessOutOfRange);
++        }
++        
++        let h_map_addr = unsafe { (mmf_borrowed.h_map_addr as *mut u8).offset(offset_as_isize) };
++
++        mmf_borrowed.num_bytes_sectioned += len;
++        let media_type = mmf_borrowed.media_type.clone();
++
++        std::mem::drop(mmf_borrowed);
++        
++        let section = Self {
++            mmf,
++            media_type,
++            size: len,
++            h_map_addr: h_map_addr as HANDLE,
++        };
++        Ok(section)
++    }
++
++    // The function `flush` flushes updated parts of the
++    // memory-mapped file back to the media.
++
++    fn flush(&mut self) {
++        unsafe {
++            match self.media_type {
++                MemoryMappedFileMediaType::BatteryBackedDRAM => {
++                    // If using battery-backed DRAM, there's no need
++                    // to flush cache lines, since those will be
++                    // flushed during the battery-enabled graceful
++                    // shutdown after power loss.
++                    _mm_sfence();
++                },
++                _ => {
++                    let hr = FlushViewOfFile(
++                        self.h_map_addr as *const c_void,
++                        self.size
++                    );
++
++                    if !SUCCEEDED(hr) {
++                        panic!("Failed to flush view of file. err={}", hr);
++                    }
++                },
++            }
++        }
++    }
++}
++
++verus! {
++
++// The `MemoryMappedFileMediaType` enum represents a type of media
++// from which a file can be memory-mapped.
++
++#[derive(Clone)]
++pub enum MemoryMappedFileMediaType {
++    HDD,
++    SSD,
++    BatteryBackedDRAM,
++}
++
++#[derive(Clone, Copy)]
++pub enum FileOpenBehavior {
++    CreateNew,
++    OpenExisting,
++}
++
++#[derive(Clone, Copy)]
++pub enum FileCloseBehavior {
++    TestingSoDeleteOnClose,
++    Persistent,
++}
++
++// The `FileBackedPersistentMemoryRegion` struct represents a
++// persistent-memory region backed by a memory-mapped file.
++
++#[allow(dead_code)]
++pub struct FileBackedPersistentMemoryRegion
++{
++    section: MemoryMappedFileSection,
++}
++
++impl FileBackedPersistentMemoryRegion
++{
++    #[verifier::external_body]
++    fn new_internal(path: &str, media_type: MemoryMappedFileMediaType, region_size: u64,
++                    open_behavior: FileOpenBehavior, close_behavior: FileCloseBehavior)
++                    -> (result: Result<Self, PmemError>)
++        ensures
++            match result {
++                Ok(region) => region.inv() && region@.len() == region_size,
++                Err(_) => true,
++            }
++    {
++        let mmf = MemoryMappedFile::from_file(
++            path,
++            region_size as usize,
++            media_type,
++            open_behavior,
++            close_behavior
++        )?;
++        let mmf =
++            Rc::<RefCell<MemoryMappedFile>>::new(RefCell::<MemoryMappedFile>::new(mmf));
++        let section = MemoryMappedFileSection::new(mmf, region_size as usize)?;
++        Ok(Self { section })
++    }
++
++    pub fn new(path: &str, media_type: MemoryMappedFileMediaType, region_size: u64,
++               close_behavior: FileCloseBehavior) -> (result: Result<Self, PmemError>)
++        ensures
++            match result {
++                Ok(region) => region.inv() && region@.len() == region_size,
++                Err(_) => true,
++            }
++    {
++        Self::new_internal(path, media_type, region_size, FileOpenBehavior::CreateNew, close_behavior)
++    }
++
++    pub fn restore(path: &str, media_type: MemoryMappedFileMediaType, region_size: u64)
++               -> (result: Result<Self, PmemError>)
++        ensures
++            match result {
++                Ok(region) => region.inv() && region@.len() == region_size,
++                Err(_) => true,
++            }
++    {
++        Self::new_internal(path, media_type, region_size, FileOpenBehavior::OpenExisting, FileCloseBehavior::Persistent)
++    }
++
++    #[verifier::external_body]
++    fn new_from_section(section: MemoryMappedFileSection) -> (result: Self)
++    {
++        Self{ section }
++    }
++
+     #[verifier::external_body]
+-    fn new_internal(path: &str, media_type: MemoryMappedFileMediaType, region_size: u64,
+-                    open_behavior: FileOpenBehavior, close_behavior: FileCloseBehavior)
+-                    -> (result: Result<Self, PmemError>)
+-        ensures
+-            match result {
+-                Ok(region) => region.inv() && region@.len() == region_size,
+-                Err(_) => true,
+-            }
+-    {
+-        let mmf = MemoryMappedFile::from_file(
+-            path,
+-            region_size as usize,
+-            media_type,
+-            open_behavior,
+-            close_behavior
+-        )?;
+-        let mmf =
+-            Rc::<RefCell<MemoryMappedFile>>::new(RefCell::<MemoryMappedFile>::new(mmf));
+-        let section = MemoryMappedFileSection::new(mmf, region_size as usize)?;
+-        Ok(Self { section })
+-    }
+-
+-    pub fn new(path: &str, media_type: MemoryMappedFileMediaType, region_size: u64,
+-               close_behavior: FileCloseBehavior) -> (result: Result<Self, PmemError>)
+-        ensures
+-            match result {
+-                Ok(region) => region.inv() && region@.len() == region_size,
+-                Err(_) => true,
+-            }
+-    {
+-        Self::new_internal(path, media_type, region_size, FileOpenBehavior::CreateNew, close_behavior)
+-    }
+-
+-    pub fn restore(path: &str, media_type: MemoryMappedFileMediaType, region_size: u64)
+-               -> (result: Result<Self, PmemError>)
+-        ensures
++    fn get_slice_at_offset(&self, addr: u64, len: u64) -> (result: Result<&[u8], PmemError>)
++        requires 
++            0 <= addr <= addr + len <= self@.len()
++        ensures 
+             match result {
+-                Ok(region) => region.inv() && region@.len() == region_size,
+-                Err(_) => true,
++                Ok(slice) => if self.constants().impervious_to_corruption {
++                    slice@ == self@.committed().subrange(addr as int, addr + len)
++                } else {
++                    let addrs = Seq::new(len as nat, |i: int| addr + i);
++                    maybe_corrupted(slice@, self@.committed().subrange(addr as int, addr + len), addrs)
++                }
++                _ => false
+             }
+     {
+-        Self::new_internal(path, media_type, region_size, FileOpenBehavior::OpenExisting, FileCloseBehavior::Persistent)
+-    }
+-
+-    #[verifier::external_body]
+-    fn new_from_section(section: MemoryMappedFileSection) -> (result: Self)
+-    {
+-        Self{ section }
+-    }
+-
+-    #[verifier::external_body]
+-    fn get_slice_at_offset(&self, addr: u64, len: u64) -> (result: Result<&[u8], PmemError>)
+-        requires 
+-            0 <= addr <= addr + len <= self@.len()
+-        ensures 
+-            match result {
+-                Ok(slice) => if self.constants().impervious_to_corruption {
+-                    slice@ == self@.committed().subrange(addr as int, addr + len)
+-                } else {
+-                    let addrs = Seq::new(len as nat, |i: int| addr + i);
+-                    maybe_corrupted(slice@, self@.committed().subrange(addr as int, addr + len), addrs)
+-                }
+-                _ => false
+-            }
+-    {
+-        // SAFETY: The `offset` method is safe as long as both the start
+-        // and resulting pointer are in bounds and the computed offset does
+-        // not overflow `isize`. The precondition ensures that addr + len are 
+-        // in bounds, and when we set up the region we ensured that 
+-        // in-bounds accesses cannot overflow isize.
+-        let addr_on_pm: *const u8 = unsafe {
+-            (self.section.h_map_addr as *const u8).offset(addr.try_into().unwrap())
+-        };
+-
+-        // SAFETY: The precondition establishes that num_bytes bytes
+-        // from addr_on_pmem are valid bytes on PM. The bytes will not 
+-        // be modified during this call since the system is single threaded.
+-        let pm_slice: &[u8] = unsafe {
+-            core::slice::from_raw_parts(addr_on_pm, len as usize)
+-        };
+-
+-        Ok(pm_slice)
+-    }
+-}
+-
+-impl PersistentMemoryRegion for FileBackedPersistentMemoryRegion
+-{
+-    closed spec fn view(&self) -> PersistentMemoryRegionView;
+-    closed spec fn inv(&self) -> bool;
+-    closed spec fn constants(&self) -> PersistentMemoryConstants;
+-
+-    #[verifier::external_body]
+-    fn get_region_size(&self) -> u64
+-    {
+-        self.section.size as u64
+-    }
+-
+-    fn read_aligned<S>(&self, addr: u64) -> (bytes: Result<MaybeCorruptedBytes<S>, PmemError>)
+-        where
+-            S: PmCopy 
+-    {
+-        let pm_slice = self.get_slice_at_offset(addr, S::size_of() as u64)?;
+-        let ghost addrs = Seq::new(S::spec_size_of() as nat, |i: int| addr + i);
+-        let ghost true_bytes = self@.committed().subrange(addr as int, addr + S::spec_size_of());
+-        let ghost true_val = S::spec_from_bytes(true_bytes);
+-        let mut maybe_corrupted_val = MaybeCorruptedBytes::new();
+-
+-        maybe_corrupted_val.copy_from_slice(pm_slice, Ghost(true_val), Ghost(addrs),
+-                                            Ghost(self.constants().impervious_to_corruption));
+-        
+-        Ok(maybe_corrupted_val)
+-    }
+-
+-    #[verifier::external_body]
+-    fn read_unaligned(&self, addr: u64, num_bytes: u64) -> (bytes: Result<Vec<u8>, PmemError>)
+-    {
+-        let pm_slice = self.get_slice_at_offset(addr, num_bytes)?;
+-
+-        // Allocate an unaligned buffer to copy the bytes into
+-        let unaligned_buffer = copy_from_slice(pm_slice);
+-
+-        Ok(unaligned_buffer)
+-    }
+-
+-    #[verifier::external_body]
+-    fn write(&mut self, addr: u64, bytes: &[u8])
+-    {
+-        let addr_on_pm: *mut u8 = unsafe {
+-            (self.section.h_map_addr as *mut u8).offset(addr.try_into().unwrap())
+-        };
+-        let slice: &mut [u8] = unsafe { core::slice::from_raw_parts_mut(addr_on_pm, bytes.len()) };
+-        slice.copy_from_slice(bytes)
+-    }
+-
+-    #[verifier::external_body]
+-    #[allow(unused_variables)]
+-    fn serialize_and_write<S>(&mut self, addr: u64, to_write: &S)
+-        where
+-            S: PmCopy + Sized
+-    {
+-        let num_bytes: usize = S::size_of() as usize;
+-
+         // SAFETY: The `offset` method is safe as long as both the start
+         // and resulting pointer are in bounds and the computed offset does
+-        // not overflow `isize`. `addr` and `num_bytes` are unsigned and
+-        // the precondition requires that `addr + num_bytes` is in bounds.
+-        // The precondition does not technically prevent overflowing `isize`
+-        // but the value is large enough (assuming a 64-bit architecture)
+-        // that we will not violate this restriction in practice.
+-        // TODO: put it in the precondition anyway
+-        let addr_on_pm: *mut u8 = unsafe {
+-            (self.section.h_map_addr as *mut u8).offset(addr.try_into().unwrap())
++        // not overflow `isize`. The precondition ensures that addr + len are 
++        // in bounds, and when we set up the region we ensured that 
++        // in-bounds accesses cannot overflow isize.
++        let addr_on_pm: *const u8 = unsafe {
++            (self.section.h_map_addr as *const u8).offset(addr.try_into().unwrap())
++        };
++
++        // SAFETY: The precondition establishes that num_bytes bytes
++        // from addr_on_pmem are valid bytes on PM. The bytes will not 
++        // be modified during this call since the system is single threaded.
++        let pm_slice: &[u8] = unsafe {
++            core::slice::from_raw_parts(addr_on_pm, len as usize)
+         };
+ 
+-        // convert the given &S to a pointer, then a slice of bytes
+-        let s_pointer = to_write as *const S as *const u8;
+-
+-        unsafe {
+-            std::ptr::copy_nonoverlapping(s_pointer, addr_on_pm, num_bytes);
+-        }
+-    }
+-
+-    #[verifier::external_body]
+-    fn flush(&mut self)
+-    {
+-        self.section.flush();
++        Ok(pm_slice)
+     }
+-}
+-
+-// The `FileBackedPersistentMemoryRegions` struct contains a
+-// vector of volatile memory regions. It implements the trait
+-// `PersistentMemoryRegions` so that it can be used by a multilog.
+-
+-pub struct FileBackedPersistentMemoryRegions
+-{
+-    media_type: MemoryMappedFileMediaType,           // common media file type used
+-    regions: Vec<FileBackedPersistentMemoryRegion>,  // all regions
+-}
+-
+-impl FileBackedPersistentMemoryRegions {
+-    #[verifier::external_body]
+-    fn new_internal(path: &str, media_type: MemoryMappedFileMediaType, region_sizes: &[u64],
+-                    open_behavior: FileOpenBehavior, close_behavior: FileCloseBehavior)
+-                    -> (result: Result<Self, PmemError>)
+-        ensures
+-            match result {
+-                Ok(regions) => {
+-                    &&& regions.inv()
+-                    &&& regions@.no_outstanding_writes()
+-                    &&& regions@.len() == region_sizes@.len()
+-                    &&& forall |i| 0 <= i < region_sizes@.len() ==> #[trigger] regions@[i].len() == region_sizes@[i]
+-                },
+-                Err(_) => true
+-            }
+-    {
+-        let mut total_size: usize = 0;
+-        for &region_size in region_sizes {
+-            let region_size = region_size as usize;
+-            if region_size >= usize::MAX - total_size {
+-                eprintln!("Cannot allocate {} bytes because, combined with the {} allocated so far, it would exceed usize::MAX", region_size, total_size);
+-                return Err(PmemError::AccessOutOfRange);
+-            }
+-            total_size += region_size;
+-        }
+-        let mmf = MemoryMappedFile::from_file(
+-            path,
+-            total_size,
+-            media_type.clone(),
+-            open_behavior,
+-            close_behavior
+-        )?;
+-        let mmf =
+-            Rc::<RefCell<MemoryMappedFile>>::new(RefCell::<MemoryMappedFile>::new(mmf));
+-        let mut regions = Vec::<FileBackedPersistentMemoryRegion>::new();
+-        for &region_size in region_sizes {
+-            let region_size: usize = region_size as usize;
+-            let section = MemoryMappedFileSection::new(mmf.clone(), region_size)?;
+-            let region = FileBackedPersistentMemoryRegion::new_from_section(section);
+-            regions.push(region);
+-        }
+-        Ok(Self { media_type, regions })
+-    }
+-
+-    // The static function `new` creates a
+-    // `FileBackedPersistentMemoryRegions` object by creating a file
+-    // and dividing it into memory-mapped sections.
+-    //
+-    // `path` -- the path to use for the file
+-    //
+-    // `media_type` -- the type of media the path refers to
+-    //
+-    // `region_sizes` -- a vector of region sizes, where
+-    // `region_sizes[i]` is the length of file `log<i>`
+-    //
+-    // `close_behavior` -- what to do when the file is closed
+-    pub fn new(path: &str, media_type: MemoryMappedFileMediaType, region_sizes: &[u64],
+-               close_behavior: FileCloseBehavior)
+-               -> (result: Result<Self, PmemError>)
+-        ensures
+-            match result {
+-                Ok(regions) => {
+-                    &&& regions.inv()
+-                    &&& regions@.no_outstanding_writes()
+-                    &&& regions@.len() == region_sizes@.len()
+-                    &&& forall |i| 0 <= i < region_sizes@.len() ==> #[trigger] regions@[i].len() == region_sizes@[i]
+-                },
+-                Err(_) => true
+-            }
+-    {
+-        Self::new_internal(path, media_type, region_sizes, FileOpenBehavior::CreateNew, close_behavior)
+-    }
+-
+-    // The static function `restore` creates a
+-    // `FileBackedPersistentMemoryRegions` object by opening an
+-    // existing file and dividing it into memory-mapped sections.
+-    //
+-    // `path` -- the path to use for the file
+-    //
+-    // `media_type` -- the type of media the path refers to
+-    //
+-    // `region_sizes` -- a vector of region sizes, where
+-    // `region_sizes[i]` is the length of file `log<i>`
+-    pub fn restore(path: &str, media_type: MemoryMappedFileMediaType, region_sizes: &[u64])
+-                   -> (result: Result<Self, PmemError>)
+-        ensures
+-            match result {
+-                Ok(regions) => {
+-                    &&& regions.inv()
+-                    &&& regions@.no_outstanding_writes()
+-                    &&& regions@.len() == region_sizes@.len()
+-                    &&& forall |i| 0 <= i < region_sizes@.len() ==> #[trigger] regions@[i].len() == region_sizes@[i]
+-                },
+-                Err(_) => true
+-            }
+-    {
+-        Self::new_internal(
+-            path, media_type, region_sizes, FileOpenBehavior::OpenExisting, FileCloseBehavior::Persistent
+-        )
+-    }
+-}
+-
+-impl PersistentMemoryRegions for FileBackedPersistentMemoryRegions {
+-    closed spec fn view(&self) -> PersistentMemoryRegionsView;
+-    closed spec fn inv(&self) -> bool;
+-    closed spec fn constants(&self) -> PersistentMemoryConstants;
+-
+-    #[verifier::external_body]
+-    fn get_num_regions(&self) -> usize
+-    {
+-        self.regions.len()
+-    }
+-
+-    #[verifier::external_body]
+-    fn get_region_size(&self, index: usize) -> u64
+-    {
+-        self.regions[index].get_region_size()
+-    }
+-
+-
+-    #[verifier::external_body]
+-    fn read_aligned<S>(&self, index: usize, addr: u64) -> (bytes: Result<MaybeCorruptedBytes<S>, PmemError>)
+-        where
+-            S: PmCopy
+-    {
+-        self.regions[index].read_aligned::<S>(addr)
+-    }
+-
+-    #[verifier::external_body]
+-    fn read_unaligned(&self, index: usize, addr: u64, num_bytes: u64) -> (bytes: Result<Vec<u8>, PmemError>)
+-    {
+-        self.regions[index].read_unaligned(addr, num_bytes)
+-    }
+-
+-    #[verifier::external_body]
+-    fn write(&mut self, index: usize, addr: u64, bytes: &[u8])
++}
++
++impl PersistentMemoryRegion for FileBackedPersistentMemoryRegion
++{
++    closed spec fn view(&self) -> PersistentMemoryRegionView;
++    closed spec fn inv(&self) -> bool;
++    closed spec fn constants(&self) -> PersistentMemoryConstants;
++
++    #[verifier::external_body]
++    fn get_region_size(&self) -> u64
++    {
++        self.section.size as u64
++    }
++
++    fn read_aligned<S>(&self, addr: u64) -> (bytes: Result<MaybeCorruptedBytes<S>, PmemError>)
++        where
++            S: PmCopy 
+     {
+-        self.regions[index].write(addr, bytes)
++        let pm_slice = self.get_slice_at_offset(addr, S::size_of() as u64)?;
++        let ghost addrs = Seq::new(S::spec_size_of() as nat, |i: int| addr + i);
++        let ghost true_bytes = self@.committed().subrange(addr as int, addr + S::spec_size_of());
++        let ghost true_val = S::spec_from_bytes(true_bytes);
++        let mut maybe_corrupted_val = MaybeCorruptedBytes::new();
++
++        maybe_corrupted_val.copy_from_slice(pm_slice, Ghost(true_val), Ghost(addrs),
++                                            Ghost(self.constants().impervious_to_corruption));
++        
++        Ok(maybe_corrupted_val)
+     }
+ 
++    #[verifier::external_body]
++    fn read_unaligned(&self, addr: u64, num_bytes: u64) -> (bytes: Result<Vec<u8>, PmemError>)
++    {
++        let pm_slice = self.get_slice_at_offset(addr, num_bytes)?;
++
++        // Allocate an unaligned buffer to copy the bytes into
++        let unaligned_buffer = copy_from_slice(pm_slice);
++
++        Ok(unaligned_buffer)
++    }
++
++    #[verifier::external_body]
++    fn write(&mut self, addr: u64, bytes: &[u8])
++    {
++        let addr_on_pm: *mut u8 = unsafe {
++            (self.section.h_map_addr as *mut u8).offset(addr.try_into().unwrap())
++        };
++        let slice: &mut [u8] = unsafe { core::slice::from_raw_parts_mut(addr_on_pm, bytes.len()) };
++        slice.copy_from_slice(bytes)
++    }
++
++    #[verifier::external_body]
++    #[allow(unused_variables)]
++    fn serialize_and_write<S>(&mut self, addr: u64, to_write: &S)
++        where
++            S: PmCopy + Sized
++    {
++        let num_bytes: usize = S::size_of() as usize;
++
++        // SAFETY: The `offset` method is safe as long as both the start
++        // and resulting pointer are in bounds and the computed offset does
++        // not overflow `isize`. `addr` and `num_bytes` are unsigned and
++        // the precondition requires that `addr + num_bytes` is in bounds.
++        // The precondition does not technically prevent overflowing `isize`
++        // but the value is large enough (assuming a 64-bit architecture)
++        // that we will not violate this restriction in practice.
++        // TODO: put it in the precondition anyway
++        let addr_on_pm: *mut u8 = unsafe {
++            (self.section.h_map_addr as *mut u8).offset(addr.try_into().unwrap())
++        };
++
++        // convert the given &S to a pointer, then a slice of bytes
++        let s_pointer = to_write as *const S as *const u8;
++
++        unsafe {
++            std::ptr::copy_nonoverlapping(s_pointer, addr_on_pm, num_bytes);
++        }
++    }
++
++    #[verifier::external_body]
++    fn flush(&mut self)
++    {
++        self.section.flush();
++    }
++}
++
++// The `FileBackedPersistentMemoryRegions` struct contains a
++// vector of volatile memory regions. It implements the trait
++// `PersistentMemoryRegions` so that it can be used by a multilog.
++
++pub struct FileBackedPersistentMemoryRegions
++{
++    media_type: MemoryMappedFileMediaType,           // common media file type used
++    regions: Vec<FileBackedPersistentMemoryRegion>,  // all regions
++}
++
++impl FileBackedPersistentMemoryRegions {
++    #[verifier::external_body]
++    fn new_internal(path: &str, media_type: MemoryMappedFileMediaType, region_sizes: &[u64],
++                    open_behavior: FileOpenBehavior, close_behavior: FileCloseBehavior)
++                    -> (result: Result<Self, PmemError>)
++        ensures
++            match result {
++                Ok(regions) => {
++                    &&& regions.inv()
++                    &&& regions@.no_outstanding_writes()
++                    &&& regions@.len() == region_sizes@.len()
++                    &&& forall |i| 0 <= i < region_sizes@.len() ==> #[trigger] regions@[i].len() == region_sizes@[i]
++                },
++                Err(_) => true
++            }
++    {
++        let mut total_size: usize = 0;
++        for &region_size in region_sizes {
++            let region_size = region_size as usize;
++            if region_size >= usize::MAX - total_size {
++                eprintln!("Cannot allocate {} bytes because, combined with the {} allocated so far, it would exceed usize::MAX", region_size, total_size);
++                return Err(PmemError::AccessOutOfRange);
++            }
++            total_size += region_size;
++        }
++        let mmf = MemoryMappedFile::from_file(
++            path,
++            total_size,
++            media_type.clone(),
++            open_behavior,
++            close_behavior
++        )?;
++        let mmf =
++            Rc::<RefCell<MemoryMappedFile>>::new(RefCell::<MemoryMappedFile>::new(mmf));
++        let mut regions = Vec::<FileBackedPersistentMemoryRegion>::new();
++        for &region_size in region_sizes {
++            let region_size: usize = region_size as usize;
++            let section = MemoryMappedFileSection::new(mmf.clone(), region_size)?;
++            let region = FileBackedPersistentMemoryRegion::new_from_section(section);
++            regions.push(region);
++        }
++        Ok(Self { media_type, regions })
++    }
++
++    // The static function `new` creates a
++    // `FileBackedPersistentMemoryRegions` object by creating a file
++    // and dividing it into memory-mapped sections.
++    //
++    // `path` -- the path to use for the file
++    //
++    // `media_type` -- the type of media the path refers to
++    //
++    // `region_sizes` -- a vector of region sizes, where
++    // `region_sizes[i]` is the length of file `log<i>`
++    //
++    // `close_behavior` -- what to do when the file is closed
++    pub fn new(path: &str, media_type: MemoryMappedFileMediaType, region_sizes: &[u64],
++               close_behavior: FileCloseBehavior)
++               -> (result: Result<Self, PmemError>)
++        ensures
++            match result {
++                Ok(regions) => {
++                    &&& regions.inv()
++                    &&& regions@.no_outstanding_writes()
++                    &&& regions@.len() == region_sizes@.len()
++                    &&& forall |i| 0 <= i < region_sizes@.len() ==> #[trigger] regions@[i].len() == region_sizes@[i]
++                },
++                Err(_) => true
++            }
++    {
++        Self::new_internal(path, media_type, region_sizes, FileOpenBehavior::CreateNew, close_behavior)
++    }
++
++    // The static function `restore` creates a
++    // `FileBackedPersistentMemoryRegions` object by opening an
++    // existing file and dividing it into memory-mapped sections.
++    //
++    // `path` -- the path to use for the file
++    //
++    // `media_type` -- the type of media the path refers to
++    //
++    // `region_sizes` -- a vector of region sizes, where
++    // `region_sizes[i]` is the length of file `log<i>`
++    pub fn restore(path: &str, media_type: MemoryMappedFileMediaType, region_sizes: &[u64])
++                   -> (result: Result<Self, PmemError>)
++        ensures
++            match result {
++                Ok(regions) => {
++                    &&& regions.inv()
++                    &&& regions@.no_outstanding_writes()
++                    &&& regions@.len() == region_sizes@.len()
++                    &&& forall |i| 0 <= i < region_sizes@.len() ==> #[trigger] regions@[i].len() == region_sizes@[i]
++                },
++                Err(_) => true
++            }
++    {
++        Self::new_internal(
++            path, media_type, region_sizes, FileOpenBehavior::OpenExisting, FileCloseBehavior::Persistent
++        )
++    }
++}
++
++impl PersistentMemoryRegions for FileBackedPersistentMemoryRegions {
++    closed spec fn view(&self) -> PersistentMemoryRegionsView;
++    closed spec fn inv(&self) -> bool;
++    closed spec fn constants(&self) -> PersistentMemoryConstants;
++
++    #[verifier::external_body]
++    fn get_num_regions(&self) -> usize
++    {
++        self.regions.len()
++    }
++
++    #[verifier::external_body]
++    fn get_region_size(&self, index: usize) -> u64
++    {
++        self.regions[index].get_region_size()
++    }
++
++
+     #[verifier::external_body]
+-    fn serialize_and_write<S>(&mut self, index: usize, addr: u64, to_write: &S)
++    fn read_aligned<S>(&self, index: usize, addr: u64) -> (bytes: Result<MaybeCorruptedBytes<S>, PmemError>)
+         where
+-            S: PmCopy + Sized
++            S: PmCopy
+     {
+-        self.regions[index].serialize_and_write(addr, to_write);
++        self.regions[index].read_aligned::<S>(addr)
+     }
+ 
+     #[verifier::external_body]
+-    fn flush(&mut self)
++    fn read_unaligned(&self, index: usize, addr: u64, num_bytes: u64) -> (bytes: Result<Vec<u8>, PmemError>)
+     {
+-        match self.media_type {
+-            MemoryMappedFileMediaType::BatteryBackedDRAM => {
+-                // If using battery-backed DRAM, a single sfence
+-                // instruction will fence all of memory, so
+-                // there's no need to iterate through all the
+-                // regions. Also, there's no need to flush cache
+-                // lines, since those will be flushed during the
+-                // battery-enabled graceful shutdown after power
+-                // loss.
+-                unsafe {
+-                    core::arch::x86_64::_mm_sfence();
+-                }
+-            },
+-            _ => {
+-                for region in &mut self.regions {
+-                    region.flush();
+-                }
+-            },
+-        }
++        self.regions[index].read_unaligned(addr, num_bytes)
+     }
+-}
+ 
+-}
++    #[verifier::external_body]
++    fn write(&mut self, index: usize, addr: u64, bytes: &[u8])
++    {
++        self.regions[index].write(addr, bytes)
++    }
++
++    #[verifier::external_body]
++    fn serialize_and_write<S>(&mut self, index: usize, addr: u64, to_write: &S)
++        where
++            S: PmCopy + Sized
++    {
++        self.regions[index].serialize_and_write(addr, to_write);
++    }
++
++    #[verifier::external_body]
++    fn flush(&mut self)
++    {
++        match self.media_type {
++            MemoryMappedFileMediaType::BatteryBackedDRAM => {
++                // If using battery-backed DRAM, a single sfence
++                // instruction will fence all of memory, so
++                // there's no need to iterate through all the
++                // regions. Also, there's no need to flush cache
++                // lines, since those will be flushed during the
++                // battery-enabled graceful shutdown after power
++                // loss.
++                unsafe {
++                    core::arch::x86_64::_mm_sfence();
++                }
++            },
++            _ => {
++                for region in &mut self.regions {
++                    region.flush();
++                }
++            },
++        }
++    }
++}
++
++}
+diff --git a/storage_node/src/pmem/wrpm_t.rs b/storage_node/src/pmem/wrpm_t.rs
+index ca27cb17..b24b0872 100644
+--- a/storage_node/src/pmem/wrpm_t.rs
++++ b/storage_node/src/pmem/wrpm_t.rs
+@@ -1,7 +1,5 @@
+ use crate::pmem::pmemspec_t::*;
+ use crate::pmem::pmcopy_t::*;
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {
+diff --git a/storage_node/src/util_v.rs b/storage_node/src/util_v.rs
+index 404abc04..616c5cb6 100644
+--- a/storage_node/src/util_v.rs
++++ b/storage_node/src/util_v.rs
+@@ -1,5 +1,3 @@
+-use builtin::*;
+-use builtin_macros::*;
+ use vstd::prelude::*;
+ 
+ verus! {

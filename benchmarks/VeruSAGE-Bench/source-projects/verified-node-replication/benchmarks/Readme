@@ -1,5 +1,0 @@
-This benchmark set is extracted from verified node replication
-https://github.com/achreto/verified-node-replication/tree/main
-
-Among all the files in the exec folder, only utils gets extracted here, 
-because every function in every other file involves statemachine
