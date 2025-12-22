@@ -89,8 +89,6 @@ impl CommitMask {
         //forall |t| idx <= t < next_idx ==> !self@.contains(t),
         // Likewise we could have a condition that `count` is not smaller than necessary
     {
-        //assert(COMMIT_MASK_BITS == 512) by (compute_only);
-        //assert(COMMIT_MASK_FIELD_COUNT == 8);
         // Starting at idx, scan to find the first bit.
 
         proof { const_facts(); }
