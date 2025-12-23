@@ -3,12 +3,54 @@ use proc_macro2::TokenStream;
 use quote::ToTokens;
 use std::path::PathBuf;
 use syn_verus::Token;
-use syn_verus::TraitItemMethod;
+use syn_verus::TraitItemFn;
+use syn_verus::parse_quote;
 
-fn remove_ghost_local(local: &syn_verus::Local) -> Option<syn_verus::Local> {
+fn remove_ghost_local(local: &syn_verus::Local, mode: &DeghostMode) -> Option<syn_verus::Local> {
     match local.ghost {
         Some(_) => None,
-        None => Some(local.clone()),
+        None => {
+            match local.tracked {
+                Some(_) => None,
+                None => {
+                    local.init.clone().map_or_else(
+                        || {
+                            Some(syn_verus::Local {
+                                attrs: local.attrs.clone(),
+                                let_token: local.let_token.clone(),
+                                tracked: None,
+                                ghost: None,
+                                pat: local.pat.clone(),
+                                init: None,
+                                semi_token: local.semi_token.clone()
+                            })
+                        },
+                        |i| {
+                            remove_ghost_expr(&i.expr, mode).map(|i_expr| {
+                                syn_verus::Local {
+                                    attrs: local.attrs.clone(),
+                                    let_token: local.let_token.clone(),
+                                    tracked: None,
+                                    ghost: None,
+                                    pat: local.pat.clone(),
+                                    init: Some(syn_verus::LocalInit {
+                                        eq_token: i.eq_token.clone(),
+                                        expr: Box::new(i_expr),
+                                        diverge: i.diverge.clone().map_or_else(
+                                            || None,
+                                            |d| remove_ghost_expr(&d.1, mode).map(|e|
+                                                (d.0.clone(), Box::new(e))
+                                            )
+                                        )
+                                    }),
+                                    semi_token: local.semi_token.clone()
+                                }
+                            })
+                        }
+                    )
+                }
+            }
+        },
     }
 }
 
@@ -59,6 +101,10 @@ fn remove_ghost_expr(expr: &syn_verus::Expr, mode: &DeghostMode) -> Option<syn_v
                 ensures: if mode.ensures { c.ensures.clone() } else { None },
                 inner_attrs: c.inner_attrs.clone(),
                 body: Box::new(new_body),
+                constness: c.constness.clone(),
+                lifetimes: c.lifetimes.clone(),
+                options: c.options.clone(),
+                proof_fn: None
             })
         }),
         syn_verus::Expr::While(w) => {
@@ -150,14 +196,23 @@ fn remove_ghost_expr(expr: &syn_verus::Expr, mode: &DeghostMode) -> Option<syn_v
                 .arms
                 .iter()
                 .filter_map(|arm| {
-                    remove_ghost_expr(&*arm.body, mode).map(|new_body| syn_verus::Arm {
-                        attrs: arm.attrs.clone(),
-                        pat: arm.pat.clone(),
-                        guard: arm.guard.clone(),
-                        fat_arrow_token: arm.fat_arrow_token.clone(),
-                        body: Box::new(new_body),
-                        comma: arm.comma.clone(),
-                    })
+                    remove_ghost_expr(&*arm.body, mode).map_or_else(
+                        || Some(syn_verus::Arm {
+                            attrs: arm.attrs.clone(),
+                            pat: arm.pat.clone(),
+                            guard: arm.guard.clone(),
+                            fat_arrow_token: arm.fat_arrow_token.clone(),
+                            body: Box::new(syn_verus::Expr::Block( parse_quote! { {} })), // insert an empty block. removing the match arm entirely can cause an error
+                            comma: arm.comma.clone(),
+                        }),
+                        |new_body| Some(syn_verus::Arm {
+                            attrs: arm.attrs.clone(),
+                            pat: arm.pat.clone(),
+                            guard: arm.guard.clone(),
+                            fat_arrow_token: arm.fat_arrow_token.clone(),
+                            body: Box::new(new_body),
+                            comma: arm.comma.clone(),
+                        }))
                 })
                 .collect();
 
@@ -172,7 +227,10 @@ fn remove_ghost_expr(expr: &syn_verus::Expr, mode: &DeghostMode) -> Option<syn_v
         // veurs:
         syn_verus::Expr::Assert(a) => {
             fn annotated_assert(a: &syn_verus::Assert) -> bool {
-                a.attrs.iter().any(|attr| attr.tokens.to_string() == "(llm_do_not_change)")
+                a.attrs.iter().any(|attr| match &attr.meta {
+                    syn_verus::Meta::List(l) => l.tokens.to_string() == "(llm_do_not_change)",
+                    _ => false
+                })
             }
 
             if mode.asserts || (mode.asserts_anno && annotated_assert(a)) {
@@ -188,7 +246,9 @@ fn remove_ghost_expr(expr: &syn_verus::Expr, mode: &DeghostMode) -> Option<syn_v
         | syn_verus::Expr::BigAnd(..)
         | syn_verus::Expr::BigOr(..)
         | syn_verus::Expr::Is(..)
+        | syn_verus::Expr::IsNot(..)
         | syn_verus::Expr::Has(..)
+        | syn_verus::Expr::HasNot(..)
         | syn_verus::Expr::Matches(..)
         | syn_verus::Expr::GetField(..) => None,
         _ => Some(expr.clone()),
@@ -197,7 +257,7 @@ fn remove_ghost_expr(expr: &syn_verus::Expr, mode: &DeghostMode) -> Option<syn_v
 
 fn remove_ghost_stmt(stmt: &syn_verus::Stmt, mode: &DeghostMode) -> Option<syn_verus::Stmt> {
     match stmt {
-        syn_verus::Stmt::Local(l) => remove_ghost_local(l).map(syn_verus::Stmt::Local),
+        syn_verus::Stmt::Local(l) => remove_ghost_local(l, mode).map(syn_verus::Stmt::Local),
         syn_verus::Stmt::Item(i) => {
             // While we do have visit_item, I am not sure if we need to visit the item here
             // or just keep it as is.
@@ -207,13 +267,14 @@ fn remove_ghost_stmt(stmt: &syn_verus::Stmt, mode: &DeghostMode) -> Option<syn_v
             //     None => None
             // }
         }
-        syn_verus::Stmt::Expr(e) => remove_ghost_expr(e, mode).map(syn_verus::Stmt::Expr),
-        syn_verus::Stmt::Semi(e, _semi) => remove_ghost_expr(e, mode)
-            .map(|new_expr| syn_verus::Stmt::Semi(new_expr, _semi.clone())),
+        syn_verus::Stmt::Expr(e, s) => remove_ghost_expr(e, mode).map(|e1| syn_verus::Stmt::Expr(e1, s.clone())),
+        syn_verus::Stmt::Macro(e) => {
+            Some(syn_verus::Stmt::Macro(e.clone()))
+        },
     }
 }
 
-fn remove_ghost_block(block: &syn_verus::Block, mode: &DeghostMode) -> Option<syn_verus::Block> {
+pub fn remove_ghost_block(block: &syn_verus::Block, mode: &DeghostMode) -> Option<syn_verus::Block> {
     let new_stms: Vec<syn_verus::Stmt> =
         block.stmts.iter().filter_map(|stmt| remove_ghost_stmt(stmt, mode)).collect();
 
@@ -224,7 +285,7 @@ fn remove_ghost_block(block: &syn_verus::Block, mode: &DeghostMode) -> Option<sy
     Some(syn_verus::Block { brace_token: block.brace_token.clone(), stmts: new_stms })
 }
 
-fn remove_ghost_sig(
+pub fn remove_ghost_sig(
     sig: &syn_verus::Signature,
     mode: &DeghostMode,
 ) -> Option<syn_verus::Signature> {
@@ -261,62 +322,78 @@ fn remove_ghost_sig(
         paren_token: sig.paren_token.clone(),
         inputs: sig.inputs.clone(),
         variadic: sig.variadic.clone(),
-        output: match mode.sig_output {
-            true => sig.output.clone(),
-            false => match &sig.output {
-                syn_verus::ReturnType::Type(_, _, _, ty) => {
-                    syn_verus::ReturnType::Type(Default::default(), None, None, ty.clone())
-                }
-                syn_verus::ReturnType::Default => syn_verus::ReturnType::Default,
+        output: match &sig.output {
+            syn_verus::ReturnType::Type(_, _, _, ty) => {
+                syn_verus::ReturnType::Type(Default::default(), None, None, ty.clone())
             }
+            syn_verus::ReturnType::Default => syn_verus::ReturnType::Default,
         },
-        prover: sig.prover.clone(), // Removed
-        // TODO: This fix needs to be propagated to other places using `Specification`
-        requires: sig
-            .requires
-            .clone()
-            .map(|mut new_req| {
-                if !new_req.exprs.exprs.trailing_punct() {
-                    new_req.exprs.exprs.push_punct(Default::default());
+        spec: syn_verus::SignatureSpec {
+            prover: sig.spec.prover.clone(), // Removed
+            // TODO: This fix needs to be propagated to other places using `Specification`
+            requires: sig
+                .spec
+                .requires
+                .clone()
+                .map(|mut new_req| {
+                    if !new_req.exprs.exprs.trailing_punct() {
+                        new_req.exprs.exprs.push_punct(Default::default());
+                    }
+                    new_req
+                })
+                .filter(|_| mode.requires), // Removed
+            recommends: sig.spec.recommends.clone().map(|mut new_rec| {
+                if !new_rec.exprs.exprs.trailing_punct() {
+                    new_rec.exprs.exprs.push_punct(Default::default());
                 }
-                new_req
-            })
-            .filter(|_| mode.requires), // Removed
-        recommends: sig.recommends.clone().map(|mut new_rec| {
-            if !new_rec.exprs.exprs.trailing_punct() {
-                new_rec.exprs.exprs.push_punct(Default::default());
-            }
-            new_rec
-        }), // Removed
-        ensures: sig
-            .ensures
-            .clone()
-            .map(|mut new_ens| {
-                if !new_ens.exprs.exprs.trailing_punct() {
-                    new_ens.exprs.exprs.push_punct(Default::default());
-                }
-                new_ens
-            })
-            .filter(|_| mode.ensures), // Removed
-        decreases: sig
-            .decreases
-            .clone()
-            .map(|mut new_dec| {
-                if !new_dec.decreases.exprs.exprs.trailing_punct() {
-                    new_dec.decreases.exprs.exprs.push_punct(Default::default());
-                }
-                new_dec
-            })
-            .filter(|_| mode.decreases), // Removed
-        invariants: sig.invariants.clone().filter(|_| mode.invariants), // Removed
+                new_rec
+            }), // Removed
+            ensures: sig
+                .spec
+                .ensures
+                .clone()
+                .map(|mut new_ens| {
+                    if !new_ens.exprs.exprs.trailing_punct() {
+                        new_ens.exprs.exprs.push_punct(Default::default());
+                    }
+                    new_ens
+                })
+                .filter(|_| mode.ensures), // Removed
+            decreases: sig
+                .spec
+                .decreases
+                .clone()
+                .map(|mut new_dec| {
+                    if !new_dec.decreases.exprs.exprs.trailing_punct() {
+                        new_dec.decreases.exprs.exprs.push_punct(Default::default());
+                    }
+                    new_dec
+                })
+                .filter(|_| mode.decreases), // Removed
+            invariants: sig.spec.invariants.clone().filter(|_| mode.invariants), // Removed
+            default_ensures: sig
+                .spec
+                .default_ensures
+                .clone()
+                .map(|mut new_ens| {
+                    if !new_ens.exprs.exprs.trailing_punct() {
+                        new_ens.exprs.exprs.push_punct(Default::default());
+                    }
+                    new_ens
+                })
+                .filter(|_| mode.ensures), // Removed
+            returns: None,
+            unwind: None,
+            with: None
+        }
     })
 }
 
 fn is_verifier_attr(attr: &syn_verus::Attribute) -> bool {
-    attr.path.segments.len() > 0 && attr.path.segments[0].ident.to_string() == "verifier"
+    attr.path().segments.len() > 0 && attr.path().segments[0].ident.to_string() == "verifier"
 }
 
-fn remove_verifier_attr(attr: &Vec<syn_verus::Attribute>) -> Vec<syn_verus::Attribute> {
+pub fn remove_verifier_attr(attr: &Vec<syn_verus::Attribute>) -> Vec<syn_verus::Attribute> {
     attr.iter().filter(|a| !is_verifier_attr(a)).map(|a| a.clone()).collect()
 }
 
@@ -363,7 +440,7 @@ fn remove_ghost_impl(i: &syn_verus::ItemImpl, mode: &DeghostMode) -> syn_verus::
             .items
             .iter()
             .filter_map(|it| {
-                if let syn_verus::ImplItem::Method(func) = it {
+                if let syn_verus::ImplItem::Fn(func) = it {
                     remove_ghost_sig(&func.sig, mode).and_then(|new_sig| {
                         {
                             if matches!(
@@ -373,7 +450,7 @@ fn remove_ghost_impl(i: &syn_verus::ItemImpl, mode: &DeghostMode) -> syn_verus::
                                 Some(func.clone())
                             } else {
                                 remove_ghost_block(&func.block, mode).map(|new_block| {
-                                    syn_verus::ImplItemMethod {
+                                    syn_verus::ImplItemFn {
                                         attrs: func.attrs.clone(),
                                         vis: func.vis.clone(),
                                         defaultness: func.defaultness.clone(),
@@ -384,7 +461,7 @@ fn remove_ghost_impl(i: &syn_verus::ItemImpl, mode: &DeghostMode) -> syn_verus::
                                 })
                             }
                         }
-                        .and_then(|new_method| Some(syn_verus::ImplItem::Method(new_method)))
+                        .and_then(|new_method| Some(syn_verus::ImplItem::Fn(new_method)))
                     })
                 } else {
                     Some(it.clone())
@@ -412,12 +489,13 @@ fn remove_ghost_item(item: &syn_verus::Item, mode: &DeghostMode) -> Option<syn_v
             colon_token: t.colon_token.clone(),
             supertraits: t.supertraits.clone(),
             brace_token: t.brace_token.clone(),
+            restriction: t.restriction.clone(),
             items: t
                 .items
                 .iter()
                 .filter_map(|i| match i {
-                    syn_verus::TraitItem::Method(func) => {
-                        Some(syn_verus::TraitItem::Method(TraitItemMethod {
+                    syn_verus::TraitItem::Fn(func) => {
+                        Some(syn_verus::TraitItem::Fn(TraitItemFn {
                             attrs: func.attrs.clone(),
                             sig: remove_ghost_sig(&func.sig, mode)?,
                             default: func.default.as_ref().map(|b| {
@@ -468,7 +546,7 @@ pub fn remove_ghost_from_file(file: &syn_verus::File, mode: &DeghostMode) -> syn
     new_file
 }
 
-fn remove_verus_macro(file: &syn_verus::File) -> syn_verus::File {
+pub fn remove_verus_macro(file: &syn_verus::File) -> syn_verus::File {
     let mut new_items: Vec<syn_verus::Item> = Vec::new();
 
     for item in &file.items {
@@ -490,7 +568,7 @@ fn remove_verus_macro(file: &syn_verus::File) -> syn_verus::File {
     new_file
 }
 
-fn merge_files(file: &syn_verus::File, verus_files: Vec<syn_verus::File>) -> syn_verus::File {
+pub fn deghost_merge_files(file: &syn_verus::File, verus_files: Vec<syn_verus::File>) -> syn_verus::File {
     let mut new_items: Vec<syn_verus::Item> = Vec::new();
 
     for item in &file.items {
@@ -529,6 +607,6 @@ pub fn fextract_pure_rust(filepath: PathBuf, mode: &DeghostMode) -> Result<syn_v
 
         //println!("{}", fprint_file(&merge_files(&pure_file, verus_files.clone()), VFormatter::VerusFmt));
 
-        Ok(merge_files(&pure_file, verus_files))
+        Ok(deghost_merge_files(&pure_file, verus_files))
     })
 }

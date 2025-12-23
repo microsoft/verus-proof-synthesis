@@ -246,10 +246,10 @@ fn merge_trait_items(
         (TraitItem::Const(c), TraitItem::Const(c1), TraitItem::Const(c2)) => {
             eq_or_conflict_3(c, c1, c2, "Const conflict", || TraitItem::Const(c.clone()))
         }
-        (TraitItem::Method(m), TraitItem::Method(m1), TraitItem::Method(m2)) => {
+        (TraitItem::Fn(m), TraitItem::Fn(m1), TraitItem::Fn(m2)) => {
             match (&m.default, &m1.default, &m2.default) {
                 (Some(d), Some(d1), Some(d2)) => {
-                    Ok(TraitItem::Method(syn_verus::TraitItemMethod {
+                    Ok(TraitItem::Fn(syn_verus::TraitItemFn {
                         attrs: m1.attrs.clone(),
                         sig: merge_sigs(&m.sig, &m1.sig, &m2.sig, mode)?,
                         default: Some(merge_blocks(&d.stmts, &d1.stmts, &d2.stmts, mode)?),
@@ -257,7 +257,7 @@ fn merge_trait_items(
                     }))
                 }
                 (None, None, None) => {
-                    eq_or_conflict_3(m, m1, m2, "Method conflict", || TraitItem::Method(m.clone()))
+                    eq_or_conflict_3(m, m1, m2, "Method conflict", || TraitItem::Fn(m.clone()))
                 }
                 _ => {
                     return Err(Error::Conflict(String::from("Method default conflict")));
@@ -421,9 +421,9 @@ fn merge_impl_items(
         (ImplItem::Const(c), ImplItem::Const(c1), ImplItem::Const(c2)) => {
             eq_or_conflict_3(c, c1, c2, "Const conflict", || ImplItem::Const(c.clone()))
         }
-        (ImplItem::Method(m), ImplItem::Method(m1), ImplItem::Method(m2)) => {
+        (ImplItem::Fn(m), ImplItem::Fn(m1), ImplItem::Fn(m2)) => {
             merge_blocks(&m.block.stmts, &m1.block.stmts, &m2.block.stmts, mode).and_then(|b| {
-                Ok(ImplItem::Method(syn_verus::ImplItemMethod {
+                Ok(ImplItem::Fn(syn_verus::ImplItemFn {
                     attrs: m1.attrs.clone(),
                     vis: m1.vis.clone(),
                     defaultness: m1.defaultness.clone(),
