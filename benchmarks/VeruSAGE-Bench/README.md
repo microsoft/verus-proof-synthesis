@@ -4,7 +4,7 @@
 
 ## Overview
 
-VeruSAGE-Bench contains **849 verification tasks** extracted from 8 real-world Verus projects, representing challenging proof synthesis problems from systems verification domains including distributed systems, kernel development, storage systems, and more.
+VeruSAGE-Bench contains **849 verification tasks** extracted from 8 real-world Verus projects, representing challenging proof synthesis problems from systems verification domains including distributed systems, operating systems, storage systems, and more.
 
 ### Benchmark Statistics
 
@@ -23,10 +23,11 @@ VeruSAGE-Bench contains **849 verification tasks** extracted from 8 real-world V
 
 ## Key Features
 
-- **Real-World Complexity**: Tasks extracted from production-grade verified systems
-- **Repository-Level Context**: Each task requires understanding dependencies across a large codebase
+- **Real-World Complexity**: Tasks are extracted from production-grade verified systems
+- **Repository-Level Context**: Each task requires understanding dependencies originally defined across a large codebase
 - **Diverse Difficulty**: Ranges from simple lemmas to complex temporal logic and refinement proofs
-- **Realistic Evaluation**: Tasks preserve the actual complexity and dependencies of real verification work
+- **Comprehensive Feature Coverage**: Tasks collectively cover all the key verification strategies and Verus features
+- **Single-file Evaluation**: Eacn task is contained in a stand-alone compilable and verifiable Rust file
 
 ## Directory Organization
 
@@ -55,7 +56,7 @@ VeruSAGE-Bench/
 │   ├── memory-allocator/               # MA - Memory allocator verification
 │   ├── node-replication/               # NO - Node replication proofs
 │   ├── nrkernel/                       # NR - NRKernel page table proofs
-│   ├── atmo/                           # OS - ATMO microkernel verification
+│   ├── atmosphere/                     # OS - ATMO microkernel verification
 │   ├── storage/                        # ST - Storage system verification
 │   └── vest/                           # VE - Vest serialization library
 ├── tasks/                              # All 849 verification tasks
@@ -78,6 +79,8 @@ VeruSAGE-Bench/
 
 ### Source Project Structure
 
+The source-projects folder groups tasks according to their source project.
+
 Each source project directory follows this structure:
 
 ```
@@ -85,11 +88,13 @@ source-projects/<project>/
 ├── README.md                           # Project-specific documentation
 ├── mapping_XX.txt                      # Mapping file (XX = project code: st, nr, ma, etc.)
 ├── unverified/                         # Unverified task files (INPUT)
-│   └── <task_name>.rs                  # The task code with function body stripped
+│   └── <task_name>.rs                  # The unverified task file
 └── verified/                           # Verified solution files (GROUND TRUTH)
     └── <subdirectory>/
         └── <task_name>.rs              # The complete verified solution
 ```
+
+The ground-truth proof was written by corresponding project developers.
 
 ### Mapping Files
 
@@ -102,7 +107,7 @@ inv_L_active_metadata_set_after_crash.rs -> verified/log_inv/inv_L_active_metada
 ...
 ```
 
-These mapping files ensure consistency between `tasks.jsonl` and the source files on disk.
+These mapping files ensure consistency between `tasks.jsonl` and the files in source-projects.
 
 ## Data Format (JSONL)
 
@@ -205,9 +210,9 @@ verus <task_file>.rs
 
 1. Select tasks from `tasks/` or use the sampled subset in `tasks-sampled-100/`
 2. Provide the task file to your LLM agent
-3. The agent should synthesize proof code to complete the function body
+3. The agent should synthesize and add Verus proof annotations to the file
 4. Verify the solution using Verus
-5. A task is considered **solved** if Verus verification succeeds
+5. A task is considered **solved** if Verus verification succeeds and there is no cheating
 
 ### Batch Evaluation
 
