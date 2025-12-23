@@ -8,20 +8,25 @@ use std::path::PathBuf;
 use std::process;
 use syn_verus::{FnArg, FnArgKind, Type};
 
+mod additions;
+mod benchmark_gen;
 mod code;
 mod deghost;
 mod func;
-mod merge;
+//mod merge;
 mod unimpl;
 mod utils;
 
+use crate::additions::*;
+use crate::benchmark_gen::*;
 use crate::code::*;
 use crate::deghost::*;
 use crate::func::*;
-use crate::merge::*;
+//use crate::merge::*;
 use crate::unimpl::*;
 use crate::utils::*;
 
+/// Parse a string of ranges in the format of a-b,c-d,e into a vector of ranges.
 fn parse_ranges(
     s: &str,
 ) -> Result<std::vec::Vec<RangeInclusive<usize>>, Box<dyn std::error::Error + Send + Sync>> {
@@ -51,7 +56,76 @@ struct GetCallsArgs {
         help = "Only returns function calls for the specified line(s).",
         long_help = "Only returns function calls for the specified line(s).
 The format is a comma separated list of ranges, e.g. 1-3,5,7-9.")]
-    line: Option<std::vec::Vec<RangeInclusive<usize>>>,
+    line: Option<Vec<RangeInclusive<usize>>>,
+}
+
+struct Loc {
+    line: usize,
+    column: usize,
+}
+
+impl Loc {
+    fn new(line: usize, column: usize) -> Self {
+        Self { line, column }
+    }
+}
+
+impl Clone for Loc {
+    fn clone(&self) -> Self {
+        Self { line: self.line, column: self.column }
+    }
+}
+
+impl std::fmt::Debug for Loc {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {})", self.line, self.column)
+    }
+}
+
+impl PartialEq for Loc {
+    fn eq(&self, other: &Self) -> bool {
+        self.line == other.line && self.column == other.column
+    }
+}
+
+impl Eq for Loc {}
+
+impl Ord for Loc {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        if self.line == other.line {
+            self.column.cmp(&other.column)
+        } else {
+            self.line.cmp(&other.line)
+        }
+    }
+}
+
+impl PartialOrd for Loc {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+/// Parse a string of spans in the format of a:b,c:d,e:f into a vector of spans.
+fn parse_locs(s: &str) -> Result<Vec<Loc>, Box<dyn std::error::Error + Send + Sync>> {
+    s.split(',')
+        .map(|part| {
+            part.split_once(':').ok_or_else(|| "Invalid format".into()).and_then(|(start, end)| {
+                let line = start.parse::<usize>().map_err(|_| "Invalid start".to_string())?;
+                let column = end.parse::<usize>().map_err(|_| "Invalid end".to_string())?;
+                Ok(Loc::new(line, column))
+            })
+        })
+        .collect()
+}
+
+#[derive(Args)]
+struct RemoveSpanArgs {
+    file: PathBuf,
+    #[clap(short, long, help = r#"
+A comma separated list of the start and end of the span in the format of (a: b) to remove."#,
+    value_parser = parse_locs)]
+    locs: Vec<Vec<Loc>>,
 }
 
 #[derive(Args)]
@@ -109,8 +183,6 @@ pub struct DeghostMode {
     decreases: bool,
     #[clap(long, help = "Compare assumes")]
     assumes: bool,
-    # [clap(long, help = "Compare signature output")]
-    sig_output: bool,
 }
 
 impl DeghostMode {
@@ -142,9 +214,26 @@ impl Default for DeghostMode {
             asserts_anno: false,
             decreases: false,
             assumes: false,
-            sig_output: false,
         }
     }
+}
+
+#[derive(Args)]
+struct AllowedAdditionsArgs {
+    #[clap(help = "Path for original file")]
+    file1: PathBuf,
+    #[clap(help = "Path for changed file")]
+    file2: PathBuf
+}
+
+#[derive(Args)]
+struct BenchmarkGenArgs {
+    #[clap(help = "Path for input file")]
+    file1: PathBuf,
+    #[clap(help = "Path for output file")]
+    file2: PathBuf,
+    #[clap(short, long, action, help = "flag to erase all lemmas (true if lemmas should be erased)")]
+    no_lemma_mode: bool
 }
 
 #[derive(Args)]
@@ -238,31 +327,35 @@ struct MergeArgs {
     all: bool,
 }
 
-#[derive(Args)]  
-struct DeghostArgs {
-    /// Input Verus source code file
-    file: PathBuf,
-    # [clap(
-        short,
-        long,
-        help = "Deghost mode: 'raw' for raw code, 'unverified' for unverified code",
-        default_value = "raw"
-    )]
-    mode: String, // "raw", "unverified"
-    #[clap(short, long, help = "Output file path (prints to stdout if not specified)")]
-    output: Option<PathBuf>,
-}
-
 #[derive(Args)]
 struct UnimplArgs {
     file1: PathBuf,
     #[clap(
         short,
         long,
-        help = "If set, also unimplement functions tagged with #[warn(llm4verus_target)]",
+        help = "If set, also unimplement functions tagged with ",
         default_value = "false"
     )]
     target: bool,
+}
+
+#[derive(Args)]
+struct GetGhostArgs {
+    file: PathBuf,
+    #[clap(
+        short,
+        long,
+        help = "Prints byte offsets instead of line/column numbers.",
+        default_value = "false"
+    )]
+    byte: bool,
+    #[clap(
+        short,
+        long,
+        help = "Prints line/column numbers instead of byte offsets.",
+        default_value = "true"
+    )]
+    loc: bool,
 }
 
 #[derive(Subcommand)]
@@ -315,8 +408,17 @@ If there are conflicts in the non-merging part, <FILE1> is preferred.
 "#)]
     Merge(MergeArgs),
     Unimpl(UnimplArgs),
-    #[clap(about = "Remove all proof annotations from Verus code to produce pure Rust code")]  
-    Deghost(DeghostArgs),
+    #[clap(
+        about = r#"Get all ghost code in a verus source code file. Returns a list of (type, LOC) of the expression.
+
+Currently we support ensures, requires, assert, invariant.
+
+The returned list is in the AST order.
+"#
+    )]
+    GetGhost(GetGhostArgs),
+    #[clap(about = "Remove ghost code of the given starting spans in a verus source code file.")]
+    RemoveGhost(RemoveSpanArgs),
 }
 
 #[derive(Subcommand)]
@@ -330,6 +432,8 @@ Various flags can be set to have fine-grained control over what ghost code shoul
     Func(FunctionCommands),
     #[clap(subcommand)]
     Code(CodeCommands),
+    Additions(AllowedAdditionsArgs),
+    Benchmark(BenchmarkGenArgs)
 }
 
 #[derive(ClapParser)]
@@ -360,7 +464,6 @@ fn compare_files(args: &CompareArgs) -> Result<bool, Error> {
 
     fextract_pure_rust(f1, &mode).and_then(|result1| {
         fextract_pure_rust(f2, &mode).and_then(|result2| {
-
             if args.verbose {
                 println!("{}", fprint_file(&result1, Formatter::VerusFmt));
                 println!("{}", fprint_file(&result2, Formatter::VerusFmt));
@@ -400,6 +503,23 @@ fn main() {
     let args = Cli::parse();
 
     match args.command {
+        Commands::Additions(args) => {
+            let res = check_allowed_additions_only(args.file1, args.file2).unwrap_or_else(|e| {
+                eprintln!("{}", e);
+                process::exit(1);
+            });
+
+            if !res {
+                println!("Disallowed changes detected");
+                process::exit(1);
+            }
+        }
+        Commands::Benchmark(args) => {
+            benchmark_cleanup(args.file1, args.file2, args.no_lemma_mode).unwrap_or_else(|e| {
+                eprintln!("{}", e);
+                process::exit(1);
+            });
+        }
         Commands::Compare(args) => {
             let res = compare_files(&args).unwrap_or_else(|e| {
                 eprintln!("{}", e);
@@ -421,14 +541,14 @@ fn main() {
             });
 
             if !check {
-                let pretty_file = format!("{:#?}", file).replace("    ", "  ");
+                let pretty_file = format!("{:#?}", file.to_token_stream()).replace("    ", "  ");
                 println!("{}", pretty_file);
             }
             fextract_verus_macro(&filepath)
                 .map(|(files, _)| {
                     if !check {
                         for file in files {
-                            let pretty_file = format!("{:#?}", file).replace("    ", "  ");
+                            let pretty_file = format!("{:#?}", file.to_token_stream()).replace("    ", "  ");
                             println!("{}", pretty_file);
                         }
                     }
@@ -593,12 +713,18 @@ fn main() {
                                         inputs: sig.inputs.clone(),
                                         variadic: sig.variadic.clone(),
                                         output: sig.output.clone(),
-                                        prover: sig.prover.clone(),
-                                        requires: if !pre { sig.requires.clone() } else { None }, // Removed
-                                        recommends: sig.recommends.clone(),
-                                        ensures: if !post { sig.ensures.clone() } else { None }, // Removed
-                                        decreases: sig.decreases.clone(),
-                                        invariants: sig.invariants.clone(),
+                                        spec: syn_verus::SignatureSpec {
+                                            prover: sig.spec.prover.clone(),
+                                            requires: if !pre { sig.spec.requires.clone() } else { None }, // Removed
+                                            recommends: sig.spec.recommends.clone(),
+                                            ensures: if !post { sig.spec.ensures.clone() } else { None }, // Removed
+                                            decreases: sig.spec.decreases.clone(),
+                                            invariants: sig.spec.invariants.clone(),
+                                            default_ensures: if !post { sig.spec.default_ensures.clone() } else { None },
+                                            returns: sig.spec.returns.clone(),
+                                            unwind: sig.spec.unwind.clone(),
+                                            with: sig.spec.with.clone(),
+                                        }
                                     };
 
                                     let new_fn = syn_verus::ItemFn {
@@ -701,38 +827,39 @@ fn main() {
                             .join(",")
                     );
                 }
-                CodeCommands::Merge(arg) => {
-                    let filepath1 = &arg.file1;
-                    let filepath2 = &arg.file2;
-                    let mode = if arg.all {
-                        &DeghostMode {
-                            requires: true,
-                            ensures: true,
-                            invariants: true,
-                            spec: true,
-                            asserts: true,
-                            asserts_anno: true,
-                            decreases: true,
-                            assumes: true,
-                            sig_output: true,
-                        }
-                    } else {
-                        &arg.opts
-                    };
+                CodeCommands::Merge(_arg) => {
+                    // let filepath1 = &arg.file1;
+                    // let filepath2 = &arg.file2;
+                    // let mode = if arg.all {
+                    //     &DeghostMode {
+                    //         requires: true,
+                    //         ensures: true,
+                    //         invariants: true,
+                    //         spec: true,
+                    //         asserts: true,
+                    //         asserts_anno: true,
+                    //         decreases: true,
+                    //         assumes: true,
+                    //     }
+                    // } else {
+                    //     &arg.opts
+                    // };
 
                     // DEGHOST_MODE_OPT.with(|mode| {
                     //     mode.borrow_mut().replace_with(&arg.opts);
                     // });
 
-                    fmerge_files(filepath1, filepath2, mode)
-                        .and_then(|f| {
-                            println!("{}", fprint_file(&f, Formatter::Mix));
-                            Ok(())
-                        })
-                        .unwrap_or_else(|e| {
-                            eprintln!("{}", e);
-                            process::exit(1);
-                        });
+                    // fmerge_files(filepath1, filepath2, mode)
+                    //     .and_then(|f| {
+                    //         println!("{}", fprint_file(&f, Formatter::Mix));
+                    //         Ok(())
+                    //     })
+                    //     .unwrap_or_else(|e| {
+                    //         eprintln!("{}", e);
+                    //         process::exit(1);
+                    //     });
+
+                    process::exit(1); // unsupported for now
                 }
                 CodeCommands::Unimpl(arg) => {
                     let filepath = arg.file1;
@@ -753,109 +880,39 @@ fn main() {
                         process::exit(1);
                     });
                 }
-                CodeCommands::Deghost(args) => {  
-                    let filepath = args.file;
-                    let output_path = args.output;
-                    let mode_str = args.mode.as_str();
+                CodeCommands::GetGhost(arg) => {
+                    let filepath = &arg.file;
 
-                    // Configure DeghostMode based on the mode flag
-                    let deghost_mode = match mode_str {
-                        "unverified" => DeghostMode {
-                            requires: true,    // Keep all preconditions  
-                            ensures: true,     // Keep all postconditions  
-                            invariants: false,
-                            spec: true,     // Keep all spec functions
-                            asserts: false,
-                            asserts_anno: false,
-                            decreases: false,
-                            assumes: true,     // Keep all assumes
-                            sig_output: true,  // Keep signature output
-                        },  
-                        "raw" => DeghostMode {
-                            requires: false,
-                            ensures: false,
-                            invariants: false,
-                            spec: false,
-                            asserts: false,
-                            asserts_anno: false,
-                            decreases: false,
-                            assumes: false, 
-                            sig_output: false,
-                        },
-                        _ => {
-                            eprintln!("Invalid mode: {}. Use 'raw' or 'unverified'", mode_str);
-                            process::exit(1);
-                        }
-                    };
-
-                    // Read file as string  
-                    let code = match std::fs::read_to_string(&filepath) {
-                        Ok(content) => content,
-                        Err(e) => {
-                            eprintln!("Error reading file: {}", e);
-                            process::exit(1);
-                        }
-                    };
-
-                    // Extract verus! macro content manually using string processing
-                    let mut verus_start = code.find("verus! {");
-                    if verus_start.is_none() {
-                        // If not found, try to find "verus!{" without space
-                        verus_start = code.find("verus!{");
-                    }
-                    // let verus_end = code.rfind("} // verus!");
-                    // assuming the verus! macro is always at the end of the file
-                    let verus_end = code.rfind("}"); // assuming the last closing brace is the end of the verus! macro
-
-                    if let (Some(start), Some(end)) = (verus_start, verus_end) {  
-                        // Extract the content inside verus! { ... }  
-                        let verus_content = &code[start + 8..end]; // Skip "verus! {"  
-                        let non_verus_content = &code[..start];  
-
-                        // Parse only the verus content  
-                        match syn_verus::parse_str::<syn_verus::File>(verus_content) {  
-                            Ok(verus_file) => {
-                                let deghosted = remove_ghost_from_file(&verus_file, &deghost_mode);
-                                let deghosted_output = fprint_file(&deghosted, Formatter::VerusFmtNoMacro);
-
-                                // Combine non-verus content with deghosted verus content
-                                // Format output based on mode
-                                let final_output = match mode_str {
-                                    "raw" => {
-                                        // comment out the `use vstd::prelude::*;` import
-                                        let non_verus_content_no_import = non_verus_content.replace("use vstd::prelude::*;", "// use vstd::prelude::*;");
-
-                                        // Just output the deghosted content without verus wrapper
-                                        format!("{}\n{}", non_verus_content_no_import.trim(), deghosted_output)
-                                    },
-                                    "unverified" => {
-                                        // Keep the verus macro wrapper and imports
-                                        format!("{}verus! {{{}}}", non_verus_content, deghosted_output)
-                                    },
-                                    _ => unreachable!()
-                                };
-
-                                if let Some(out_path) = output_path {
-                                    match std::fs::write(&out_path, &final_output) {
-                                        Ok(_) => println!("Deghosted code written to: {}", out_path.display()),
-                                        Err(e) => {
-                                            eprintln!("Error writing to file: {}", e);
-                                            process::exit(1);
-                                        }
-                                    }
-                                } else {
-                                    println!("{}", final_output);
-                                }
-                            }
-                            Err(e) => {
-                                eprintln!("Error parsing verus content: {}", e);
-                                process::exit(1);
-                            }
-                        }
-                    } else {
-                        eprintln!("No verus! macro found in file");
+                    let result = fget_ghosts(filepath).unwrap_or_else(|e| {
+                        eprintln!("{}", e);
                         process::exit(1);
+                    });
+
+                    if arg.byte {
+                        unimplemented!();
+                    } else {
+                        result.iter().for_each(|(t, loc)| {
+                            println!(
+                                "{}:(({}, {}), ({}, {}))",
+                                t,
+                                loc.start().line,
+                                loc.start().column,
+                                loc.end().line,
+                                loc.end().column
+                            );
+                        });
                     }
+                }
+                CodeCommands::RemoveGhost(arg) => {
+                    let _filepath = arg.file;
+                    // clap parses the argument as a Vec<Vec<Loc>> because it allows multiple --locs
+                    // We might find a better way to parse this in the future.
+                    // But for now, we just take the first element.
+                    let locs = &arg.locs[0];
+
+                    println!("{:?}", locs);
+
+                    unimplemented!();
                 }
             }
         }

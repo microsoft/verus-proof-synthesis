@@ -12,12 +12,25 @@ use std::process::Command;
 use std::str::FromStr;
 use syn::spanned::Spanned;
 
+pub fn fn_body_is_target(body: &syn_verus::Block)-> bool {
+    !body.to_token_stream().to_string().contains("unimplemented ! ()")
+}
+
+pub fn is_proof_or_exec(sig: &syn_verus::Signature) -> bool {
+    match sig.mode {
+        syn_verus::FnMode::Proof(_) | syn_verus::FnMode::Exec(_) | syn_verus::FnMode::Default => true,
+        syn_verus::FnMode::Spec(_) | syn_verus::FnMode::SpecChecked(_)  | syn_verus::FnMode::ProofAxiom(_) => false,
+    }
+}
+
+#[derive(Debug)]
 pub enum Error {
     //IncorrectUsage,
     ReadFile(io::Error),
     ParseFile { error: syn_verus::Error, filepath: PathBuf, source_code: String },
     NotFound(String),
     Conflict(String),
+    WriteFile(io::Error)
 }
 
 impl Display for Error {
@@ -32,6 +45,7 @@ impl Display for Error {
             }
             NotFound(func) => write!(f, "{} not found", func),
             Conflict(func) => write!(f, "Conflict: {}", func),
+            WriteFile(error) => write!(f, "Unable to write file: {}", error)
         }
     }
 }
@@ -160,11 +174,9 @@ pub fn fextract_verus_macro(
     })
 }
 
-#[derive(PartialEq)]
 pub enum Formatter {
     #[allow(dead_code)]
     VerusFmt,
-    VerusFmtNoMacro,
     RustFmt,
     Mix,
 }
@@ -182,10 +194,6 @@ pub fn format_token_stream(ts: &TokenStream, formatter: Formatter) -> String {
     let mut cmd = match formatter {
         Formatter::VerusFmt => {
             write!(tmp_file, "verus!{{{}}}", verus_s).expect("Failed to write to temp file");
-            Command::new("verusfmt")
-        }
-        Formatter::VerusFmtNoMacro => {
-            write!(tmp_file, "verus! {{{}}} // verus!", verus_s).expect("Failed to write to temp file");
             Command::new("verusfmt")
         }
         Formatter::RustFmt => {
@@ -216,12 +224,7 @@ pub fn format_token_stream(ts: &TokenStream, formatter: Formatter) -> String {
 
     tmp_file.close().expect("Failed to close temp file");
 
-    if formatter == Formatter::VerusFmtNoMacro {
-        // Remove the verus! macro from the formatted code
-        formatted_code.replace("verus! {", "").replace("} // verus!", "")
-    } else {
-        formatted_code
-    }
+    formatted_code
 }
 
 pub fn fprint_file(file: &syn_verus::File, formatter: Formatter) -> String {
@@ -344,8 +347,8 @@ pub enum FnMethod {
     Fn(syn_verus::ItemFn),
     // For Method and MethodDefault, we need to keep the Trait/Struct
     // information to get the qualified name of the method.
-    Method(syn_verus::ItemImpl, syn_verus::ImplItemMethod),
-    MethodDefault(syn_verus::ItemTrait, syn_verus::TraitItemMethod),
+    Method(syn_verus::ItemImpl, syn_verus::ImplItemFn),
+    MethodDefault(syn_verus::ItemTrait, syn_verus::TraitItemFn),
 }
 
 pub trait FnMethodExt {
@@ -456,17 +459,26 @@ pub fn update_verus_macros_files(
     update_verus_macros_tss(orig, verus_tss)
 }
 
-static TARGET_IDENT: &str = "(llm4verus_target)";
+static TARGET_IDENT: &str = "llm4verus_target";
 
 pub fn attrs_have_target(attrs: &Vec<syn_verus::Attribute>) -> bool {
-    attrs.iter().any(|attr| attr.tokens.to_string() == TARGET_IDENT)
+    attrs.iter().any(|attr| match &attr.meta {
+        syn_verus::Meta::List(m) => {
+            m.tokens.to_string() == TARGET_IDENT
+        },
+        _ => false
+    })
 }
 
 pub fn func_is_target(f: &syn_verus::ItemFn) -> bool {
     attrs_have_target(&f.attrs)
 }
 
-pub fn method_is_target(m: &syn_verus::ImplItemMethod) -> bool {
+pub fn impl_fn_is_target(m: &syn_verus::ImplItemFn) -> bool {
+    attrs_have_target(&m.attrs)
+}
+
+pub fn trait_fn_is_target(m: &syn_verus::TraitItemFn) -> bool {
     attrs_have_target(&m.attrs)
 }
 
@@ -481,16 +493,16 @@ pub fn func_is_ghost(f: &syn_verus::ItemFn) -> bool {
     sig_is_ghost(&f.sig)
 }
 
-pub fn method_is_ghost(m: &syn_verus::ImplItemMethod) -> bool {
+pub fn method_is_ghost(m: &syn_verus::ImplItemFn) -> bool {
     sig_is_ghost(&m.sig)
 }
 
 pub fn attrs_have_ext_spec(attrs: &Vec<syn_verus::Attribute>) -> bool {
     attrs.iter().any(|attr| {
-        attr.path.segments.len() == 2
-            && attr.path.segments[0].ident.to_string() == "verifier"
-            && attr.path.segments[1].ident.to_string() == "external_fn_specification"
-            && attr.tokens.is_empty()
+        attr.path().segments.len() == 2
+            && attr.path().segments[0].ident.to_string() == "verifier"
+            && attr.path().segments[1].ident.to_string() == "external_fn_specification"
+            //&& attr.tokens.is_empty()
     })
 }
 
@@ -498,7 +510,7 @@ pub fn func_is_ext_spec(f: &syn_verus::ItemFn) -> bool {
     attrs_have_ext_spec(&f.attrs)
 }
 
-pub fn method_is_ext_spec(m: &syn_verus::ImplItemMethod) -> bool {
+pub fn method_is_ext_spec(m: &syn_verus::ImplItemFn) -> bool {
     attrs_have_ext_spec(&m.attrs)
 }
 

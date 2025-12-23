@@ -1,9 +1,7 @@
 use crate::deghost::*;
 use crate::utils::*;
 use crate::DeghostMode;
-use crate::func::extract_functions_by_name;
 use quote::ToTokens;
-use syn::ext;
 use std::path::PathBuf;
 
 mod exprs;

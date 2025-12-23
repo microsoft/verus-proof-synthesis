@@ -1,0 +1,242 @@
+Here are some ideas for how to name the prompts' strategies:
+
+***
+
+Prompt file name
+
+Short description
+
+Longer description
+
+***
+
+add_trigger_assert.md
+
+Instantiate a quantified fact using its trigger
+
+Instantiate a quantified fact with certain variable assignments by adding an
+assertion that triggers the quantifier with those assignments
+
+***
+
+arithmetic_reasoning.md
+
+Fix arithmetic-related assertions using nonlinear arithmetic hints
+
+Add hints or assertions to help the verifier reason about nonlinear arithmetic
+expressions, such as multiplications, divisions, or modular arithmetic.
+
+***
+
+assertion_reasoning_pipeline.md
+
+LLM reasoning pipeline for assertion failures
+
+Guide the LLM through a structured reasoning process to analyze assertion
+failures in Verus code and select the most appropriate repair action.
+
+***
+
+bit_vector_reasoning.md
+
+Fix a failing assertion by invoking the bit-vector solver
+
+Replace a failing assertion of the form `assert(P);` with one of the form
+`assert(P) by (bit_vector);` or `assert(P) by (bit_vector) requires Cs;` where
+`Cs` is a comma-separated list of conditions.
+
+***
+
+case_analysis.md
+
+Fix a failing assertion by case analysis, i.e., replace it with a branching
+proof that uses a different subproof for each case
+
+Determine if a given failing assertion is easier to prove by breaking it into
+multiple cases, each with a different proof approach. If so, replace it with a
+branching proof that uses a different subproof for each case. The result will
+look something like the following:
+`if C1 { Proof_of_Case_C1 } else if C2 { Proof_of_Case_C2 } else ...`
+
+***
+
+compute.md
+
+Fix a failing assertion with a proof by computation
+
+Replace a failing assertion with an assertion of the form `assert(P) by
+(compute);`. Make sure that the expression `P` only consists of constants.
+
+***
+
+extensional_equality.md
+
+Prove collection equality using extensional equality
+
+Prove the equality of two collections (e.g., sequences, maps, or sets) by
+proving equality of each of their corresponding elements
+
+***
+
+fallback_llm_repair.md
+
+General LLM-based repair for unclassified errors
+
+When no specific repair action is applicable, use this general-purpose LLM
+prompt to attempt fixing the verification error.
+
+***
+
+induction.md
+
+Prove a lemma using induction
+
+Determine if a given lemma that's failing verification is amenable to proof by
+induction. If so, split the proof into a base case, proven normally, and an
+inductive case, proven by invoking the lemma recursively.
+
+***
+
+inductive_lemma.md
+
+Write a new lemma and prove it with induction
+
+If the given failing assertion is best proved with induction, factor out its
+proof into a separate proof function. Prove that separate function using
+induction. Then invoke that function before the failing assertion.
+
+***
+
+instantiate_exists.md
+
+Use or establish an existentially quantified expression
+
+If a given failed assertion could benefit from using a given existentially
+quantified expression, use `choose` to instantiate that expression with a
+useful variable assignment. Alternatively, if the given failed assertion is
+itself an existentially quantified expression, find a witness establishing
+that expression and assert the corresponding trigger involving it.
+
+***
+
+instantiate_forall.md
+
+Prove a universally quantified expression with `assert forall by`
+
+Replace a failing assertion of a quantified expression of the form
+`assert(forall |x| P(x) ==> Q(x));` with a proof of the form `assert forall
+|x| P(x) implies Q(x) by { ... }`
+
+***
+
+integer_ring.md
+
+Fix arithmetic assertions using integer ring reasoning
+
+Use the integer ring solver to prove assertions involving integer arithmetic
+operations like addition, subtraction, and multiplication.
+
+***
+
+invariant_end_repair.md
+
+Replace a failure to maintain a loop invariant with an assertion failure
+
+Given a loop invariant that the verifier can't prove holds at loop end, assert
+that condition at the end of the loop body
+
+***
+
+invariant_front_repair_general.md
+
+Fix a failure to establish an invariant on loop entry
+
+Given a verification failure saying that a certain invariant doesn't
+necessarily hold upon loop entry, consider various approaches to fixing it
+
+***
+
+loopinv.md
+
+Add a loop invariant to enable proving a failed assertion
+
+Given a failed assertion in the body of a loop or following a loop, add an
+invariant to that loop that allows the assertion to be verified
+
+***
+
+postcondition_repair_basic.md
+
+Turn a failing postcondition into a failing assertion
+
+Given a function postcondition that the verifier fails to verify, add an
+assertion of the same property to the end of the function
+
+***
+
+postcondition_repair_expand.md
+
+Turn each failing postcondition conjunct into a failing assertion
+
+Given a function postcondition that the verifier fails to verify and that is a
+conjunction of multiple properties, add an assertion of each such property to
+the end of the function
+
+***
+
+precondition_repair.md
+
+Before a function invocation with a failed precondition, insert a proof block
+
+Given a function invocation that the verifier can't show satisfies a
+precondition, insert a proof block before the invocation proving that the
+precondition holds
+
+***
+
+reveal_opaque.md
+
+Fix a failing assert by revealing an opaque function's body
+
+Given a failing assert statement, determine if it's failing because it
+involves an invocation of an opaque spec function but the body of that
+function is necessary to establish correctness. If so, use a `reveal`
+statement before the assertion to reveal its body.
+
+***
+
+reveal_with_fuel.md
+
+Fix a failing assert by providing more fuel to unfold a recursive definition
+
+Given a failing assert statement, determine if it's failing because it
+involves a deep recursive unfolding of a certain specification function. If
+so, use a `reveal_with_fuel` statement to provide the verifier the ability to
+unfold the statement more deeply than the default limit allows.
+
+***
+
+seqsetmap.md
+
+Document knowledge about built-in collection types
+
+This document describes useful information about the built-in collection types
+Seq<T>, Set<T>, and Map<K, V> for reasoning about sequences, sets, and maps.
+
+***
+
+type_repair.md
+
+Fix type mismatch errors
+
+Repair type mismatch and conversion errors by adding appropriate type
+annotations, conversions, or fixing incorrect type usages.
+
+***
+
+uselemma.md
+
+Fix a failing assertion by invoking a lemma
+
+Find a proof function whose postcondition could help satisfy the given failing
+assertion, and invoke it with appropriate parameters before the assertion

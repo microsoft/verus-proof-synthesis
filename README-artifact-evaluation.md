@@ -1,15 +1,15 @@
-# <img src="assets/logo.png" alt="Project logo" width="40" /> AutoVerus - Artifact Evaluation
+# <img src="assets/autoverus-logo.png" alt="AutoVerus logo" width="40" /> AutoVerus - Artifact Evaluation
 
-![Framework](assets/framework.png)
+![Framework](assets/autoverus-framework.png)
 
 This repository contains code and artifacts for the paper "**AutoVerus: Automated Proof Generation for Rust Code**". This README guides you through reproducing the experimental results from our paper.
 
 ## 📁 Repository Structure
 
 * **`benchmarks/`** - 150 Rust/Verus proof tasks (Verus-Bench) used in our evaluation
-  * `CloverBench/` - Clover benchmark tasks  
+  * `CloverBench/` - Clover benchmark tasks
   * `Diffy/` - Diffy benchmark tasks
-  * `MBPP/` - MBPP benchmark tasks  
+  * `MBPP/` - MBPP benchmark tasks
   * `Misc/` - Miscellaneous benchmark tasks
   * `ablation/` - Tasks for ablation studies
   * See [benchmarks README](benchmarks/README.md) for details
@@ -18,7 +18,7 @@ This repository contains code and artifacts for the paper "**AutoVerus: Automate
 * **`utils/lynette/`** - Verus parser supporting proof synthesis
 * **`generated/`** - Pre-generated proof results
   * `autoverus-generated/` - Results from our AutoVerus approach
-  * `baseline-generated/` - Results from baseline LLM approach  
+  * `baseline-generated/` - Results from baseline LLM approach
   * `ablation-study/` - Results from ablation experiments
 
 ## 🚀 Quick Start (5 minutes)
@@ -51,13 +51,13 @@ The `generated/` directory is organized into three main categories:
 ```
 generated/
 ├── autoverus-generated/          # Results from our AutoVerus approach
-│   ├── gpt4o-clover-1.0/        # AutoVerus on Clover benchmarks  
+│   ├── gpt4o-clover-1.0/        # AutoVerus on Clover benchmarks
 │   ├── gpt4o-diffy-1.0/         # AutoVerus on Diffy benchmarks
 │   ├── gpt4o-mbpp-1.0/          # AutoVerus on MBPP benchmarks
 │   └── gpt4o-misc-1.0/          # AutoVerus on Misc benchmarks
 ├── baseline-generated/           # Results from baseline LLM approach
 │   ├── baseline-clover-1.0/     # Baseline on Clover benchmarks
-│   ├── baseline-diffy-1.0/      # Baseline on Diffy benchmarks  
+│   ├── baseline-diffy-1.0/      # Baseline on Diffy benchmarks
 │   ├── baseline-mbpp-1.0/       # Baseline on MBPP benchmarks
 │   └── baseline-misc-1.0/       # Baseline on Misc benchmarks
 └── abalation-study/             # Results from ablation experiments
@@ -116,7 +116,7 @@ For the verified proofs, the score should be `(N, 0)` and `Safe: True`.
 **3. Reproduce Paper Results:**
 The generated results directly support the claims in our paper:
 - **Section 7.1 & 7.3** (Overall Results): Compare success rates across `autoverus-generated/` directories
-- **Section 7.2** (Baseline Comparison): Compare `autoverus-generated/` vs `baseline-generated/`  
+- **Section 7.2** (Baseline Comparison): Compare `autoverus-generated/` vs `baseline-generated/`
 - **Section 7.4** (Ablation Studies): Analyze results in `abalation-study/` directories
 
 **4. Verification:**
@@ -124,7 +124,7 @@ All generated correct proofs have been verified by Verus to ensure correctness.
 
 ## 🧪 Full Experimental Reproduction
 
-> **⚠️ Important:** 
+> **⚠️ Important:**
 > - All experiments run inside Docker under `/home/appuser/verus-proof-synthesis/code/`
 > - Full reproduction requires time and OpenAI API costs
 > - Consider running experiments in parallel or on subsets for faster evaluation
@@ -163,7 +163,7 @@ python verify.py --name baseline-misc-simple --is-baseline
 ```bash
 # Test impact of removing different few-shot examples
 python verify.py --name few-shot-ab-inference-without-3 --phase1-examples 6 7 --repair-num 0
-python verify.py --name few-shot-ab-inference-without-6 --phase1-examples 3 7 --repair-num 0  
+python verify.py --name few-shot-ab-inference-without-6 --phase1-examples 3 7 --repair-num 0
 python verify.py --name few-shot-ab-inference-without-7 --phase1-examples 3 6 --repair-num 0
 ```
 
@@ -215,7 +215,7 @@ Reset config to use `"gpt-4o"`, then:
 ```bash
 # Test different temperature settings
 python verify.py --name temp-ab-sampled --temp 0.1 --config-file config-artifact-openai.json
-python verify.py --name temp-ab-sampled --temp 0.4 --config-file config-artifact-openai.json  
+python verify.py --name temp-ab-sampled --temp 0.4 --config-file config-artifact-openai.json
 python verify.py --name temp-ab-sampled --temp 0.7 --config-file config-artifact-openai.json
 ```
 
@@ -250,7 +250,7 @@ python verify.py --name temp-ab-sampled --temp 0.7 --config-file config-artifact
 git clone <repository-url>
 cd verus-proof-synthesis
 
-# Install Python dependencies  
+# Install Python dependencies
 pip install -r requirements.txt
 
 # Set API key
@@ -266,11 +266,11 @@ python main.py --input <input_file.rs> --output <output_file.rs> --config <confi
 
 **Key Parameters:**
 - `--input` - Input Rust file needing Verus proofs (default: `input.rs`)
-- `--output` - Output file with generated proofs (default: `output.rs`)  
+- `--output` - Output file with generated proofs (default: `output.rs`)
 - `--config` - Configuration file (default: `config.json`)
 - `--repair` - Max debugging rounds (default: 10)
 
-**Output:** 
+**Output:**
 - Final proof in specified output file
 - `intermediate-<timestamp>/` folder with all intermediate files
 - Detailed logs showing the proof generation process
@@ -285,7 +285,7 @@ Error: OpenAI API rate limit exceeded
 ```
 **Solution:** Wait and retry, or use multiple API keys in config file.
 
-**2. Verus Path Issues**  
+**2. Verus Path Issues**
 ```
 Error: Verus binary not found
 ```
