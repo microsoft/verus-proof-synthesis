@@ -48,15 +48,16 @@ VeruSAGE-Bench/
 ├── README.md                           # This file
 ├── tasks.jsonl                         # All tasks in JSONL format (for ML pipelines)
 ├── benchmark-stats.csv                 # Summary statistics
-├── source-projects/                    # Original verified projects (8 projects)
-│   ├── verified-anvil/
-│   ├── verified-atmo/
-│   ├── verified-ironkv/
-│   ├── verified-memory-allocator/
-│   ├── verified-node-replication/
-│   ├── verified-nrkernel/
-│   ├── verified-storage/
-│   └── verified-vest/
+├── source-projects/                    # Original verified projects (9 directories)
+│   ├── anvil-library/                  # AL - Anvil library proofs
+│   ├── anvil-controller/               # AC - Anvil controller proofs  
+│   ├── ironkv/                         # IR - IronKV distributed key-value store
+│   ├── memory-allocator/               # MA - Memory allocator verification
+│   ├── node-replication/               # NO - Node replication proofs
+│   ├── nrkernel/                       # NR - NRKernel page table proofs
+│   ├── atmo/                           # OS - ATMO microkernel verification
+│   ├── storage/                        # ST - Storage system verification
+│   └── vest/                           # VE - Vest serialization library
 ├── tasks/                              # All 849 verification tasks
 │   ├── AL__*.rs
 │   ├── AC__*.rs
@@ -74,6 +75,34 @@ VeruSAGE-Bench/
     ├── ...
     └── batch_008/                      # 49 tasks
 ```
+
+### Source Project Structure
+
+Each source project directory follows this structure:
+
+```
+source-projects/<project>/
+├── README.md                           # Project-specific documentation
+├── mapping_XX.txt                      # Mapping file (XX = project code: st, nr, ma, etc.)
+├── unverified/                         # Unverified task files (INPUT)
+│   └── <task_name>.rs                  # The task code with function body stripped
+└── verified/                           # Verified solution files (GROUND TRUTH)
+    └── <subdirectory>/
+        └── <task_name>.rs              # The complete verified solution
+```
+
+### Mapping Files
+
+Each project contains a `mapping_XX.txt` file that maps unverified task files to their verified counterparts:
+
+```
+# Example: mapping_st.txt
+append_L_tentatively_append.rs -> verified/log_append/append_L_tentatively_append.rs
+inv_L_active_metadata_set_after_crash.rs -> verified/log_inv/inv_L_active_metadata_set_after_crash.rs
+...
+```
+
+These mapping files ensure consistency between `tasks.jsonl` and the source files on disk.
 
 ## Data Format (JSONL)
 

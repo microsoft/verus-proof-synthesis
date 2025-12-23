@@ -1435,7 +1435,8 @@ impl ProcessManager {
             old(self).get_container(container_ptr).owned_threads@.remove(thread_ptr)
         ));
       
-        thread_to_page(thread_ptr, thread_perm)
+        let ret = thread_to_page(thread_ptr, thread_perm);
+        ret
     }
 
 }

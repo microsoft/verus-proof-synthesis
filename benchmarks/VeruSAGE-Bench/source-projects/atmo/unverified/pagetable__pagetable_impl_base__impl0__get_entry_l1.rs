@@ -985,11 +985,12 @@ impl PageTable {
         let tracked l1_perm = self.l1_tables.borrow().tracked_borrow(l2_entry.addr);
         let l1_tbl: &PageMap = PPtr::<PageMap>::from_usize(l2_entry.addr).borrow(Tracked(l1_perm));
         let l1_entry = l1_tbl.get(target_l1i);
-        if l1_entry.perm.present {
+        let ret = if l1_entry.perm.present {
             Some(l1_entry)
         } else {
             None
-        }
+        };
+        ret
     }
 
 }

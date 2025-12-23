@@ -1429,7 +1429,8 @@ impl ProcessManager {
             },
         );
 
-        thread_to_page(thread_ptr, thread_perm)
+        let ret = thread_to_page(thread_ptr, thread_perm);
+        ret
     }
 
 }
