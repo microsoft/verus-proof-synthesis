@@ -87,6 +87,8 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedMap<K> {
             ret.0 == forall |i| #![auto] lo <= i <= hi ==> self@[self.keys@[i]]@ == v@,
             !ret.0 ==> (ret.1 == (self@[self.keys@[hi as int]]@ != v@ && (forall |i| #![auto] lo <= i < hi ==> self@[self.keys@[i]]@ == v@))),
     {
+        assert(self.valid());
+        assert(forall |i| lo <= i <= hi ==> self@[self.keys@[i]] == self.vals@[i]);
         let (agree, almost) = self.values_agree(lo, hi, v);
         
         (agree, almost)
