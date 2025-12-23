@@ -14,6 +14,8 @@ Vest is a verified serialization/deserialization combinator library. Tasks focus
 
 ## Source Modules
 
+We extracted executable/proof functions that require proof annotations from [vest/src](https://github.com/secure-foundations/vest/tree/main/vest/src).
+
 - `properties/` - Combinator property proofs
 - `regular/leb128/` - LEB128 encoding proofs
 - `regular/repetition/` - Repetition combinator proofs
@@ -32,3 +34,7 @@ Vest is a verified serialization/deserialization combinator library. Tasks focus
 - 22 non-trivial proof/exec functions extracted
 - Trait implementation proofs excluded (repetitive)
 - Some trait-related lemmas kept in context
+
+## Acknowledgement
+
+Many thanks to the Vest authors!
