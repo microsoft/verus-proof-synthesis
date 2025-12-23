@@ -228,12 +228,19 @@ done
 
 ## Comparison with Verus-Bench
 
-While **[Verus-Bench](../Verus-Bench/)** contains 150 algorithm-level verification tasks suitable for non-expert verification, **VeruSAGE-Bench** focuses on:
+VeruSage-Bench and **[Verus-Bench](../Verus-Bench/)** have different focus, with VeruSage-Bench focuses on verification in large system projects and Verus-Bench focuses on verification of algorithm examples, such as Fibonacci, binary search, and array operations.
 
-- **Repository-level** tasks requiring understanding of large codebases
-- **Systems verification** domains (OS kernels, distributed systems, storage)
-- **Real-world complexity** from production verification projects
-- **Dependency-rich** problems requiring multi-file reasoning
+The table below offers a brief comparison between these two benchmark suites based on the verified version of every task.
+
+| Per-task Avg.  | Verus-Bench | VeruSAGEBench |
+|----------------|-------------|---------------|
+| Total LoC      |  ~30        |  ~950         |
+| Spec. LoC      |  ~8         |  ~500         |
+| Proof LoC      |  ~10        |  ~50          |
+| &nbsp;&nbsp;&nbsp; Loop invariant proof | 8 | 1   |
+| &nbsp;&nbsp;&nbsp;  Non-loop-inv. proof | 2 | ~50 |
+| \# of loops    | 1.6         | < 0.1         |
+| \# of helper lemmas |< 0.1   | 2.4           |
 
 ## Source Projects
 
@@ -252,3 +259,8 @@ The benchmark is derived from 8 verified Verus projects spanning distributed sys
 | **Vest** | VE | 22 | Verification | [secure-foundations/vest](https://github.com/secure-foundations/vest) |
 
 Full source code and extraction details available in `source-projects/` (see individual README.md files).
+
+## Leader Board
+
+TO COME
+
