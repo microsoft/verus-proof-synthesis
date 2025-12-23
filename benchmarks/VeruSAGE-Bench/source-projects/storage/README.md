@@ -68,3 +68,7 @@ verus -L dependency=deps_hack/target/debug/deps \
 - Dependency build required before verification
 - Tasks that involve Ghost/Tracked arguments went through some special refactoring: we replaced the exact Ghost/Tracked expression with place-holder expressions, and leveraged `proof_from_false` and `arbitrary` to make sure the unverified task file is compilable.
 - Broadcast use statements removed in the unverified task files
+
+## Acknowledgement
+
+Many thanks to the authors of Verified Storage; we got a ton of support from them!
