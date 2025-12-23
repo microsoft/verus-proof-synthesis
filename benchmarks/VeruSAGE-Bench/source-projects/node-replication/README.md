@@ -31,8 +31,8 @@ And, a couple of tasks extracted from [exec/utils](https://github.com/verus-lang
 - All non-trivial proof/exec functions with ensures clauses extracted
 - State machine/tokenized state machine functions excluded
 - `exec/rwlock.rs` excluded (concurrency)
-- Only simple state machine field access included
-
+- Only one state-machine task kept, as it only involves simple state machine field access
+  
 ## Acknowledgement
 
 Many thanks to the original authros of Node Replication.
