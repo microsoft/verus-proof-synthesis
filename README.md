@@ -3,7 +3,7 @@
 <p align="left">
     <a href="https://arxiv.org/abs/2409.13082"><img src="https://img.shields.io/badge/AutoVerus-arXiv%202409.13082-b31b1b.svg?style=for-the-badge"></a>
     <a href="https://arxiv.org/abs/2512.18436"><img src="https://img.shields.io/badge/VeruSAGE-arXiv%202512.18436-b31b1b.svg?style=for-the-badge"></a>
-    <a href="https://sites.google.com/view/autoverus"><img src="https://img.shields.io/badge/Website-blue.svg?style=for-the-badge"></a>
+    <a href="https://www.microsoft.com/en-us/research/project/practical-system-verification/"><img src="https://img.shields.io/badge/Website-blue.svg?style=for-the-badge"></a>
 </p>
 
 This repository contains code and artifacts for automated [Verus](https://github.com/verus-lang/verus) proof synthesis using LLM-based approaches. It includes two proof synthesis systems and two benchmark suites.
@@ -14,8 +14,8 @@ This repository contains code and artifacts for automated [Verus](https://github
 
 | System | Description | Benchmark |
 |--------|-------------|-----------|
-| **[AutoVerus](#-autoverus)** | Three-phase proof synthesis for algorithms | **[Verus-Bench](#verus-bench)** (150 tasks) |
-| **[VeruSAGE](#-verusage)** | Agent-based verification for systems code | **[VeruSAGE-Bench](#verusage-bench)** (849 tasks) |
+| **[AutoVerus](#-autoverus)** | Proof synthesis for small algorithmic code | **[Verus-Bench](#verus-bench)** (150 tasks) |
+| **[VeruSAGE](#-verusage)** | Proof synthesis for code in large system projects | **[VeruSAGE-Bench](#verusage-bench)** (849 tasks) |
 
 ---
 
@@ -156,7 +156,7 @@ verus-proof-synthesis/
 
 - **AutoVerus Paper**: [arXiv:2409.13082](https://arxiv.org/abs/2409.13082)
 - **VeruSAGE Paper**: [arXiv:2512.18436](https://arxiv.org/abs/2512.18436)
-- **Project Website**: [sites.google.com/view/autoverus](https://sites.google.com/view/autoverus)
+- **Project Website**: [sites.google.com/view/autoverus](https://www.microsoft.com/en-us/research/project/practical-system-verification)
 - **Verus Documentation**: [verus-lang.github.io/verus/guide](https://verus-lang.github.io/verus/guide/)
 - **Artifact Evaluation** for AutoVerus: [README-artifact-evaluation.md](README-artifact-evaluation.md)
 
