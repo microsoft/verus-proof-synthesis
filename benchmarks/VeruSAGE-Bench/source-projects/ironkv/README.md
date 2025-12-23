@@ -14,7 +14,7 @@ IronKV is a verified distributed key-value store. Tasks involve delegation maps,
 
 ## Source Files
 
-Tasks extracted from `ironsht/src/`:
+Tasks extracted from [ironsht/src/](https://github.com/verus-lang/verified-ironkv/tree/main/ironsht/src):
 - `delegation_map_v.rs` - Key delegation logic
 - `marshal_v.rs` - Serialization/deserialization
 - `net_sht_v.rs` - Network protocols
@@ -24,5 +24,9 @@ Tasks extracted from `ironsht/src/`:
 ## Extraction Notes
 
 - Downloaded June 14th, 2025
-- All executable/proof functions from delegation_map_v extracted
-- Manual cleanup required for some edge cases
+- All executable/proof functions that require proof annotations from `ironsht/src` are extracted
+- Quite some functions that used to require proof annotations no long do with the latest version of Verus, and hence are excluded from our benchmark suite
+
+## Acknowledgement
+
+Many thanks to the IronKV authors.
