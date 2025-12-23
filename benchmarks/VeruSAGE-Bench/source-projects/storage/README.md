@@ -66,6 +66,5 @@ verus -L dependency=deps_hack/target/debug/deps \
 ## Extraction Notes
 
 - Dependency build required before verification
-- Manual cleanup for Ghost/Tracked arguments
-- Broadcast use statements manually removed
-- Some axioms manually added back to nolemma benchmarks
+- Tasks that involve Ghost/Tracked arguments went through some special refactoring: we replaced the exact Ghost/Tracked expression with place-holder expressions, and leveraged `proof_from_false` and `arbitrary` to make sure the unverified task file is compilable.
+- Broadcast use statements removed in the unverified task files
