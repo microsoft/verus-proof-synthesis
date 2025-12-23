@@ -14,7 +14,8 @@ ATMO (Atmosphere) is a verified microkernel project. Tasks focus on kernel verif
 
 ## Extraction Notes
 
-- All executable/proof functions requiring proof annotations extracted
+- All executable/proof functions requiring proof annotations extracted from the [verified folder](https://github.com/mars-research/atmosphere/tree/main/kernel/verified) of Atmosphere
 - Covers every module in the module list
-- Almost all unfinished proofs were extracted
-- 3 functions could not be verified after extraction (in TODO folder)
+
+## Extraction Notes
+Many thanks to the Atmosphere authors who kindly released the source code of Atmosphere upon our inquiry, answered numerous questions from us regarding Atmosphere, and reviewed all the proof-related PRs submitted by us.
