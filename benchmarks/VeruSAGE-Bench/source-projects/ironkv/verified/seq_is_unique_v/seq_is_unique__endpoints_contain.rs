@@ -35,7 +35,7 @@ eq == (e1@ == e2@)
     unimplemented!()
 }
 
-    pub fn endpoints_contain(endpoints: &Vec<EndPoint>, endpoint: &EndPoint) -> (present: bool)
+pub fn endpoints_contain(endpoints: &Vec<EndPoint>, endpoint: &EndPoint) -> (present: bool)
 ensures present == abstractify_end_points(*endpoints).contains(endpoint@)
     {
         let mut j: usize = 0;
