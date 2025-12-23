@@ -1,6 +1,8 @@
 # VeruSAGE-Bench
 
-**VeruSAGE-Bench** is a comprehensive benchmark suite for evaluating LLM-based agents on repository-level formal verification tasks in [Verus](https://github.com/verus-lang/verus).
+**VeruSAGE-Bench** is a comprehensive benchmark suite for evaluating LLM-based agents on repository-level formal verification tasks in [Verus](https://github.com/verus-lang/verus). 
+
+Note: A Verus version in or after Sep. 2025 is highly recommended.
 
 ## Overview
 
