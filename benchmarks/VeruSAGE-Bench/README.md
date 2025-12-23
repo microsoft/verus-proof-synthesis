@@ -232,15 +232,15 @@ VeruSage-Bench and **[Verus-Bench](../Verus-Bench/)** have different focus, with
 
 The table below offers a brief comparison between these two benchmark suites based on the verified version of every task.
 
-| Per-task Avg.                               | Verus-Bench | VeruSAGEBench |
-|---------------------------------------------|------------:|--------------:|
-| Total LoC                                   |  ~30        |  ~950         |
-| Spec. LoC                                   |  ~8         |  ~500         |
-| Proof LoC                                   |  ~10        |  ~50          |
-| &nbsp;&nbsp;&nbsp; Loop invariant proof LoC | 8           | 1             |
-| &nbsp;&nbsp;&nbsp;  Non-loop-inv. proof LoC | 2           | ~50           |
-| \# of loops                                 | 1.6         | < 0.1         |
-| \# of helper lemmas                         |< 0.1        | 2.4           |
+| Per-task Avg.                               | Verus-Bench | VeruSAGE-Bench |
+|---------------------------------------------|------------:|---------------:|
+| Total LoC                                   |  ~30        |  ~950          |
+| Spec. LoC                                   |  ~8         |  ~500          |
+| Proof LoC                                   |  ~10        |  ~50           |
+| &nbsp;&nbsp;&nbsp; Loop invariant proof LoC | 8           | 1              |
+| &nbsp;&nbsp;&nbsp;  Non-loop-inv. proof LoC | 2           | ~50            |
+| \# of loops                                 | 1.6         | < 0.1          |
+| \# of helper lemmas                         |< 0.1        | 2.4            |
 
 ## Source Projects
 
