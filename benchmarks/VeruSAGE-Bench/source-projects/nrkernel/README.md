@@ -24,6 +24,8 @@ Key modules with extracted tasks:
 
 ## Extraction Notes
 
-- All 204 non-trivial proof/exec functions extracted
-- Uses `--cfg feature="impl"` for verification
-- Most functions from `spec_t::mmu::rl3` excluded (log-all issues)
+- Most functions from `spec_t::mmu::rl3` excluded due to verus --log-all issues encountered during our benchmark extraction. We may work on this later.
+
+## Acknowledgement
+
+Many thanks to the original authors of NRKernel.
