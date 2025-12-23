@@ -240,14 +240,14 @@ impl WriteRestrictedPersistentMemorySubregion
             Perm: CheckPermission<Seq<u8>>,
             PMRegion: PersistentMemoryRegion,
         requires
-            self.inv(old::<&mut _>(wrpm), perm),
-            relative_addr + bytes@.len() <= self.view(old::<&mut _>(wrpm)).len(),
-            self.view(old::<&mut _>(wrpm)).no_outstanding_writes_in_range(relative_addr as int,
+            self.inv(old/*::<&mut _>*/(wrpm), perm),
+            relative_addr + bytes@.len() <= self.view(old/*::<&mut _>*/(wrpm)).len(),
+            self.view(old/*::<&mut _>*/(wrpm)).no_outstanding_writes_in_range(relative_addr as int,
                                                                         relative_addr + bytes.len()),
             forall |i: int| relative_addr <= i < relative_addr + bytes@.len() ==> self.is_writable_relative_addr(i),
         ensures
             self.inv(wrpm, perm),
-            self.view(wrpm) == self.view(old::<&mut _>(wrpm)).write(relative_addr as int, bytes@),
+            self.view(wrpm) == self.view(old/*::<&mut _>*/(wrpm)).write(relative_addr as int, bytes@),
     {
         let ghost subregion_view = self.view(wrpm).write(relative_addr as int, bytes@);
         assert(forall |addr| #![trigger self.is_writable_absolute_addr_fn()(addr)]

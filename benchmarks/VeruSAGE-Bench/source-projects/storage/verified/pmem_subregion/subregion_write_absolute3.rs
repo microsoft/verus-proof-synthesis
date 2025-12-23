@@ -212,10 +212,10 @@ impl WriteRestrictedPersistentMemorySubregion
         bytes: &[u8],
     )
         requires
-            self.inv(old::<&mut _>(pm)),
+            self.inv(old/*::<&mut _>*/(pm)),
             self.start() <= absolute_addr,
             absolute_addr + bytes@.len() <= self.len(),
-            self.view(old::<&mut _>(pm)).no_outstanding_writes_in_range(
+            self.view(old/*::<&mut _>*/(pm)).no_outstanding_writes_in_range(
                 absolute_addr - self.start(),
                 absolute_addr + bytes@.len() - self.start()
             ),
@@ -223,7 +223,7 @@ impl WriteRestrictedPersistentMemorySubregion
                 #[trigger] self.is_writable_absolute_addr_fn()(i),
         ensures
             self.inv(pm),
-            self.view(pm) == self.view(old::<&mut _>(pm)).write(absolute_addr - self.start(), bytes@),
+            self.view(pm) == self.view(old/*::<&mut _>*/(pm)).write(absolute_addr - self.start(), bytes@),
     {
         let ghost subregion_view = self.view(pm).write(absolute_addr - self.start(), bytes@);
         assert forall |i| #![trigger pm@.state[i]]

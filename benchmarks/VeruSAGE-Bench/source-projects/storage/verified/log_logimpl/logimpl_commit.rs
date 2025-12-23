@@ -811,13 +811,21 @@ verus! {
         }
     }
 
-	#[verifier::external_body]
+    #[verifier::opaque]
+ 
     pub open spec fn spec_padding_needed(offset: nat, align: nat) -> nat
-	{
-		unimplemented!()
-	}
+    {
+        let misalignment = offset % align;
+        if misalignment > 0 {
+            // we can safely cast this to a nat because it will always be the case that
+            // misalignment <= align
+            (align - misalignment) as nat
+        } else {
+            0
+        }
+    }
 
-    #[verifier::external_body]
+
     pub const fn padding_needed(offset: usize, align: usize) -> (out: usize) 
         requires 
             align > 0,
@@ -825,7 +833,13 @@ verus! {
             out <= align,
             out as nat == spec_padding_needed(offset as nat, align as nat)
     {
-        unimplemented!()
+        reveal(spec_padding_needed);
+        let misalignment = offset % align;
+        if misalignment > 0 {
+            align - misalignment
+        } else {
+            0
+        }
     }
 
 
