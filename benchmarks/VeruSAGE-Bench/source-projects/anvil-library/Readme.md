@@ -1,4 +1,4 @@
-Benchmarks in this folder originate two folders of lemma functions from [Anvil](https://github.com/anvil-verifier/anvil/).
+Benchmarks in this folder originate from two folders of lemma functions in [Anvil](https://github.com/anvil-verifier/anvil/).
 
 All proof functions in the [temporal_logic](https://github.com/anvil-verifier/anvil/tree/main/src/temporal_logic) folder and the [vstd_ext](https://github.com/anvil-verifier/anvil/tree/main/src/vstd_ext) folder that requires proof annotations were extracted and put here.
 
