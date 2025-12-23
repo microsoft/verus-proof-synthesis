@@ -156,7 +156,7 @@ verus-proof-synthesis/
 
 - **AutoVerus Paper**: [arXiv:2409.13082](https://arxiv.org/abs/2409.13082)
 - **VeruSAGE Paper**: [arXiv:2512.18436](https://arxiv.org/abs/2512.18436)
-- **Project Website**: [sites.google.com/view/autoverus](https://www.microsoft.com/en-us/research/project/practical-system-verification)
+- **Project Website**: [website](https://www.microsoft.com/en-us/research/project/practical-system-verification)
 - **Verus Documentation**: [verus-lang.github.io/verus/guide](https://verus-lang.github.io/verus/guide/)
 - **Artifact Evaluation** for AutoVerus: [README-artifact-evaluation.md](README-artifact-evaluation.md)
 
