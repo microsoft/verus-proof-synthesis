@@ -1,0 +1,9 @@
+TODO
+
+These functions were initially extracted, but excluded at the last stage of our benchmark preparation as they have deps_hack deps_hack dependency
+
+vreplicaset_controller/exec/reconciler.rs filter_pods
+vreplicaset_controller/exec/reconciler.rs make_owner_references
+vreplicaset_controller/exec/reconciler.rs objects_to_pods
+vreplicaset_controller/exec/reconciler.rs reconcile_core-fixed
+vreplicaset_controller/proof/helper_lemmas.rs lemma_filtered_pods_set_equals_matching_pods
