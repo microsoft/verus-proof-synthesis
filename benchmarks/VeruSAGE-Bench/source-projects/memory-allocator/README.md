@@ -29,3 +29,7 @@ Tasks extracted from the following files in [verus-mimalloc](https://github.com/
 - Tasks that involve `tokenized_state_machine!` excluded (complex Verus feature)
 - All other tasks that require proof annotations in [verus-mimalloc](https://github.com/verus-lang/verified-memory-allocator/tree/main/verus-mimalloc) are extracted and put here (note, quite some functions that used to require proof annotations no longer do under the later versions of Verus)
 - `Metadata::Thin` replaced with `()` for latest Verus compatibility
+
+## Acknowledgement
+
+Many thanks to the original authors of `Verified Memory Allocator`.
