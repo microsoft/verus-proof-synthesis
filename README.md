@@ -4,9 +4,12 @@
     <a href="https://arxiv.org/abs/2409.13082"><img src="https://img.shields.io/badge/AutoVerus-arXiv%202409.13082-b31b1b.svg?style=for-the-badge"></a>
     <a href="https://arxiv.org/abs/2512.18436"><img src="https://img.shields.io/badge/VeruSAGE-arXiv%202512.18436-b31b1b.svg?style=for-the-badge"></a>
     <a href="https://www.microsoft.com/en-us/research/project/practical-system-verification/"><img src="https://img.shields.io/badge/Website-blue.svg?style=for-the-badge"></a>
+    <a href="https://microsoft.github.io/verus-proof-synthesis/"><img src="https://img.shields.io/badge/🏆_Leaderboard-View_Results-6366f1.svg?style=for-the-badge"></a>
 </p>
 
 This repository contains code and artifacts for automated [Verus](https://github.com/verus-lang/verus) proof synthesis using LLM-based approaches. It includes two proof synthesis systems and two benchmark suites.
+
+> 🏆 **[View the Leaderboard](https://microsoft.github.io/verus-proof-synthesis/)** — Compare proof synthesis systems on our benchmarks!
 
 ---
 

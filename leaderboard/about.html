@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="About the Verus Proof Synthesis Leaderboard - benchmarks, systems, and research">
+
+    <title>About - Verus Proof Synthesis Leaderboard</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦀</text></svg>">
+
+    <style>
+        .content-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--spacing-2xl) var(--spacing-lg);
+        }
+
+        .content-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: var(--spacing-lg);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: var(--spacing-2xl);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .content-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+
+        .content-section p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            line-height: 1.8;
+        }
+
+        .content-section ul {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            padding-left: var(--spacing-xl);
+        }
+
+        .content-section li {
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.7;
+        }
+
+        .content-section a {
+            color: var(--accent-primary-light);
+            text-decoration: none;
+        }
+
+        .content-section a:hover {
+            text-decoration: underline;
+        }
+
+        .benchmark-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .benchmark-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            transition: all var(--transition-normal);
+        }
+
+        .benchmark-card:hover {
+            border-color: var(--border-color-hover);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .benchmark-card h3 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .benchmark-card .badge {
+            font-size: 0.7rem;
+        }
+
+        .benchmark-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .benchmark-stat {
+            text-align: center;
+        }
+
+        .benchmark-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary-light);
+        }
+
+        .benchmark-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .project-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+        }
+
+        .project-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .project-domain {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+
+        .citation-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            overflow-x: auto;
+            white-space: pre;
+            color: var(--text-secondary);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: var(--spacing-md);
+        }
+
+        .team-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .team-affiliation {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">🦀</span>
+                    <span class="logo-text">Verus Proof Synthesis</span>
+                </a>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Leaderboard</a>
+                    <a href="submit.html" class="nav-link">Submit</a>
+                    <a href="about.html" class="nav-link active">About</a>
+                    <a href="https://github.com/microsoft/verus-proof-synthesis" target="_blank" rel="noopener"
+                        class="nav-link">GitHub ↗</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-section">
+        <h1>About the Leaderboard</h1>
+
+        <p>
+            The Verus Proof Synthesis Leaderboard tracks progress in using Large Language Models (LLMs)
+            to automatically generate formal correctness proofs for Rust programs verified with
+            <a href="https://github.com/verus-lang/verus" target="_blank">Verus</a>.
+        </p>
+
+        <p>
+            Our goal is to provide standardized benchmarks and transparent comparisons to accelerate
+            research in LLM-based formal verification.
+        </p>
+
+        <h2>📊 Benchmarks</h2>
+
+        <div class="benchmark-comparison">
+            <div class="benchmark-card">
+                <h3>
+                    Verus-Bench
+                    <span class="badge">Algorithm-Level</span>
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Classic algorithmic verification tasks including sorting, searching, array manipulation,
+                    and mathematical proofs.
+                </p>
+                <div class="benchmark-stats">
+                    <div class="benchmark-stat">
+                        <div class="benchmark-stat-value">150</div>
+                        <div class="benchmark-stat-label">Tasks</div>
+                    </div>
+                    <div class="benchmark-stat">
+                        <div class="benchmark-stat-value">4</div>
+                        <div class="benchmark-stat-label">Sources</div>
+                    </div>
+                    <div class="benchmark-stat">
+                        <div class="benchmark-stat-value">~30</div>
+                        <div class="benchmark-stat-label">Avg LoC</div>
+                    </div>
+                    <div class="benchmark-stat">
+                        <div class="benchmark-stat-value">~10</div>
+                        <div class="benchmark-stat-label">Avg Proof LoC</div>
+                    </div>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-tertiary);">
+                    Sources: CloverBench, MBPP, Diffy, Misc
+                </p>
+            </div>
+
+            <div class="benchmark-card">
+                <h3>
+                    VeruSAGE-Bench
+                    <span class="badge">Repository-Level</span>
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Complex verification tasks extracted from real-world verified systems including
+                    OS kernels, distributed systems, and storage systems.
+                </p>
+                <div class="benchmark-stats">
+                    <div class="benchmark-stat">
+                        <div class="benchmark-stat-value">849</div>
+                        <div class="benchmark-stat-label">Tasks</div>
+                    </div>
+                    <div class="benchmark-stat">
+                        <div class="benchmark-stat-value">8</div>
+                        <div class="benchmark-stat-label">Projects</div>
+                    </div>
+                    <div class="benchmark-stat">
+                        <div class="benchmark-stat-value">~950</div>
+                        <div class="benchmark-stat-label">Avg LoC</div>
+                    </div>
+                    <div class="benchmark-stat">
+                        <div class="benchmark-stat-value">~50</div>
+                        <div class="benchmark-stat-label">Avg Proof LoC</div>
+                    </div>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-tertiary);">
+                    Projects: Anvil, IronKV, NRKernel, ATMO, and more
+                </p>
+            </div>
+        </div>
+
+        <h3>VeruSAGE-Bench Source Projects</h3>
+
+        <div class="project-grid">
+            <div class="project-item">
+                <div class="project-name">Anvil (AL)</div>
+                <div class="project-domain">Distributed Systems</div>
+            </div>
+            <div class="project-item">
+                <div class="project-name">Anvil Advanced (AC)</div>
+                <div class="project-domain">Distributed Systems</div>
+            </div>
+            <div class="project-item">
+                <div class="project-name">IronKV (IR)</div>
+                <div class="project-domain">Key-Value Store</div>
+            </div>
+            <div class="project-item">
+                <div class="project-name">Memory Allocator (MA)</div>
+                <div class="project-domain">Systems</div>
+            </div>
+            <div class="project-item">
+                <div class="project-name">Node Replication (NO)</div>
+                <div class="project-domain">Distributed Systems</div>
+            </div>
+            <div class="project-item">
+                <div class="project-name">NRKernel (NR)</div>
+                <div class="project-domain">OS Kernel</div>
+            </div>
+            <div class="project-item">
+                <div class="project-name">ATMO (OS)</div>
+                <div class="project-domain">Microkernel</div>
+            </div>
+            <div class="project-item">
+                <div class="project-name">Storage (ST)</div>
+                <div class="project-domain">Storage Systems</div>
+            </div>
+            <div class="project-item">
+                <div class="project-name">Vest (VE)</div>
+                <div class="project-domain">Serialization</div>
+            </div>
+        </div>
+
+        <h2>🔬 Proof Synthesis Systems</h2>
+
+        <h3>AutoVerus</h3>
+        <p>
+            <strong>AutoVerus</strong> is a three-phase proof synthesis system for algorithm-level verification:
+        </p>
+        <ul>
+            <li><strong>Inference:</strong> Generate initial proof candidates using few-shot examples</li>
+            <li><strong>Refinement:</strong> Refine promising candidates with targeted improvements</li>
+            <li><strong>Repair:</strong> Debug and fix remaining verification errors</li>
+        </ul>
+        <p>
+            📄 Paper: <a href="https://arxiv.org/abs/2409.13082" target="_blank">arXiv:2409.13082</a> (OOPSLA 2025)
+        </p>
+
+        <h3>VeruSAGE</h3>
+        <p>
+            <strong>VeruSAGE</strong> is an agentic framework for repository-level verification that uses
+            an observation-reasoning-action loop with specialized tools for navigating large codebases.
+        </p>
+        <ul>
+            <li><strong>Observation:</strong> Analyze verification errors and code context</li>
+            <li><strong>Reasoning:</strong> Plan proof strategies using LLM capabilities</li>
+            <li><strong>Action:</strong> Generate and refine proofs iteratively</li>
+        </ul>
+        <p>
+            📄 Paper: <a href="https://arxiv.org/abs/2512.18436" target="_blank">arXiv:2512.18436</a>
+        </p>
+
+        <h2>📚 What is Verus?</h2>
+
+        <p>
+            <a href="https://github.com/verus-lang/verus" target="_blank">Verus</a> is a tool for verifying
+            the correctness of Rust programs. It uses SMT-based verification to prove that code satisfies
+            its specifications, which are written as pre/post-conditions and invariants in Rust syntax.
+        </p>
+
+        <p>
+            Unlike testing, which can only show the presence of bugs, verification can mathematically
+            prove their absence. Verus has been used to verify production systems including
+            <a href="https://github.com/verus-lang/verified-ironkv" target="_blank">IronKV</a> and components
+            of Azure infrastructure.
+        </p>
+
+        <h2>📖 Citation</h2>
+
+        <p>If you use our benchmarks or systems in your research, please cite:</p>
+
+        <div class="citation-box">@article{autoverus,
+            title={AutoVerus: Automated Proof Generation for Rust Code},
+            author={Chenyuan Yang and Xuheng Li and Md Rakib Hossain Misu and
+            Jianan Yao and Weidong Cui and Yeyun Gong and Chris Hawblitzel and
+            Shuvendu K. Lahiri and Jacob R. Lorch and Shuai Lu and
+            Fan Yang and Ziqiao Zhou and Shan Lu},
+            journal={Proceedings of the ACM on Programming Languages},
+            volume={9},
+            number={OOPSLA2},
+            year={2025},
+            publisher={ACM}
+            }</div>
+
+        <div class="citation-box">@misc{verusage,
+            title={VeruSAGE: A Study of Agent-Based Verification for Rust Systems},
+            author={Chenyuan Yang and Natalie Neamtu and Chris Hawblitzel and
+            Jacob R. Lorch and Shan Lu},
+            year={2025},
+            eprint={2512.18436},
+            archivePrefix={arXiv},
+            primaryClass={cs.OS}
+            }</div>
+
+        <h2>🔗 Related Links</h2>
+
+        <ul>
+            <li><a href="https://github.com/microsoft/verus-proof-synthesis" target="_blank">GitHub Repository</a></li>
+            <li><a href="https://github.com/verus-lang/verus" target="_blank">Verus Verifier</a></li>
+            <li><a href="https://verus-lang.github.io/verus/guide/" target="_blank">Verus Documentation</a></li>
+            <li><a href="https://www.microsoft.com/en-us/research/project/practical-system-verification/"
+                    target="_blank">Project Website</a></li>
+        </ul>
+
+        <h2>📧 Contact</h2>
+
+        <p>
+            For questions, suggestions, or collaborations, please open an issue on our
+            <a href="https://github.com/microsoft/verus-proof-synthesis/issues" target="_blank">GitHub repository</a>
+            or contact the authors directly.
+        </p>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/microsoft/verus-proof-synthesis" target="_blank" rel="noopener"
+                        class="footer-link">
+                        💻 GitHub
+                    </a>
+                    <a href="https://arxiv.org/abs/2409.13082" target="_blank" rel="noopener" class="footer-link">
+                        📄 AutoVerus Paper
+                    </a>
+                    <a href="https://arxiv.org/abs/2512.18436" target="_blank" rel="noopener" class="footer-link">
+                        📄 VeruSAGE Paper
+                    </a>
+                </div>
+                <p class="footer-credit">
+                    © 2025 Microsoft Research. Made with ❤️ for the verification community.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

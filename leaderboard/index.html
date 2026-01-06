@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Leaderboard for Verus Proof Synthesis benchmarks. Compare LLM-based proof generation systems on Verus-Bench and VeruSAGE-Bench.">
+  <meta name="keywords" content="Verus, Rust, formal verification, proof synthesis, LLM, benchmark, leaderboard">
+  <meta name="author" content="Verus Proof Synthesis Team">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Verus Proof Synthesis Leaderboard">
+  <meta property="og:description" content="Compare LLM-based proof generation systems on Verus verification benchmarks">
+  <meta property="og:type" content="website">
+
+  <title>Verus Proof Synthesis Leaderboard</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/main.css">
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦀</text></svg>">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">🦀</span>
+          <span class="logo-text">Verus Proof Synthesis</span>
+        </a>
+        <nav class="nav">
+          <a href="index.html" class="nav-link active">Leaderboard</a>
+          <a href="submit.html" class="nav-link">Submit</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="https://github.com/microsoft/verus-proof-synthesis" target="_blank" rel="noopener"
+            class="nav-link">GitHub ↗</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1 class="hero-title">Verus Proof Synthesis Leaderboard</h1>
+        <p class="hero-subtitle">
+          Tracking progress in LLM-based formal verification for Rust.
+          Compare proof synthesis systems on algorithm-level and repository-level verification tasks.
+        </p>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value" id="stat-tasks">-</div>
+            <div class="stat-label">Total Tasks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value" id="stat-submissions">-</div>
+            <div class="stat-label">Submissions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🥇</div>
+            <div class="stat-value" id="stat-best-score">-</div>
+            <div class="stat-label">Best Score</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value" id="stat-last-update">-</div>
+            <div class="stat-label">Last Updated</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section class="leaderboard-section">
+      <div class="container">
+        <!-- Benchmark Tabs -->
+        <div class="tabs">
+          <button class="tab-button active" data-benchmark="verusage-bench">
+            VeruSAGE-Bench (849)
+          </button>
+          <button class="tab-button" data-benchmark="verus-bench">
+            Verus-Bench (150)
+          </button>
+        </div>
+
+        <!-- Section Header -->
+        <div class="section-header">
+          <h2 class="section-title">
+            <span id="benchmark-title">VeruSAGE-Bench</span>
+            <span class="badge">Official</span>
+          </h2>
+          <p id="benchmark-desc" style="color: var(--text-secondary); font-size: 0.95rem;">
+            849 repository-level verification tasks from real-world systems projects
+          </p>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div class="table-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Rank</th>
+                <th class="sortable" data-column="system">System</th>
+                <th class="sortable sorted-desc" data-column="percent_solved">% Solved</th>
+                <th>Solved</th>
+                <th class="sortable" data-column="avg_time">Avg Time</th>
+                <th class="sortable" data-column="avg_cost">Avg Cost</th>
+                <th>Status</th>
+                <th style="width: 80px;">Links</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <tr>
+                <td colspan="8" class="loading">
+                  <div class="loading-spinner"></div>
+                  Loading leaderboard data...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Breakdown Section -->
+        <div style="margin-top: var(--spacing-2xl);">
+          <h3 class="section-title" style="margin-bottom: var(--spacing-lg);">
+            📈 Performance Breakdown
+            <span style="font-size: 0.9rem; font-weight: 400; color: var(--text-tertiary); margin-left: 0.5rem;">
+              (Best submission)
+            </span>
+          </h3>
+          <div id="breakdown-grid" class="breakdown-grid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Papers Section -->
+    <section style="padding: var(--spacing-2xl) 0;">
+      <div class="container">
+        <h3 class="section-title" style="margin-bottom: var(--spacing-lg);">
+          📚 Related Papers
+        </h3>
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+          <a href="https://arxiv.org/abs/2409.13082" target="_blank" rel="noopener" class="stat-card"
+            style="text-decoration: none;">
+            <div class="stat-icon">📄</div>
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">AutoVerus</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">
+              Automated Proof Generation for Rust Code
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-tertiary); margin-top: 0.5rem;">
+              OOPSLA 2025 • arXiv:2409.13082
+            </div>
+          </a>
+          <a href="https://arxiv.org/abs/2512.18436" target="_blank" rel="noopener" class="stat-card"
+            style="text-decoration: none;">
+            <div class="stat-icon">📄</div>
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">VeruSAGE</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">
+              A Study of Agent-Based Verification for Rust Systems
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-tertiary); margin-top: 0.5rem;">
+              arXiv 2025 • arXiv:2512.18436
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="https://github.com/microsoft/verus-proof-synthesis" target="_blank" rel="noopener"
+            class="footer-link">
+            💻 GitHub
+          </a>
+          <a href="https://arxiv.org/abs/2409.13082" target="_blank" rel="noopener" class="footer-link">
+            📄 AutoVerus Paper
+          </a>
+          <a href="https://arxiv.org/abs/2512.18436" target="_blank" rel="noopener" class="footer-link">
+            📄 VeruSAGE Paper
+          </a>
+          <a href="https://github.com/verus-lang/verus" target="_blank" rel="noopener" class="footer-link">
+            🦀 Verus
+          </a>
+          <a href="https://www.microsoft.com/en-us/research/project/practical-system-verification/" target="_blank"
+            rel="noopener" class="footer-link">
+            🔗 Project Website
+          </a>
+        </div>
+        <p class="footer-credit">
+          © 2025 Microsoft Research. Made with ❤️ for the verification community.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/leaderboard.js"></script>
+</body>
+
+</html>
