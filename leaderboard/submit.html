@@ -232,7 +232,7 @@
         <div class="step-card">
             <div class="step-title"><span class="step-number">2</span> Collect Results</div>
             <div class="step-content">
-                Record the number of solved tasks, average time per task, and average LLM API calls per task.
+                Record the number of solved tasks, average time per task, and average cost per task (in USD).
                 If possible, include a per-source/per-project breakdown.
             </div>
         </div>
@@ -267,7 +267,7 @@
     "total": 150,
     "percent_solved": 90.0,
     "avg_time_seconds": 28.5,
-    "avg_llm_calls": 2.8
+    "avg_cost_usd": 0.25
   },
   "breakdown": [
     {"category": "CloverBench", "solved": 11, "total": 11},
@@ -292,8 +292,9 @@
 
         <h3>Optional Fields</h3>
         <ul>
-            <li><code>results.avg_time_seconds</code> — Average time per task</li>
-            <li><code>results.avg_llm_calls</code> — Average LLM API calls per task</li>
+            <li><code>results.avg_time_seconds</code> — Average time per task (Verus-Bench)</li>
+            <li><code>results.avg_time_minutes</code> — Average time per task (VeruSAGE-Bench)</li>
+            <li><code>results.avg_cost_usd</code> — Average cost per task in USD</li>
             <li><code>breakdown</code> — Per-source (Verus-Bench) or per-project (VeruSAGE-Bench) breakdown</li>
             <li><code>paper_url</code> — Link to associated paper</li>
             <li><code>code_url</code> — Link to code repository</li>
@@ -325,8 +326,8 @@
         <p>Submissions are labeled with verification status:</p>
 
         <ul>
-            <li><span class="verified-badge">✓ Verified</span> — Results independently reproduced by maintainers</li>
-            <li><span class="unverified-badge">○ Reported</span> — Self-reported, format validated</li>
+            <li><strong>Verified</strong> — Results independently reproduced by maintainers</li>
+            <li><strong>Reported</strong> — Self-reported, format validated</li>
         </ul>
 
         <p>
