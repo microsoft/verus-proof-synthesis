@@ -1,0 +1,110 @@
+{
+    "benchmark": "Verus-Bench",
+    "description": "150 algorithm-level verification tasks from classic CS problems",
+    "total_tasks": 150,
+    "sources": [
+        {
+            "name": "CloverBench",
+            "tasks": 11,
+            "description": "Classic CS examples from Clover"
+        },
+        {
+            "name": "MBPP",
+            "tasks": 78,
+            "description": "Mostly Basic Python Problems translated to Verus"
+        },
+        {
+            "name": "Diffy",
+            "tasks": 38,
+            "description": "Array/loop programs from SV-COMP"
+        },
+        {
+            "name": "Misc",
+            "tasks": 23,
+            "description": "Verus tutorial and library examples"
+        }
+    ],
+    "last_updated": "2026-01-05",
+    "submissions": [
+        {
+            "submission_id": "autoverus-gpt4o-2024",
+            "system_name": "AutoVerus",
+            "model": "GPT-4o",
+            "date": "2024-09-10",
+            "results": {
+                "solved": 137,
+                "total": 150,
+                "percent_solved": 91.3,
+                "avg_time_seconds": 347.0,
+                "avg_llm_calls": 8.8,
+                "total_cost_usd": 37.0
+            },
+            "breakdown": [
+                {
+                    "category": "CloverBench",
+                    "solved": 11,
+                    "total": 11
+                },
+                {
+                    "category": "Diffy",
+                    "solved": 38,
+                    "total": 38
+                },
+                {
+                    "category": "MBPP",
+                    "solved": 68,
+                    "total": 78
+                },
+                {
+                    "category": "Misc",
+                    "solved": 20,
+                    "total": 23
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2409.13082",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "OOPSLA 2025 paper. >50% tasks solved in <30s. 3M input + 1.5M output tokens at Azure GPT-4o pricing ($5/$15 per 1M) = $37 total."
+        },
+        {
+            "submission_id": "baseline-fewshot-gpt4o-2024",
+            "system_name": "Few-shot Baseline",
+            "model": "GPT-4o",
+            "date": "2024-09-10",
+            "results": {
+                "solved": 67,
+                "total": 150,
+                "percent_solved": 44.7,
+                "avg_time_seconds": 179.0,
+                "avg_llm_calls": 40.7,
+                "total_cost_usd": 173.0
+            },
+            "breakdown": [
+                {
+                    "category": "CloverBench",
+                    "solved": 8,
+                    "total": 11
+                },
+                {
+                    "category": "Diffy",
+                    "solved": 5,
+                    "total": 38
+                },
+                {
+                    "category": "MBPP",
+                    "solved": 43,
+                    "total": 78
+                },
+                {
+                    "category": "Misc",
+                    "solved": 11,
+                    "total": 23
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2409.13082",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Few-shot baseline with 25 attempts per task. 6111 LLM calls, ~20.8M tokens at Azure GPT-4o pricing = ~$173 total."
+        }
+    ]
+}

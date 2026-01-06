@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Submit your proof synthesis results to the Verus Proof Synthesis Leaderboard">
+
+    <title>Submit Results - Verus Proof Synthesis Leaderboard</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦀</text></svg>">
+
+    <style>
+        .content-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-2xl) var(--spacing-lg);
+        }
+
+        .content-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: var(--spacing-lg);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: var(--spacing-2xl);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .content-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+
+        .content-section p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            line-height: 1.8;
+        }
+
+        .content-section ul,
+        .content-section ol {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            padding-left: var(--spacing-xl);
+        }
+
+        .content-section li {
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.7;
+        }
+
+        .content-section code {
+            font-family: var(--font-mono);
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9em;
+        }
+
+        .content-section pre {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .content-section pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-radius: var(--radius-full);
+            margin-right: var(--spacing-sm);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .step-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .warning-box h4 {
+            color: var(--accent-warning);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .warning-box p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .info-box h4 {
+            color: var(--accent-primary-light);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .info-box p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">🦀</span>
+                    <span class="logo-text">Verus Proof Synthesis</span>
+                </a>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Leaderboard</a>
+                    <a href="submit.html" class="nav-link active">Submit</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="https://github.com/microsoft/verus-proof-synthesis" target="_blank" rel="noopener"
+                        class="nav-link">GitHub ↗</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-section">
+        <h1>📤 Submit Your Results</h1>
+
+        <p>
+            We welcome submissions from the research community! Follow the guidelines below to add your
+            proof synthesis system to the leaderboard.
+        </p>
+
+        <h2>🎯 Benchmarks</h2>
+
+        <p>You can submit results for either or both benchmarks:</p>
+
+        <ul>
+            <li><strong>Verus-Bench</strong> — 150 algorithm-level verification tasks (sorting, searching, etc.)</li>
+            <li><strong>VeruSAGE-Bench</strong> — 849 repository-level verification tasks from 8 real-world systems</li>
+        </ul>
+
+        <div class="info-box">
+            <h4>📦 Getting the Benchmarks</h4>
+            <p>
+                Both benchmarks are available in the
+                <a href="https://github.com/microsoft/verus-proof-synthesis/tree/main/benchmarks" target="_blank"
+                    style="color: var(--accent-primary-light);">benchmarks/</a>
+                directory of our repository. Each directory contains a <code>tasks.jsonl</code> file for programmatic
+                access.
+            </p>
+        </div>
+
+        <h2>📋 Submission Process</h2>
+
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">1</span> Run Evaluation</div>
+            <div class="step-content">
+                Run your proof synthesis system on the benchmark tasks. Each task should be verified using the
+                Verus verifier. A task is considered <strong>solved</strong> if Verus verification succeeds.
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">2</span> Collect Results</div>
+            <div class="step-content">
+                Record the number of solved tasks, average time per task, and average LLM API calls per task.
+                If possible, include a per-source/per-project breakdown.
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">3</span> Create Submission JSON</div>
+            <div class="step-content">
+                Format your results according to our schema (see below). Include links to your paper and code
+                repository.
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">4</span> Submit via Pull Request</div>
+            <div class="step-content">
+                Open a pull request to our GitHub repository adding your entry to the appropriate
+                <code>leaderboard/data/*.json</code> file. Include a brief description of your approach.
+            </div>
+        </div>
+
+        <h2>📄 Submission Schema</h2>
+
+        <p>Your submission should follow this JSON format:</p>
+
+        <pre><code>{
+  "submission_id": "your-system-model-version",
+  "system_name": "Your System Name",
+  "model": "LLM Model Used",
+  "date": "YYYY-MM-DD",
+  "results": {
+    "solved": 135,
+    "total": 150,
+    "percent_solved": 90.0,
+    "avg_time_seconds": 28.5,
+    "avg_llm_calls": 2.8
+  },
+  "breakdown": [
+    {"category": "CloverBench", "solved": 11, "total": 11},
+    {"category": "MBPP", "solved": 72, "total": 78}
+  ],
+  "paper_url": "https://arxiv.org/abs/...",
+  "code_url": "https://github.com/...",
+  "verified": false,
+  "notes": "Brief description of your approach"
+}</code></pre>
+
+        <h3>Required Fields</h3>
+        <ul>
+            <li><code>submission_id</code> — Unique identifier (e.g., "mysystem-gpt4-v1.0")</li>
+            <li><code>system_name</code> — Name of your proof synthesis system</li>
+            <li><code>model</code> — LLM model used (e.g., "GPT-4o", "Claude-3.5-Sonnet")</li>
+            <li><code>date</code> — Submission date in YYYY-MM-DD format</li>
+            <li><code>results.solved</code> — Number of tasks solved</li>
+            <li><code>results.total</code> — Total number of tasks attempted</li>
+            <li><code>results.percent_solved</code> — Percentage solved (solved/total × 100)</li>
+        </ul>
+
+        <h3>Optional Fields</h3>
+        <ul>
+            <li><code>results.avg_time_seconds</code> — Average time per task</li>
+            <li><code>results.avg_llm_calls</code> — Average LLM API calls per task</li>
+            <li><code>breakdown</code> — Per-source (Verus-Bench) or per-project (VeruSAGE-Bench) breakdown</li>
+            <li><code>paper_url</code> — Link to associated paper</li>
+            <li><code>code_url</code> — Link to code repository</li>
+            <li><code>notes</code> — Additional information about the submission</li>
+        </ul>
+
+        <h2>⚠️ Rules & Guidelines</h2>
+
+        <div class="warning-box">
+            <h4>No Cheating</h4>
+            <p>
+                Submissions using trivial solutions (e.g., <code>assume false</code>,
+                <code>#[verifier::external_body]</code>)
+                to fake verification will be rejected. We may run spot-checks on submitted solutions.
+            </p>
+        </div>
+
+        <ul>
+            <li><strong>Use Standard Verus:</strong> Use the recommended Verus version specified in the benchmark README
+            </li>
+            <li><strong>Report Honestly:</strong> Self-reported results should be accurate and reproducible</li>
+            <li><strong>Provide Code:</strong> Submissions with public code/papers are prioritized for verification</li>
+            <li><strong>One Entry per Configuration:</strong> Submit separate entries for different model/system
+                combinations</li>
+        </ul>
+
+        <h2>✅ Verification Levels</h2>
+
+        <p>Submissions are labeled with verification status:</p>
+
+        <ul>
+            <li><span class="verified-badge">✓ Verified</span> — Results independently reproduced by maintainers</li>
+            <li><span class="unverified-badge">○ Reported</span> — Self-reported, format validated</li>
+        </ul>
+
+        <p>
+            To expedite verification, please provide detailed reproduction instructions and
+            consider making your evaluation scripts publicly available.
+        </p>
+
+        <h2>📧 Contact</h2>
+
+        <p>
+            For questions about submissions, open an issue on our
+            <a href="https://github.com/microsoft/verus-proof-synthesis/issues" target="_blank"
+                style="color: var(--accent-primary-light);">GitHub repository</a>
+            or email the maintainers.
+        </p>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/microsoft/verus-proof-synthesis" target="_blank" rel="noopener"
+                        class="footer-link">
+                        💻 GitHub
+                    </a>
+                    <a href="https://arxiv.org/abs/2409.13082" target="_blank" rel="noopener" class="footer-link">
+                        📄 AutoVerus Paper
+                    </a>
+                    <a href="https://arxiv.org/abs/2512.18436" target="_blank" rel="noopener" class="footer-link">
+                        📄 VeruSAGE Paper
+                    </a>
+                </div>
+                <p class="footer-credit">
+                    © 2025 Microsoft Research. Made with ❤️ for the verification community.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

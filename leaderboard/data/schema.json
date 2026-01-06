@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Verus Proof Synthesis Leaderboard Submission",
+  "description": "Schema for submitting results to the Verus Proof Synthesis Leaderboard",
+  "type": "object",
+  "required": ["submission_id", "system_name", "model", "date", "benchmark", "results"],
+  "properties": {
+    "submission_id": {
+      "type": "string",
+      "description": "Unique identifier for this submission (e.g., 'autoverus-gpt4o-v1.0')"
+    },
+    "system_name": {
+      "type": "string",
+      "description": "Name of the proof synthesis system"
+    },
+    "model": {
+      "type": "string",
+      "description": "LLM model used (e.g., 'gpt-4o', 'claude-3.5-sonnet')"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Submission date in YYYY-MM-DD format"
+    },
+    "benchmark": {
+      "type": "string",
+      "enum": ["Verus-Bench", "VeruSAGE-Bench", "VeruSAGE-Bench-Sampled"],
+      "description": "Which benchmark was evaluated"
+    },
+    "results": {
+      "type": "object",
+      "required": ["solved", "total", "percent_solved"],
+      "properties": {
+        "solved": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of tasks solved"
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of tasks attempted"
+        },
+        "percent_solved": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentage of tasks solved"
+        },
+        "avg_time_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average time per task in seconds"
+        },
+        "avg_llm_calls": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average number of LLM API calls per task"
+        },
+        "avg_tokens": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Average tokens used per task"
+        }
+      }
+    },
+    "breakdown": {
+      "type": "array",
+      "description": "Per-source or per-project breakdown",
+      "items": {
+        "type": "object",
+        "required": ["category", "solved", "total"],
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Source (for Verus-Bench) or project code (for VeruSAGE-Bench)"
+          },
+          "solved": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "paper_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to the associated paper"
+    },
+    "code_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to the code repository"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether results have been verified by maintainers"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the submission"
+    }
+  }
+}

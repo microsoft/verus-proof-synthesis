@@ -1,0 +1,640 @@
+{
+    "benchmark": "VeruSAGE-Bench",
+    "description": "849 repository-level verification tasks from real-world systems projects",
+    "total_tasks": 849,
+    "projects": [
+        {
+            "code": "AL",
+            "name": "Anvil",
+            "tasks": 104,
+            "domain": "Distributed Systems"
+        },
+        {
+            "code": "AC",
+            "name": "Anvil Advanced",
+            "tasks": 63,
+            "domain": "Distributed Systems"
+        },
+        {
+            "code": "IR",
+            "name": "IronKV",
+            "tasks": 118,
+            "domain": "Distributed Systems"
+        },
+        {
+            "code": "MA",
+            "name": "Memory Allocator",
+            "tasks": 89,
+            "domain": "Systems"
+        },
+        {
+            "code": "NO",
+            "name": "Node Replication",
+            "tasks": 29,
+            "domain": "Distributed Systems"
+        },
+        {
+            "code": "NR",
+            "name": "NRKernel",
+            "tasks": 204,
+            "domain": "OS Kernel"
+        },
+        {
+            "code": "OS",
+            "name": "ATMO",
+            "tasks": 157,
+            "domain": "OS Kernel"
+        },
+        {
+            "code": "ST",
+            "name": "Storage",
+            "tasks": 63,
+            "domain": "Systems"
+        },
+        {
+            "code": "VE",
+            "name": "Vest",
+            "tasks": 22,
+            "domain": "Serialization"
+        }
+    ],
+    "last_updated": "2026-01-05",
+    "submissions": [
+        {
+            "submission_id": "verusage-handsoff-sonnet45-2026",
+            "system_name": "VeruSAGE (Hands-off)",
+            "model": "Sonnet 4.5",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 688,
+                "total": 849,
+                "percent_solved": 81.0,
+                "avg_time_minutes": 7.2,
+                "avg_cost_usd": 5.61
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 104,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 23,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 99,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 80,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 29,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 151,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 130,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 49,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 22,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 6: Hands-off mode - Best overall (81%)"
+        },
+        {
+            "submission_id": "verusage-handson-sonnet45-2026",
+            "system_name": "VeruSAGE (Hands-on)",
+            "model": "Sonnet 4.5",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 569,
+                "total": 849,
+                "percent_solved": 67.0,
+                "avg_time_minutes": 6.9,
+                "avg_cost_usd": 1.47
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 86,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 23,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 79,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 75,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 28,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 122,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 97,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 45,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 17,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 7: Hands-on mode with Sonnet 4.5"
+        },
+        {
+            "submission_id": "verusage-handsoff-sonnet4-2026",
+            "system_name": "VeruSAGE (Hands-off)",
+            "model": "Sonnet 4",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 543,
+                "total": 849,
+                "percent_solved": 64.0,
+                "avg_time_minutes": 9.2,
+                "avg_cost_usd": 6.65
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 89,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 15,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 81,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 67,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 25,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 112,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 97,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 44,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 18,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 6: Hands-off mode with Sonnet 4"
+        },
+        {
+            "submission_id": "verusage-handson-sonnet4-2026",
+            "system_name": "VeruSAGE (Hands-on)",
+            "model": "Sonnet 4",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 492,
+                "total": 849,
+                "percent_solved": 58.0,
+                "avg_time_minutes": 7.1,
+                "avg_cost_usd": 1.72
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 72,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 13,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 63,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 67,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 29,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 114,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 85,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 34,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 14,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 7: Hands-on mode with Sonnet 4"
+        },
+        {
+            "submission_id": "verusage-handson-gpt5-2026",
+            "system_name": "VeruSAGE (Hands-on)",
+            "model": "GPT-5",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 467,
+                "total": 849,
+                "percent_solved": 55.0,
+                "avg_time_minutes": 12.7,
+                "avg_cost_usd": 0.52
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 82,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 20,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 52,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 64,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 24,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 98,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 71,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 39,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 16,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 7: Hands-on mode with GPT-5"
+        },
+        {
+            "submission_id": "verusage-handsoff-gpt5-2026",
+            "system_name": "VeruSAGE (Hands-off)",
+            "model": "GPT-5",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 425,
+                "total": 849,
+                "percent_solved": 50.0,
+                "avg_time_minutes": 3.7,
+                "avg_cost_usd": 1.30
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 80,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 10,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 73,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 53,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 27,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 80,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 68,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 21,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 14,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 6: Hands-off mode with GPT-5"
+        },
+        {
+            "submission_id": "verusage-handson-o4mini-2026",
+            "system_name": "VeruSAGE (Hands-on)",
+            "model": "o4-mini",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 348,
+                "total": 849,
+                "percent_solved": 41.0,
+                "avg_time_minutes": 12.8,
+                "avg_cost_usd": 0.67
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 50,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 12,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 41,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 55,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 21,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 61,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 58,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 31,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 15,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 7: Hands-on mode with o4-mini"
+        },
+        {
+            "submission_id": "autoverus-o4mini-baseline-2026",
+            "system_name": "AutoVerus (Baseline)",
+            "model": "o4-mini",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 168,
+                "total": 849,
+                "percent_solved": 19.8,
+                "avg_time_minutes": 9.0,
+                "avg_cost_usd": 0.74
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 31,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 4,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 28,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 28,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 10,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 30,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 20,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 12,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 5,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "AutoVerus baseline from autoverus+o4-mini raw data (168/849, $626.39 total, $0.74/task)"
+        },
+        {
+            "submission_id": "verusage-handsoff-o4mini-2026",
+            "system_name": "VeruSAGE (Hands-off)",
+            "model": "o4-mini",
+            "date": "2026-01-05",
+            "results": {
+                "solved": 144,
+                "total": 849,
+                "percent_solved": 17.0,
+                "avg_time_minutes": 3.3,
+                "avg_cost_usd": 0.81
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 26,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 7,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 29,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 13,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 14,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 29,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 14,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 6,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 6,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 6: Hands-off mode with o4-mini"
+        }
+    ]
+}
