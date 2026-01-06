@@ -4,7 +4,7 @@ A web-based leaderboard for tracking progress in LLM-based formal verification f
 
 ## 🌐 Live Website
 
-Visit the leaderboard at: **[Coming Soon]**
+Visit the leaderboard at: **[https://yangchenyuan.github.io/verus-proof-synthesis/](https://yangchenyuan.github.io/verus-proof-synthesis/)**
 
 ## 📁 Directory Structure
 
@@ -62,7 +62,7 @@ php -S localhost:8000
     "total": 150,
     "percent_solved": 90.0,
     "avg_time_seconds": 28.5,
-    "avg_llm_calls": 2.8
+    "avg_cost_usd": 0.25
   },
   "breakdown": [
     {"category": "CloverBench", "solved": 11, "total": 11}
@@ -90,8 +90,9 @@ php -S localhost:8000
 
 | Field | Description |
 |-------|-------------|
-| `results.avg_time_seconds` | Average time per task |
-| `results.avg_llm_calls` | Average LLM API calls per task |
+| `results.avg_time_seconds` | Average time per task (Verus-Bench) |
+| `results.avg_time_minutes` | Average time per task (VeruSAGE-Bench) |
+| `results.avg_cost_usd` | Average cost per task in USD |
 | `breakdown` | Per-source/project breakdown |
 | `paper_url` | Link to paper |
 | `code_url` | Link to code repository |
@@ -101,8 +102,7 @@ php -S localhost:8000
 
 Submissions are labeled with verification status:
 
-- **Verified** ✓ — Results independently reproduced by maintainers
-- **Reported** ○ — Self-reported, format validated
+- **Verified** — Results independently reproduced by maintainers
 
 To expedite verification, please:
 - Provide detailed reproduction instructions
