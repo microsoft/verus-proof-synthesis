@@ -4,7 +4,7 @@ A web-based leaderboard for tracking progress in LLM-based formal verification f
 
 ## 🌐 Live Website
 
-Visit the leaderboard at: **[https://yangchenyuan.github.io/verus-proof-synthesis/](https://yangchenyuan.github.io/verus-proof-synthesis/)**
+Visit the leaderboard at: **[https://microsoft.github.io/verus-proof-synthesis/](https://microsoft.github.io/verus-proof-synthesis/)**
 
 ## 📁 Directory Structure
 

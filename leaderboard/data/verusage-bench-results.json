@@ -122,7 +122,7 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 6: Hands-off mode - Best overall (67.5%)"
+            "notes": "Table 6: Hands-off mode - Best hands-off (67.5%)"
         },
         {
             "submission_id": "verusage-handson-sonnet45-2026",
@@ -130,16 +130,16 @@
             "model": "Sonnet 4.5",
             "date": "2026-01-05",
             "results": {
-                "solved": 569,
+                "solved": 687,
                 "total": 849,
-                "percent_solved": 67.0,
+                "percent_solved": 80.9,
                 "avg_time_minutes": 6.9,
                 "avg_cost_usd": 1.47
             },
             "breakdown": [
                 {
                     "category": "AL",
-                    "solved": 86,
+                    "solved": 104,
                     "total": 104
                 },
                 {
@@ -149,44 +149,44 @@
                 },
                 {
                     "category": "IR",
-                    "solved": 79,
+                    "solved": 99,
                     "total": 118
                 },
                 {
                     "category": "MA",
-                    "solved": 75,
+                    "solved": 80,
                     "total": 89
                 },
                 {
                     "category": "NO",
-                    "solved": 28,
+                    "solved": 29,
                     "total": 29
                 },
                 {
                     "category": "NR",
-                    "solved": 122,
+                    "solved": 151,
                     "total": 204
                 },
                 {
                     "category": "OS",
-                    "solved": 97,
+                    "solved": 130,
                     "total": 157
                 },
                 {
                     "category": "ST",
-                    "solved": 45,
+                    "solved": 49,
                     "total": 63
                 },
                 {
                     "category": "VE",
-                    "solved": 17,
+                    "solved": 22,
                     "total": 22
                 }
             ],
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 7: Hands-on mode with Sonnet 4.5"
+            "notes": "Table 7: Hands-on mode - Best overall (81%)"
         },
         {
             "submission_id": "verusage-handsoff-sonnet4-2026",
@@ -258,26 +258,26 @@
             "model": "Sonnet 4",
             "date": "2026-01-05",
             "results": {
-                "solved": 492,
+                "solved": 544,
                 "total": 849,
-                "percent_solved": 58.0,
+                "percent_solved": 64.1,
                 "avg_time_minutes": 7.1,
                 "avg_cost_usd": 1.72
             },
             "breakdown": [
                 {
                     "category": "AL",
-                    "solved": 72,
+                    "solved": 89,
                     "total": 104
                 },
                 {
                     "category": "AC",
-                    "solved": 13,
+                    "solved": 15,
                     "total": 63
                 },
                 {
                     "category": "IR",
-                    "solved": 63,
+                    "solved": 81,
                     "total": 118
                 },
                 {
@@ -287,27 +287,27 @@
                 },
                 {
                     "category": "NO",
-                    "solved": 29,
+                    "solved": 25,
                     "total": 29
                 },
                 {
                     "category": "NR",
-                    "solved": 114,
+                    "solved": 113,
                     "total": 204
                 },
                 {
                     "category": "OS",
-                    "solved": 85,
+                    "solved": 96,
                     "total": 157
                 },
                 {
                     "category": "ST",
-                    "solved": 34,
+                    "solved": 40,
                     "total": 63
                 },
                 {
                     "category": "VE",
-                    "solved": 14,
+                    "solved": 18,
                     "total": 22
                 }
             ],
@@ -322,56 +322,56 @@
             "model": "GPT-5",
             "date": "2026-01-05",
             "results": {
-                "solved": 467,
+                "solved": 425,
                 "total": 849,
-                "percent_solved": 55.0,
+                "percent_solved": 50.1,
                 "avg_time_minutes": 12.7,
                 "avg_cost_usd": 0.52
             },
             "breakdown": [
                 {
                     "category": "AL",
-                    "solved": 82,
+                    "solved": 80,
                     "total": 104
                 },
                 {
                     "category": "AC",
-                    "solved": 20,
+                    "solved": 10,
                     "total": 63
                 },
                 {
                     "category": "IR",
-                    "solved": 52,
+                    "solved": 73,
                     "total": 118
                 },
                 {
                     "category": "MA",
-                    "solved": 64,
+                    "solved": 53,
                     "total": 89
                 },
                 {
                     "category": "NO",
-                    "solved": 24,
+                    "solved": 27,
                     "total": 29
                 },
                 {
                     "category": "NR",
-                    "solved": 98,
+                    "solved": 79,
                     "total": 204
                 },
                 {
                     "category": "OS",
-                    "solved": 71,
+                    "solved": 68,
                     "total": 157
                 },
                 {
                     "category": "ST",
-                    "solved": 39,
+                    "solved": 21,
                     "total": 63
                 },
                 {
                     "category": "VE",
-                    "solved": 16,
+                    "solved": 14,
                     "total": 22
                 }
             ],
@@ -450,56 +450,56 @@
             "model": "o4-mini",
             "date": "2026-01-05",
             "results": {
-                "solved": 348,
+                "solved": 144,
                 "total": 849,
-                "percent_solved": 41.0,
+                "percent_solved": 17.0,
                 "avg_time_minutes": 12.8,
                 "avg_cost_usd": 0.67
             },
             "breakdown": [
                 {
                     "category": "AL",
-                    "solved": 50,
+                    "solved": 26,
                     "total": 104
                 },
                 {
                     "category": "AC",
-                    "solved": 12,
+                    "solved": 7,
                     "total": 63
                 },
                 {
                     "category": "IR",
-                    "solved": 41,
+                    "solved": 29,
                     "total": 118
                 },
                 {
                     "category": "MA",
-                    "solved": 55,
+                    "solved": 13,
                     "total": 89
                 },
                 {
                     "category": "NO",
-                    "solved": 21,
+                    "solved": 14,
                     "total": 29
                 },
                 {
                     "category": "NR",
-                    "solved": 61,
+                    "solved": 29,
                     "total": 204
                 },
                 {
                     "category": "OS",
-                    "solved": 58,
+                    "solved": 14,
                     "total": 157
                 },
                 {
                     "category": "ST",
-                    "solved": 31,
+                    "solved": 6,
                     "total": 63
                 },
                 {
                     "category": "VE",
-                    "solved": 15,
+                    "solved": 6,
                     "total": 22
                 }
             ],
