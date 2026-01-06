@@ -9,7 +9,7 @@
 
 This repository contains code and artifacts for automated [Verus](https://github.com/verus-lang/verus) proof synthesis using LLM-based approaches. It includes two proof synthesis systems and two benchmark suites.
 
-> 🏆 **[View the Leaderboard](https://microsoft.github.io/verus-proof-synthesis/)** — Compare proof synthesis systems on our benchmarks!
+> 🏆 **[View the Leaderboard](leaderboard)** — Compare proof synthesis systems on our benchmarks!
 
 ---
 
