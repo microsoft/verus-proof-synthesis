@@ -261,6 +261,8 @@ body::before {
 }
 
 .tab-button {
+  display: flex;
+  align-items: center;
   padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
   background: transparent;
@@ -282,6 +284,15 @@ body::before {
   color: white;
   background: var(--accent-primary);
   box-shadow: var(--shadow-md);
+}
+
+.tab-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: var(--spacing-xs);
+  border-radius: var(--radius-sm);
 }
 
 /* Leaderboard Table */
