@@ -61,8 +61,8 @@
     "last_updated": "2026-01-05",
     "submissions": [
         {
-            "submission_id": "verusage-handsoff-sonnet45-2026",
-            "system_name": "VeruSAGE (Hands-off)",
+            "submission_id": "verusage-handson-sonnet45-2026",
+            "system_name": "VeruSAGE (Hands-on)",
             "model": "Sonnet 4.5",
             "date": "2026-01-05",
             "results": {
@@ -122,11 +122,11 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 6: Hands-off mode - Best hands-off (67.5%)"
+            "notes": "Table 6: Hands-on mode - Best hands-off (67.5%)"
         },
         {
-            "submission_id": "verusage-handson-sonnet45-2026",
-            "system_name": "VeruSAGE (Hands-on)",
+            "submission_id": "verusage-handsoff-sonnet45-2026",
+            "system_name": "VeruSAGE (Hands-off)",
             "model": "Sonnet 4.5",
             "date": "2026-01-05",
             "results": {
@@ -186,11 +186,11 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 7: Hands-on mode - Best overall (81%)"
+            "notes": "Table 7: Hands-off mode - Best overall (81%)"
         },
         {
-            "submission_id": "verusage-handsoff-sonnet4-2026",
-            "system_name": "VeruSAGE (Hands-off)",
+            "submission_id": "verusage-handson-sonnet4-2026",
+            "system_name": "VeruSAGE (Hands-on)",
             "model": "Sonnet 4",
             "date": "2026-01-05",
             "results": {
@@ -250,11 +250,11 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 6: Hands-off mode with Sonnet 4"
+            "notes": "Table 6: Hands-on mode with Sonnet 4"
         },
         {
-            "submission_id": "verusage-handson-sonnet4-2026",
-            "system_name": "VeruSAGE (Hands-on)",
+            "submission_id": "verusage-handsoff-sonnet4-2026",
+            "system_name": "VeruSAGE (Hands-off)",
             "model": "Sonnet 4",
             "date": "2026-01-05",
             "results": {
@@ -314,11 +314,11 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 7: Hands-on mode with Sonnet 4"
+            "notes": "Table 7: Hands-off mode with Sonnet 4"
         },
         {
-            "submission_id": "verusage-handson-gpt5-2026",
-            "system_name": "VeruSAGE (Hands-on)",
+            "submission_id": "verusage-handsoff-gpt5-2026",
+            "system_name": "VeruSAGE (Hands-off)",
             "model": "GPT-5",
             "date": "2026-01-05",
             "results": {
@@ -378,11 +378,11 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 7: Hands-on mode with GPT-5"
+            "notes": "Table 7: Hands-off mode with GPT-5"
         },
         {
-            "submission_id": "verusage-handsoff-gpt5-2026",
-            "system_name": "VeruSAGE (Hands-off)",
+            "submission_id": "verusage-handson-gpt5-2026",
+            "system_name": "VeruSAGE (Hands-on)",
             "model": "GPT-5",
             "date": "2026-01-05",
             "results": {
@@ -390,7 +390,7 @@
                 "total": 849,
                 "percent_solved": 56.4,
                 "avg_time_minutes": 3.7,
-                "avg_cost_usd": 1.30
+                "avg_cost_usd": 1.3
             },
             "breakdown": [
                 {
@@ -442,11 +442,11 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 6: Hands-off mode with GPT-5"
+            "notes": "Table 6: Hands-on mode with GPT-5"
         },
         {
-            "submission_id": "verusage-handson-o4mini-2026",
-            "system_name": "VeruSAGE (Hands-on)",
+            "submission_id": "verusage-handsoff-o4mini-2026",
+            "system_name": "VeruSAGE (Hands-off)",
             "model": "o4-mini",
             "date": "2026-01-05",
             "results": {
@@ -506,7 +506,7 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 7: Hands-on mode with o4-mini"
+            "notes": "Table 7: Hands-off mode with o4-mini"
         },
         {
             "submission_id": "autoverus-o4mini-baseline-2026",
@@ -573,8 +573,8 @@
             "notes": "AutoVerus baseline from autoverus+o4-mini raw data (168/849, $626.39 total, $0.74/task)"
         },
         {
-            "submission_id": "verusage-handsoff-o4mini-2026",
-            "system_name": "VeruSAGE (Hands-off)",
+            "submission_id": "verusage-handson-o4mini-2026",
+            "system_name": "VeruSAGE (Hands-on)",
             "model": "o4-mini",
             "date": "2026-01-05",
             "results": {
@@ -634,7 +634,7 @@
             "paper_url": "https://arxiv.org/abs/2512.18436",
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
-            "notes": "Table 6: Hands-off mode with o4-mini"
+            "notes": "Table 6: Hands-on mode with o4-mini"
         }
     ]
 }
