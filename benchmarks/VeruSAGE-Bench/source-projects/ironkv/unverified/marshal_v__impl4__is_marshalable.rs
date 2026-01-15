@@ -155,6 +155,12 @@ impl<T: Marshalable> Marshalable for Vec<T> {
         while res && i < self.len() {
             res =
             res && self[i]._is_marshalable() && (usize::MAX - total_len >= self[i].serialized_size());
+            if res {
+               let old_total_len = total_len;
+               total_len = total_len + self[i].serialized_size();
+               i = i + 1;
+            } else {
+            }
         }
         res
     }
