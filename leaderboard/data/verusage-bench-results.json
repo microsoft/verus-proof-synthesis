@@ -58,7 +58,7 @@
             "domain": "Serialization"
         }
     ],
-    "last_updated": "2026-01-05",
+    "last_updated": "2026-01-21",
     "submissions": [
         {
             "submission_id": "verusage-handsoff-sonnet45-2026",
@@ -635,6 +635,70 @@
             "code_url": "https://github.com/microsoft/verus-proof-synthesis",
             "verified": true,
             "notes": "Table 6: Hands-off mode (17.0%)"
+        },
+        {
+            "submission_id": "verusage-handsoff-opus45-2026",
+            "system_name": "VeruSAGE (Hands-off)",
+            "model": "Opus 4.5",
+            "date": "2026-01-21",
+            "results": {
+                "solved": 797,
+                "total": 849,
+                "percent_solved": 93.9,
+                "avg_time_minutes": 15.3,
+                "avg_cost_usd": 13.65
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 104,
+                    "total": 104
+                },
+                {
+                    "category": "AC",
+                    "solved": 52,
+                    "total": 63
+                },
+                {
+                    "category": "IR",
+                    "solved": 113,
+                    "total": 118
+                },
+                {
+                    "category": "MA",
+                    "solved": 84,
+                    "total": 89
+                },
+                {
+                    "category": "NO",
+                    "solved": 29,
+                    "total": 29
+                },
+                {
+                    "category": "NR",
+                    "solved": 186,
+                    "total": 204
+                },
+                {
+                    "category": "OS",
+                    "solved": 146,
+                    "total": 157
+                },
+                {
+                    "category": "ST",
+                    "solved": 61,
+                    "total": 63
+                },
+                {
+                    "category": "VE",
+                    "solved": 22,
+                    "total": 22
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 6: Hands-off mode with Opus 4.5 (93.9%)"
         }
     ]
 }
