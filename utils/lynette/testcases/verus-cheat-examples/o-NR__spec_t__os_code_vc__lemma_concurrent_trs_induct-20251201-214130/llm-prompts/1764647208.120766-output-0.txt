@@ -1,0 +1,53 @@
+Looking at the error, the issue is with the `choose` expressions in the `lemma_concurrent_trs_induct` proof function. The error states that Verus could not automatically infer triggers for the quantifier, even though `#![trigger ...]` annotations are present.
+
+The problem is that the `#![trigger ...]` syntax is being used incorrectly within the `choose` expressions. In Verus, when you have a `choose` with an `exists` that has multiple bound variables, you need to use the `#[trigger]` attribute syntax instead of `#![trigger ...]`.
+
+Looking at the previous failed attempts:
+1. Attempt 1 tried to use `#![trigger ...]` - failed
+2. Attempt 2 tried to use `#[trigger]` with type annotations and different structure - failed  
+3. Attempt 3 went back to `#![trigger ...]` - failed
+
+The key insight is that for `choose` expressions with `exists` quantifiers, we need to structure the trigger annotations properly. The correct approach is to use `#[trigger]` on the specific term we want to trigger on, and ensure the body is structured as a conjunction rather than a block.
+
+Here's my fix:
+
+```rust
+<<<<<<< SEARCH
+        let state = choose|state: os::State| exists|step, lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+=======
+        let state = choose|state: os::State| exists|step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && #[trigger] os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+        let step = choose|step| exists|lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && #[trigger] os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+        let lbl = choose|lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && #[trigger] os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+>>>>>>> REPLACE
+```
+
+The changes I made:
+1. Removed the `#![trigger ...]` syntax and the block `{ &&& ... }` structure
+2. Used `#[trigger]` attribute directly on the `os::next_step` term
+3. Changed from `&&& ` (block-style conjunctions) to `&&` (expression-style conjunctions)
+4. Removed the curly braces and semicolons, making these single expressions
+
+This should allow Verus to properly infer the triggers for these quantifiers.

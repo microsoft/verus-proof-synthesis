@@ -1,0 +1,42 @@
+Looking at the error and previous attempts, I need to establish that `old(self).wf()` holds before calling `range_create_and_share_mapping`. The precondition requires `old(self).wf()`, but after calling `new_proc_with_endpoint_iommu`, we need to re-establish that `self.wf()` holds.
+
+The key issue is that `new_proc_with_endpoint_iommu` ensures `self.wf()` in its postcondition, but we need to assert this fact explicitly before the next function call.
+
+Previous attempts were rejected as "unsafe" because they tried to add assertions in executable code without proper `proof` blocks. Since this is an executable function (`pub fn`), assertions about ghost state need to be in `proof {...}` blocks.
+
+Let me add a proof block that establishes `self.wf()` after the `new_proc_with_endpoint_iommu` call:
+
+```rust
+<<<<<<< SEARCH
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        proof {
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

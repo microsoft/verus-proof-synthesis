@@ -1,0 +1,31 @@
+### Step 1: Analyze the Failing Assertion
+- The failing assertion is self.view_equal(other) inside Option<T>::lemma_serialize_injective.
+- In this proof, we implicitly have the trait’s requires available: self.is_marshalable(), other.is_marshalable(), and self.ghost_serialize() == other.ghost_serialize().
+- Option<T>::ghost_serialize prepends a tag byte: None -> seq![0], Some(x) -> seq![1] + x.ghost_serialize(); view_equal matches shapes and delegates to inner T for Some.
+
+### Step 2: Root Cause Analysis
+- The proof never uses the preconditions or the Option serialization structure; thus the assertion cannot be derived directly.
+- We need case analysis on (self, other) using the serialization tags to rule out cross-cases (0 vs 1 at index 0) and, in the Some/Some case, reduce to inner equality and invoke T’s injectivity lemma.
+
+### Step 3: Why Previous Attempts Failed
+- Prior attempts used ad-hoc helpers (is_None, get_Some_0) and type tweaks (u8 suffix), introducing syntax/unsafe changes.
+- They also tried modifying the method signature (adding requires/ensures) or asserting contradictions; both are unnecessary and led to errors rather than addressing the core need for proper case analysis with pattern matching and inner lemma use.
+
+### Step 4: Action Selection
+- Perform CASE_ANALYSIS by matching on (self, other) and use the equality of ghost_serialize to:
+  - Eliminate mixed None/Some cases via first-byte mismatch (0 vs 1).
+  - In the Some/Some case, strip the leading tag to conclude s.ghost_serialize() == o.ghost_serialize() and then USELEMMA on T to get s.view_equal(o).
+
+```json
+{
+    "root_cause_analysis": "The assertion self.view_equal(other) is made without leveraging the preconditions (marshalable and equal serializations) and without analyzing Option’s tag-based serialization. We must split on (self, other), use the first byte (0 vs 1) to rule out cross-cases, and in Some/Some reduce to inner equality and apply T’s injectivity.",
+    "knows_root_cause": true,
+    "primary_action": "CASE_ANALYSIS",
+    "secondary_actions": ["USELEMMA", "SEQSETMAP"],
+    "reasoning_explanation": "Option’s serialization is tag-prefixed, so equality of serialized sequences determines the shape. Case analysis lets us discharge None/Some by tag mismatch and reduce Some/Some to the inner values, where we can call T’s lemma_serialize_injective. Sequence operations (index 0, subrange) are needed for the reduction.",
+    "action_parameters": {
+        "assertion_content": "self.view_equal(other)",
+        "guidance": "Match on (self, other). For (None, None) return true. For (None, Some(_)) and (Some(_), None), use ghost_serialize equality and compare index 0 to show 0 != 1, contradicting equality. For (Some(s), Some(o)), from equality of ghost_serialize, strip the first byte to get s.ghost_serialize() == o.ghost_serialize(); use marshalable preconditions to call s.lemma_serialize_injective(&o) and conclude s.view_equal(o)."
+    }
+}
+```

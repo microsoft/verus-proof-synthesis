@@ -1,0 +1,101 @@
+Looking at the error, the precondition failure is:
+
+```
+failed precondition
+            old(self).dom().contains(key),
+```
+
+This occurs at line 992:
+```rust
+let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+```
+
+The `tracked_remove` method requires that the domain contains the key being removed. In this case, we need `self.l4_table@.dom().contains(self.cr3)` to be true.
+
+Looking at the function's preconditions, we have `old(self).wf()` which should establish this property. From the `wf_l4` specification, we can see that:
+
+```rust
+self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)
+```
+
+This means the domain should contain `self.cr3`. However, we need to establish this fact before the call to `tracked_remove`.
+
+I need to add an assertion to establish that `self.l4_table@.dom().contains(self.cr3)` before the `tracked_remove` call.
+
+```rust
+<<<<<<< SEARCH
+    pub fn remove_l4_entry(
+        &mut self,
+        target_l4i: L4Index,
+        target_l3_p: PageMapPtr,
+    ) -> (ret:(PageMapPtr, Tracked<PointsTo<PageMap>>))
+        requires
+            old(self).wf(),
+            old(self).kernel_l4_end <= target_l4i < 512,
+            old(self).spec_resolve_mapping_l4(target_l4i).is_Some(),
+            old(self).spec_resolve_mapping_l4(target_l4i).get_Some_0().addr
+                == target_l3_p,
+            forall|i: L3Index| #![auto] 0 <= i < 512 ==> old(self).spec_resolve_mapping_l3(
+                target_l4i,
+                i
+            ).is_None(),
+            forall|i: L3Index| #![auto] 0 <= i < 512 ==> old(self).spec_resolve_mapping_1g_l3(
+                target_l4i,
+                i
+            ).is_None(),
+        ensures
+            // self.wf(),
+            // self.kernel_l4_end == old(self).kernel_l4_end,
+            // self.page_closure() =~= old(self).page_closure().remove(target_l3_p),
+            // self.mapping_2m() == old(self).mapping_2m(),
+            // self.mapping_4k() =~= old(self).mapping_4k(),
+            // self.mapping_1g() =~= old(self).mapping_1g(),
+            // self.kernel_entries =~= old(self).kernel_entries,
+            // ret.0 == target_l3_p,
+            // ret.1@.is_init(),
+            // ret.1@.addr() == target_l3_p,
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+    pub fn remove_l4_entry(
+        &mut self,
+        target_l4i: L4Index,
+        target_l3_p: PageMapPtr,
+    ) -> (ret:(PageMapPtr, Tracked<PointsTo<PageMap>>))
+        requires
+            old(self).wf(),
+            old(self).kernel_l4_end <= target_l4i < 512,
+            old(self).spec_resolve_mapping_l4(target_l4i).is_Some(),
+            old(self).spec_resolve_mapping_l4(target_l4i).get_Some_0().addr
+                == target_l3_p,
+            forall|i: L3Index| #![auto] 0 <= i < 512 ==> old(self).spec_resolve_mapping_l3(
+                target_l4i,
+                i
+            ).is_None(),
+            forall|i: L3Index| #![auto] 0 <= i < 512 ==> old(self).spec_resolve_mapping_1g_l3(
+                target_l4i,
+                i
+            ).is_None(),
+        ensures
+            // self.wf(),
+            // self.kernel_l4_end == old(self).kernel_l4_end,
+            // self.page_closure() =~= old(self).page_closure().remove(target_l3_p),
+            // self.mapping_2m() == old(self).mapping_2m(),
+            // self.mapping_4k() =~= old(self).mapping_4k(),
+            // self.mapping_1g() =~= old(self).mapping_1g(),
+            // self.kernel_entries =~= old(self).kernel_entries,
+            // ret.0 == target_l3_p,
+            // ret.1@.is_init(),
+            // ret.1@.addr() == target_l3_p,
+    {
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+            assert(self.wf_l4());
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```

@@ -8,23 +8,7 @@ use std::path::PathBuf;
 use std::process;
 use syn_verus::{FnArg, FnArgKind, Type};
 
-mod additions;
-mod benchmark_gen;
-mod code;
-mod deghost;
-mod func;
-//mod merge;
-mod unimpl;
-mod utils;
-
-use crate::additions::*;
-use crate::benchmark_gen::*;
-use crate::code::*;
-use crate::deghost::*;
-use crate::func::*;
-//use crate::merge::*;
-use crate::unimpl::*;
-use crate::utils::*;
+use lynette::*;
 
 /// Parse a string of ranges in the format of a-b,c-d,e into a vector of ranges.
 fn parse_ranges(
@@ -162,60 +146,8 @@ struct DetectNLArgs {
     sig: bool,
 }
 
-/// When a flag is set, the corresponding ghost code will not be removed by the
-/// deghost functions.
-#[derive(Clone)]
-#[derive(Args)]
-pub struct DeghostMode {
-    #[clap(long, help = "Compare requires")]
-    requires: bool,
-    #[clap(long, help = "Compare ensures")]
-    ensures: bool,
-    #[clap(long, help = "Compare invariants")]
-    invariants: bool,
-    #[clap(long, help = "Compare spec functions")]
-    spec: bool,
-    #[clap(long, help = "Compare asserts")]
-    asserts: bool,
-    #[clap(long, help = "Compare asserts with annotations(e.g. #[warn(llm_do_not_change)])")]
-    asserts_anno: bool,
-    #[clap(long, help = "Compare decreases")]
-    decreases: bool,
-    #[clap(long, help = "Compare assumes")]
-    assumes: bool,
-}
-
-impl DeghostMode {
-    pub fn replace_with(&mut self, other: &DeghostMode) {
-        self.requires = other.requires;
-        self.ensures = other.ensures;
-        self.invariants = other.invariants;
-        self.spec = other.spec;
-        self.asserts = other.asserts;
-        self.asserts_anno = other.asserts_anno;
-        self.decreases = other.decreases;
-        self.assumes = other.assumes;
-    }
-}
-
 thread_local! {
     static DEGHOST_MODE_OPT: RefCell<DeghostMode> = RefCell::new(DeghostMode::default());
-}
-
-/// By default, all flags are set to false so that all ghost code will be removed.
-impl Default for DeghostMode {
-    fn default() -> Self {
-        Self {
-            requires: false,
-            ensures: false,
-            invariants: false,
-            spec: false,
-            asserts: false,
-            asserts_anno: false,
-            decreases: false,
-            assumes: false,
-        }
-    }
 }
 
 #[derive(Args)]

@@ -1,0 +1,33 @@
+Looking at the error, the function `os_init_refines_hl_init` is being called but cannot be found in scope. Looking at the code, I can see that this function is defined in the `impl_u::os_refinement` module, but it's not being imported or used correctly.
+
+The issue is that in the `theorem` module, the function `os_init_refines_hl_init` is being called directly without the proper module path or import. Since this function is defined in a different module (`impl_u::os_refinement`), it needs to be properly referenced.
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    os_init_refines_hl_init(c, pre);
+    init_implies_inv(c, pre);
+}
+=======
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    crate::os_init_refines_hl_init(c, pre);
+    crate::init_implies_inv(c, pre);
+}
+>>>>>>> REPLACE
+```
+
+The change I'm making is to add the proper module path `crate::` before both function calls (`os_init_refines_hl_init` and `init_implies_inv`) so that Verus can find these functions that are defined at the crate root level. This is a safe change that only modifies the proof code and doesn't change any executable logic or function signatures.

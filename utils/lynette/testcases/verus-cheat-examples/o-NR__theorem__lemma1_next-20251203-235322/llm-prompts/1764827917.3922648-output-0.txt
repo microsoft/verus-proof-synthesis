@@ -1,0 +1,45 @@
+Looking at the error and previous attempts, I need to analyze what's happening:
+
+1. The function `lemma1_next` has two postconditions that are failing:
+   - `hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp())`
+   - `post.inv(c)`
+
+2. Previous attempts tried to call helper functions `os_next_refines_hl_next` and `next_preserves_inv`, but these calls failed due to compilation errors or unsafe changes.
+
+3. Looking at the code, I can see these functions are defined as `#[verifier::external_body]` which means they are trusted axioms, but the calls need to be made properly.
+
+4. The issue is that the functions are defined in different modules, so I need to use the correct module paths.
+
+Let me examine the function signatures:
+- `os_next_refines_hl_next` is in the `impl_u::os_refinement` module
+- `next_preserves_inv` is in the `spec_t::os_invariant` module
+
+The key insight is that I need to add assertions at the end of the function body to help verification, and I should call the helper lemmas that are already proven.
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+}
+=======
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+    crate::os_next_refines_hl_next(c, pre, post, lbl);
+    crate::next_preserves_inv(c, pre, post, lbl);
+    assert(hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()));
+    assert(post.inv(c));
+}
+>>>>>>> REPLACE
+```

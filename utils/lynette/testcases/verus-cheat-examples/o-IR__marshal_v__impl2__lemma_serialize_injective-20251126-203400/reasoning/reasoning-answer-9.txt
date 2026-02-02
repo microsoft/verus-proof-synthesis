@@ -1,0 +1,30 @@
+### Step 1: Analyze the Failing Assertion
+- The failing assertion is p1.len() == p2.len(), where p1 = (s.len() as usize).ghost_serialize() and p2 = (o.len() as usize).ghost_serialize().
+- This is inside the Vec<u8> injectivity proof, aiming to show that the length-prefix encodings have identical, fixed size regardless of the values s.len() and o.len().
+- Context: usize::ghost_serialize() is defined as u64 serialization, and u64::ghost_serialize() is spec_u64_to_le_bytes, which should always be 8 bytes.
+
+### Step 2: Root Cause Analysis
+- The solver lacks the fact that usize serialization has a fixed length (8), so it cannot conclude p1.len() == p2.len().
+- Without establishing this constant-length property, subsequent equalities derived from concatenation cannot be decomposed cleanly.
+
+### Step 3: Why Previous Attempts Failed
+- Prior compute attempts likely failed because the link p1 == ((...) as u64).ghost_serialize() and then to spec_u64_to_le_bytes(...) was not explicitly established before computing lengths.
+- The solver needs explicit unfolding to u64 serialization before compute can reduce .len() to 8.
+
+### Step 4: Action Selection
+- Use COMPUTE to evaluate the lengths after explicitly rewriting usize::ghost_serialize to u64::ghost_serialize and then to spec_u64_to_le_bytes.
+- This directly provides the fixed-size (8) result for both p1 and p2, establishing p1.len() == p2.len().
+
+```json
+{
+    "root_cause_analysis": "The proof lacks the fact that usize serialization is fixed-length (via u64 LE encoding), so the solver cannot deduce that the two length prefixes have equal length.",
+    "knows_root_cause": true,
+    "primary_action": "COMPUTE",
+    "secondary_actions": ["SEQSETMAP"],
+    "reasoning_explanation": "By unfolding usize::ghost_serialize to u64::ghost_serialize and then to spec_u64_to_le_bytes, compute can determine the length is 8 for any input, establishing p1.len() == p2.len(). This avoids depending on other unproven properties.",
+    "action_parameters": {
+        "assertion_content": "p1.len() == p2.len()",
+        "guidance": "First rewrite p1 and p2 using the open specs: p1 == ((s.len() as usize) as u64).ghost_serialize() and p2 == ((o.len() as usize) as u64).ghost_serialize(); then rewrite to spec_u64_to_le_bytes(...). Next, compute ((...) as u64).ghost_serialize().len() == spec_u64_to_le_bytes(...).len() == 8 for both p1 and p2 using `by (compute)`. Conclude p1.len() == 8 and p2.len() == 8, hence p1.len() == p2.len(). Keep the computation focused only on `.len()`."
+    }
+}
+```

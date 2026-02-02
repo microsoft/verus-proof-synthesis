@@ -1,0 +1,74 @@
+Looking at the failed postcondition and the previous repair attempts, I need to analyze what's happening:
+
+1. The function `lemma_concurrent_trs_induct` is a proof function that needs to establish `pred(pre, post)` by induction on `pidx`.
+2. The function has a `decreases pidx` clause in its specification (in `concurrent_trs`), so we need to add it to the proof function as well.
+3. Previous attempts that were rejected as "unsafe" were actually trying to add proof code, which should be safe. The issue is likely that they weren't properly structured.
+
+The key insight is that this is an inductive proof over `pidx`. When `pidx == 0`, we have `post == pre`, so `pred(pre, post)` follows from the reflexivity assumption. When `pidx > 0`, we need to use the inductive hypothesis on the intermediate state.
+
+Let me provide a proper inductive proof structure:
+
+```rust
+<<<<<<< SEARCH
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+{
+}
+=======
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+    } else {
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        let state = choose|state: os::State| exists|step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+        assert(pred(pre, state));
+        let step = choose|step| exists|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        assert(concurrent_trs(pre, state, c, core, sub(pidx, 1)));
+        assert(os::next_step(c, state, post, step, lbl));
+        assert(!step.is_actor_step(core));
+        assert(pred(pre, post));
+    }
+}
+>>>>>>> REPLACE
+```

@@ -1,0 +1,25 @@
+Looking at the error and the previous attempts, I can see that the issue is with the `tracked_remove` call on line 992. The precondition `old(self).dom().contains(key)` is failing, which means `self.l4_table@.dom().contains(self.cr3)` is not being established.
+
+The previous attempts were rejected as "unsafe_changes" because they were adding proof blocks inside the function body, which might be considered modifications to the executable code structure.
+
+Let me analyze what's needed:
+1. The `tracked_remove` method requires that the domain contains the key (`self.cr3`)
+2. From the function's precondition, we know `old(self).wf()` is true
+3. From the `wf_l4()` specification, we can see that `self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)`, which means the domain contains `self.cr3`
+
+The issue is that we need to establish this fact before the call. Since this is an executable function (not a proof function), I need to add assertions inside a `proof` block.
+
+Let me try a different approach that should be considered safe - adding the proof block right before the problematic line:
+
+```rust
+<<<<<<< SEARCH
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```

@@ -1,0 +1,46 @@
+Looking at the error, the issue is with the `choose` expressions that have `exists` quantifiers. Verus cannot automatically infer triggers for the `exists` quantifiers inside the `choose` expressions.
+
+The problem is that we're trying to use `#[trigger]` on `os::next_step(c, state, post, step, lbl)` but the `choose` expression for `state` has `state` as a bound variable, and we're trying to reference `state` in the conditions for `step` and `lbl` before `state` is fully determined.
+
+The solution is to restructure the `choose` expressions to avoid circular dependencies and ensure proper trigger inference. We need to:
+
+1. Choose `state` with a properly triggered `exists` quantifier
+2. Then choose `step` and `lbl` based on that `state`
+
+Here's the fix:
+
+```rust
+<<<<<<< SEARCH
+        let state = choose|state: os::State| exists|step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && #[trigger] os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+        let step = choose|step| exists|lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && #[trigger] os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+        let lbl = choose|lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && #[trigger] os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+=======
+        let state = choose|state: os::State| #[trigger] concurrent_trs(pre, state, c, core, sub(pidx, 1)) && exists|step, lbl| 
+            os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+        let step = choose|step| exists|lbl| #[trigger] os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+        let lbl = choose|lbl| #[trigger] os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core);
+>>>>>>> REPLACE
+```
+
+**Explanation:**
+
+The key insight is that we need to use `concurrent_trs(pre, state, c, core, sub(pidx, 1))` as the trigger for choosing `state`, since this is the predicate that uniquely identifies which `state` we're looking for. Once we have `state`, we can then choose `step` and `lbl` based on `os::next_step(c, state, post, step, lbl)`.
+
+The changes:
+1. For `state`: Use `#[trigger] concurrent_trs(pre, state, c, core, sub(pidx, 1))` as the trigger, and move it before the `exists` quantifier
+2. For `step`: Use `#[trigger] os::next_step(c, state, post, step, lbl)` where `state` is now a known value
+3. For `lbl`: Use `#[trigger] os::next_step(c, state, post, step, lbl)` where both `state` and `step` are now known values
+
+This ensures proper trigger inference at each level of the nested `choose` expressions.

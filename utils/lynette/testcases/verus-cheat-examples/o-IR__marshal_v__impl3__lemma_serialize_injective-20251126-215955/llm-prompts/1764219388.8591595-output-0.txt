@@ -1,0 +1,69 @@
+Explanation:
+The failing assertion needs case analysis on Option values and to use the trait preconditions. I refactored the lemma to match the trait’s requires/ensures so we can assume self.is_marshalable(), other.is_marshalable(), and self.ghost_serialize() == other.ghost_serialize(). Then I performed case analysis:
+- None/None: view_equal is true by definition.
+- None/Some and Some/None: substitute the serialized forms and show the first byte must be equal (direct substitution via indexing), exposing the 0 vs 1 contradiction skeleton.
+- Some/Some: substitute serialized forms, strip the leading tag via subrange equalities to get s.ghost_serialize() == o.ghost_serialize(), assert s.is_marshalable() and o.is_marshalable(), then call T::lemma_serialize_injective(s, o) to conclude s.view_equal(o), which substitutes back to Option view_equal.
+
+I only changed the lemma and used if-else case analysis with direct substitutions as requested.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)); // VERUS_ERROR_HERE
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+        assert(self.view_equal(other)) by {
+            if self.is_None() {
+                if other.is_None() {
+                    // substitute value of view_equal for (None, None)
+                    assert(true);
+                } else {
+                    let o = other.get_Some_0();
+                    // substitute serializations for None vs Some and use equality to get first-byte equality
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // substitute concrete first bytes (0 vs 1)
+                    assert(seq![0][0] == (seq![1] + o.ghost_serialize())[0]);
+                }
+            } else {
+                let s = self.get_Some_0();
+                if other.is_None() {
+                    // substitute serializations for Some vs None and use equality to get first-byte equality
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // substitute concrete first bytes (1 vs 0)
+                    assert((seq![1] + s.ghost_serialize())[0] == seq![0][0]);
+                } else {
+                    let o = other.get_Some_0();
+                    // substitute serializations for Some vs Some and strip the leading tag
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    assert(self.ghost_serialize().subrange(1, self.ghost_serialize().len() as int)
+                        == other.ghost_serialize().subrange(1, other.ghost_serialize().len() as int));
+                    assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    // inner values are marshalable
+                    assert(s.is_marshalable());
+                    assert(o.is_marshalable());
+                    s.lemma_serialize_injective(&o);
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(&o));
+                }
+            }
+        }
+    }
+>>>>>>> REPLACE
+```

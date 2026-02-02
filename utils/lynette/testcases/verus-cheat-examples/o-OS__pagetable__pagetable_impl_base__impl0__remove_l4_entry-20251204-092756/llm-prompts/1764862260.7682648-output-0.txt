@@ -1,0 +1,40 @@
+Looking at the error and previous attempts, I can see that the issue is with the `tracked_remove` method call on `self.l4_table.borrow_mut()`. The precondition `old(self).dom().contains(key)` is failing, which means we need to establish that `self.l4_table@.dom().contains(self.cr3)`.
+
+From the previous attempts, I can see that they were all rejected as "unsafe_changes" because they were adding proof blocks inside executable functions. Since this is an executable function (not a `proof fn`), I need to wrap the assertions in a `proof { ... }` block.
+
+Looking at the `wf_l4` specification, I can see that it establishes:
+```
+self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)
+```
+
+This means that `self.l4_table@.dom().contains(self.cr3)` should be true when `self.wf()` holds.
+
+The key insight is that I need to use the broadcast proof functions to reveal the definitions and then assert the required precondition. Let me add the proof block with the necessary assertions:
+
+```rust
+<<<<<<< SEARCH
+            // ret.1@.addr() == target_l3_p,
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+            // ret.1@.addr() == target_l3_p,
+    {
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```
+
+The reason this should work is:
+1. The function requires `old(self).wf()` in its precondition
+2. By calling `self.reveal_page_table_wf()` and `self.reveal_page_table_levels_wf()`, we reveal that `self.wf()` implies `self.wf_l4()`
+3. `self.wf_l4()` establishes that `self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)`
+4. This means `self.l4_table@.dom().contains(self.cr3)` is true
+5. The assertion makes this explicit for the verifier
+
+This approach is different from the previous attempts because it focuses on the minimal set of reveals needed and directly asserts the required precondition.

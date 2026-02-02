@@ -1,0 +1,23 @@
+Looking at the error, the function `os_next_refines_hl_next` cannot be found in scope. The error occurs at line 3549 where this function is being called.
+
+From examining the code, I can see that `os_next_refines_hl_next` is defined in the `impl_u/os_refinement.rs` module at the end of the file, but it's not being imported or made available in the scope where it's being called.
+
+The function is being called in the `theorem` module in the `lemma1_next` proof function. I need to make this function available by adding the appropriate import.
+
+```rust
+<<<<<<< SEARCH
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+
+fn main() {}
+=======
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+use crate::os_next_refines_hl_next;
+use crate::next_preserves_inv;
+
+fn main() {}
+>>>>>>> REPLACE
+```

@@ -1,0 +1,34 @@
+Explanation:
+The failing assertion p1.len() == p2.len() needs justification. We follow the guidance:
+- Rewrite p1 and p2 using the open specs to u64 serialization: ((s.len() as usize) as u64).ghost_serialize() and similarly for o.
+- Unfold ghost_serialize for u64 to spec_u64_to_le_bytes(...).
+- Use by(compute) to show spec_u64_to_le_bytes(_).len() == 8, which holds regardless of the argument.
+- Conclude p1.len() == 8 and p2.len() == 8, hence p1.len() == p2.len().
+
+We implement this by replacing the failing assert with an assert-by block that contains the rewrites and computes.
+
+```rust
+<<<<<<< SEARCH
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == p2.len()); // VERUS_ERROR_HERE
+=======
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == p2.len()) by {
+                    // Rewrite p1 and p2 to the u64 serialization of the lengths
+                    assert(p1 == ((s.len() as usize) as u64).ghost_serialize());
+                    assert(p2 == ((o.len() as usize) as u64).ghost_serialize());
+
+                    // Unfold u64::ghost_serialize to spec_u64_to_le_bytes(...)
+                    assert(((s.len() as usize) as u64).ghost_serialize() == spec_u64_to_le_bytes((s.len() as usize) as u64));
+                    assert(((o.len() as usize) as u64).ghost_serialize() == spec_u64_to_le_bytes((o.len() as usize) as u64));
+
+                    // Compute that u64 encodings are 8 bytes long
+                    assert(spec_u64_to_le_bytes((s.len() as usize) as u64).len() == 8) by (compute);
+                    assert(spec_u64_to_le_bytes((o.len() as usize) as u64).len() == 8) by (compute);
+
+                    // Hence, both prefixes have length 8
+                    assert(p1.len() == 8);
+                    assert(p2.len() == 8);
+                };
+>>>>>>> REPLACE
+```

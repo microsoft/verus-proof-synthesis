@@ -1,0 +1,838 @@
+You are an expert in Verus formal verification. You will be given an incomplete proof that cannot yet succeed verification. Your task is to analyze a specific assertion failure and systematically guide verification debugging by determining the best strategy to apply to the failing assertion.
+
+## PIPELINE for assertion failure `assert(P)`:
+
+### 1. ANALYZE ROOT CAUSE
+First, analyze the failing assertion `assert(P)`. You need to analyze what we already know about the assertion and the code, like preconditions, spec function definitions, arithmetic facts, assertions before the failed one, etc. In the Verus code, pay attention to special syntax like quantified formulas (with `forall` and `exists`), annotated triggers (`#[trigger]`), loop invariants (`invariant`), etc. 
+
+### 2. ACTION SELECTION
+Choose the most appropriate action to apply next on the failing assertion. Focus only on the ***next*** step that a verification engineer should take in the iterative process of debugging. Pick the strategy that is most relevant based on the current verification errors, the definitions used the proof, the relevant preconditions and previously established facts, and the principles of mathematical reasoning.
+
+## Important Guidelines
+
+- Analyze Full Context: Consider the surrounding context of the failing assertion, including preconditions, previous assert statements, and previously applied strategies (both successful and failed). Pick the best action to apply given all of the available information.
+- Self Contained: Use only the code that is provided to you for your proof strategy. You cannot not assume knowledge of outside lemmas or definitions that are not present in the code.
+- Be Concise: Your guidance must be high-level and brief (2-3 sentences maximum). It should steer the general approach, not provide detailed instructions.
+- Understand Available Actions: Read carefully the descriptions of all available actions. There may be capabilities or limitations that may not be obvious from the action name.
+- Review Action History: Carefully consider previous actions, no need to do the same action again and again. Analyze why previous actions failed before deciding to retry them.
+- Action Confidence: If you are highly confident in an action that was previously rejected, you may try it again with refined guidance, especially for the difficult actions.
+- Safe Changes: Prioritize SAFE changes that only modify ghost code (proofs, assertions, loop invariants) and leave the executable code (AST) exactly the same. Do NOT modify the `requires` or `ensures` clauses of the target function (though `decreases` is allowed). Modifying executable statements (e.g., extracting variables, changing loop bounds) is UNSAFE and will be rejected.
+
+## Available Actions
+### PREPROCESSING ANALYSIS:
+- Available lemmas: va_range_lemma
+- No opaque functions found
+
+### ACTIONS:
+- **INSTANTIATE_FORALL**: If the failing assertion starts with `forall`, explicitly instantiate the quantified variable(s) to use in further reasoning. Do this action first! Do not reason directly on an assertion with a quantifier.
+  *When to apply*: Apply when the failing assertion contains a `forall` quantifier that need explicit instantiation with proof blocks. Most effective when the verifier needs help fixing/introducing a specific value for a `forall` expression.
+  *Guidance*: Identify which quantified expressions need instantiation and suggest specific values or patterns.
+- **INSTANTIATE_EXISTS**: If the failing assertion starts with `exists` AND/OR depends on a known fact that starts with `exists`, explicitly instantiate the existentially quantified variable(s) to use in further reasoning.
+  *When to apply*: Apply when the failing assertion contains a `forall` quantifier and/or there are useful facts that are contained in existentially quantified expressions. Most effective when the verifier needs help finding or choosing a witness for an `exists` expression.
+  *Guidance*: Identify which quantified expressions need instantiation.
+- **CASE_ANALYSIS**: If the failing assertion requires case analysis with different proofs for each case, inline a spec function from a failing assertion or known facts (e.g. preconditions) which uses branching.
+  *When to apply*: Apply when when the proof needs to consider different cases based on the given definitions. Most effective when preconditions or spec function definitions contain branching that needs to be analyzed differently for each case. **Note:** for a recursive spec function which requires induction, you **must** use the induction action instead of this one; if the expression contains only one integer variable whose value is bounded, you **must** use by-compute action instead of this one.
+  *Guidance*: Identify the cases that should be used and relevant spec function(s).
+- **EXTENSIONAL_EQUALITY**: Transform collection equality assertions into element-wise comparisons using extensional equality. Handles sequences (Seq<T>), maps (Map<K,V>), sets (Set<T>), and nested structures by first establishing length/domain equality, then proving element-wise equality through quantified assertions.
+  *When to apply*: Apply when the assertion involves collection equality (`seq1 == seq2`, `map1 == map2`, `set1 == set2`) or collection properties requiring element-wise reasoning. Most effective for sequences, maps, sets, and nested structures where the verifier needs explicit length/domain equality followed by element-wise comparison.
+  *Guidance*: Analyze collection equality patterns and nesting depth. For sequences: establish `seq1.len() == seq2.len()` then `assert forall |i| 0 <= i < seq1.len() implies seq1[i] == seq2[i]`. For maps: establish domain equality then `assert forall |k| map1.dom().contains(k) implies map1[k] == map2[k]`. For sets: use `assert forall |x| set1.contains(x) <==> set2.contains(x)`.
+- **INDUCTION**: When the lemma requires inductive reasoning to reason about *recursive* spec functions or to prove the lemma conclusion, transform the lemma into a proof by induction. Add inductive invocations of the lemma within its own proof.
+  *When to apply*: Apply when induction is necessary to prove the current lemma. This is common when recursive definitions show up in the lemma specification. **Notes:** This action is more powerful than simple case analysis: it allows recursive invocations of the current lemma. If the inductive proof should be factored out into a separate lemma, use the inductive lemma action instead.
+  *Guidance*: Analyze why induction is necessary to complete the proof. Identify potential base and inductive cases.
+- **INDUCTIVE_LEMMA**: When the failing assertion requires a separate helper lemma that itself requires a proof by induction, create a new helper lemma for the inductive proof.
+  *When to apply*: Apply when the failing assertion can only be proven by an inductive proof, but the proof should be factored out into a new, separate lemma. **Notes:** this action has important information about setting up the signature of an inductive lemma that is not included in the normal induction action.
+  *Guidance*: Analyze what fact is needed to prove the failing assertion and why it requires induction to prove.
+- **COMPUTE**: This action performs proof by computation: it simplifies spec functions on concrete, constant values (e.g., 0, 1, seq![42]) or on ranges of concrete integers (e.g., 1 to 100).
+  *When to apply*: Consider this action when the asserted expression contains constant variables, and zero or just one integer variable whose value is bounded. Furthermore, if the expression contains complicated computation, such as recursion, bit operation, multiplication, we **should** definitely use this by-compute action. The reason is that the verifier requires special mode to reason about bit-operations, non-linear operations, and can only expand a recursive function a small number of times. And yet, the `compute` engine is not limited by any of these, as long as there is at most one bounded integer variable in the expression. ***Note***: this action should be used BEFORE case analysis, because case-analysis may introduce more variables into the asserted expression, causing by-compute not appliable.
+  *Guidance*: Describe what expressions to compute and what concrete argument value or argument value-range to use.
+- **SEQSETMAP**: Some proof requires an understanding of Seq/Set/Map/Vec/Multiset APIs, axioms, and available lemma functions.
+  *When to apply*: Apply when the asserted expression involves APIs of Seq/Set/Map.
+  *Guidance*: This action is an expert in Verus data structure: Seq, Set, and Map.
+- **NONLINEAR_ARITHMETIC**: Nonlinear arithmetic supports reasoning about equalities and inequalities for expressions that use arithmetic operators +, -, *, /, % and non-constant number values. This action also includes knowledge of axioms about natural numbers/integers, such as commutativity. This action CANNOT reason about spec function definitions or simplify spec function expressions: it will treat spec functions as arbitrary values. If you need to reason about the value of a spec function expression, apply another action FIRST (e.g., reveal with fuel, inductive lemma, compute on concrete values).
+  *When to apply*: Apply when the failing assertion involves operators +, -, *, /, % and equational reasoning, including on non-concrete (arbitrary) values. Most effective for assertions with integer/natural number operations, bounds checking, or mathematical properties. **Notes:** this action uses a specialized solver that CANNOT use and simplify spec function definitions. You can only establish simple facts about +, -, *, /, %, and any spec functions will be treated as arbitrary values. If the expression uses spec functions, you may need to combine this action with other actions, or use a different action entirely.
+  *Guidance*: Describe what equalities or inequalities to establish using nonlinear arithmetic, and why nonlinear arithmetic is sufficient to establish those facts. Do not describe what Verus features to use or assume existence of any Verus lemmas/axioms besides those in this file.
+- **INTEGER_RING**: Nonlinear formulas that consists of congruence modulo relations among integers (e.g., to show that a % n == b % n ==> (a * c) % n == (b * c) % n) can benefit from integer_ring.
+  *When to apply*: Apply when the failing assertion is about modulo-congruence relationship among integers. Keep in mind that integer_ring can only be used with int parameters; it does NOT support division; it does NOT support inequalities.
+  *Guidance*: Think about what integer modulo-congruence relationship to establish using integer_ring.
+- **BIT_VECTOR_REASONING**: When the failing assertion requires reasoning about bitwise operators `&`, `|`, `^`, `<<` and `>>`, and/or the truncating arithmetic functions `add`, `sub`, and `mul`.
+  *When to apply*: Apply when the assertion involves bitwise operations and truncating arithmetic functions. Bit vector reasoning is more effective than arithmetic reasoning when these operations are present.
+  *Guidance*: Describe mathematically why the failing assertion is true. Do not describe what Verus features to use or assume existence of any Verus lemmas/axioms besides those in this file.
+- **ADD_TRIGGER_ASSERT**: Add strategic trigger assertions to help the verifier instantiate quantified formulas. Analyzes trigger patterns from preconditions, previous assertions, and spec functions to add targeted assert statements that provide necessary quantifier instantiations for proof completion.
+  *When to apply*: Apply when the assertion failure is caused by missing quantifier triggers, preventing the verifier from instantiating relevant quantified formulas. Most effective when preconditions or previous assertions/spec functions contain `#[trigger]` annotations and the verifier needs specific trigger expressions to instantiate quantifiers for the proof.
+  *Guidance*: Identify trigger patterns in preconditions, previous assertions, and spec functions. Determine what instantiations are missing for the failed assertion, then add `assert(trigger_expression)` statements to provide the necessary quantifier triggers. Focus on expressions marked with `#[trigger]` annotations.
+- **USELEMMA**: If the full code contains other proof functions (lemmas or axioms), we may need to call them to prove the failing assertion. Do NOT assume any lemma functions that do not exist in the code!
+  *When to apply*: When the full code contains any proof function other than the current function to be proved, make sure to check if any of those proof functions can help prove the failing assert. Note: do NOT make sure lemma functions to call. Use this action ONLY when the full code contains another proof function.
+  *Guidance*: Do not make up proof functions that do not exist; only call a proof function when it is already in the code and can help prove the failing assert.
+  *Available lemmas*: va_range_lemma
+- **LOOPINV**: If the assert statement is after a loop in the same function, proper invariants need to be added to that loop.
+  *When to apply*: Apply when there is a loop before the asserted expression.
+  *Guidance*: Loop invariants are needed to tell Verus what properties are true at the end of a loop.
+
+## Relevant vstd Library Examples
+
+### Example 1: axiom_hashmap_deepview_borrow
+
+Borrowing a key works the same way on deep_view as on view,
+if deep_view is injective; see `axiom_contains_deref_key`.
+
+```rust
+pub broadcast proof fn axiom_hashmap_deepview_borrow<
+    K: DeepView + Borrow<Q>,
+    V: DeepView,
+    Q: View<V = <K as DeepView>::V> + Hash + Eq + ?Sized,
+>(m: HashMap<K, V>, k: &Q)
+    requires
+        obeys_key_model::<K>(),
+        crate::relations::injective(|k: K| k.deep_view()),
+    ensures
+        #[trigger] contains_borrowed_key(m@, k) <==> m.deep_view().contains_key(k@),
+```
+
+### Example 2: vstd::tokens::seq::new
+
+```rust
+pub proof fn new(off: nat, len: nat, tracked f: GhostSubmap<int, V>) -> (tracked result:
+        GhostSubseq<V>)
+        requires
+            f@.dom() == Set::new(|i: int| off <= i < off + len),
+        ensures
+            result.id() == f.id(),
+            result.off() == off,
+            result@ == Seq::new(len, |i| f@[off + i])
+{
+        GhostSubseq { off: off, len: len, frac: f }
+    }
+```
+
+### Example 3: lemma_mod_induction_forall2
+
+This utility function helps prove a mathematical property of a
+pair of integers by induction. The caller supplies a predicate
+over a pair of integers, proves the predicate holds in certain
+base cases, and proves correctness of inductive steps both upward
+and downward from the base cases. This lemma invokes induction to
+establish that the predicate holds for all possible inputs.
+
+`f`: The integer predicate
+
+`n`: Upper bound on the base cases. Specifically, the caller
+establishes `f(i, j)` for every pair of values `i, j` satisfying
+`0 <= i < n` and `0 <= j < n`.
+
+To prove inductive steps from the base cases, the caller must
+establish that:
+
+1) For any `i >= 0`, `f(i, j) ==> f(add1(i, n), j)`. `add1(i, n)`
+is just `i + n`, but written in a functional style so that it can
+be used where functional triggers are required.
+
+2) For any `j >= 0`, `f(i, j) ==> f(i, add1(j, n))`
+
+3) For any `i < n`, `f(i) ==> f(sub1(i, n))`. `sub1(i, n)` is just
+`i - n`, but written in a functional style so that it can be used
+where functional triggers are required.
+
+4) For any `j < n`, `f(j) ==> f(i, sub1(j, n))`.
+
+```rust
+pub proof fn lemma_mod_induction_forall2(n: int, f: spec_fn(int, int) -> bool)
+    requires
+        n > 0,
+        forall|i: int, j: int| 0 <= i < n && 0 <= j < n ==> #[trigger] f(i, j),
+        forall|i: int, j: int| i >= 0 && #[trigger] f(i, j) ==> #[trigger] f(add1(i, n), j),
+        forall|i: int, j: int| j >= 0 && #[trigger] f(i, j) ==> #[trigger] f(i, add1(j, n)),
+        forall|i: int, j: int| i < n && #[trigger] f(i, j) ==> #[trigger] f(sub1(i, n), j),
+        forall|i: int, j: int| j < n && #[trigger] f(i, j) ==> #[trigger] f(i, sub1(j, n)),
+    ensures
+        forall|i: int, j: int| #[trigger] f(i, j)
+{
+    assert forall|x: int, y: int| #[trigger] f(x, y) by {
+        assert forall|i: int| 0 <= i < n implies #[trigger] f(i, y) by {
+            let fj = |j| f(i, j);
+            lemma_mod_induction_forall(n, fj);
+            assert(fj(y));
+        };
+        let fi = |i| f(i, y);
+        lemma_mod_induction_forall(n, fi);
+        assert(fi(x));
+    };
+}
+```
+
+### Example 4: vstd::multiset_lib::lemma_is_singleton
+
+A multiset has exactly one element, if and only if, it has at least one element with multiplicity 1 and any two elements are equal.
+
+```rust
+pub proof fn lemma_is_singleton(s: Multiset<A>)
+        ensures
+            s.is_singleton() <==> (s.len() == 1)
+{
+        if s.is_singleton() {
+            s.lemma_singleton_size();
+        }
+        if s.len() == 1 {
+            assert forall|x: A, y: A| s.contains(x) && s.contains(y) implies x == y by {
+                assert(s.remove(x).len() == 0);
+                if x != y {
+                    assert(s.remove(x).count(y) == 0);
+                    assert(s.remove(x).insert(x) =~= s);
+                }
+            }
+        }
+    }
+```
+
+### Example 5: find_unique_maximal_ensures
+
+Proof of correctness and expected behavior for `Set::find_unique_maximal`.
+
+```rust
+pub proof fn find_unique_maximal_ensures(self, r: spec_fn(A, A) -> bool)
+        requires
+            self.finite(),
+            self.len() > 0,
+            total_ordering(r),
+        ensures
+            is_maximal(r, self.find_unique_maximal(r), self) && (forall|max: A|
+                is_maximal(r, max, self) ==> self.find_unique_maximal(r) == max),
+        decreases self.len(),
+```
+
+**Context (helper functions used across examples):**
+
+```rust
+// lemma_mod_induction_forall
+pub proof fn lemma_mod_induction_forall(n: int, f: spec_fn(int) -> bool)
+    requires
+        n > 0,
+        forall|i: int| 0 <= i < n ==> #[trigger] f(i),
+        forall|i: int| i >= 0 && #[trigger] f(i) ==> #[trigger] f(add1(i, n)),
+        forall|i: int| i < n && #[trigger] f(i) ==> #[trigger] f(sub1(i, n)),
+    ensures
+        forall|i| #[trigger] f(i),
+{
+    assert forall|i: int| #[trigger] f(i) by {
+        lemma_induction_helper(n, f, i);
+    };
+}
+
+// vstd::multiset_lib::lemma_singleton_size
+pub proof fn lemma_singleton_size(self)
+        requires
+            self.is_singleton(),
+        ensures
+            self.len() == 1,
+{
+        self.lemma_is_singleton_contains_elem_equal_singleton(self.choose());
+    }
+
+// contains
+pub closed spec fn contains(self, a: A) -> bool
+{
+        (self.set)(a)
+    }
+
+// count
+pub uninterp spec fn count(self, value: V) -> nat
+{
+        Self::from_map(Map::new(|k| m.contains(k), |v| 1))
+    }
+
+// vstd::map::insert
+pub closed spec fn insert(self, key: K, value: V) -> Map<K, V>
+{
+        Map {
+            mapping: |k|
+                if k == key {
+                    Some(value)
+                } else {
+                    (self.mapping)(k)
+                },
+        }
+    }
+
+// vstd::multiset::len
+pub uninterp spec fn len(self) -> nat
+{
+        Self::from_map(Map::new(|k| m.contains(k), |v| 1))
+    }
+
+// vstd::map::remove
+pub closed spec fn remove(self, key: K) -> Map<K, V>
+{
+        Map {
+            mapping: |k|
+                if k == key {
+                    None
+                } else {
+                    (self.mapping)(k)
+                },
+        }
+    }
+
+```
+
+
+
+## Response Format
+
+Your response should follow this format and your reasoning should be step-by-step and detailed before the final answer:
+
+<response>
+
+### Step 1: Analyze the Failing Assertion
+- Summarize what the assertion is checking.
+- Describe the current program state when the assertion fails.
+- List any relevant context (inputs, paths, prior conditions).
+- ...
+
+### Step 2: Root Cause Analysis
+- Explain *why* `assert(P)` is failing.
+- Identify the incorrect assumptions, missing checks, or faulty logic.
+- Clarify which values or conditions violate `P`.
+- ... 
+
+### Step 3: Why Previous Attempts Failed
+- Briefly describe prior fixes or hypotheses (if any).
+- Explain why they did not address the real root cause.
+- Highlight any misunderstandings or overlooked factors.
+- ...
+
+### Step 4: Action Selection
+- State what you recommend doing next.
+- Justify the choice based on the analysis in Steps 1–3.
+
+```json
+{
+    "root_cause_analysis": "Detailed analysis of WHY assert(P) is failing",
+    "knows_root_cause": true/false,
+    "primary_action": "ACTION_NAME",
+    "secondary_actions": ["ACTION_NAME1", "ACTION_NAME2"],
+    "reasoning_explanation": "Why this action was chosen based on the pipeline",
+    "action_parameters": {
+        "assertion_content": "P",
+        "guidance": "Guidance for the action (5 sentences max)"
+    }
+}
+``` 
+</response>
+
+Please analyze this assertion failure following the systematic pipeline:
+
+## Error Information
+- Error Type: AssertFail
+- Error Location: Lines 98-98
+- Error Text:             assert(ret@.len() == ret.len);
+
+## Code Context (surrounding area)
+```rust
+        &&& spec_va_4k_valid(self.start)
+        &&& self@.len() == self.len
+        &&& self@.no_duplicates()
+        &&& forall|i: int| #![trigger self@[i]] 0 <= i < self.len ==> spec_va_4k_valid(self@[i])
+        &&& self.view_match_spec()
+    }
+
+    pub closed spec fn view_match_spec(&self) -> bool {
+        &&& forall|i: usize|
+            #![trigger spec_va_add_range(self.start, i)]
+            0 <= i < self.len ==> spec_va_add_range(self.start, i) == self@[i as int]
+    }
+
+    #[verifier::spinoff_prover]
+    pub fn new(va: VAddr, len: usize) -> (ret: Self)
+        requires
+            spec_va_4k_valid(va),
+            va_4k_range_valid(va, len),
+            va < usize::MAX - len * 4096,
+        ensures
+            ret.wf(),
+            ret.start == va,
+            ret.len == len,
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len);
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+        Self { start: va, len: len, view: seq }
+    }
+
+}
+
+
+
+// File: util/page_ptr_util_u.rs
+pub open spec fn spec_va_4k_range_valid(va: usize, len: usize) -> bool {
+    forall|i: usize|
+        #![trigger spec_va_add_range(va, i)]
+        0 <= i < len ==> spec_va_4k_valid(spec_va_add_range(va, i))
+}
+
+pub open spec fn spec_va_4k_valid(va: usize) -> bool {
+    (va & (!MEM_4k_MASK) as usize == 0) && (va as u64 >> 39u64 & 0x1ffu64)
+        >= KERNEL_MEM_END_L4INDEX as u64
+}
+
+pub open spec fn spec_va_add_range(va: usize, i: usize) -> usize {
+    (va + (i * 4096)) as usize
+}
+
+	#[verifier::external_body]
+#[verifier(external_body)]
+pub proof fn va_range_lemma()
+```
+
+## Full Code
+```rust
+use vstd::prelude::*;
+use vstd::simple_pptr::*;
+
+fn main() {}
+
+pub type VAddr = usize;
+
+verus!{
+#[verifier::loop_isolation(false)]
+
+// File: util/page_ptr_util_u.rs
+
+#[verifier(when_used_as_spec(spec_va_4k_valid))]
+pub fn va_4k_valid(va: usize) -> (ret: bool)
+    ensures
+        ret == spec_va_4k_valid(va),
+{
+    (va & (!MEM_4k_MASK) as usize == 0) && (va as u64 >> 39u64 & 0x1ffu64)
+        >= KERNEL_MEM_END_L4INDEX as u64
+}
+
+#[verifier(when_used_as_spec(spec_va_4k_range_valid))]
+pub fn va_4k_range_valid(va: usize, len: usize) -> (ret: bool)
+    requires
+        va_4k_valid(va),
+    ensures
+        spec_va_4k_range_valid(va, len) == ret,
+{
+    for idx in iter: 0..len
+        invariant
+            va_4k_valid(va),
+            forall|i: usize|
+                #![trigger spec_va_add_range(va, i)]
+                0 <= i < idx ==> spec_va_4k_valid(spec_va_add_range(va, i)),
+    {
+        if va_4k_valid(va_add_range(va, idx)) == false {
+            return false;
+        }
+    }
+    true
+}
+
+#[verifier(external_body)]
+pub fn va_add_range(va: usize, i: usize) -> (ret: usize)
+    ensures
+        ret == spec_va_add_range(va, i),
+        i != 0 ==> ret != va,
+{
+    (va + (i * 4096)) as usize
+}
+
+
+// File: va_range.rs
+#[derive(Clone, Copy)]
+pub struct VaRange4K {
+    pub start: VAddr,
+    pub len: usize,
+    pub view: Ghost<Seq<VAddr>>,
+}
+
+impl VaRange4K {
+
+    pub closed spec fn view(&self) -> Seq<VAddr> {
+        self.view@
+    }
+
+    pub open spec fn wf(&self) -> bool {
+        &&& self.start + self.len * 4096 < usize::MAX
+        &&& spec_va_4k_valid(self.start)
+        &&& self@.len() == self.len
+        &&& self@.no_duplicates()
+        &&& forall|i: int| #![trigger self@[i]] 0 <= i < self.len ==> spec_va_4k_valid(self@[i])
+        &&& self.view_match_spec()
+    }
+
+    pub closed spec fn view_match_spec(&self) -> bool {
+        &&& forall|i: usize|
+            #![trigger spec_va_add_range(self.start, i)]
+            0 <= i < self.len ==> spec_va_add_range(self.start, i) == self@[i as int]
+    }
+
+    #[verifier::spinoff_prover]
+    pub fn new(va: VAddr, len: usize) -> (ret: Self)
+        requires
+            spec_va_4k_valid(va),
+            va_4k_range_valid(va, len),
+            va < usize::MAX - len * 4096,
+        ensures
+            ret.wf(),
+            ret.start == va,
+            ret.len == len,
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len); // VERUS_ERROR_HERE
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+        Self { start: va, len: len, view: seq }
+    }
+
+}
+
+
+
+// File: util/page_ptr_util_u.rs
+pub open spec fn spec_va_4k_range_valid(va: usize, len: usize) -> bool {
+    forall|i: usize|
+        #![trigger spec_va_add_range(va, i)]
+        0 <= i < len ==> spec_va_4k_valid(spec_va_add_range(va, i))
+}
+
+pub open spec fn spec_va_4k_valid(va: usize) -> bool {
+    (va & (!MEM_4k_MASK) as usize == 0) && (va as u64 >> 39u64 & 0x1ffu64)
+        >= KERNEL_MEM_END_L4INDEX as u64
+}
+
+pub open spec fn spec_va_add_range(va: usize, i: usize) -> usize {
+    (va + (i * 4096)) as usize
+}
+
+	#[verifier::external_body]
+#[verifier(external_body)]
+pub proof fn va_range_lemma()
+    ensures
+        forall|va: VAddr, len: usize, i: usize, j: usize|
+            #![trigger spec_va_4k_range_valid(va,len), spec_va_add_range(va, i), spec_va_add_range(va, j)]
+            va_4k_valid(va) && spec_va_4k_range_valid(va, len) && 0 <= i < len && 0 <= i < len ==> (
+            (i == j) == (spec_va_add_range(va, i) == spec_va_add_range(va, j))),
+	{
+		unimplemented!()
+	}
+
+
+// File: define.rs
+pub const KERNEL_MEM_END_L4INDEX: usize = 1;
+
+pub const MEM_4k_MASK: u64 = 0x0000_ffff_ffff_f000;
+
+
+}
+```
+
+## Previous Repair Attempts
+
+### Attempt 6: SEQSETMAP - ✗ REJECTED
+- **Detailed Changes**:
+  - Candidate 0: unsafe_changes: Generated code changes are not considered safe
+  ```diff
+<<<<<<< SEARCH
+            ret.len == len,
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len);
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+        Self { start: va, len: len, view: seq }
+=======
+            ret.len == len,
+    {
+        let seq = Ghost(Seq::new(len as nat, |i: int| spec_va_add_range(va, i as usize)));
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            
+            // The sequence length matches by construction using Seq::new
+            assert(ret@.len() == len as nat) by {
+                // Seq::new creates a sequence with the specified length
+            }
+            assert(ret@.len() == ret.len);
+            
+            // Prove no duplicates using the va_range_lemma
+            va_range_lemma();
+            assert(ret@.no_duplicates()) by {
+                assert(forall|i: int, j: int| 
+                    0 <= i < ret@.len() && 0 <= j < ret@.len() && i != j ==> ret@[i] != ret@[j]) by {
+                    // The lemma ensures different indices give different addresses
+                }
+            }
+            
+            // All addresses are valid by precondition va_4k_range_valid
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i])) by {
+                // Each element is constructed using spec_va_add_range which preserves validity
+            }
+            
+            // View matches spec by construction
+            assert(ret.view_match_spec()) by {
+                assert(forall|i: usize| 0 <= i < ret.len ==> 
+                    spec_va_add_range(ret.start, i) == ret@[i as int]) by {
+                    // The sequence is constructed exactly as spec_va_add_range(va, i)
+                }
+            }
+        }
+        Self { start: va, len: len, view: seq }
+>>>>>>> REPLACE  ```
+
+### Attempt 7: SEQSETMAP - ✗ REJECTED
+- **Detailed Changes**:
+  - Candidate 0: No error reduction
+  ```diff
+<<<<<<< SEARCH
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len);
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+        Self { start: va, len: len, view: seq }
+=======
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            
+            // Since ret.wf() must hold in the postcondition, and seq is arbitrary,
+            // we can deduce that seq@ must have the right properties
+            assert(ret@.len() == ret.len) by {
+                // This must hold because ret.wf() requires it and ret.wf() is ensured
+                assert(ret.wf()); // This will be true in the postcondition
+            }
+            
+            assert(ret@.no_duplicates()) by {
+                assert(ret.wf());
+            }
+            
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i])) by {
+                assert(ret.wf());
+            }
+            
+            assert(ret.view_match_spec()) by {
+                assert(ret.wf());
+            }
+        }
+        Self { start: va, len: len, view: seq }
+>>>>>>> REPLACE  ```
+
+### Attempt 8: SEQSETMAP - ✗ REJECTED
+- **Detailed Changes**:
+  - Candidate 0: unsafe_changes: Generated code changes are not considered safe
+  ```diff
+<<<<<<< SEARCH
+            ret.len == len,
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len);
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+        Self { start: va, len: len, view: seq }
+=======
+            ret.len == len,
+    {
+        let seq = Ghost(arbitrary::<Seq<VAddr>>()); // TODO: please replace arbitrary() with the right expression
+        proof {
+            // Since the postcondition ensures ret.wf(), and we're returning 
+            // Self { start: va, len: len, view: seq }, the seq@ must satisfy
+            // all the properties required by wf()
+            
+            // We can assert these properties will hold because they're guaranteed
+            // by the postcondition constraint that ret.wf() must be true
+            assert(va + len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(va));
+            
+            // The following properties must hold for seq@ because the postcondition
+            // guarantees ret.wf(), which requires these properties
+            assert(seq@.len() == len);
+            assert(seq@.no_duplicates());
+            assert(forall|i: int| #![trigger seq@[i]] 0 <= i < len ==> spec_va_4k_valid(seq@[i]));
+            assert(forall|i: usize| #![trigger spec_va_add_range(va, i)] 0 <= i < len ==> spec_va_add_range(va, i) == seq@[i as int]);
+        }
+        Self { start: va, len: len, view: seq }
+>>>>>>> REPLACE  ```
+
+### Attempt 9: SEQSETMAP - ✗ REJECTED
+
+### Attempt 10: SEQSETMAP - ✗ REJECTED
+
+### Attempt 11: SEQSETMAP - ✗ REJECTED
+- **Detailed Changes**:
+  - Candidate 0: unsafe_changes: Generated code changes are not considered safe
+  ```diff
+<<<<<<< SEARCH
+            ret.len == len,
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len);
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+        Self { start: va, len: len, view: seq }
+=======
+            ret.len == len,
+    {
+        let seq = Ghost(Seq::new(len as nat, |i: int| spec_va_add_range(va, i as usize)));
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            
+            // The sequence length matches by construction using Seq::new
+            assert(ret@.len() == ret.len);
+            
+            // Prove no duplicates using the va_range_lemma
+            va_range_lemma();
+            assert(ret@.no_duplicates()) by {
+                assert(forall|i: int, j: int| 
+                    0 <= i < ret@.len() && 0 <= j < ret@.len() && i != j ==> ret@[i] != ret@[j]) by {
+                    assert(forall|i: usize, j: usize|
+                        0 <= i < len && 0 <= j < len && i != j ==> 
+                        spec_va_add_range(va, i) != spec_va_add_range(va, j));
+                }
+            }
+            
+            // All addresses are valid by precondition va_4k_range_valid
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i])) by {
+                assert(forall|i: int| 0 <= i < ret.len ==> ret@[i] == spec_va_add_range(va, i as usize));
+                assert(spec_va_4k_range_valid(va, len));
+            }
+            
+            // View matches spec by construction
+            assert(ret.view_match_spec()) by {
+                assert(forall|i: usize| 0 <= i < ret.len ==> 
+                    spec_va_add_range(ret.start, i) == ret@[i as int]);
+            }
+        }
+        Self { start: va, len: len, view: seq }
+>>>>>>> REPLACE  ```
+
+### Attempt 12: SEQSETMAP - ✗ REJECTED
+- **Detailed Changes**:
+  - Candidate 0: unsafe_changes: Generated code changes are not considered safe
+  ```diff
+<<<<<<< SEARCH
+            ret.len == len,
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len);
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+        Self { start: va, len: len, view: seq }
+=======
+            ret.len == len,
+    {
+        let seq = Ghost(Seq::new(len as nat, |i: int| spec_va_add_range(va, i as usize)));
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            
+            // seq@ has length len by construction using Seq::new
+            assert(ret@.len() == ret.len);
+            
+            // Prove no duplicates using the va_range_lemma
+            va_range_lemma();
+            assert(ret@.no_duplicates()) by {
+                assert(forall|i: int, j: int| 
+                    0 <= i < ret@.len() && 0 <= j < ret@.len() && i != j ==> ret@[i] != ret@[j]) by {
+                    assert(forall|i: usize, j: usize|
+                        0 <= i < len && 0 <= j < len && i != j ==> 
+                        spec_va_add_range(va, i) != spec_va_add_range(va, j));
+                }
+            }
+            
+            // All addresses are valid by precondition
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i])) by {
+                assert(forall|i: int| 0 <= i < ret.len ==> ret@[i] == spec_va_add_range(va, i as usize));
+                assert(spec_va_4k_range_valid(va, len));
+            }
+            
+            // View matches spec by construction
+            assert(ret.view_match_spec()) by {
+                assert(forall|i: usize| 0 <= i < ret.len ==> 
+                    spec_va_add_range(ret.start, i) == ret@[i as int]);
+            }
+        }
+        Self { start: va, len: len, view: seq }
+>>>>>>> REPLACE  ```
+
+### Attempt 13: SEQSETMAP - ✗ REJECTED
+- **Detailed Changes**:
+  - Candidate 0: No error reduction
+  ```diff
+<<<<<<< SEARCH
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len);
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+        Self { start: va, len: len, view: seq }
+=======
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            
+            // Since the postcondition guarantees ret.wf(), the arbitrary sequence
+            // must satisfy all the wf() requirements, including the length constraint
+            assert(ret@.len() == ret.len) by {
+                // The postcondition ensures ret.wf(), which requires ret@.len() == ret.len
+                // Therefore, the arbitrary sequence must have length equal to len
+            }
+            
+            assert(ret@.no_duplicates()) by {
+                // The postcondition ensures ret.wf(), which requires no_duplicates
+            }
+            
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i])) by {
+                // The postcondition ensures ret.wf(), which requires all elements to be valid
+            }
+            
+            assert(ret.view_match_spec()) by {
+                // The postcondition ensures ret.wf(), which requires view_match_spec
+            }
+        }
+        Self { start: va, len: len, view: seq }
+>>>>>>> REPLACE  ```
+
+**Important**: Analyze the previous attempts carefully before proposing a new repair. Avoid repeating failed approaches, especially those marked as UNSAFE and SYNTAX ERROR. Consider why each attempt failed and ensure your solution addresses those issues.
+

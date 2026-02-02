@@ -1,0 +1,33 @@
+Looking at the error, I can see that there's a misplaced `proof` block at lines 105-112. The error indicates that the parser is expecting certain keywords but found a `proof` block in an invalid location.
+
+Examining the code, I can see that there are two `proof` blocks in the `new` function:
+1. One inside the function body (which is correct)
+2. Another one after the function ends (which is causing the error)
+
+The second `proof` block appears to be orphaned and is not properly associated with any function or context. This is causing the compilation error.
+
+The fix is to remove the orphaned `proof` block that appears after the `new` function ends.
+
+```rust
+<<<<<<< SEARCH
+        Self { start: va, len: len, view: seq }
+    }
+    proof {
+        assert(ret.start + ret.len * 4096 < usize::MAX);
+        assert(spec_va_4k_valid(ret.start));
+        assert(ret@.len() == ret.len);
+        assert(ret@.no_duplicates());
+        assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+        assert(ret.view_match_spec());
+    }
+
+}
+=======
+        Self { start: va, len: len, view: seq }
+    }
+
+}
+>>>>>>> REPLACE
+```
+
+The orphaned `proof` block was placed outside of any function context, which is not valid Verus syntax. Proof blocks must be inside functions or associated with specific constructs. The assertions in that proof block were also referencing `ret` which is not in scope outside the function. By removing this orphaned proof block, the compilation error should be resolved.

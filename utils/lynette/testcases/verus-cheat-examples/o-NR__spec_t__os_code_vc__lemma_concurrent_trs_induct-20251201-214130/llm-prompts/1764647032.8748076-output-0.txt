@@ -1,0 +1,41 @@
+Looking at the error, the issue is that Verus cannot automatically infer triggers for the quantifiers in the `choose` expressions. The error occurs because the `#![trigger ...]` syntax is being used incorrectly - it should be placed after the quantifier variables and before the body, and the trigger expression needs to be part of the body itself.
+
+The previous attempts tried to add triggers but used incorrect syntax. The correct approach is to use `#[trigger]` attribute on expressions within the body of the quantifier, not `#![trigger ...]` as an attribute on the entire block.
+
+Let me fix this by properly annotating the trigger terms:
+
+```rust
+<<<<<<< SEARCH
+        let state = choose|state: os::State| exists|step, lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+=======
+        let state = choose|state: os::State| exists|step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+>>>>>>> REPLACE
+```

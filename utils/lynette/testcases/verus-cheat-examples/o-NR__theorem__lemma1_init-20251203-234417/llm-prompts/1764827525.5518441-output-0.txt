@@ -1,0 +1,43 @@
+Looking at the error and previous attempts, I can see that the function `lemma1_init` needs to establish two postconditions:
+1. `hlspec::init(c.interp(), pre.interp(c))`
+2. `pre.inv(c)`
+
+The previous attempts were rejected as unsafe because they were trying to add imports and make other changes. I can see from the code that there are already two proof functions defined that should help establish these postconditions:
+
+1. `os_init_refines_hl_init` - which should establish the first postcondition
+2. `init_implies_inv` - which should establish the second postcondition
+
+Let me add the necessary assertions by calling these existing proof functions:
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+}
+=======
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    os_init_refines_hl_init(c, pre);
+    init_implies_inv(c, pre);
+}
+>>>>>>> REPLACE
+```
+
+This approach calls the existing proof functions that should establish each postcondition based on the precondition `os::init(c, pre)`. The functions are already defined in the codebase:
+
+- `os_init_refines_hl_init` takes the same parameters and has the precondition `os::init(c, s)` and ensures `hlspec::init(c.interp(), s.interp(c))`
+- `init_implies_inv` takes the same parameters and has the precondition `os::init(c, s)` and ensures `s.inv(c)`
+
+This should be a safe change that only adds proof code without modifying any executable statements or function signatures.

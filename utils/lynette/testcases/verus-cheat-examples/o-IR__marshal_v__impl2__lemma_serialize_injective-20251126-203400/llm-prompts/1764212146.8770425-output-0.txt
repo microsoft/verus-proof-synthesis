@@ -1,0 +1,30 @@
+Explanation:
+The failing assertion p1.len() == p2.len() requires using the fact that usize::ghost_serialize serializes via u64, and u64 is serialized to a fixed-length 8-byte little-endian sequence. We unfold the open specs to relate p1 and p2 to spec_u64_to_le_bytes of the corresponding u64 values, then use the lemma (available via vstd::bytes) that for all x: u64, spec_u64_to_le_bytes(x).len() == 8. To make sure the quantified lemma is instantiated, we assert the specific instances with the spec_u64_to_le_bytes(x).len() terms. With both p1 and p2 having length 8, the original assertion follows.
+
+```rust
+<<<<<<< SEARCH
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == p2.len()); // VERUS_ERROR_HERE
+=======
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == p2.len()) by {
+                    // Rewrite usize serialization to u64 little-endian bytes
+                    let x1 = (s.len() as usize) as u64;
+                    let x2 = (o.len() as usize) as u64;
+
+                    // Connect p1 and p2 to u64 serialization lengths via open specs
+                    assert(p1.len() == x1.ghost_serialize().len());
+                    assert(p2.len() == x2.ghost_serialize().len());
+                    assert(x1.ghost_serialize().len() == spec_u64_to_le_bytes(x1).len());
+                    assert(x2.ghost_serialize().len() == spec_u64_to_le_bytes(x2).len());
+
+                    // Instantiate the lemma that u64 encodes to 8 bytes (quantified over all x)
+                    assert(spec_u64_to_le_bytes(x1).len() == 8);
+                    assert(spec_u64_to_le_bytes(x2).len() == 8);
+
+                    // Hence both prefixes have equal length
+                    assert(p1.len() == 8);
+                    assert(p2.len() == 8);
+                };
+>>>>>>> REPLACE
+```

@@ -1,0 +1,47 @@
+Looking at the error, the precondition `old(self).dom().contains(key)` is failing for the call `self.l4_table.borrow_mut().tracked_remove(self.cr3)` on line 992.
+
+The issue is that `tracked_remove` requires that the map's domain contains the key being removed. In this case, we need `self.l4_table@.dom().contains(self.cr3)` to be true.
+
+Looking at the previous attempts, they all tried to add proof blocks with various assertions, but were rejected as unsafe. The key insight is that we need to establish that `self.l4_table@.dom().contains(self.cr3)` is true based on the function's preconditions.
+
+From the function's preconditions, we have `old(self).wf()`, and from the `wf_l4()` specification, we can see that `self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)`, which means the domain contains exactly `self.cr3`.
+
+However, since this is an executable function (not a proof function), I need to add the assertion inside a `proof {...}` block:
+
+```rust
+<<<<<<< SEARCH
+            // ret.1@.addr() == target_l3_p,
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+            // ret.1@.addr() == target_l3_p,
+    {
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```
+
+Wait, I see that the previous attempts were rejected as unsafe. Let me reconsider the approach. The issue might be that I'm trying to call methods on `self` within the proof block, which might not be allowed.
+
+Let me try a simpler approach by directly asserting what we need based on the preconditions:
+
+```rust
+<<<<<<< SEARCH
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+    {
+        proof {
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```

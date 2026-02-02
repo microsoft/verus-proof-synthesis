@@ -1,0 +1,13 @@
+Explanation:
+The failing post-condition is for the proof function lemma_serialize_injective in the impl for Vec<u8>. Since the trait method requires ensures self.view_equal(other), and the function body is currently empty, the post-condition is not proven. To address this, we add an explicit assertion at the end of the function body: assert(self.view_equal(other));. As this is a proof fn, we place the assertion directly without a proof block.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other));
+    }
+>>>>>>> REPLACE
+```

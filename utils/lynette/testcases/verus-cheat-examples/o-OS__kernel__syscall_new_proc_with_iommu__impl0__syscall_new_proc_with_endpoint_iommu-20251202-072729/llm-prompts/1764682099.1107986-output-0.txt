@@ -1,0 +1,51 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `range_create_and_share_mapping`. The issue is that after calling `proc_man.new_proc_with_endpoint_iommu`, the kernel's `wf()` invariant needs to be re-established.
+
+The previous attempt tried to add a simple assertion `assert(self.wf())` which was rejected as unsafe. This is because we need to actually prove that `self.wf()` holds after the `new_proc_with_endpoint_iommu` call, not just assert it.
+
+Let me analyze what needs to be proven:
+1. After `new_proc_with_endpoint_iommu`, we need to show that `self.wf()` holds
+2. The `wf()` predicate includes multiple sub-conditions: `mem_man.wf()`, `page_alloc.wf()`, `proc_man.wf()`, `memory_wf()`, `mapping_wf()`, `pcid_ioid_wf()`, and `page_mapping_wf()`
+
+Since this is in an executable function, I need to add a `proof { ... }` block with assertions that help establish the precondition. I should break down the conjuncts of `self.wf()` to help identify which parts might be failing.
+
+```rust
+<<<<<<< SEARCH
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        proof {
+            assert(self.mem_man.wf());
+            assert(self.page_alloc.wf());
+            assert(self.proc_man.wf());
+            assert(self.memory_wf());
+            assert(self.mapping_wf());
+            assert(self.pcid_ioid_wf());
+            assert(self.page_mapping_wf());
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

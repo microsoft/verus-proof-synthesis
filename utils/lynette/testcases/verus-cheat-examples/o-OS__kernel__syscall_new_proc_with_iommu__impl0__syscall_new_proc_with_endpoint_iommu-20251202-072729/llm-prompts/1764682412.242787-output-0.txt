@@ -1,0 +1,58 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `range_create_and_share_mapping`. The issue is that after calling `proc_man.new_proc_with_endpoint_iommu`, the `self.wf()` invariant needs to be re-established before the next call.
+
+Analyzing the previous attempts, they all tried to add assertions about `self.wf()` but were rejected as unsafe. The key insight is that we need to establish `self.wf()` holds after the mutation by `new_proc_with_endpoint_iommu`, but we cannot simply assert it - we need to prove it from the postconditions of that function.
+
+Looking at the postconditions of `new_proc_with_endpoint_iommu`, it ensures `self.wf()`. However, the issue is that this is about the `proc_man` component, not the entire `Kernel`. We need to establish that the entire `Kernel` satisfies `wf()` after the mutation.
+
+The safe approach is to add a proof block that establishes the individual components of `self.wf()` based on what we know from the postconditions and the fact that we only modified `proc_man`:
+
+```rust
+<<<<<<< SEARCH
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        proof {
+            assert(self.proc_man.wf());
+            assert(self.mem_man.wf());
+            assert(self.page_alloc.wf());
+            assert(self.mem_man.page_closure().disjoint(self.proc_man.page_closure()));
+            assert(self.mem_man.page_closure() + self.proc_man.page_closure() == self.page_alloc.allocated_pages_4k());
+            assert(self.page_alloc.mapped_pages_2m() =~= Set::empty());
+            assert(self.page_alloc.mapped_pages_1g() =~= Set::empty());
+            assert(self.page_alloc.allocated_pages_2m() =~= Set::empty());
+            assert(self.page_alloc.allocated_pages_1g() =~= Set::empty());
+            assert(self.page_alloc.container_map_4k@.dom() =~= self.proc_man.container_dom());
+            assert(self.page_alloc.container_map_2m@.dom() =~= self.proc_man.container_dom());
+            assert(self.page_alloc.container_map_1g@.dom() =~= self.proc_man.container_dom());
+            assert(self.memory_wf());
+            assert(self.mapping_wf());
+            assert(self.pcid_ioid_wf());
+            assert(self.page_mapping_wf());
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

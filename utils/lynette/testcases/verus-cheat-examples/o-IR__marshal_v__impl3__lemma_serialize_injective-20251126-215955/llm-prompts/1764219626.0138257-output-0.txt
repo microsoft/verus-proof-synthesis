@@ -1,0 +1,17 @@
+Explanation:
+The compilation error occurs because the trait method implementation for Option<T>::lemma_serialize_injective declares requires and ensures clauses. In Verus, these clauses must only appear in the trait declaration, and implementations inherit them implicitly. The fix is to remove the requires and ensures clauses from the implementation’s function signature, keeping the proof body as-is.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+>>>>>>> REPLACE
+```

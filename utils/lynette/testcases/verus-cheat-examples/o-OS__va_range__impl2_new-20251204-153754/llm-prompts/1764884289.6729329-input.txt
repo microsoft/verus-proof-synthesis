@@ -1,0 +1,238 @@
+Your mission is to address the post-condition not satisfied error for the following code. For each failing postcondition, add an assertion at the end of the function body. It is okay if the assertions will not pass verification, you will address those in subsequent debugging steps.
+
+**Important Guidelines:**
+- Don't use `assume`.
+- If the function to be changed is `proof fn`, don't include any `proof {...}` block, just use `assert(...)` directly.
+- If a failed post-condition contains a conjunction and we don't know which conjunct is failing, split the conjunction into multiple assertions with each assertion about one conjunct. This helps identify the specific failing conjunct.
+- Use `if-else` statements to handle different cases, instead of using `match` statements with `_` patterns.
+
+For example, consider the following toy function
+```
+proof fn foo (...)
+requires ...
+ensures
+           ({
+                let x = ...
+                let y = ...
+                let z = ...
+                &&& x < 10
+                &&& x > y
+                &&& z > x + y
+            }),
+{
+...
+}
+```
+
+If ```foo```'s post-condition is not satisfied, we can fix it by adding the following code block at the end of ```foo```:
+```
+    {
+        let x = ...
+        let y = ...
+        let z = ...
+        assert(x < 10);
+        assert(x > y);
+        assert(z > x + y);
+    }
+```
+(If ```foo``` is an executable function, the above code block should be put inside ```proof{...}```.)
+
+Note that using three separate asserts is much better than using one assert on a big conjunction, like
+```assert( (x < 10) && (x > y) && (z > x + y))```
+
+**Important Guidelines:**
+- Use `if-else` statements to handle different cases, instead of using `match` statements with `_` patterns.
+
+Failed post-condition
+```
+Line 89-89:
+failed this postcondition
+            ret.wf(),
+```
+
+Failed location
+```
+Line 94-94:
+at the end of the function body
+        Self { start: va, len: len, view: seq }
+```
+
+Code
+```
+use vstd::prelude::*;
+use vstd::simple_pptr::*;
+
+fn main() {}
+
+pub type VAddr = usize;
+
+verus!{
+#[verifier::loop_isolation(false)]
+
+// File: util/page_ptr_util_u.rs
+
+#[verifier(when_used_as_spec(spec_va_4k_valid))]
+pub fn va_4k_valid(va: usize) -> (ret: bool)
+    ensures
+        ret == spec_va_4k_valid(va),
+{
+    (va & (!MEM_4k_MASK) as usize == 0) && (va as u64 >> 39u64 & 0x1ffu64)
+        >= KERNEL_MEM_END_L4INDEX as u64
+}
+
+#[verifier(when_used_as_spec(spec_va_4k_range_valid))]
+pub fn va_4k_range_valid(va: usize, len: usize) -> (ret: bool)
+    requires
+        va_4k_valid(va),
+    ensures
+        spec_va_4k_range_valid(va, len) == ret,
+{
+    for idx in iter: 0..len
+        invariant
+            va_4k_valid(va),
+            forall|i: usize|
+                #![trigger spec_va_add_range(va, i)]
+                0 <= i < idx ==> spec_va_4k_valid(spec_va_add_range(va, i)),
+    {
+        if va_4k_valid(va_add_range(va, idx)) == false {
+            return false;
+        }
+    }
+    true
+}
+
+#[verifier(external_body)]
+pub fn va_add_range(va: usize, i: usize) -> (ret: usize)
+    ensures
+        ret == spec_va_add_range(va, i),
+        i != 0 ==> ret != va,
+{
+    (va + (i * 4096)) as usize
+}
+
+
+// File: va_range.rs
+#[derive(Clone, Copy)]
+pub struct VaRange4K {
+    pub start: VAddr,
+    pub len: usize,
+    pub view: Ghost<Seq<VAddr>>,
+}
+
+impl VaRange4K {
+
+    pub closed spec fn view(&self) -> Seq<VAddr> {
+        self.view@
+    }
+
+    pub open spec fn wf(&self) -> bool {
+        &&& self.start + self.len * 4096 < usize::MAX
+        &&& spec_va_4k_valid(self.start)
+        &&& self@.len() == self.len
+        &&& self@.no_duplicates()
+        &&& forall|i: int| #![trigger self@[i]] 0 <= i < self.len ==> spec_va_4k_valid(self@[i])
+        &&& self.view_match_spec()
+    }
+
+    pub closed spec fn view_match_spec(&self) -> bool {
+        &&& forall|i: usize|
+            #![trigger spec_va_add_range(self.start, i)]
+            0 <= i < self.len ==> spec_va_add_range(self.start, i) == self@[i as int]
+    }
+
+    #[verifier::spinoff_prover]
+    pub fn new(va: VAddr, len: usize) -> (ret: Self)
+        requires
+            spec_va_4k_valid(va),
+            va_4k_range_valid(va, len),
+            va < usize::MAX - len * 4096,
+        ensures
+            ret.wf(),
+            ret.start == va,
+            ret.len == len,
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        Self { start: va, len: len, view: seq }
+    }
+
+}
+
+
+
+// File: util/page_ptr_util_u.rs
+pub open spec fn spec_va_4k_range_valid(va: usize, len: usize) -> bool {
+    forall|i: usize|
+        #![trigger spec_va_add_range(va, i)]
+        0 <= i < len ==> spec_va_4k_valid(spec_va_add_range(va, i))
+}
+
+pub open spec fn spec_va_4k_valid(va: usize) -> bool {
+    (va & (!MEM_4k_MASK) as usize == 0) && (va as u64 >> 39u64 & 0x1ffu64)
+        >= KERNEL_MEM_END_L4INDEX as u64
+}
+
+pub open spec fn spec_va_add_range(va: usize, i: usize) -> usize {
+    (va + (i * 4096)) as usize
+}
+
+	#[verifier::external_body]
+#[verifier(external_body)]
+pub proof fn va_range_lemma()
+    ensures
+        forall|va: VAddr, len: usize, i: usize, j: usize|
+            #![trigger spec_va_4k_range_valid(va,len), spec_va_add_range(va, i), spec_va_add_range(va, j)]
+            va_4k_valid(va) && spec_va_4k_range_valid(va, len) && 0 <= i < len && 0 <= i < len ==> (
+            (i == j) == (spec_va_add_range(va, i) == spec_va_add_range(va, j))),
+	{
+		unimplemented!()
+	}
+
+
+// File: define.rs
+pub const KERNEL_MEM_END_L4INDEX: usize = 1;
+
+pub const MEM_4k_MASK: u64 = 0x0000_ffff_ffff_f000;
+
+
+}
+```
+
+
+Please analyze the previous repair attempts below before proceeding:
+## Previous Repair Attempts
+
+### Attempt 1: POSTCONDITION_REPAIR - ✗ REJECTED
+- **Detailed Changes**:
+  - Candidate 0: unsafe_changes: Generated code changes are not considered safe
+  ```diff
+<<<<<<< SEARCH
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        Self { start: va, len: len, view: seq }
+    }
+
+=======
+    {
+        let seq = Ghost(arbitrary()); // TODO: please replace arbitrary() with the right expression
+        let result = Self { start: va, len: len, view: seq };
+        proof {
+            assert(result.start + result.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(result.start));
+            assert(result@.len() == result.len);
+            assert(result@.no_duplicates());
+            assert(forall|i: int| #![trigger result@[i]] 0 <= i < result.len ==> spec_va_4k_valid(result@[i]));
+            assert(result.view_match_spec());
+        }
+        result
+    }
+
+>>>>>>> REPLACE  ```
+
+**Important**: Analyze the previous attempts carefully before proposing a new repair. Avoid repeating failed approaches, especially those marked as UNSAFE and SYNTAX ERROR. Consider why each attempt failed and ensure your solution addresses those issues.
+
+
+
+Please don't use assume(...).
+Please follow the Rust and Verus syntax and best practices.
+Please use if-else statements to handle different cases, instead of using match statements with _ patterns.
+Prioritize SAFE changes that only modify ghost code (proofs, assertions, loop invariants) and leave the executable code (AST) exactly the same. Do NOT modify the `requires` or `ensures` clauses of the target function (though `decreases` is allowed). Modifying executable statements (e.g., extracting variables, changing loop bounds) is UNSAFE and will be rejected.

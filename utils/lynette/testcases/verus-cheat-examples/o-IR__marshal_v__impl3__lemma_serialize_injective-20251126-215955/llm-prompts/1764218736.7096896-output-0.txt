@@ -1,0 +1,92 @@
+Explanation:
+The compilation error arises from ambiguous integer literals used in sequences of bytes, namely seq![0] and seq![1]. Verus cannot infer the intended type of these literals. Since ghost_serialize returns Seq<u8>, the literals should be annotated as u8. I replaced all occurrences of seq![0] and seq![1] with seq![0u8] and seq![1u8], respectively, both in the Option<T>::ghost_serialize function and throughout the proof where these sequences are used. No other logic was changed.
+
+```rust
+<<<<<<< SEARCH
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        match self {
+            None => seq![0],
+            Some(x) => seq![1] + x.ghost_serialize(),
+        }
+    }
+=======
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        match self {
+            None => seq![0u8],
+            Some(x) => seq![1u8] + x.ghost_serialize(),
+        }
+    }
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    // ghost_serialize(None) = [0], ghost_serialize(Some(o)) = [1] ++ o.ghost_serialize()
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+=======
+                    // ghost_serialize(None) = [0], ghost_serialize(Some(o)) = [1] ++ o.ghost_serialize()
+                    assert(self.ghost_serialize() == seq![0u8]);
+                    assert(other.ghost_serialize() == seq![1u8] + o.ghost_serialize());
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    // but first bytes are 0 vs 1: contradiction
+                    assert(seq![0][0] != (seq![1] + o.ghost_serialize())[0]);
+=======
+                    // but first bytes are 0 vs 1: contradiction
+                    assert(seq![0u8][0] != (seq![1u8] + o.ghost_serialize())[0]);
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    // ghost_serialize(Some(s)) = [1] ++ s.ghost_serialize(), ghost_serialize(None) = [0]
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+=======
+                    // ghost_serialize(Some(s)) = [1] ++ s.ghost_serialize(), ghost_serialize(None) = [0]
+                    assert(self.ghost_serialize() == seq![1u8] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0u8]);
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    // but first bytes are 1 vs 0: contradiction
+                    assert((seq![1] + s.ghost_serialize())[0] != seq![0][0]);
+=======
+                    // but first bytes are 1 vs 0: contradiction
+                    assert((seq![1u8] + s.ghost_serialize())[0] != seq![0u8][0]);
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    // expand serializations: both start with 1
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+=======
+                    // expand serializations: both start with 1
+                    assert(self.ghost_serialize() == seq![1u8] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1u8] + o.ghost_serialize());
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    // identify tails with inner serializations
+                    assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+=======
+                    // identify tails with inner serializations
+                    assert((seq![1u8] + s.ghost_serialize()).subrange(1, (seq![1u8] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1u8] + o.ghost_serialize()).subrange(1, (seq![1u8] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+>>>>>>> REPLACE
+```

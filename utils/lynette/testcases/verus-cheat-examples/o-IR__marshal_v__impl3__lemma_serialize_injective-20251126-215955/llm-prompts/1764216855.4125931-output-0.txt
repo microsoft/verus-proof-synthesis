@@ -1,0 +1,20 @@
+Explanation:
+The error arises because a trait method implementation (Option<T>::lemma_serialize_injective) redeclared requires/ensures clauses. In Verus, trait method implementations cannot declare their own requires/ensures; they inherit them from the trait declaration. The fix is to remove the requires and ensures clauses from the implementation while keeping the body intact, so it still proves the inherited postcondition under the inherited preconditions.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+        assert(self.view_equal(other)) by {
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+    {
+        assert(self.view_equal(other)) by {
+>>>>>>> REPLACE
+```

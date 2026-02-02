@@ -1,0 +1,53 @@
+Looking at the error and previous attempts, I need to establish that `self.wf()` holds before calling `range_create_and_share_mapping`. The previous attempts were rejected as "unsafe_changes" because they added assertions in the executable code path without proper `proof {}` blocks.
+
+The key issue is that after calling `self.proc_man.new_proc_with_endpoint_iommu(...)`, we need to re-establish that `self.wf()` holds. Looking at the function signature, `new_proc_with_endpoint_iommu` has `ensures self.wf()`, so after that call, `self.wf()` should hold.
+
+However, the previous attempts that added `proof { assert(self.wf()); }` were rejected. This suggests that simply asserting `self.wf()` in a proof block is not sufficient or is considered unsafe.
+
+Let me analyze what's needed: The precondition `old(self).wf()` needs to be satisfied. After `new_proc_with_endpoint_iommu`, we have `self.wf()` from its postcondition. But we need to make this explicit for Verus to see it at the call site.
+
+Since this is an executable function (not a `proof fn`), I need to use `proof { ... }` blocks. The issue with previous attempts is they might have been placed incorrectly or the assertions weren't helping Verus understand the invariant.
+
+Let me try a different approach: explicitly assert the components of `wf()` that are needed, focusing on what might have changed:
+
+```rust
+<<<<<<< SEARCH
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        proof {
+            assert(self.mem_man.wf());
+            assert(self.page_alloc.wf());
+            assert(self.proc_man.wf());
+            assert(self.memory_wf());
+            assert(self.mapping_wf());
+            assert(self.pcid_ioid_wf());
+            assert(self.page_mapping_wf());
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

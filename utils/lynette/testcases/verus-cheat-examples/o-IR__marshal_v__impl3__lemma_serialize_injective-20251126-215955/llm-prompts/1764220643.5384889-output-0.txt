@@ -1,0 +1,91 @@
+Explanation of changes:
+- Added requires/ensures to Option<T>::lemma_serialize_injective to match the trait’s contract so the necessary preconditions (marshalability and serialization equality) are in scope.
+- Replaced the failing single assertion with structured case analysis using if-else:
+  - (None, None): directly substitute view_equal to true using an assert-by block.
+  - (None, Some) and (Some, None): derived contradiction from the first-byte tag of ghost_serialize (0 vs 1), showing the branches are impossible under the preconditions.
+  - (Some(s), Some(o)): used sequence reasoning to drop the first tag byte via subrange and show s.ghost_serialize() == o.ghost_serialize(), then applied s.lemma_serialize_injective(&o) and finally substituted the view_equal definition for Some-Some in an assert-by block.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)); // VERUS_ERROR_HERE
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+        if self.is_None() {
+            if other.is_None() {
+                assert(self.view_equal(other)) by {
+                    // substitute value of view_equal for (None, None)
+                    assert(true);
+                }
+            } else {
+                let o = other.get_Some_0();
+                // other.is_marshalable() implies o.is_marshalable()
+                assert(other.is_marshalable());
+                assert(o.is_marshalable());
+                // Substitute serializations
+                assert(self.ghost_serialize() == seq![0]);
+                assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                // Equality of serializations implies equality of first bytes
+                assert(self.ghost_serialize().len() > 0);
+                assert(other.ghost_serialize().len() > 0);
+                assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                // But tags differ (0 vs 1)
+                assert(seq![0][0] != (seq![1] + o.ghost_serialize())[0]);
+                // Contradiction: this branch is impossible
+                assert(false);
+            }
+        } else {
+            let s = self.get_Some_0();
+            if other.is_None() {
+                // self.is_marshalable() implies s.is_marshalable()
+                assert(self.is_marshalable());
+                assert(s.is_marshalable());
+                // Substitute serializations
+                assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                assert(other.ghost_serialize() == seq![0]);
+                // Equality of serializations implies equality of first bytes
+                assert(self.ghost_serialize().len() > 0);
+                assert(other.ghost_serialize().len() > 0);
+                assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                // But tags differ (1 vs 0)
+                assert((seq![1] + s.ghost_serialize())[0] != seq![0][0]);
+                // Contradiction: this branch is impossible
+                assert(false);
+            } else {
+                let o = other.get_Some_0();
+                // From marshalability of Options, get marshalability of inners
+                assert(self.is_marshalable());
+                assert(other.is_marshalable());
+                assert(s.is_marshalable());
+                assert(o.is_marshalable());
+                // Expand serializations
+                assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                // Drop the tag byte to compare inner serializations
+                assert(self.ghost_serialize().subrange(1, self.ghost_serialize().len() as int)
+                    == other.ghost_serialize().subrange(1, other.ghost_serialize().len() as int));
+                assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                    == s.ghost_serialize());
+                assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                    == o.ghost_serialize());
+                assert(s.ghost_serialize() == o.ghost_serialize());
+                // Injectivity on T
+                s.lemma_serialize_injective(&o);
+                // Conclude Option view equality via direct substitution
+                assert(self.view_equal(other)) by {
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(&o));
+                }
+            }
+        }
+    }
+>>>>>>> REPLACE
+```

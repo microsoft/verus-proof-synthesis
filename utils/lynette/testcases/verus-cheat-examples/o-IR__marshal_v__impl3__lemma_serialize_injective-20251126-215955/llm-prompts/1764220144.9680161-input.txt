@@ -1,0 +1,199 @@
+Your mission is to fix the compilation error in the following Verus code. Please follow the Verus and Rust syntax rules strictly.
+
+
+## Previous Repair Attempts for Similar Errors:
+
+### Attempt 1: ✗ FAILED
+```diff
+<<<<<<< SEARCH
+                    s.lemma_serialize_injective(&o);
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(( o ) as &T));
+                }
+            }
+=======
+                    s.lemma_serialize_injective(&o);
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(o));
+                }
+            }
+>>>>>>> REPLACE
+```
+
+**Learn from previous attempts**: Reuse successful fixes and avoid repeating failed approaches.
+
+Error Information:
+Error at line 146-146:                     assert(s.view_equal(( o ) as &T));
+
+Error: VerusErrorType.Other: the trait bound `&T: vstd::prelude::Integer` is not satisfied
+Error: the trait bound `&T: vstd::prelude::Integer` is not satisfied
+Location:
+                    assert(s.view_equal(( o ) as &T));
+Details:
+                      assert(s.view_equal(( o ) as &T));
+                                                   ^^
+  (the trait `vstd::prelude::Integer` is not implemented for `&T`)
+
+
+Code to fix:
+```rust
+use vstd::bytes::*;
+use vstd::prelude::*;
+fn main() {}
+verus! {
+#[verifier::loop_isolation(false)]
+
+pub trait Marshalable: Sized {
+    spec fn is_marshalable(&self) -> bool;
+
+    #[verifier::external_body]
+    spec fn ghost_serialize(&self) -> Seq<u8>
+        recommends
+            self.is_marshalable(),
+    {
+        unimplemented!()
+    }
+
+    spec fn view_equal(&self, other: &Self) -> bool;
+
+    #[verifier::external_body]
+    proof fn lemma_serialize_injective(&self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+        unimplemented!()
+    }
+}
+
+impl Marshalable for u64 {
+    open spec fn view_equal(&self, other: &Self) -> bool {
+        self@ === other@
+    }
+
+    open spec fn is_marshalable(&self) -> bool {
+        true
+    }
+
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        spec_u64_to_le_bytes(*self)
+    }
+
+    #[verifier::external_body]
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        unimplemented!()
+    }
+}
+
+impl Marshalable for usize {
+    open spec fn view_equal(&self, other: &Self) -> bool {
+        self@ === other@
+    }
+
+    open spec fn is_marshalable(&self) -> bool {
+        &&& *self as int <= u64::MAX
+    }
+
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        (*self as u64).ghost_serialize()
+    }
+
+    #[verifier::external_body]
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        unimplemented!()
+    }
+}
+
+impl<T: Marshalable, U: Marshalable> Marshalable for (T, U) {
+    open spec fn view_equal(&self, other: &Self) -> bool {
+        self.0.view_equal(&other.0) && self.1.view_equal(&other.1)
+    }
+
+    open spec fn is_marshalable(&self) -> bool {
+        &&& self.0.is_marshalable()
+        &&& self.1.is_marshalable()
+        &&& self.0.ghost_serialize().len() + self.1.ghost_serialize().len() <= usize::MAX
+    }
+
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        self.0.ghost_serialize() + self.1.ghost_serialize()
+    }
+
+    #[verifier::external_body]
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        unimplemented!()
+    }
+}
+
+impl<T: Marshalable> Marshalable for Option<T> {
+    open spec fn view_equal(&self, other: &Self) -> bool {
+        match (self, other) {
+            (None, None) => true,
+            (Some(s), Some(o)) => s.view_equal(o),
+            _ => false,
+        }
+    }
+
+    open spec fn is_marshalable(&self) -> bool {
+        match self {
+            None => true,
+            Some(x) => x.is_marshalable() && 1 + x.ghost_serialize().len() <= usize::MAX,
+        }
+    }
+
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        match self {
+            None => seq![0],
+            Some(x) => seq![1] + x.ghost_serialize(),
+        }
+    }
+
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+        assert(self.view_equal(other)) by {
+            if self.is_None() {
+                if other.is_None() {
+                    // substitute value of view_equal for (None, None)
+                    assert(true);
+                } else {
+                    let o = other.get_Some_0();
+                    // substitute serializations for (None, Some)
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                }
+            } else {
+                let s = self.get_Some_0();
+                if other.is_None() {
+                    // substitute serializations for (Some, None)
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+                } else {
+                    let o = other.get_Some_0();
+                    // substitute serializations for (Some, Some)
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(( o ) as &T));
+                }
+            }
+        }
+    }
+}
+
+} // verus!
+
+```
+
+
+Please don't use assume(...).
+Please follow the Rust and Verus syntax and best practices.
+Please use if-else statements to handle different cases, instead of using match statements with _ patterns.

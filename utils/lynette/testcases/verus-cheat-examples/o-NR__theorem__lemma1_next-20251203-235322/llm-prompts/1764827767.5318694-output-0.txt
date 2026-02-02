@@ -1,0 +1,25 @@
+Looking at the error, I can see that there's a name conflict. The function `os_next_refines_hl_next` is both imported via `use crate::os_next_refines_hl_next;` and defined in the same file. This creates a duplicate definition error.
+
+The previous repair attempt tried to remove the import, but that failed. Let me analyze the code more carefully.
+
+I can see that:
+1. There's an import: `use crate::os_next_refines_hl_next;`
+2. There's a function definition: `pub proof fn os_next_refines_hl_next(...)`
+3. The function is called in `lemma1_next` as `os_next_refines_hl_next(c, pre, post, lbl);`
+
+The issue is that we have both an import and a local definition of the same function. Since the function is defined locally in this file, we don't need to import it. The fix is to remove the import statement.
+
+```rust
+<<<<<<< SEARCH
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+use crate::os_next_refines_hl_next;
+use crate::next_preserves_inv;
+=======
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+use crate::next_preserves_inv;
+>>>>>>> REPLACE
+```

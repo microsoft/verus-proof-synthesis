@@ -1,0 +1,24 @@
+Explanation:
+The assertion that spec_u64_to_le_bytes(x).len() == 8 relies on a quantified lemma from the bytes library whose trigger is the raw sequence term spec_u64_to_le_bytes(x). To make the verifier instantiate that lemma for x1 and x2, we add tautological assertions on the raw sequence terms:
+- assert(spec_u64_to_le_bytes(x1) == spec_u64_to_le_bytes(x1));
+- assert(spec_u64_to_le_bytes(x2) == spec_u64_to_le_bytes(x2));
+These match the trigger and enable the verifier to conclude the fixed length property, making the subsequent length-equality assertions provable.
+
+```rust
+<<<<<<< SEARCH
+                assert(x1.ghost_serialize() == spec_u64_to_le_bytes(x1));
+                assert(x2.ghost_serialize() == spec_u64_to_le_bytes(x2));
+                // Directly assert the fixed-length property for these concrete values
+                assert(spec_u64_to_le_bytes(x1).len() == 8); // VERUS_ERROR_HERE
+                assert(spec_u64_to_le_bytes(x2).len() == 8);
+=======
+                assert(x1.ghost_serialize() == spec_u64_to_le_bytes(x1));
+                assert(x2.ghost_serialize() == spec_u64_to_le_bytes(x2));
+                // Trigger instantiation for the library quantifier about u64 -> le bytes length
+                assert(spec_u64_to_le_bytes(x1) == spec_u64_to_le_bytes(x1));
+                assert(spec_u64_to_le_bytes(x2) == spec_u64_to_le_bytes(x2));
+                // Directly assert the fixed-length property for these concrete values
+                assert(spec_u64_to_le_bytes(x1).len() == 8);
+                assert(spec_u64_to_le_bytes(x2).len() == 8);
+>>>>>>> REPLACE
+```

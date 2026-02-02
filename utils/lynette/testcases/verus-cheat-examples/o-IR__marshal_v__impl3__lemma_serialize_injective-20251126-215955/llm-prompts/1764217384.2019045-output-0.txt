@@ -1,0 +1,120 @@
+Explanation:
+The type inference error arises because the seq! macro with integer literals like seq![0] and seq![1] is ambiguous without a concrete element type. Since ghost_serialize returns Seq<u8>, we must annotate those literals as u8 to form Seq<u8>. I updated:
+- Option<T>::ghost_serialize to use seq![0u8] and seq![1u8].
+- All proof assertions that used seq![0] or seq![1] to use seq![0u8] and seq![1u8].
+
+These changes resolve the type inference issues while preserving the logic.
+
+```rust
+<<<<<<< SEARCH
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        match self {
+            None => seq![0],
+            Some(x) => seq![1] + x.ghost_serialize(),
+        }
+    }
+=======
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        match self {
+            None => seq![0u8],
+            Some(x) => seq![1u8] + x.ghost_serialize(),
+        }
+    }
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    let o = other.get_Some_0();
+                    // substitute ghost_serialize for None vs Some
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // establish index bounds
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    // from equality of sequences, first bytes are equal
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // substitute the concrete first bytes (0 vs 1) to derive contradiction
+                    assert(seq![0][0] != (seq![1] + o.ghost_serialize())[0]);
+                    assert(false);
+=======
+                    let o = other.get_Some_0();
+                    // substitute ghost_serialize for None vs Some
+                    assert(self.ghost_serialize() == seq![0u8]);
+                    assert(other.ghost_serialize() == seq![1u8] + o.ghost_serialize());
+                    // establish index bounds
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    // from equality of sequences, first bytes are equal
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // substitute the concrete first bytes (0 vs 1) to derive contradiction
+                    assert(seq![0u8][0] != (seq![1u8] + o.ghost_serialize())[0]);
+                    assert(false);
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    // substitute ghost_serialize for Some vs None
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+                    // establish index bounds
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    // from equality of sequences, first bytes are equal
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // substitute the concrete first bytes (1 vs 0) to derive contradiction
+                    assert((seq![1] + s.ghost_serialize())[0] != seq![0][0]);
+                    assert(false);
+=======
+                    // substitute ghost_serialize for Some vs None
+                    assert(self.ghost_serialize() == seq![1u8] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0u8]);
+                    // establish index bounds
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    // from equality of sequences, first bytes are equal
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // substitute the concrete first bytes (1 vs 0) to derive contradiction
+                    assert((seq![1u8] + s.ghost_serialize())[0] != seq![0u8][0]);
+                    assert(false);
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    // substitute ghost_serialize for Some vs Some
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // both have a leading tag, so dropping the first byte gives equal tails
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    assert(self.ghost_serialize().subrange(1, self.ghost_serialize().len() as int)
+                        == other.ghost_serialize().subrange(1, other.ghost_serialize().len() as int));
+                    // identify tails with inner serializations
+                    assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+                    // conclude equality of inner serializations and apply injectivity for T
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    s.lemma_serialize_injective(&o);
+=======
+                    // substitute ghost_serialize for Some vs Some
+                    assert(self.ghost_serialize() == seq![1u8] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1u8] + o.ghost_serialize());
+                    // both have a leading tag, so dropping the first byte gives equal tails
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    assert(self.ghost_serialize().subrange(1, self.ghost_serialize().len() as int)
+                        == other.ghost_serialize().subrange(1, other.ghost_serialize().len() as int));
+                    // identify tails with inner serializations
+                    assert((seq![1u8] + s.ghost_serialize()).subrange(1, (seq![1u8] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1u8] + o.ghost_serialize()).subrange(1, (seq![1u8] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+                    // conclude equality of inner serializations and apply injectivity for T
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    s.lemma_serialize_injective(&o);
+>>>>>>> REPLACE
+```

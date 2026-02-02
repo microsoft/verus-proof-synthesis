@@ -1,0 +1,32 @@
+Looking at the error, the postcondition `hlspec::init(c.interp(), pre.interp(c))` is not satisfied. I can see from the code that there are two external proof functions available:
+1. `os_init_refines_hl_init` - which proves exactly this postcondition
+2. `init_implies_inv` - which proves the second postcondition
+
+The previous attempts failed because they were trying to call these functions incorrectly. Let me examine the function signatures:
+
+```rust
+pub proof fn os_init_refines_hl_init(c: os::Constants, s: os::State)
+    requires
+        os::init(c, s),
+    ensures
+        hlspec::init(c.interp(), s.interp(c)),
+
+pub proof fn init_implies_inv(c: os::Constants, s: os::State)
+    requires os::init(c, s),
+    ensures s.inv(c),
+```
+
+These functions are in the global scope, not in a module, so I need to call them correctly. The issue with previous attempts was likely the module path.
+
+```rust
+<<<<<<< SEARCH
+// $line_count$}$
+{
+}
+>>>>>>> REPLACE
+// $line_count$}$
+{
+    os_init_refines_hl_init(c, pre);
+    init_implies_inv(c, pre);
+}
+```

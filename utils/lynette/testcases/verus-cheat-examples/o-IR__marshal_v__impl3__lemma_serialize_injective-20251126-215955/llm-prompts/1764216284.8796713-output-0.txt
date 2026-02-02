@@ -1,0 +1,18 @@
+Explanation:
+The error arises because Seq<u8> in Verus does not provide a drop method. To obtain the tail of a sequence, use subseq(start, end). I replaced the drop(1) calls with subseq(1, len()) on the corresponding sequences. This preserves the intended reasoning of comparing the tails after the leading tag byte.
+
+```rust
+<<<<<<< SEARCH
+                    assert(self.ghost_serialize().drop(1) == other.ghost_serialize().drop(1));
+=======
+                    assert(self.ghost_serialize().subseq(1, self.ghost_serialize().len()) == other.ghost_serialize().subseq(1, other.ghost_serialize().len()));
+>>>>>>> REPLACE
+```
+
+```rust
+<<<<<<< SEARCH
+                    assert((seq![1] + s.ghost_serialize()).drop(1) == (seq![1] + o.ghost_serialize()).drop(1));
+=======
+                    assert((seq![1] + s.ghost_serialize()).subseq(1, (seq![1] + s.ghost_serialize()).len()) == (seq![1] + o.ghost_serialize()).subseq(1, (seq![1] + o.ghost_serialize()).len()));
+>>>>>>> REPLACE
+```

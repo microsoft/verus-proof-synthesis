@@ -1,0 +1,40 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range)` at line 2963.
+
+The issue is that after calling `self.proc_man.new_proc_with_endpoint_iommu(...)`, the state of `self` has changed, so we can no longer refer to it as `old(self)`. The precondition expects `old(self).wf()`, but at that point in the execution, `self` has been modified.
+
+I need to add an assertion before the call to `range_create_and_share_mapping` to establish that `self.wf()` holds at that point (not `old(self).wf()`).
+
+```rust
+<<<<<<< SEARCH
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        proof {
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

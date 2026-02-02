@@ -1,0 +1,109 @@
+Looking at the error, the issue is that `lemma_concurrent_trs_induct` is being called recursively within a `proof` function, but the function itself is declared as `proof fn`, which means it has mode `proof`. However, Verus is complaining that we "cannot call function with mode proof".
+
+The problem is that within the proof body, we're calling `lemma_concurrent_trs_induct` recursively, but we need to be in a `proof` block to make proof-mode calls.
+
+The fix is to wrap the recursive calls in `proof { ... }` blocks, or restructure the proof to make the recursive calls properly.
+
+Let me examine the code more carefully:
+
+```rust
+proof fn lemma_concurrent_trs_induct(...)
+{
+    if pidx == 0 {
+        ...
+    } else {
+        ...
+        lemma_concurrent_trs_induct(pre, pre, c, core, 0, pred);  // This call
+        assert(forall|state: os::State, step, lbl| 
+            ...
+            ==> {
+                lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);  // And this call
+                ...
+            }
+        );
+    }
+}
+```
+
+The issue is that the recursive calls to `lemma_concurrent_trs_induct` need to be in proof blocks. The first call is fine, but the second call inside the `assert(forall|...| ==> { ... })` needs to be wrapped properly.
+
+Here's the fix:
+
+```rust
+<<<<<<< SEARCH
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+        assert(pred(pre, pre));
+    } else {
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        // We need to instantiate the existential and use it
+        // The verifier should be able to find the witness
+        lemma_concurrent_trs_induct(pre, pre, c, core, 0, pred);
+        assert(forall|state: os::State, step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> {
+                lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+                pred(pre, state) && pred(pre, post)
+            }
+        );
+    }
+}
+=======
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+        assert(pred(pre, pre));
+    } else {
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        // We need to instantiate the existential and use it
+        // The verifier should be able to find the witness
+        lemma_concurrent_trs_induct(pre, pre, c, core, 0, pred);
+        assert forall|state: os::State, step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core)
+            implies pred(pre, post) by {
+                lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+                assert(pred(pre, state));
+            };
+    }
+}
+>>>>>>> REPLACE
+```

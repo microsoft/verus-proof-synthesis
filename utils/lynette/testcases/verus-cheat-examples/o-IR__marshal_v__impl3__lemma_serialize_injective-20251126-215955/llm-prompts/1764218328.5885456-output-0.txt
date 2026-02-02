@@ -1,0 +1,72 @@
+Explanation of changes:
+- I replaced the failing assertion with an assert-by block that performs explicit case analysis on (self, other).
+- For (None, None), I directly substitute the definition of view_equal and assert true.
+- For (None, Some(_)) and (Some(_), None), I use the equality of ghost_serialize to derive equality of the first byte, then substitute the concrete first bytes (0 vs 1) to obtain a contradiction.
+- For (Some(s), Some(o)), I expand the serializations to strip the leading tag, conclude s.ghost_serialize() == o.ghost_serialize(), use marshalability inherited from the preconditions, and invoke s.lemma_serialize_injective(&o) to conclude s.view_equal(o), which matches the goal under this case.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)); // VERUS_ERROR_HERE
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)) by {
+            if self.is_None() {
+                if other.is_None() {
+                    // view_equal(None, None) == true
+                    assert(true);
+                } else {
+                    let o = other.get_Some_0();
+                    // ghost_serialize(None) == [0], ghost_serialize(Some(o)) == [1] ++ o.ghost_serialize()
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // lengths are > 0 so index 0 is valid
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    // equality implies equality of first elements
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // but first bytes are 0 vs 1, contradiction
+                    assert(seq![0][0] != (seq![1] + o.ghost_serialize())[0]);
+                    assert(false);
+                }
+            } else {
+                let s = self.get_Some_0();
+                if other.is_None() {
+                    // ghost_serialize(Some(s)) == [1] ++ s.ghost_serialize(), ghost_serialize(None) == [0]
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+                    // lengths are > 0 so index 0 is valid
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    // equality implies equality of first elements
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // but first bytes are 1 vs 0, contradiction
+                    assert((seq![1] + s.ghost_serialize())[0] != seq![0][0]);
+                    assert(false);
+                } else {
+                    let o = other.get_Some_0();
+                    // expand serializations with leading tag 1
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // strip the first byte to get equality of tails
+                    assert(self.ghost_serialize().subrange(1, self.ghost_serialize().len() as int)
+                        == other.ghost_serialize().subrange(1, other.ghost_serialize().len() as int));
+                    // identify tails with inner serializations
+                    assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+                    // conclude equality of inner serializations
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    // inner values are marshalable from Option.is_marshalable() under the preconditions
+                    assert(s.is_marshalable());
+                    assert(o.is_marshalable());
+                    // apply injectivity of T
+                    s.lemma_serialize_injective(&o);
+                }
+            }
+        }
+    }
+>>>>>>> REPLACE
+```

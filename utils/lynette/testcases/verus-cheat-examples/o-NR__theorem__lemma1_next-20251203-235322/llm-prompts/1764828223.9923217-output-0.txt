@@ -1,0 +1,13 @@
+Looking at the error, the function `os_next_refines_hl_next` cannot be found in the current scope. Based on the previous successful repair attempts, I can see that the pattern is to add `crate::` prefix to these function calls to properly reference them from the module root.
+
+The error is on line 3549 where `os_next_refines_hl_next` is called without the proper module path. Looking at the previous successful attempts, the solution is to add the `crate::` prefix to make it a fully qualified path.
+
+```rust
+<<<<<<< SEARCH
+    os_next_refines_hl_next(c, pre, post, lbl);
+    next_preserves_inv(c, pre, post, lbl);
+=======
+    crate::os_next_refines_hl_next(c, pre, post, lbl);
+    crate::next_preserves_inv(c, pre, post, lbl);
+>>>>>>> REPLACE
+```

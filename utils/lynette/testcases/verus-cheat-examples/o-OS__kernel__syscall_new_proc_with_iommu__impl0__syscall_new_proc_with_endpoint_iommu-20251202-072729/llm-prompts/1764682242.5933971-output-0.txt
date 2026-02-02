@@ -1,0 +1,54 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `range_create_and_share_mapping`. The issue is that after calling `proc_man.new_proc_with_endpoint_iommu`, we need to establish that `self.wf()` still holds before calling `range_create_and_share_mapping`.
+
+The previous attempts all tried to add `proof { assert(self.wf()); }` but were rejected as unsafe. This is because we cannot simply assert `self.wf()` without proving it. The key insight is that `new_proc_with_endpoint_iommu` ensures `self.wf()` in its postcondition, but we need to explicitly establish the connection between the modified `self.proc_man` and the overall `self.wf()`.
+
+Looking at the structure:
+1. After `new_proc_with_endpoint_iommu`, we have `self.proc_man.wf()` from its ensures clause
+2. We need to establish that the other components (`mem_man`, `page_alloc`) still satisfy their wellformedness
+3. Then we can conclude `self.wf()`
+
+However, since `new_proc_with_endpoint_iommu` is `#[verifier::external_body]`, Verus doesn't automatically track that it only modifies `proc_man` and leaves `mem_man` and `page_alloc` unchanged. We need to help Verus understand this through assertions about what hasn't changed.
+
+Let me add assertions that establish the wellformedness step by step, focusing on what the `new_proc_with_endpoint_iommu` postcondition guarantees:
+
+```rust
+<<<<<<< SEARCH
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        proof {
+            assert(self.proc_man.wf());
+            assert(self.proc_man.container_perms_wf());
+            assert(self.proc_man.proc_perms_wf());
+            assert(self.proc_man.threads_perms_wf());
+            assert(self.proc_man.endpoint_perms_wf());
+            assert(self.proc_man.container_fields_wf());
+            assert(self.proc_man.process_fields_wf());
+            assert(self.proc_man.internal_wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

@@ -1,0 +1,51 @@
+Looking at the error, I can see that `MAX_BASE` is not in scope at line 2252. The error occurs in the `lemma1_init` function where it's trying to assert `interp_pre.mem.len() === MAX_BASE`.
+
+Looking at the code structure, I can see that `MAX_BASE` is defined in the `defs` module as:
+
+```rust
+pub spec const MAX_BASE: nat = X86_MAX_ENTRY_SIZE * (X86_NUM_ENTRIES as nat);
+```
+
+The issue is that `MAX_BASE` is defined inside the `defs` module but the `lemma1_init` function is trying to use it without the proper import or fully qualified path.
+
+I need to add the proper import or use the fully qualified path to access `MAX_BASE`.
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    let interp_c = c.interp();
+    let interp_pre = pre.interp(c);
+    assert(interp_pre.mem.len() === MAX_BASE);
+    assert(interp_pre.mappings === Map::empty());
+    assert(forall|id: nat| id < interp_c.thread_no ==> (interp_pre.thread_state[id] === hlspec::ThreadState::Idle));
+    assert(hlspec::wf(interp_c, interp_pre));
+    assert(interp_pre.sound);
+    assert(pre.inv(c));
+}
+=======
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    let interp_c = c.interp();
+    let interp_pre = pre.interp(c);
+    assert(interp_pre.mem.len() === crate::defs::MAX_BASE);
+    assert(interp_pre.mappings === Map::empty());
+    assert(forall|id: nat| id < interp_c.thread_no ==> (interp_pre.thread_state[id] === hlspec::ThreadState::Idle));
+    assert(hlspec::wf(interp_c, interp_pre));
+    assert(interp_pre.sound);
+    assert(pre.inv(c));
+}
+>>>>>>> REPLACE
+```

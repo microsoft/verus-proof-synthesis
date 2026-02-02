@@ -1,0 +1,44 @@
+Explanation:
+The failing assertion was asserting self.view_equal(other) without leveraging the structure of Option. I replaced it with an assert-by block that performs case analysis on (self, other) using if-else branches:
+- For (None, None), substitute view_equal to true.
+- For (None, Some(o)) and (Some(s), None), substitute the serialized forms to expose the differing tag bytes (0 vs 1), preparing for contradiction in later steps.
+- For (Some(s), Some(o)), expand the serializations and substitute view_equal to s.view_equal(o), setting up for invoking injectivity in subsequent steps.
+
+This change only does direct substitutions as requested, without additional reasoning or assumptions.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)); // VERUS_ERROR_HERE
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)) by {
+            if self.is_None() {
+                if other.is_None() {
+                    // substitute value of view_equal for (None, None)
+                    assert(true);
+                } else {
+                    let o = other.get_Some_0();
+                    // expand serializations for (None, Some)
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                }
+            } else {
+                let s = self.get_Some_0();
+                if other.is_None() {
+                    // expand serializations for (Some, None)
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+                } else {
+                    let o = other.get_Some_0();
+                    // expand serializations and substitute value of view_equal for (Some, Some)
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    assert(s.view_equal(&o));
+                }
+            }
+        }
+    }
+>>>>>>> REPLACE
+```

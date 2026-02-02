@@ -1,0 +1,80 @@
+Explanation of changes:
+The compilation error arises from ambiguous integer literals inside seq! macros. Since ghost_serialize returns Seq<u8>, the literals inside seq! must be u8-typed. I replaced all occurrences of seq![0] and seq![1] with seq![0u8] and seq![1u8], respectively, in the Option implementation and associated proof assertions. This resolves the type inference errors without altering logic.
+
+```rust
+<<<<<<< SEARCH
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        match self {
+            None => seq![0],
+            Some(x) => seq![1] + x.ghost_serialize(),
+        }
+    }
+=======
+    open spec fn ghost_serialize(&self) -> Seq<u8> {
+        match self {
+            None => seq![0u8],
+            Some(x) => seq![1u8] + x.ghost_serialize(),
+        }
+    }
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+                    // expand ghost_serialize for None vs Some
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+=======
+                    // expand ghost_serialize for None vs Some
+                    assert(self.ghost_serialize() == seq![0u8]);
+                    assert(other.ghost_serialize() == seq![1u8] + o.ghost_serialize());
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+                    // substitute concrete first bytes to derive contradiction
+                    assert(seq![0][0] != (seq![1] + o.ghost_serialize())[0]);
+=======
+                    // substitute concrete first bytes to derive contradiction
+                    assert(seq![0u8][0] != (seq![1u8] + o.ghost_serialize())[0]);
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+                    // expand ghost_serialize for Some vs None
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+=======
+                    // expand ghost_serialize for Some vs None
+                    assert(self.ghost_serialize() == seq![1u8] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0u8]);
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+                    // substitute concrete first bytes to derive contradiction
+                    assert((seq![1] + s.ghost_serialize())[0] != seq![0][0]);
+=======
+                    // substitute concrete first bytes to derive contradiction
+                    assert((seq![1u8] + s.ghost_serialize())[0] != seq![0u8][0]);
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+                    // expand ghost_serialize for Some vs Some
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+=======
+                    // expand ghost_serialize for Some vs Some
+                    assert(self.ghost_serialize() == seq![1u8] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1u8] + o.ghost_serialize());
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+                    // identify tails with inner serializations
+                    assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+=======
+                    // identify tails with inner serializations
+                    assert((seq![1u8] + s.ghost_serialize()).subrange(1, (seq![1u8] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1u8] + o.ghost_serialize()).subrange(1, (seq![1u8] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+>>>>>>> REPLACE
+```

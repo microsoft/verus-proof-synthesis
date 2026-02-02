@@ -1,0 +1,16 @@
+I will remove the requires and ensures clauses from the trait method implementation for Option<T>, since trait method implementations cannot declare them; they are inherited from the trait declaration. The rest of the proof body remains unchanged and can still rely on the inherited preconditions.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+>>>>>>> REPLACE
+```

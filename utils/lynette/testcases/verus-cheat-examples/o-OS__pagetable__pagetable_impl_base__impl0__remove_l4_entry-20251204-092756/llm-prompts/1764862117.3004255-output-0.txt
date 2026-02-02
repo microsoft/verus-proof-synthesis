@@ -1,0 +1,40 @@
+Looking at the error and the previous attempts, I can see that the issue is with the `tracked_remove` call on `self.l4_table.borrow_mut()`. The precondition that's failing is:
+
+```
+old(self).dom().contains(key)
+```
+
+This means that `self.l4_table@.dom().contains(self.cr3)` needs to be established before the call.
+
+The previous attempts were rejected as "unsafe_changes" because they were trying to add proof blocks in an executable function. In Verus, when we're in an executable function (not a `proof fn`), we need to wrap proof code in `proof { ... }` blocks.
+
+However, looking more carefully at the function signature, this is an executable function (`pub fn`), not a proof function. The previous attempts were actually using the correct syntax with `proof { ... }` blocks, but they were still rejected as unsafe.
+
+Let me analyze what's needed:
+
+1. The function requires `old(self).wf()` in its precondition
+2. From `wf()`, we should be able to derive that `self.l4_table@.dom().contains(self.cr3)`
+3. We need to establish this before the `tracked_remove` call
+
+The issue might be that we need to be more explicit about the derivation. Let me try a different approach by adding assertions step by step:
+
+```rust
+<<<<<<< SEARCH
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+    {
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+            assert(self.wf_l4());
+            assert(self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3));
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```
+
+The key insight is that from `wf_l4()`, we get the property that `self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)`, which directly implies that `self.l4_table@.dom().contains(self.cr3)`. By making this derivation explicit with an additional assertion, we should be able to establish the required precondition.

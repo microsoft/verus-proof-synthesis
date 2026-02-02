@@ -1,0 +1,39 @@
+Looking at the error, the issue is that the function `os_next_refines_hl_next` cannot be found in the current scope. Based on the previous successful repair attempts, I can see that the pattern is to add the `crate::` prefix to make the function calls fully qualified.
+
+The error is on line 3549 where `os_next_refines_hl_next(c, pre, post, lbl);` is called. Looking at the code, I can see that this function is defined in the `impl_u/os_refinement.rs` section with the signature:
+
+```rust
+pub proof fn os_next_refines_hl_next(c: os::Constants, s1: os::State, s2: os::State, lbl: RLbl)
+```
+
+And there's also a similar function `next_preserves_inv` that would likely have the same issue.
+
+Looking at the `lemma1_next` function in the theorem module, I can see both function calls that need to be fixed:
+
+```rust
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+    os_next_refines_hl_next(c, pre, post, lbl);
+    next_preserves_inv(c, pre, post, lbl);
+    assert(hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()));
+    assert(post.inv(c));
+}
+```
+
+I need to add the `crate::` prefix to both function calls to make them fully qualified.
+
+```rust
+<<<<<<< SEARCH
+    os_next_refines_hl_next(c, pre, post, lbl);
+    next_preserves_inv(c, pre, post, lbl);
+=======
+    crate::os_next_refines_hl_next(c, pre, post, lbl);
+    crate::next_preserves_inv(c, pre, post, lbl);
+>>>>>>> REPLACE
+```

@@ -1,0 +1,54 @@
+Looking at this problem, I need to prove that `pred(pre, post)` holds given:
+1. `concurrent_trs(pre, post, c, core, pidx)` - which is defined recursively
+2. `pred` is reflexive: `forall|s| pred(s, s)`
+3. `pred` is preserved by non-actor steps: if `pred(pre, mid)` and we take a non-actor step from `mid` to `post`, then `pred(pre, post)`
+
+The function is a proof by induction on `pidx`. Looking at the definition of `concurrent_trs`:
+- Base case (`pidx == 0`): `post == pre`, so by reflexivity `pred(pre, post)`
+- Inductive case (`pidx > 0`): there exists a `state` such that `concurrent_trs(pre, state, c, core, pidx-1)` and a non-actor step from `state` to `post`
+
+The previous attempts failed because they either:
+1. Used unsafe `choose` operations (attempts 8)
+2. Had assertion issues without proper witness handling (attempts 5-7, 9)
+
+The key insight is that I need to:
+1. Handle the base case explicitly
+2. For the inductive case, use the existential witness properly and apply both the inductive hypothesis and the preservation property
+
+Here's my solution:
+
+```rust
+<<<<<<< SEARCH
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+{
+}
+=======
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+        assert(pred(pre, post));
+    } else {
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        assert forall|state: os::State, step, lbl| 
+            #![trigger concurrent_trs(pre, state, c, core, sub(pidx, 1))]
+            #![trigger os::next_step(c, state, post, step, lbl)]
+            concurrent_trs(pre, state, c, core, sub(pidx, 1))
+            && os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core)
+            implies pred(pre, post) by {
+            lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+            assert(pred(pre, state));
+        };
+        assert(pred(pre, post));
+    }
+}
+>>>>>>> REPLACE
+```

@@ -1,0 +1,77 @@
+Explanation of changes:
+- Updated Option<T>::lemma_serialize_injective to match the trait’s requires and ensures, so we can use marshalability and equality of ghost_serialize in the proof.
+- Implemented a structured proof using if-else case analysis on self and other being None/Some.
+- Excluded None/Some mismatches by using the differing tag bytes (0 vs 1) to derive a contradiction under the precondition that serializations are equal.
+- For Some–Some, derived equality of inner serializations by dropping the first tag byte with subrange properties, then called the inner lemma_serialize_injective on T to conclude view equality.
+- Avoided calling proof functions inside assert blocks; all calls are in the regular proof body.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)); // VERUS_ERROR_HERE
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other)
+    {
+        if self.is_None() {
+            if other.is_None() {
+                assert(self.view_equal(other));
+            } else {
+                let o = other.get_Some_0();
+                // Expand serializations
+                assert(self.ghost_serialize() == seq![0]);
+                assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                // Both nonempty; equality implies equal first byte
+                assert(self.ghost_serialize().len() > 0);
+                assert(other.ghost_serialize().len() > 0);
+                assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                // But the tag bytes differ (0 vs 1), contradiction
+                assert(seq![0][0] != (seq![1] + o.ghost_serialize())[0]);
+                // From contradiction, goal follows
+                assert(self.view_equal(other));
+            }
+        } else {
+            let s = self.get_Some_0();
+            if other.is_None() {
+                // Expand serializations
+                assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                assert(other.ghost_serialize() == seq![0]);
+                // Both nonempty; equality implies equal first byte
+                assert(self.ghost_serialize().len() > 0);
+                assert(other.ghost_serialize().len() > 0);
+                assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                // But the tag bytes differ (1 vs 0), contradiction
+                assert((seq![1] + s.ghost_serialize())[0] != seq![0][0]);
+                // From contradiction, goal follows
+                assert(self.view_equal(other));
+            } else {
+                let o = other.get_Some_0();
+                // Expand serializations
+                assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                // Drop the tag byte to get equality of inner serializations
+                assert(self.ghost_serialize().subrange(1, self.ghost_serialize().len() as int)
+                    == other.ghost_serialize().subrange(1, other.ghost_serialize().len() as int));
+                assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                    == s.ghost_serialize());
+                assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                    == o.ghost_serialize());
+                assert(s.ghost_serialize() == o.ghost_serialize());
+                // From marshalable Options, inners are marshalable
+                assert(s.is_marshalable());
+                assert(o.is_marshalable());
+                // Apply injectivity for T
+                s.lemma_serialize_injective(&o);
+                // Conclude Option view equality
+                assert(self.view_equal(other));
+            }
+        }
+    }
+>>>>>>> REPLACE
+```

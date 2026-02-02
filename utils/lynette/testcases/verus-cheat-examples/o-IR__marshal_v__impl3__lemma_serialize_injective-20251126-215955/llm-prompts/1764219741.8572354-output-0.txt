@@ -1,0 +1,61 @@
+Explanation:
+The assertion self.view_equal(other) fails because the proof body does not consider cases for Option<T>. We prove it by case analysis on (self, other):
+
+- None/None: view_equal is true.
+- None/Some and Some/None: impossible from the precondition self.ghost_serialize() == other.ghost_serialize(), since the first byte differs (0 vs 1). We create a contradiction by directly substituting the ghost_serialize definitions and asserting the sequences are unequal.
+- Some/Some: from equality of serializations and extensional equality of sequences, we strip the first byte to deduce s.ghost_serialize() == o.ghost_serialize(). Then, using the Option.is_marshalable definition, we obtain s.is_marshalable() and o.is_marshalable(), apply s.lemma_serialize_injective(&o), and substitute the definition of view_equal.
+
+I only modified the failing assertion to an assert-by block with if-else case analysis and direct substitutions, avoiding changes to other parts of the code and keeping seq![0]/seq![1] as in the original.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)); // VERUS_ERROR_HERE
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)) by {
+            if self.is_None() {
+                if other.is_None() {
+                    // substitute value of view_equal for (None, None)
+                    assert(true);
+                } else {
+                    let o = other.get_Some_0();
+                    // None vs Some is impossible since tags (first byte) differ
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    assert(seq![0] != seq![1] + o.ghost_serialize());
+                    assert(false);
+                }
+            } else {
+                let s = self.get_Some_0();
+                if other.is_None() {
+                    // Some vs None is impossible since tags (first byte) differ
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+                    assert(seq![1] + s.ghost_serialize() != seq![0]);
+                    assert(false);
+                } else {
+                    let o = other.get_Some_0();
+                    // Both Some: strip the first byte to compare inner serializations
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    assert(self.ghost_serialize().subrange(1, self.ghost_serialize().len() as int)
+                        == other.ghost_serialize().subrange(1, other.ghost_serialize().len() as int));
+                    assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    // marshalability of inners follows from Option.is_marshalable() in Some case
+                    assert(s.is_marshalable());
+                    assert(o.is_marshalable());
+                    s.lemma_serialize_injective(&o);
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(o));
+                }
+            }
+        }
+    }
+>>>>>>> REPLACE
+```
