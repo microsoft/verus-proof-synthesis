@@ -331,6 +331,15 @@ fn check_trait_items(original_items: &[syn_verus::TraitItem], changed_items: &[s
     return idx_orig == original_items.len();
 }
 
+fn mod_decl_is_equal(original: &syn_verus::ItemMod, changed: &syn_verus::ItemMod) -> bool {
+    original.attrs == changed.attrs &&
+    original.vis == changed.vis &&
+    original.unsafety == changed.unsafety &&
+    original.mod_token == changed.mod_token &&
+    original.ident == changed.ident &&
+    original.semi == changed.semi
+}
+
 fn check_items(original_items: &[syn_verus::Item], changed_items: &[syn_verus::Item]) -> bool
 {
     let mut idx_orig = 0;
@@ -439,6 +448,9 @@ fn check_items(original_items: &[syn_verus::Item], changed_items: &[syn_verus::I
                 if orig_clone != changed_clone {
                     return false;
                 } else if !check_impl_items(&i_orig.items[0..], &i_changed.items[0..]) {
+                    println!("Disallowed changes made to impl block: {}", i_orig.self_ty.to_token_stream().to_string());
+                    // println!("{:#?}", i_orig);
+                    // println!("{:#?}", i_changed);
                     return false;
                 }
                 else {
@@ -474,8 +486,41 @@ fn check_items(original_items: &[syn_verus::Item], changed_items: &[syn_verus::I
                     idx_changed = idx_changed + 1;
                 }
             },
+            (syn_verus::Item::Mod(m_orig), syn_verus::Item::Mod(m_changed)) => {
+                if !mod_decl_is_equal(&m_orig, &m_changed) {
+                    println!("Disallowed changes made to module declaration: {}", m_orig.ident.to_string());
+                    return false;
+                }
+
+                match (&m_orig.content, &m_changed.content) {
+                    (Some((orig_br, orig_items)), Some((changed_br, changed_items))) => {
+                        if orig_br != changed_br {
+                            println!("Disallowed changes made to module content braces: {}", m_orig.ident.to_string());
+                            return false;
+                        } else if !check_items(&orig_items[0..], &changed_items[0..]) {
+                            return false;
+                        } else {
+                            idx_orig = idx_orig + 1;
+                            idx_changed = idx_changed + 1;
+                        }
+                    },
+                    (None, None) => {
+                        idx_orig = idx_orig + 1;
+                        idx_changed = idx_changed + 1;
+                    },
+                    _ => {
+                        println!("Disallowed changes made to module content: {}", m_orig.ident.to_string());
+                        return false;
+                    }
+                }
+
+            },
             (_, _) => {
                 if original != changed {
+                    println!("{:#?}", changed);
+                    println!("{:#?}", original);
+                    println!("{}", changed.to_token_stream().to_string());
+                    println!("{}", original.to_token_stream().to_string());
                     return false;
                 } else {
                     idx_orig = idx_orig + 1;
@@ -514,6 +559,14 @@ pub fn check_allowed_additions_only(original_file: PathBuf, changed_file: PathBu
                 println!("Disallowed changes made to Verus macros in the original files.");
                 return Ok(false);
             }
+
+            // original_verus_macros.iter().for_each(|m| {
+            //     println!("{}", fprint_file(&m, Formatter::VerusFmt))
+            // });
+
+            // changed_verus_macros.iter().for_each(|m| {
+            //     println!("{}", fprint_file(&m, Formatter::VerusFmt))
+            // });
 
             for i in 0..original_verus_macros.len() {
                 if !check_items(&original_verus_macros[i].items[0..], &changed_verus_macros[i].items[0..]) {

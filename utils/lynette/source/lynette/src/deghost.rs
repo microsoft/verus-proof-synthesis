@@ -336,14 +336,14 @@ pub fn remove_ghost_sig(
                 .requires
                 .clone()
                 .map(|mut new_req| {
-                    if !new_req.exprs.exprs.trailing_punct() {
+                    if !new_req.exprs.exprs.empty_or_trailing() {
                         new_req.exprs.exprs.push_punct(Default::default());
                     }
                     new_req
                 })
                 .filter(|_| mode.requires), // Removed
             recommends: sig.spec.recommends.clone().map(|mut new_rec| {
-                if !new_rec.exprs.exprs.trailing_punct() {
+                if !new_rec.exprs.exprs.empty_or_trailing() {
                     new_rec.exprs.exprs.push_punct(Default::default());
                 }
                 new_rec
@@ -353,7 +353,7 @@ pub fn remove_ghost_sig(
                 .ensures
                 .clone()
                 .map(|mut new_ens| {
-                    if !new_ens.exprs.exprs.trailing_punct() {
+                    if !new_ens.exprs.exprs.empty_or_trailing() {
                         new_ens.exprs.exprs.push_punct(Default::default());
                     }
                     new_ens
@@ -364,7 +364,7 @@ pub fn remove_ghost_sig(
                 .decreases
                 .clone()
                 .map(|mut new_dec| {
-                    if !new_dec.decreases.exprs.exprs.trailing_punct() {
+                    if !new_dec.decreases.exprs.exprs.empty_or_trailing() {
                         new_dec.decreases.exprs.exprs.push_punct(Default::default());
                     }
                     new_dec
@@ -376,7 +376,7 @@ pub fn remove_ghost_sig(
                 .default_ensures
                 .clone()
                 .map(|mut new_ens| {
-                    if !new_ens.exprs.exprs.trailing_punct() {
+                    if !new_ens.exprs.exprs.empty_or_trailing() {
                         new_ens.exprs.exprs.push_punct(Default::default());
                     }
                     new_ens
