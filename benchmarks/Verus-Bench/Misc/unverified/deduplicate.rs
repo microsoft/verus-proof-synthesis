@@ -17,7 +17,7 @@ spec fn seq_to_set_rec<A>(seq: Seq<A>) -> Set<A>
 fn remove_duplicates(nums: Vec<i32>) -> (res: Vec<i32>)
 ensures
     res@.no_duplicates(),
-    nums@.to_set().ext_equal(res@.to_set())
+    nums@.to_set()==res@.to_set()
 {
     let mut res = Vec::new();
     let mut i = 0;
