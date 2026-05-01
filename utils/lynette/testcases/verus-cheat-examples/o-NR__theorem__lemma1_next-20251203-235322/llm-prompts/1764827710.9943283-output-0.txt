@@ -1,0 +1,16 @@
+Looking at the error, I can see that there's a naming conflict. The function `os_next_refines_hl_next` is being defined twice - once as an import (`use crate::os_next_refines_hl_next;`) and once as a function definition in the same file.
+
+The issue is that there's both an import statement and a function definition with the same name `os_next_refines_hl_next`. I need to remove the import statement since the function is being defined in this file.
+
+```rust
+<<<<<<< SEARCH
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+use crate::os_next_refines_hl_next;
+=======
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+>>>>>>> REPLACE
+```

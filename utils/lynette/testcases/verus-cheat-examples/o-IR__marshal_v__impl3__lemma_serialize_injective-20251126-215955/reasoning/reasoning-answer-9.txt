@@ -1,0 +1,30 @@
+### Step 1: Analyze the Failing Assertion
+- The assertion is proving self.view_equal(other) inside Option<T>::lemma_serialize_injective.
+- From the trait spec, we can assume: self.is_marshalable(), other.is_marshalable(), and self.ghost_serialize() == other.ghost_serialize().
+- For Option<T>, view_equal branches on (self, other): true for (None, None), s.view_equal(o) for (Some(s), Some(o)), false otherwise. ghost_serialize uses a leading tag byte: seq![0] for None, seq![1] + payload for Some.
+
+### Step 2: Root Cause Analysis
+- The assertion fails because no reasoning connects the precondition self.ghost_serialize() == other.ghost_serialize() to the conclusion self.view_equal(other).
+- We must rule out the cross cases (None, Some) and (Some, None) using the differing tag bytes, and in the (Some, Some) case, reduce to equality of inner serializations and apply T’s lemma to get s.view_equal(o).
+
+### Step 3: Why Previous Attempts Failed
+- Prior attempts added ad-hoc APIs (is_None, get_Some_0) and changed element types (u8 suffixes), causing syntax errors/unsafe changes.
+- They also tried to restate function specs on the impl method signature, leading to mismatches; instead, use the trait’s inherited requires/ensures and proper match on (self, other).
+
+### Step 4: Action Selection
+- Use CASE_ANALYSIS to inline Option<T>::view_equal’s definition at the failing assertion, splitting into (None, None), (None, Some), (Some, None), and (Some, Some).
+- This leverages the tag structure of ghost_serialize to refute cross cases and reduces the Some/Some case to inner injectivity via the available lemma for T.
+
+```json
+{
+    "root_cause_analysis": "The proof does not connect the equality of ghost_serialize() to view_equal(). For Option, serialization includes a tag byte (0 for None, 1 for Some), so cross cases are impossible; in the Some/Some case, equality of serializations implies equality of inner serializations, and then T’s injectivity gives s.view_equal(o).",
+    "knows_root_cause": true,
+    "primary_action": "CASE_ANALYSIS",
+    "secondary_actions": ["SEQSETMAP", "USELEMMA"],
+    "reasoning_explanation": "view_equal is an open spec function with branching on (self, other). Splitting on these cases allows using the tag byte in ghost_serialize to rule out mismatched cases and reduce the Some/Some case to inner injectivity. Sequence API lemmas help relate heads/tails, and T’s lemma discharges the inner equality.",
+    "action_parameters": {
+        "assertion_content": "self.view_equal(other)",
+        "guidance": "Inline Option<T>::view_equal at the assert and match on (self, other). For (None, Some) and (Some, None), expand ghost_serialize to seq![0] vs seq![1] + ..., show both lengths > 0, and use equality of sequences to derive a contradiction on index 0. For (Some(s), Some(o)), expand ghost_serialize to seq![1] + ..., use sequence equality to conclude tails are equal: subrange(1, len) equals s.ghost_serialize() and o.ghost_serialize(), hence s.ghost_serialize() == o.ghost_serialize(). From self/other marshalable, get s.is_marshalable() and o.is_marshalable(), then call s.lemma_serialize_injective(&o) to conclude s.view_equal(o). Keep original seq![0]/seq![1] literals; avoid non-existent Option helper methods."
+    }
+}
+```

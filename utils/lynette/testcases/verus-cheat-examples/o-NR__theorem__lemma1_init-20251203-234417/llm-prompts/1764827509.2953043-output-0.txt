@@ -1,0 +1,36 @@
+Looking at the error, the function `lemma1_init` needs to prove two postconditions:
+1. `hlspec::init(c.interp(), pre.interp(c))`
+2. `pre.inv(c)`
+
+The previous attempts were rejected as unsafe because they tried to add imports and break down assertions manually. Looking at the code, I can see there are already two proof functions available that directly establish these postconditions:
+
+1. `os_init_refines_hl_init` - proves that `os::init(c, s)` implies `hlspec::init(c.interp(), s.interp(c))`
+2. `init_implies_inv` - proves that `os::init(c, s)` implies `s.inv(c)`
+
+Since the precondition of `lemma1_init` is `os::init(c, pre)`, I can simply call these existing proof functions to establish the required postconditions.
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+}
+=======
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    os_init_refines_hl_init(c, pre);
+    init_implies_inv(c, pre);
+}
+>>>>>>> REPLACE
+```

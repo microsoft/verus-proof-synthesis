@@ -1,0 +1,22 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `range_create_and_share_mapping` at line 2963. 
+
+The issue is that after calling `proc_man.new_proc_with_endpoint_iommu`, the `self.wf()` invariant needs to be re-established before calling `range_create_and_share_mapping`. 
+
+Looking at the previous attempts, they all tried to add assertions about `self.wf()` in a proof block, but were rejected as unsafe. The key insight is that we need to establish that `self.wf()` holds after the mutation by `new_proc_with_endpoint_iommu`, but we cannot do this with a simple assertion in a proof block in an executable function.
+
+However, examining the code more carefully, I notice that `new_proc_with_endpoint_iommu` has an ensures clause that guarantees `self.wf()` after it executes. The problem is that Verus may not be automatically connecting this postcondition to the precondition of the next call.
+
+The solution is to add an `assert(self.wf());` statement (not in a proof block, since this is an executable function) right before the call to `range_create_and_share_mapping`. This will help Verus verify that the precondition is satisfied.
+
+```rust
+<<<<<<< SEARCH
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        );
+
+        assert(self.wf());
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

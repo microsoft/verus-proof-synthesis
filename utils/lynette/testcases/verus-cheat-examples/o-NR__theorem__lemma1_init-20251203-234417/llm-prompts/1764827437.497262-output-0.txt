@@ -1,0 +1,48 @@
+Looking at the error and previous attempts, I can see that the postcondition `hlspec::init(c.interp(), pre.interp(c))` is failing. The previous attempts were rejected as unsafe because they were trying to modify the function signature and add imports.
+
+Let me analyze what needs to be done:
+
+1. The function is a `proof fn`, so I should add assertions directly without `proof {...}` blocks
+2. I need to break down the failing postcondition into individual assertions
+3. I should not modify the function signature or add imports
+4. I need to focus only on adding assertions at the end of the function body
+
+Looking at the `hlspec::init` definition, it requires:
+- `s.mem.len() === MAX_BASE`
+- `s.mappings === Map::empty()`
+- `forall|id: nat| id < c.thread_no ==> (s.thread_state[id] === ThreadState::Idle)`
+- `wf(c, s)`
+- `s.sound`
+
+I'll add these assertions at the end of the function body:
+
+<<<<<<< SEARCH
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+}
+=======
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    // Break down the first postcondition hlspec::init(c.interp(), pre.interp(c))
+    assert(pre.interp(c).mem.len() === MAX_BASE);
+    assert(pre.interp(c).mappings === Map::empty());
+    assert(forall|id: nat| id < c.interp().thread_no ==> (pre.interp(c).thread_state[id] === hlspec::ThreadState::Idle));
+    assert(hlspec::wf(c.interp(), pre.interp(c)));
+    assert(pre.interp(c).sound);
+    
+    // Assert the second postcondition
+    assert(pre.inv(c));
+}
+>>>>>>> REPLACE

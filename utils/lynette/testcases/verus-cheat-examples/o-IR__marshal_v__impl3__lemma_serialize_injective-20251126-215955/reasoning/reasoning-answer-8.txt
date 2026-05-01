@@ -1,0 +1,30 @@
+### Step 1: Analyze the Failing Assertion
+- The assertion is attempting to conclude self.view_equal(other) for Option<T> from the injectivity of serialization.
+- From the trait, the intended context is: self.is_marshalable(), other.is_marshalable(), and self.ghost_serialize() == other.ghost_serialize(). The body does not use these facts, nor does it distinguish the Option cases.
+- For Option, ghost_serialize is tagged: None -> seq![0], Some(x) -> seq![1] + x.ghost_serialize().
+
+### Step 2: Root Cause Analysis
+- The assertion fails because no reasoning connects serialized equality to view_equal: the verifier needs a case split on (self, other) to use the tag structure and then (for Some, Some) reduce to the inner T case.
+- Specifically, the proof must show tag consistency (0 vs 1) to rule out mixed None/Some cases, and for Some/Some, derive s.ghost_serialize() == o.ghost_serialize() and then invoke T::lemma_serialize_injective.
+
+### Step 3: Why Previous Attempts Failed
+- Prior attempts used non-existent helpers (is_None, get_Some_0), causing syntax errors, and changed literal types (0 -> 0u8), marked unsafe.
+- They also didn’t cleanly use pattern matching and extensional equality on sequences, nor did they rely on the inherited preconditions from the trait.
+
+### Step 4: Action Selection
+- Use CASE_ANALYSIS via a match on (self, other), leveraging the precondition self.ghost_serialize() == other.ghost_serialize() to rule out mismatched tags and reduce the Some/Some case to inner injectivity.
+- In the Some/Some branch, use EXTENSIONAL_EQUALITY on sequences to drop the first byte and deduce equality of inner serializations, then USELEMMA to call s.lemma_serialize_injective(&o).
+
+```json
+{
+    "root_cause_analysis": "The proof never uses the serialization-equality precondition nor the tag structure of Option. To conclude view_equal, we must split on (self, other), derive tag consistency from equality of ghost_serialize, and in the Some/Some case reduce to inner injectivity.",
+    "knows_root_cause": true,
+    "primary_action": "CASE_ANALYSIS",
+    "secondary_actions": ["EXTENSIONAL_EQUALITY", "USELEMMA"],
+    "reasoning_explanation": "We need to match on (self, other) to use the tagged serialization (0 for None, 1+ for Some). Equality of serialized sequences rules out mixed cases and, for Some/Some, implies equality of the tails, enabling a call to T::lemma_serialize_injective to conclude s.view_equal(o).",
+    "action_parameters": {
+        "assertion_content": "self.view_equal(other)",
+        "guidance": "Open a proof block and match on (self, other). Show that equality of ghost_serialize implies the leading tag bytes are equal, ruling out (None, Some) and (Some, None). In the (Some(s), Some(o)) branch, assert (seq![1] + s.ghost_serialize()).subrange(1, ...) == (seq![1] + o.ghost_serialize()).subrange(1, ...), deduce s.ghost_serialize() == o.ghost_serialize(), then call s.lemma_serialize_injective(&o)."
+    }
+}
+```

@@ -1,0 +1,27 @@
+Looking at the error, the function `os_next_refines_hl_next` cannot be found in scope. Based on the code structure and the previous failed attempts, I can see that this function is defined in the `impl_u/os_refinement.rs` module but is not being imported properly.
+
+The function is defined as:
+```rust
+pub proof fn os_next_refines_hl_next(c: os::Constants, s1: os::State, s2: os::State, lbl: RLbl)
+```
+
+And it's being called at line 3549:
+```rust
+os_next_refines_hl_next(c, pre, post, lbl);
+```
+
+The issue is that the function is defined in a different module but not imported. I need to add the appropriate use statement to bring this function into scope.
+
+```rust
+<<<<<<< SEARCH
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+=======
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+use crate::os_next_refines_hl_next;
+use crate::next_preserves_inv;
+>>>>>>> REPLACE
+```

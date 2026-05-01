@@ -1,0 +1,18 @@
+Looking at the error, I can see that there's a naming conflict. The code is both importing `next_preserves_inv` from a crate and also defining a function with the same name. This causes a "name defined multiple times" error.
+
+The issue is on line 4 where there's `use crate::next_preserves_inv;` which imports a function, but then later in the code there's also a function definition with the same name `next_preserves_inv`.
+
+I need to remove the conflicting import since the function is defined locally in the file.
+
+```rust
+<<<<<<< SEARCH
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+use crate::next_preserves_inv;
+=======
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+>>>>>>> REPLACE
+```

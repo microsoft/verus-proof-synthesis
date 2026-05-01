@@ -1,0 +1,59 @@
+Explanation of changes:
+- The failing assertion requires proving self.view_equal(other) for Option<T>. We add case analysis on (self, other) using if-else and the Option discriminators is_None()/get_Some_0().
+- For None/None, we directly substitute view_equal to true.
+- For None/Some and Some/None, we derive a contradiction via the first byte of the ghost_serialize sequences (0 vs 1) using the equality precondition and in-branch expansions of ghost_serialize.
+- For Some/Some, we use the equality (seq![1] + s.ghost_serialize()) == (seq![1] + o.ghost_serialize()), drop the first byte to obtain s.ghost_serialize() == o.ghost_serialize(), then apply lemma_serialize_injective on T (with marshalability from Option.is_marshalable) to conclude s.view_equal(o), which is exactly the substituted value for self.view_equal(other).
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)); // VERUS_ERROR_HERE
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)) by {
+            // case analysis on (self, other)
+            if self.is_None() {
+                if other.is_None() {
+                    // substitute value of view_equal
+                    assert(true);
+                } else {
+                    let o = other.get_Some_0();
+                    // expand ghost_serialize in this branch
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // use seq equality precondition to derive a contradiction on the leading byte 0 vs 1
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    assert(seq![0][0] == (seq![1] + o.ghost_serialize())[0]);
+                }
+            } else {
+                let s = self.get_Some_0();
+                if other.is_None() {
+                    // expand ghost_serialize in this branch
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+                    // use seq equality precondition to derive a contradiction on the leading byte 1 vs 0
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    assert((seq![1] + s.ghost_serialize())[0] == seq![0][0]);
+                } else {
+                    let o = other.get_Some_0();
+                    // expand ghost_serialize in this branch
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // from equality of serialized options, tails are equal after dropping the first tag byte
+                    assert(self.ghost_serialize().drop(1) == other.ghost_serialize().drop(1));
+                    assert((seq![1] + s.ghost_serialize()).drop(1) == (seq![1] + o.ghost_serialize()).drop(1));
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    // marshalability for inner values from Option.is_marshalable()
+                    assert(self.is_marshalable());
+                    assert(other.is_marshalable());
+                    assert(s.is_marshalable());
+                    assert(o.is_marshalable());
+                    // injectivity for T gives s.view_equal(o), which is the substituted value for this case
+                    s.lemma_serialize_injective(&o);
+                }
+            }
+        }
+    }
+>>>>>>> REPLACE
+```

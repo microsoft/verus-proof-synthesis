@@ -1,0 +1,95 @@
+Looking at the error, the issue is that `lemma_concurrent_trs_induct` is being called recursively within a `proof` function, but the function itself is marked as `proof fn`. The error message indicates that we cannot call a `proof` mode function from within proof code in this context.
+
+The solution is to change `lemma_concurrent_trs_induct` from a `proof fn` to a `proof` function by removing the `fn` keyword and using the correct syntax. However, looking more carefully at the code, the issue is that we're calling `lemma_concurrent_trs_induct` recursively within the proof block, which should be allowed.
+
+Actually, the real issue is that the function is marked as `proof fn` but Verus is having trouble with the recursive call. Let me examine the code more carefully.
+
+The problem is in the recursive call at line 2015. The function signature shows it's a `proof fn`, but when calling it recursively, we need to ensure we're in the right context. The issue is that we're calling it within assertions/proof blocks where the mode might be ambiguous.
+
+Let me provide the fix:
+
+```rust
+<<<<<<< SEARCH
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+        assert(pred(pre, pre));
+    } else {
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        // We need to instantiate the existential and use it
+        // The verifier should be able to find the witness
+        lemma_concurrent_trs_induct(pre, pre, c, core, 0, pred);
+        assert(forall|state: os::State, step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> {
+                lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+                pred(pre, state) && pred(pre, post)
+            }
+        );
+    }
+}
+=======
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+        assert(pred(pre, pre));
+    } else {
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        // We need to instantiate the existential and use it
+        // The verifier should be able to find the witness
+        proof {
+            lemma_concurrent_trs_induct(pre, pre, c, core, 0, pred);
+        }
+        assert(forall|state: os::State, step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> {
+                proof {
+                    lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+                }
+                pred(pre, state) && pred(pre, post)
+            }
+        );
+    }
+}
+>>>>>>> REPLACE
+```
+
+The fix wraps the recursive calls to `lemma_concurrent_trs_induct` inside explicit `proof { }` blocks. This ensures that the calls are properly recognized as being in proof mode, which should resolve the compilation error about calling a proof mode function.

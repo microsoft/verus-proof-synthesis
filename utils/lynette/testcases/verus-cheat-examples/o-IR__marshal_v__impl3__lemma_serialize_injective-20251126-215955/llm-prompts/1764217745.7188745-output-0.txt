@@ -1,0 +1,71 @@
+Explanation of changes:
+- Replaced the failing assertion with a proof block that performs explicit case analysis on (self, other) using if-else.
+- Added the necessary preconditions (marshalability and equality of ghost_serialize) and postcondition to the lemma to match the trait’s contract and allow using the equality of serialized forms in the proof.
+- In mismatched cases (None, Some) and (Some, None), we expose the leading tag bytes to demonstrate a contradiction via direct substitution of ghost_serialize.
+- In the (Some, Some) case, we show that the tails (after dropping the leading tag byte) are equal, substitute them to the inner ghost_serialize values, and then call the inner lemma to conclude view equality.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) {
+        assert(self.view_equal(other)); // VERUS_ERROR_HERE
+    }
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+        assert(self.view_equal(other)) by {
+            if self.is_None() {
+                if other.is_None() {
+                    // substitute value of view_equal for (None, None)
+                    assert(true);
+                } else {
+                    let o = other.get_Some_0();
+                    // substitute ghost_serialize for None vs Some
+                    assert(self.ghost_serialize() == seq![0]);
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // from equality of sequences, first bytes are equal
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // substitute the concrete first bytes (0 vs 1)
+                    assert(seq![0][0] == (seq![1] + o.ghost_serialize())[0]);
+                }
+            } else {
+                let s = self.get_Some_0();
+                if other.is_None() {
+                    // substitute ghost_serialize for Some vs None
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![0]);
+                    // from equality of sequences, first bytes are equal
+                    assert(self.ghost_serialize().len() > 0);
+                    assert(other.ghost_serialize().len() > 0);
+                    assert(self.ghost_serialize()[0] == other.ghost_serialize()[0]);
+                    // substitute the concrete first bytes (1 vs 0)
+                    assert((seq![1] + s.ghost_serialize())[0] == seq![0][0]);
+                } else {
+                    let o = other.get_Some_0();
+                    // substitute ghost_serialize for Some vs Some
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // equality of sequences implies equality of tails after dropping first byte
+                    assert(self.ghost_serialize().subrange(1, self.ghost_serialize().len() as int)
+                        == other.ghost_serialize().subrange(1, other.ghost_serialize().len() as int));
+                    // identify tails with inner serializations
+                    assert((seq![1] + s.ghost_serialize()).subrange(1, (seq![1] + s.ghost_serialize()).len() as int)
+                        == s.ghost_serialize());
+                    assert((seq![1] + o.ghost_serialize()).subrange(1, (seq![1] + o.ghost_serialize()).len() as int)
+                        == o.ghost_serialize());
+                    // conclude equality of inner serializations and apply injectivity for T
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    s.lemma_serialize_injective(&o);
+                }
+            }
+        }
+    }
+>>>>>>> REPLACE
+```

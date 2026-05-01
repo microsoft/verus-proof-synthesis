@@ -1,0 +1,47 @@
+Looking at the failed postcondition and the previous repair attempts, I need to analyze what's happening:
+
+1. The postcondition `hlspec::init(c.interp(), pre.interp(c))` is failing
+2. Previous attempts that directly called external functions like `crate::os_init_refines_hl_init` were rejected as unsafe
+3. Attempts that tried to assert the postconditions directly were also rejected as unsafe
+
+The key insight is that this is a `proof fn`, so I should add assertions that help prove the postconditions, but I need to be careful not to make unsafe changes.
+
+Looking at the code structure, I can see that:
+- `hlspec::init` is defined and has specific requirements
+- `os::init` is the precondition 
+- There should be a logical connection between `os::init` and `hlspec::init`
+
+Let me add assertions that break down what needs to be proven, focusing on the components of `hlspec::init`:
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+}
+=======
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    // Break down hlspec::init postcondition
+    assert(pre.interp(c).mem.len() === crate::defs::MAX_BASE);
+    assert(pre.interp(c).mappings === Map::empty());
+    assert(forall|id: nat| id < c.interp().thread_no ==> (pre.interp(c).thread_state[id] === hlspec::ThreadState::Idle));
+    assert(hlspec::wf(c.interp(), pre.interp(c)));
+    assert(pre.interp(c).sound);
+    
+    // Assert the invariant postcondition
+    assert(pre.inv(c));
+}
+>>>>>>> REPLACE
+```

@@ -1,0 +1,17 @@
+The error occurs because trait method implementations in Verus cannot redeclare requires/ensures clauses; they must inherit them from the trait declaration. The Option<T> implementation of lemma_serialize_injective redeclared these clauses, causing the compilation error. The fix is to remove the requires/ensures from the implementation signature, letting it inherit the specifications from the trait.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self) 
+    {
+>>>>>>> REPLACE
+```

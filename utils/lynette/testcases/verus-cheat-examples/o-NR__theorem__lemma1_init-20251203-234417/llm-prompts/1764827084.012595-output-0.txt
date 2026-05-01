@@ -1,0 +1,19 @@
+Looking at the error, the issue is that `Map::empty()` is being used but the `Map` type is not in scope. The error occurs at line 2253 in the `lemma1_init` function:
+
+```rust
+assert(interp_pre.mappings === Map::empty());
+```
+
+The problem is that while `vstd::prelude::*` is imported at the top of the file, within the `verus!` block, the `Map` type needs to be explicitly referenced or imported. Looking at the code, I can see that other parts of the code use `map![]` macro for empty maps instead of `Map::empty()`.
+
+Let me fix this by changing `Map::empty()` to `map![]`:
+
+```rust
+<<<<<<< SEARCH
+    assert(interp_pre.mappings === Map::empty());
+=======
+    assert(interp_pre.mappings === map![]);
+>>>>>>> REPLACE
+```
+
+This change uses the `map![]` macro which is the standard way to create an empty map in Verus, and it's already being used elsewhere in the codebase (as seen in the `inv_mapping` and `inv_unmapping` functions).

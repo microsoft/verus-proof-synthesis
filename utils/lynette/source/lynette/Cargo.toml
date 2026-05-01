@@ -5,6 +5,9 @@ edition = "2018"
 publish = false
 rust-version = "1.62"
 
+[dev-dependencies]
+gag = "1.0"
+
 [dependencies]
 serde_json = "1.0"
 colored = "1.7"

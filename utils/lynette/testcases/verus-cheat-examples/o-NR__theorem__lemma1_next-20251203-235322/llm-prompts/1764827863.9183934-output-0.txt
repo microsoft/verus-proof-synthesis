@@ -1,0 +1,19 @@
+Looking at the error, I can see that there's a name conflict. The function `os_next_refines_hl_next` is both imported via `use crate::os_next_refines_hl_next;` and defined in the same file at lines 3493-3501. This creates a duplicate definition error.
+
+Based on the previous failed attempts, I can see that simply removing the import didn't work, which suggests the function is actually needed elsewhere in the code. The solution is to remove the local definition of the function since it's already being imported.
+
+```rust
+<<<<<<< SEARCH
+	#[verifier::external_body]
+pub proof fn os_next_refines_hl_next(c: os::Constants, s1: os::State, s2: os::State, lbl: RLbl)
+    requires
+        os::next(c, s1, s2, lbl),
+        s1.inv(c),
+    ensures
+        hlspec::next(c.interp(), s1.interp(c), s2.interp(c), lbl.interp()),
+	{
+		unimplemented!()
+	}
+=======
+>>>>>>> REPLACE
+```

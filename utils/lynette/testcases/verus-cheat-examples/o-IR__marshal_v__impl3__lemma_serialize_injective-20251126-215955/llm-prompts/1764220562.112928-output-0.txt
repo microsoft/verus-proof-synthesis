@@ -1,0 +1,19 @@
+The error arises from using an invalid cast "(o) as &T" when calling the lemma and in the subsequent assertion. In Verus/Rust, you shouldn't cast references like this. Since o already has type &T, you can pass it directly. The invalid cast leads the type checker down a wrong path causing the "Integer" trait error.
+
+I replaced the casted usages with direct references.
+
+```rust
+<<<<<<< SEARCH
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    // apply injectivity for T to conclude s.view_equal(o)
+                    s.lemma_serialize_injective(( o ) as &T);
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(( o ) as &T));
+=======
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    // apply injectivity for T to conclude s.view_equal(o)
+                    s.lemma_serialize_injective(o);
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(o));
+>>>>>>> REPLACE
+```

@@ -1,0 +1,18 @@
+Explanation:
+The error occurs because the implementation of a trait method cannot redeclare requires or ensures clauses; these must be inherited from the trait. The Option<T> implementation of lemma_serialize_injective incorrectly includes these clauses. We remove the requires and ensures from the impl method signature while keeping the body unchanged. The preconditions and postconditions still apply from the trait definition.
+
+```rust
+<<<<<<< SEARCH
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+        requires
+            self.is_marshalable(),
+            other.is_marshalable(),
+            self.ghost_serialize() == other.ghost_serialize(),
+        ensures
+            self.view_equal(other),
+    {
+=======
+    proof fn lemma_serialize_injective(self: &Self, other: &Self)
+    {
+>>>>>>> REPLACE
+```

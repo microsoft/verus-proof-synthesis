@@ -1,0 +1,37 @@
+Looking at the error and previous attempts, I can see that the postcondition `hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp())` is not satisfied for the `lemma1_next` function.
+
+The previous attempts were rejected as unsafe because they were calling external functions like `crate::os_next_refines_hl_next` and `crate::next_preserves_inv`. These functions are marked with `#[verifier::external_body]`, which means they are trusted axioms, but calling them directly in proof code might not be the right approach.
+
+Looking at the function signature and the postconditions, I need to add assertions that help verify the postconditions. Since this is a proof function, I should add assertions that break down the postcondition into smaller parts that can be verified.
+
+The postcondition has two parts:
+1. `hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp())`
+2. `post.inv(c)`
+
+Let me add assertions for these at the end of the function body:
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+}
+=======
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+    assert(hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()));
+    assert(post.inv(c));
+}
+>>>>>>> REPLACE
+```

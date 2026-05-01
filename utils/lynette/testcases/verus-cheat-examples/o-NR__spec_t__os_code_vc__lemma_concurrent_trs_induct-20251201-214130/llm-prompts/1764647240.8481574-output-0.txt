@@ -1,0 +1,58 @@
+Looking at this problem, I need to prove that `pred(pre, post)` holds given:
+1. `concurrent_trs(pre, post, c, core, pidx)` - which is defined recursively
+2. A reflexive property: `forall|s| pred(s, s)`
+3. An inductive property: if `pred(pre, mid)` holds and we take a non-actor step from `mid` to `post`, then `pred(pre, post)` holds
+
+The function is a proof by induction on `pidx`. Looking at the previous attempts, they all tried to add executable code or use `choose` which caused syntax errors or were marked as unsafe.
+
+The key insight is that this is a structural induction proof. When `pidx == 0`, we have `post == pre` by definition of `concurrent_trs`, so `pred(pre, post)` follows from reflexivity. When `pidx > 0`, we have an intermediate state where the inductive hypothesis applies, and then we use the second precondition.
+
+The issue is that we need to help the verifier see this structure. Let me add assertions that guide the proof without changing the executable code:
+
+```rust
+<<<<<<< SEARCH
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+{
+}
+=======
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+        assert(pred(pre, post));
+    } else {
+        assert forall|state: os::State, step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1))
+            && os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core)
+            implies pred(pre, post) by {
+            lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+        };
+        assert(pred(pre, post));
+    }
+}
+>>>>>>> REPLACE
+```

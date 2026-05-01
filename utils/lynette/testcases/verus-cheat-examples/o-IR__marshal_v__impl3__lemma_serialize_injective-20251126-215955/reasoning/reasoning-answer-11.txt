@@ -1,0 +1,30 @@
+### Step 1: Analyze the Failing Assertion
+- The assertion is asserting self.view_equal(other) with no assumptions in scope.
+- In this proof, there are no prior facts about self.is_marshalable(), other.is_marshalable(), or that self.ghost_serialize() == other.ghost_serialize().
+- For Option<T>, view_equal and ghost_serialize are defined via matches with a leading tag (0 for None, 1 for Some).
+
+### Step 2: Root Cause Analysis
+- The lemma is meant to prove injectivity from equal serializations, but the proof body lacks the needed preconditions; thus the assert has no support.
+- Without the equality of ghost_serialize and marshalability, neither the None/Some contradiction nor the Some/Some inner reduction can be justified.
+
+### Step 3: Why Previous Attempts Failed
+- Prior case analyses tried to derive contradictions or inner equalities but did not have the serialization-equality assumption in scope; they also introduced signature changes that were rejected by the harness.
+- Asserting intermediate sequence equalities without the required hypothesis led to unverifiable steps.
+
+### Step 4: Action Selection
+- Recommend: perform case analysis after bringing the trait’s required hypotheses into scope (match the trait’s requires/ensures in this impl).
+- This enables using the Option serialization tags to refute mixed cases and using the inner lemma for the Some/Some case.
+
+```json
+{
+  "root_cause_analysis": "The assertion tries to conclude view_equal without any of the trait-required assumptions (marshalability and equality of ghost_serialize) in scope. The proof must use those to distinguish None/Some by tag and reduce Some/Some to inner injectivity.",
+  "knows_root_cause": true,
+  "primary_action": "CASE_ANALYSIS",
+  "secondary_actions": ["SEQSETMAP", "USELEMMA"],
+  "reasoning_explanation": "Case analysis on (self, other) only works if we assume the trait’s preconditions. With those, we can reason about the first byte tag (0 vs 1) for None/Some via Seq operations, and in the Some/Some case strip the tag and call the inner type’s lemma_serialize_injective.",
+  "action_parameters": {
+    "assertion_content": "self.view_equal(other)",
+    "guidance": "First align this lemma’s signature with the trait’s requires/ensures to bring is_marshalable and ghost_serialize equality into scope. Then case-analyze (self, other): None/Some and Some/None contradict by first-byte tag (0 vs 1) using Seq len/index facts; None/None is trivially true. For Some/Some, deduce equality of tails after dropping the first byte, conclude s.ghost_serialize() == o.ghost_serialize(), and call s.lemma_serialize_injective(&o)."
+  }
+}
+```

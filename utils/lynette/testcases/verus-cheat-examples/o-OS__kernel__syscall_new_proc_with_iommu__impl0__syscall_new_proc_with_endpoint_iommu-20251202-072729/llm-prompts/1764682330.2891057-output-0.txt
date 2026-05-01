@@ -1,0 +1,29 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `range_create_and_share_mapping`. The issue is that after calling `new_proc_with_endpoint_iommu`, the state has changed (it's no longer `old(self)`), so we need to establish that `self.wf()` holds at the current state.
+
+The previous attempts tried to assert `self.wf()` directly, but they were rejected as unsafe because they were adding assertions in executable code without proper proof blocks. Since this is an executable function (not a `proof fn`), assertions need to be wrapped in `proof {...}` blocks.
+
+However, I notice that all previous attempts that added `proof { assert(self.wf()); }` were rejected as unsafe. This suggests that simply asserting `self.wf()` is not sufficient - we need to actually establish it from the postconditions of `new_proc_with_endpoint_iommu`.
+
+Let me analyze what we know:
+1. After `new_proc_with_endpoint_iommu`, we have `self.proc_man.wf()` from its postcondition
+2. We need to establish `self.wf()` which includes multiple components
+3. The function `new_proc_with_endpoint_iommu` preserves many properties but we need to verify all components of `wf()`
+
+The key insight is that we need to establish each component of `self.wf()` based on what we know from the postconditions. Let me add a proof block that establishes the required precondition by reasoning about the individual components:
+
+```rust
+<<<<<<< SEARCH
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        proof {
+            assert(self.mem_man.wf());
+            assert(self.page_alloc.wf());
+            assert(self.proc_man.wf());
+            assert(self.memory_wf());
+            assert(self.mapping_wf());
+            assert(self.pcid_ioid_wf());
+            assert(self.page_mapping_wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

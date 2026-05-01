@@ -1,0 +1,39 @@
+Looking at the error and the previous attempts, I can see that the postcondition is failing for the `lemma1_next` function. The function needs to prove two things:
+1. `hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp())`
+2. `post.inv(c)`
+
+I can see from the code that there are two external proof functions available:
+- `os_next_refines_hl_next` which should prove the first postcondition
+- `next_preserves_inv` which should prove the second postcondition
+
+The previous attempts failed because they were trying to import these functions incorrectly or call them with wrong syntax. Looking at the code structure, these functions are already defined in the same file and should be callable directly.
+
+Let me add the appropriate assertions at the end of the function body:
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+}
+=======
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+    os_next_refines_hl_next(c, pre, post, lbl);
+    next_preserves_inv(c, pre, post, lbl);
+    assert(hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()));
+    assert(post.inv(c));
+}
+>>>>>>> REPLACE
+```

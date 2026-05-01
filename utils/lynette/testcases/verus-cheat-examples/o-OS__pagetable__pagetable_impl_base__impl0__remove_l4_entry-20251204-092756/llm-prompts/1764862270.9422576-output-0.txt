@@ -1,0 +1,34 @@
+Looking at the error, the precondition `old(self).dom().contains(key)` is failing for the call `self.l4_table.borrow_mut().tracked_remove(self.cr3)` on line 992.
+
+The issue is that `tracked_remove` requires the key (`self.cr3`) to be in the domain of the map (`self.l4_table@.dom()`). 
+
+From the previous attempts, I can see that they were trying to establish this precondition by calling the reveal functions and asserting that the domain contains `self.cr3`. However, these attempts were rejected as unsafe.
+
+Looking more carefully at the code, I notice that the function is an executable function (not a `proof fn`), so assertions need to be wrapped in `proof { ... }` blocks. The previous attempts were mixing proof code with executable code incorrectly.
+
+Let me analyze what we know:
+1. The function requires `old(self).wf()`
+2. From `wf_l4()`, we know that `self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)`
+3. This means `self.l4_table@.dom().contains(self.cr3)` should be true
+
+The issue is that we need to establish this fact before the `tracked_remove` call. Since this is an executable function, we need to use a `proof` block.
+
+```rust
+<<<<<<< SEARCH
+            // ret.1@.addr() == target_l3_p,
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+            // ret.1@.addr() == target_l3_p,
+    {
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+        }
+        
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```
+
+The key insight is that I need to call the reveal functions to make the connection between `self.wf()` and the specific properties like `wf_l4()` visible to the verifier. The `reveal_page_table_wf()` function establishes that `self.wf()` implies `self.levels_wf()`, and `reveal_page_table_levels_wf()` establishes that `self.levels_wf()` implies `self.wf_l4()`. From `wf_l4()`, we get that `self.l4_table@.dom().contains(self.cr3)` is true.

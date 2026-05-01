@@ -1,0 +1,25 @@
+Explanation of changes:
+- The assertion attempted to cast using "as &T", which is invalid and led to a trait error. Instead, we should work with references properly.
+- To prove equality in the (Some, Some) case, we need to use the injectivity lemma on the inner values s and o. We assert their marshalability, assert the equality of their serialized sequences (derived from the outer equality), call the injectivity lemma, and finally assert the desired view equality.
+- This approach avoids the invalid cast and ensures the proof obligations are met.
+
+```rust
+<<<<<<< SEARCH
+                    // substitute serializations for (Some, Some)
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(( o ) as &T));
+=======
+                    // substitute serializations for (Some, Some)
+                    assert(self.ghost_serialize() == seq![1] + s.ghost_serialize());
+                    assert(other.ghost_serialize() == seq![1] + o.ghost_serialize());
+                    // deduce equality of inner serializations and apply injectivity
+                    assert(s.is_marshalable());
+                    assert(o.is_marshalable());
+                    assert(s.ghost_serialize() == o.ghost_serialize());
+                    s.lemma_serialize_injective(&o);
+                    // substitute value of view_equal for (Some, Some)
+                    assert(s.view_equal(&o));
+>>>>>>> REPLACE
+```

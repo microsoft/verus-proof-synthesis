@@ -1,0 +1,46 @@
+Looking at the error, the precondition failure is:
+
+```
+failed precondition
+            old(self).dom().contains(key),
+```
+
+This occurs at line 992:
+```rust
+let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+```
+
+The `tracked_remove` method requires that the key (`self.cr3`) exists in the domain of the map (`self.l4_table@.dom()`).
+
+Looking at the function's preconditions, we have `old(self).wf()`, and from the `wf_l4()` specification, we can see:
+
+```rust
+pub open spec fn wf_l4(&self) -> bool {
+    &&& self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)
+    // ... other conditions
+}
+```
+
+This means that when `wf_l4()` holds, `self.l4_table@.dom()` contains exactly `self.cr3`.
+
+The previous attempts were rejected as unsafe because they used `proof { ... }` blocks in an executable function. Since this is an executable function (not a `proof fn`), I need to use `proof { ... }` blocks to add the necessary assertions.
+
+Let me add the proper assertions to establish that `self.l4_table@.dom().contains(self.cr3)`:
+
+```rust
+<<<<<<< SEARCH
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+    {
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+            assert(self.wf_l4());
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```

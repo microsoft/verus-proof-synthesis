@@ -1,0 +1,51 @@
+Looking at the error, the issue is with the `choose` expressions that have `exists` quantifiers. Verus cannot automatically infer triggers for these quantifiers. The error occurs in the `lemma_concurrent_trs_induct` function where we're using `choose` with complex `exists` predicates.
+
+The problem is that the `exists|step, lbl|` quantifier in the `choose` expressions needs explicit triggers. Previous attempts tried adding `#[trigger]` annotations and `#![auto]` directives, but these didn't work properly.
+
+The solution is to add explicit trigger annotations to the `exists` quantifiers within the `choose` expressions. We need to mark the key predicates that should serve as triggers.
+
+```rust
+<<<<<<< SEARCH
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        let state = choose|state: os::State| exists|step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+=======
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        let state = choose|state: os::State| exists|step, lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+>>>>>>> REPLACE
+```

@@ -1,0 +1,42 @@
+Looking at the error, the function `os_next_refines_hl_next` cannot be found in the current scope. I can see that this function is defined in the `impl_u/os_refinement.rs` module but it's not being imported.
+
+Looking at the previous failed attempts, they all tried to add `use` statements, but they were adding them incorrectly. The functions are defined within the current crate, so we need to use the correct module path.
+
+Let me examine the code structure:
+1. The function `os_next_refines_hl_next` is defined in the root of the crate (not in a module)
+2. The function `next_preserves_inv` is also defined in the root of the crate
+3. The error occurs in the `theorem` module where these functions are being called
+
+The issue is that these functions are defined at the crate root level but the `theorem` module cannot see them. We need to make these functions available to the `theorem` module.
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+    os_next_refines_hl_next(c, pre, post, lbl);
+    next_preserves_inv(c, pre, post, lbl);
+    assert(hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()));
+    assert(post.inv(c));
+}
+=======
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+    crate::os_next_refines_hl_next(c, pre, post, lbl);
+    crate::next_preserves_inv(c, pre, post, lbl);
+    assert(hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()));
+    assert(post.inv(c));
+}
+>>>>>>> REPLACE
+```

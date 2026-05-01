@@ -1,0 +1,33 @@
+Looking at the error and the previous attempts, I can see that the issue is with the `tracked_remove` method call on `self.l4_table.borrow_mut()`. The precondition `old(self).dom().contains(key)` is failing, where `key` is `self.cr3`.
+
+From the previous attempts, I can see that they were trying to establish that `self.l4_table@.dom().contains(self.cr3)` through various proof blocks, but they were all rejected as unsafe changes.
+
+Looking more carefully at the code, I notice that the function is not a `proof fn` - it's a regular function. This means I need to put the assertions inside a `proof { ... }` block, not as standalone assertions.
+
+Let me analyze what we need to establish:
+1. The precondition requires `old(self).dom().contains(key)` where `key` is `self.cr3`
+2. From the function's requires clause, we have `old(self).wf()`
+3. From the `wf_l4()` specification, we can see that `self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)`
+
+The issue with previous attempts seems to be that they were mixing proof blocks with assertions outside of proof blocks. Let me fix this by putting everything inside a single proof block:
+
+```rust
+<<<<<<< SEARCH
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+    {
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+            assert(self.wf());
+            assert(self.levels_wf());
+            assert(self.wf_l4());
+            assert(self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3));
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```

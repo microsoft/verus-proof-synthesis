@@ -1,0 +1,43 @@
+Your mission is to fix the compilation error in the following Verus code. Please follow the Verus and Rust syntax rules strictly.
+
+Error Information:
+Error at line 2-2: fn os_init_refines_hl_init(c: os::Constants, s: os::State)
+
+Error: VerusErrorType.Other: expected one of `->`, `where`, or `{`, found `requires`
+Error: expected one of `->`, `where`, or `{`, found `requires`
+Location:
+    requires
+fn os_init_refines_hl_init(c: os::Constants, s: os::State)
+Details:
+  fn os_init_refines_hl_init(c: os::Constants, s: os::State)
+                                                            
+  (expected one of `->`, `where`, or `{`)
+      requires
+      ^^^^^^^^
+  (unexpected token)
+
+
+Code to fix:
+```rust
+#[verifier::proof]
+fn os_init_refines_hl_init(c: os::Constants, s: os::State)
+    requires
+        os::init(c, s),
+    ensures
+        hlspec::init(c.interp(), s.interp(c)),
+{
+}
+
+#[verifier::proof]
+fn init_implies_inv(c: os::Constants, s: os::State)
+    requires os::init(c, s),
+    ensures s.inv(c),
+{
+}
+```
+
+
+Please don't use assume(...).
+Please follow the Rust and Verus syntax and best practices.
+Please use if-else statements to handle different cases, instead of using match statements with _ patterns.
+Prioritize SAFE changes that only modify ghost code (proofs, assertions, loop invariants) and leave the executable code (AST) exactly the same. Do NOT modify the `requires` or `ensures` clauses of the target function (though `decreases` is allowed). Modifying executable statements (e.g., extracting variables, changing loop bounds) is UNSAFE and will be rejected.

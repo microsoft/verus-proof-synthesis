@@ -1,0 +1,16 @@
+Looking at the error, the function `os_next_refines_hl_next` is being called but cannot be found in scope. I can see that this function is defined in the `impl_u/os_refinement.rs` module with an `#[verifier::external_body]` attribute, but it's not being imported or made available in the current scope.
+
+The issue is that the function is defined in a module but not imported where it's being used. I need to add the appropriate `use` statement to bring this function into scope.
+
+```rust
+<<<<<<< SEARCH
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+=======
+use vstd::prelude::*;
+use crate::defs::*;
+use crate::theorem::RLbl;
+use crate::os_next_refines_hl_next;
+>>>>>>> REPLACE
+```

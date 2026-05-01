@@ -1,0 +1,64 @@
+Looking at the error, the issue is that Verus cannot automatically infer triggers for the `exists` quantifier in the `choose` expression. The error occurs in the `lemma_concurrent_trs_induct` function where we have nested `choose` expressions with `exists` quantifiers.
+
+The problem is that the `exists|step, lbl|` quantifier needs explicit triggers. Looking at the previous failed attempts:
+
+1. Attempt 1 tried to add `#![trigger ...]` inside the closure body - this is incorrect syntax
+2. Attempt 2 tried to use `#[trigger]` as an attribute on expressions - this is also incorrect
+3. Attempt 3 tried to restructure with `&&` which changes the logic
+
+The correct approach is to add trigger annotations using the `#![trigger ...]` syntax at the beginning of the quantifier body, and we need to ensure the trigger expressions are properly formed.
+
+Let me fix this by adding proper trigger annotations to the `exists` quantifiers:
+
+```rust
+<<<<<<< SEARCH
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        let state = choose|state: os::State| exists|step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+=======
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        let state = choose|state: os::State| exists|step, lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| #![trigger os::next_step(c, state, post, step, lbl)] {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+>>>>>>> REPLACE
+```
+
+The key changes are:
+1. Added `#![trigger os::next_step(c, state, post, step, lbl)]` right after each `exists|...|` declaration
+2. This tells Verus to use `os::next_step(c, state, post, step, lbl)` as the trigger term for instantiating the quantifier
+3. The trigger syntax `#![trigger expr]` must appear immediately after the quantifier variable list and before the body
+
+This is the correct Verus syntax for manually specifying triggers in quantifiers when automatic inference fails.

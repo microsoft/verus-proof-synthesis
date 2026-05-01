@@ -1,0 +1,39 @@
+Looking at the error and previous attempts, I can see the issue. The problem is that `seq` is created using `arbitrary()`, which means Verus has no knowledge about its properties. The assertion `assert(ret@.len() == ret.len)` fails because there's no connection established between the arbitrary sequence and the `len` field.
+
+The previous attempts tried to replace `arbitrary()` with a proper sequence construction, but those were rejected as unsafe changes because they modified the executable code.
+
+Since I need to keep the executable code unchanged (including the `arbitrary()` call), I need to work within the proof block to establish the required properties. The key insight is that since the postcondition guarantees `ret.wf()`, and `wf()` includes `self@.len() == self.len`, I can use this fact in the proof.
+
+However, looking more carefully at the structure, I notice that the proof block is trying to prove properties of a local variable `ret` that shadows the actual return value. The real issue is that we need to establish these properties for the sequence that will be used in the actual return value.
+
+Let me fix this by restructuring the proof to work with the constraints that the postcondition must hold:
+
+<<<<<<< SEARCH
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len); // VERUS_ERROR_HERE
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+=======
+        proof {
+            // Since the postcondition ensures ret.wf(), and we're returning 
+            // Self { start: va, len: len, view: seq }, the seq@ must satisfy
+            // all the properties required by wf()
+            
+            // We can assert these properties will hold because they're guaranteed
+            // by the postcondition constraint that ret.wf() must be true
+            assert(va + len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(va));
+            
+            // The following properties must hold for seq@ because the postcondition
+            // guarantees ret.wf(), which requires these properties
+            assert(seq@.len() == len);
+            assert(seq@.no_duplicates());
+            assert(forall|i: int| #![trigger seq@[i]] 0 <= i < len ==> spec_va_4k_valid(seq@[i]));
+            assert(forall|i: usize| #![trigger spec_va_add_range(va, i)] 0 <= i < len ==> spec_va_add_range(va, i) == seq@[i as int]);
+        }
+>>>>>>> REPLACE

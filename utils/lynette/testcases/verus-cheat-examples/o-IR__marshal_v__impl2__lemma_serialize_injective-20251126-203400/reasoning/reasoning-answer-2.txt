@@ -1,0 +1,29 @@
+### Step 1: Analyze the Failing Assertion
+- The assertion is trying to prove self.view_equal(other) for Vec<u8>, which unfolds to self@ === other@ (sequence equality).
+- From the trait’s requires (available in the impl body), we know self.is_marshalable(), other.is_marshalable(), and self.ghost_serialize() == other.ghost_serialize().
+- For Vec<u8>, ghost_serialize() is defined as (len as usize).ghost_serialize() + self@, i.e., a fixed-length length-prefix followed by the raw bytes.
+
+### Step 2: Root Cause Analysis
+- The proof does not bridge the equality of serialized sequences to equality of the underlying sequences (self@ and other@).
+- We need to peel off the equal length-prefixes (usize serialization) from both sides of the equality and then conclude the suffixes (self@ vs other@) are equal; this requires using sequence operations (concat/drop/take) and the fact that the usize serialization has the same length for both sides.
+
+### Step 3: Why Previous Attempts Failed
+- The previous attempt simply asserted the goal without using the structure of ghost_serialize or sequence properties, so the solver had no path to derive self@ === other@.
+
+### Step 4: Action Selection
+- Primary: SEQSETMAP, to use Seq concat/take/drop properties to strip the length-prefix from the equality of serialized sequences and derive equality of the data suffixes.
+- Secondary: EXTENSIONAL_EQUALITY, to finish by converting self@ === other@ into length and per-index equality once the suffix equality is established.
+
+```json
+{
+    "root_cause_analysis": "Equality of ghost_serialize() only implies view equality after peeling off the common, fixed-size length-prefix; the current proof does not use Seq concat/drop reasoning to relate the serialized equality to equality of the underlying sequences.",
+    "knows_root_cause": true,
+    "primary_action": "SEQSETMAP",
+    "secondary_actions": ["EXTENSIONAL_EQUALITY", "NONLINEAR_ARITHMETIC"],
+    "reasoning_explanation": "Use Seq API facts: (a + b).drop(a.len()) == b and (a + b).take(a.len()) == a. From ghost_serialize equality and equal header lengths (usize serialization), drop the header length on both sides to get self@ == other@, then conclude self.view_equal(other).",
+    "action_parameters": {
+        "assertion_content": "self.view_equal(other)",
+        "guidance": "Let h1 = (self@.len() as usize).ghost_serialize() and h2 = (other@.len() as usize).ghost_serialize(). From self.ghost_serialize() == other.ghost_serialize() and len(h1) == len(h2), assert (h1 + self@).drop(h1.len()) == self@ and (h2 + other@).drop(h2.len()) == other@, then deduce self@ == other@ by dropping equal-length prefixes on both sides. If needed, assert len(h1) == len(h2) using the fact that usize serialization length is constant. Finally, use extensional equality to conclude self.view_equal(other)."
+    }
+}
+```

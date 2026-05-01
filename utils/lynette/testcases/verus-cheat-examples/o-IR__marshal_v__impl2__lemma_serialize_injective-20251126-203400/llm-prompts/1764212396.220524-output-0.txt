@@ -1,0 +1,40 @@
+Explanation of changes:
+- The failing assertion p1.len() == p2.len() is justified by unfolding the open specs:
+  - Rewrite usize::ghost_serialize to u64::ghost_serialize, then to spec_u64_to_le_bytes.
+  - Relate the lengths through these equalities.
+- Use by (compute) only on the .len() of spec_u64_to_le_bytes(...) to evaluate it to 8. Although the argument contains variables, the length is a constant 8 and the compute step succeeds in this case.
+- Conclude p1.len() == 8 and p2.len() == 8, and thus p1.len() == p2.len().
+
+```rust
+<<<<<<< SEARCH
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == p2.len()); // VERUS_ERROR_HERE
+
+                // Connect ghost_serialize to the explicit concatenations
+=======
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == p2.len()) by {
+                    // Rewrite p1 and p2 using open specs
+                    assert(p1 == ((s.len() as usize) as u64).ghost_serialize());
+                    assert(p2 == ((o.len() as usize) as u64).ghost_serialize());
+                    assert(p1.len() == ((s.len() as usize) as u64).ghost_serialize().len());
+                    assert(p2.len() == ((o.len() as usize) as u64).ghost_serialize().len());
+
+                    // Rewrite u64 serialization to explicit little-endian bytes
+                    assert(((s.len() as usize) as u64).ghost_serialize() == spec_u64_to_le_bytes((s.len() as usize) as u64));
+                    assert(((o.len() as usize) as u64).ghost_serialize() == spec_u64_to_le_bytes((o.len() as usize) as u64));
+                    assert(((s.len() as usize) as u64).ghost_serialize().len() == spec_u64_to_le_bytes((s.len() as usize) as u64).len());
+                    assert(((o.len() as usize) as u64).ghost_serialize().len() == spec_u64_to_le_bytes((o.len() as usize) as u64).len());
+
+                    // Compute that each u64 encoding has length 8
+                    assert(spec_u64_to_le_bytes((s.len() as usize) as u64).len() == 8) by (compute);
+                    assert(spec_u64_to_le_bytes((o.len() as usize) as u64).len() == 8) by (compute);
+
+                    // Hence both prefixes have length 8
+                    assert(p1.len() == 8);
+                    assert(p2.len() == 8);
+                };
+
+                // Connect ghost_serialize to the explicit concatenations
+>>>>>>> REPLACE
+```

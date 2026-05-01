@@ -1,0 +1,14 @@
+Explanation:
+The failing assertion is inside a forall proof where we need to establish that spec_u64_to_le_bytes(x) always yields a sequence of length 8. Instead of relying on unfolding or fuel, we can use the compute interpreter to evaluate the length due to the definitional construction of the 8-byte sequence. Therefore, we replace the inner assertion with assert(... ) by (compute) as suggested.
+
+```rust
+<<<<<<< SEARCH
+                assert forall |x: u64| spec_u64_to_le_bytes(x).len() == 8 by {
+                    assert(spec_u64_to_le_bytes(x).len() == 8); // VERUS_ERROR_HERE
+                };
+=======
+                assert forall |x: u64| spec_u64_to_le_bytes(x).len() == 8 by {
+                    assert(spec_u64_to_le_bytes(x).len() == 8) by (compute);
+                };
+>>>>>>> REPLACE
+```

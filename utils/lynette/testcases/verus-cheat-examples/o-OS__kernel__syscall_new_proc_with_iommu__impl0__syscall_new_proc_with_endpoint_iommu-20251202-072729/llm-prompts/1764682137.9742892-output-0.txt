@@ -1,0 +1,32 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `range_create_and_share_mapping`. The issue is that after calling `proc_man.new_proc_with_endpoint_iommu` and `mem_man.alloc_page_table`/`alloc_iommu_table`, we need to establish that `self.wf()` still holds.
+
+The previous attempts were rejected because they tried to add `proof { assert(self.wf()); }` blocks in executable code, which is unsafe. Instead, we need to add assertions **before** the function call that help establish the precondition.
+
+Looking at the `wf()` definition for `Kernel`, it requires:
+- `self.mem_man.wf()`
+- `self.page_alloc.wf()`
+- `self.proc_man.wf()`
+- `self.memory_wf()`
+- `self.mapping_wf()`
+- `self.pcid_ioid_wf()`
+- `self.page_mapping_wf()`
+
+Since we're in an executable function, assertions need to be inside `proof {...}` blocks. Let me add the necessary proof block with assertions to establish `self.wf()` before the call:
+
+```rust
+<<<<<<< SEARCH
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        proof {
+            assert(self.mem_man.wf());
+            assert(self.page_alloc.wf());
+            assert(self.proc_man.wf());
+            assert(self.memory_wf());
+            assert(self.mapping_wf());
+            assert(self.pcid_ioid_wf());
+            assert(self.page_mapping_wf());
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

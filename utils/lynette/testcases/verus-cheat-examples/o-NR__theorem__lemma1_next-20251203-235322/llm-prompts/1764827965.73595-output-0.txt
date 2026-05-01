@@ -1,0 +1,41 @@
+Looking at the error, I need to analyze what's happening:
+
+1. The postcondition `hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp())` is failing
+2. The function `lemma1_next` is a proof function that needs to establish this postcondition
+3. There are two external proof functions available: `os_next_refines_hl_next` and `next_preserves_inv`
+
+The previous attempts failed because they were calling functions that don't exist in the current scope. Looking at the code, I can see that `os_next_refines_hl_next` and `next_preserves_inv` are defined in separate files but need to be called properly.
+
+Let me examine the function signatures:
+- `os_next_refines_hl_next(c: os::Constants, s1: os::State, s2: os::State, lbl: RLbl)` ensures `hlspec::next(c.interp(), s1.interp(c), s2.interp(c), lbl.interp())`
+- `next_preserves_inv(c: os::Constants, s1: os::State, s2: os::State, lbl: RLbl)` ensures `s2.inv(c)`
+
+The issue is that these functions are defined in the same file but in different modules. I need to call them correctly within the proof.
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+}
+=======
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+    os_next_refines_hl_next(c, pre, post, lbl);
+    next_preserves_inv(c, pre, post, lbl);
+    assert(hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()));
+    assert(post.inv(c));
+}
+>>>>>>> REPLACE
+```

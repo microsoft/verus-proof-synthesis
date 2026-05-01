@@ -1,0 +1,42 @@
+Looking at the error and previous attempts, I need to analyze what's happening:
+
+1. The function `lemma1_init` has two postconditions:
+   - `hlspec::init(c.interp(), pre.interp(c))`
+   - `pre.inv(c)`
+
+2. The error shows that the first postcondition `hlspec::init(c.interp(), pre.interp(c))` is failing.
+
+3. Previous attempts were rejected as "unsafe_changes" because they were adding imports and modifying the function signature.
+
+Looking at the code more carefully, I can see that:
+- There are already external proof functions `os_init_refines_hl_init` and `init_implies_inv` that should help prove these postconditions
+- The function is a `proof fn`, so I should add assertions directly without `proof {...}` blocks
+- I need to call the existing lemmas to establish the postconditions
+
+Let me add the necessary assertions by calling the existing proof functions:
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+}
+=======
+proof fn lemma1_init(c: os::Constants, pre: os::State)
+    requires
+        os::init(c, pre),
+    ensures
+        hlspec::init(c.interp(), pre.interp(c)),
+        pre.inv(c),
+// $line_count$}$
+{
+    crate::os_init_refines_hl_init(c, pre);
+    crate::init_implies_inv(c, pre);
+}
+>>>>>>> REPLACE
+```

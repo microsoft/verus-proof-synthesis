@@ -1,0 +1,25 @@
+Explanation:
+The assertion p1.len() == p2.len() failed because the verifier cannot automatically see that the length-prefix serialization of a usize has a fixed length. Following the guidance, we explicitly rewrite p1 and p2 using the open spec definitions:
+- usize::ghost_serialize(u) = (u as u64).ghost_serialize()
+- u64::ghost_serialize(v) = spec_u64_to_le_bytes(v)
+
+This exposes that both p1 and p2 are spec_u64_to_le_bytes applied to some value, whose length is always 8. We then assert p1.len() == 8 and p2.len() == 8 using by (compute), and finally conclude p1.len() == p2.len().
+
+```rust
+<<<<<<< SEARCH
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == p2.len()); // VERUS_ERROR_HERE
+=======
+                // Both length prefixes have the same (fixed) length
+                // Rewrite p1 and p2 using open specs to expose fixed-length encoding
+                assert(p1 == ((s.len() as usize) as u64).ghost_serialize());
+                assert(p2 == ((o.len() as usize) as u64).ghost_serialize());
+                assert(((s.len() as usize) as u64).ghost_serialize() == spec_u64_to_le_bytes((s.len() as usize) as u64));
+                assert(((o.len() as usize) as u64).ghost_serialize() == spec_u64_to_le_bytes((o.len() as usize) as u64));
+                assert(spec_u64_to_le_bytes((s.len() as usize) as u64).len() == 8) by (compute);
+                assert(spec_u64_to_le_bytes((o.len() as usize) as u64).len() == 8) by (compute);
+                assert(p1.len() == 8);
+                assert(p2.len() == 8);
+                assert(p1.len() == p2.len());
+>>>>>>> REPLACE
+```

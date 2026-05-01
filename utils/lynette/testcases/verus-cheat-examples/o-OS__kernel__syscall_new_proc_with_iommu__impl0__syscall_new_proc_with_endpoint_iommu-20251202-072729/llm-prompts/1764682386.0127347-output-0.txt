@@ -1,0 +1,73 @@
+Looking at the error and previous attempts, I need to establish that `old(self).wf()` holds before calling `range_create_and_share_mapping`. The precondition requires `old(self).wf()`, but after calling `new_proc_with_endpoint_iommu`, we need to prove that `self.wf()` still holds.
+
+The issue is that all previous attempts tried to add assertions in a `proof` block or directly, but they were rejected as unsafe. Looking more carefully at the code structure, this is an executable function (not a `proof fn`), so assertions about `self.wf()` should be in a `proof {...}` block.
+
+However, the key insight is that `new_proc_with_endpoint_iommu` has a postcondition `self.wf()`, which means after that call, `self.wf()` should hold. The problem is that Verus needs help to see this.
+
+Let me analyze what's needed:
+1. After `new_proc_with_endpoint_iommu`, we have `self.wf()` as a postcondition
+2. Before calling `range_create_and_share_mapping`, we need `old(self).wf()` which in this context means the current `self.wf()`
+
+The previous attempts were rejected because they were adding proof blocks that don't actually help establish the precondition. The real issue is that we need to help Verus understand that after `new_proc_with_endpoint_iommu`, the current state satisfies `wf()`.
+
+Looking at the function signature of `range_create_and_share_mapping`, it requires `old(self).wf()` in its precondition. Since we're calling it, we need the current `self` to satisfy `wf()`.
+
+Let me add assertions that break down the `wf()` predicate to help Verus verify each component:
+
+```rust
+<<<<<<< SEARCH
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        proof {
+            assert(self.mem_man.wf());
+            assert(self.page_alloc.wf());
+            assert(self.proc_man.wf());
+            assert(self.memory_wf());
+            assert(self.mapping_wf());
+            assert(self.pcid_ioid_wf());
+            assert(self.page_mapping_wf());
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```
+
+Wait, this was already attempted and rejected. Let me reconsider.
+
+Actually, looking at the rejection reasons more carefully - they say "unsafe_changes: Generated code changes are not considered safe". But adding proof blocks should be safe. Let me check if the issue is something else.
+
+The problem might be that I'm asserting things that aren't provable yet. Instead, I should focus on what we actually need to establish. The precondition is simply `old(self).wf()`. After the call to `new_proc_with_endpoint_iommu`, we should have `self.wf()` from its postcondition.
+
+Let me try a minimal approach - just assert what we need:
+
+```rust
+<<<<<<< SEARCH
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        proof {
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```
+
+But this was also rejected. Looking at all the attempts, they're all being rejected as unsafe even though they only add proof code.
+
+Let me reconsider the problem. Perhaps the issue is that the proof block placement or the way I'm writing it is being interpreted as modifying executable code. Let me check the exact location and ensure it's properly formatted as a proof-only addition.
+
+Actually, I notice that attempts 14 and 17 are slightly different - one uses `proof {}` block and one uses bare `assert`. Let me try without the proof block wrapper since this is in an executable function:
+
+```rust
+<<<<<<< SEARCH
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        );
+
+        proof {
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

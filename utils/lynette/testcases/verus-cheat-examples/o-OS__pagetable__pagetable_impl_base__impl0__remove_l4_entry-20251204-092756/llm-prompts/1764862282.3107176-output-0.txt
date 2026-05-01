@@ -1,0 +1,40 @@
+Looking at the error, the precondition failure is:
+
+```
+failed precondition
+            old(self).dom().contains(key),
+```
+
+This occurs at line 992:
+```rust
+let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+```
+
+The `tracked_remove` method requires that the domain contains the key `self.cr3`. Looking at the previous attempts, they all tried to add proof blocks, but were rejected as unsafe changes.
+
+The issue is that I need to establish that `self.l4_table@.dom().contains(self.cr3)` before the call to `tracked_remove`. 
+
+From the function's precondition, we have `old(self).wf()`, and from the `wf_l4` specification, we can see that:
+```rust
+self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)
+```
+
+This means the domain contains exactly `self.cr3`. I need to reveal the appropriate broadcast proofs and assert this fact.
+
+Looking at the previous attempts, they were rejected as "unsafe_changes". The issue might be that I'm adding proof blocks in an executable function. Let me try a different approach by adding the assertion directly without a proof block wrapper.
+
+```rust
+<<<<<<< SEARCH
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+    {
+        assert(self.l4_table@.dom().contains(self.cr3)) by {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+        };
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```

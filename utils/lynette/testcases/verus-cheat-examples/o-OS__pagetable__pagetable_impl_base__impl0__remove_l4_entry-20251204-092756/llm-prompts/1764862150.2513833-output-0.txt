@@ -1,0 +1,37 @@
+Looking at the error and the previous attempts, I can see that the issue is with the `tracked_remove` method call on `self.l4_table.borrow_mut()`. The precondition `old(self).dom().contains(key)` is failing, which means we need to establish that `self.l4_table@.dom().contains(self.cr3)`.
+
+From the previous attempts, I can see that they were all rejected as "unsafe_changes" because they were adding proof blocks inside the executable function body. However, since this is an executable function (not a `proof fn`), I need to put assertions inside `proof {...}` blocks.
+
+Looking at the `wf_l4` specification, I can see that it establishes:
+```
+self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)
+```
+
+This means that `self.l4_table@.dom().contains(self.cr3)` should be true when `self.wf_l4()` holds, which should be true when `self.wf()` holds (based on the function's precondition).
+
+The key insight is that I need to use the broadcast proof functions to reveal the definitions and then assert the required precondition. Let me add the proof block correctly:
+
+```rust
+<<<<<<< SEARCH
+    {
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+=======
+    {
+        proof {
+            self.reveal_page_table_wf();
+            self.reveal_page_table_levels_wf();
+            assert(self.wf_l4());
+            assert(self.l4_table@.dom().contains(self.cr3));
+        }
+
+        let tracked mut l4_perm = self.l4_table.borrow_mut().tracked_remove(self.cr3);
+>>>>>>> REPLACE
+```
+
+The reason this should work is:
+1. `self.wf()` is given in the precondition
+2. `self.reveal_page_table_wf()` reveals that `self.wf()` implies `self.levels_wf()`
+3. `self.reveal_page_table_levels_wf()` reveals that `self.levels_wf()` implies `self.wf_l4()`
+4. `self.wf_l4()` establishes that `self.l4_table@.dom() =~= Set::<PageMapPtr>::empty().insert(self.cr3)`
+5. Therefore `self.l4_table@.dom().contains(self.cr3)` should hold

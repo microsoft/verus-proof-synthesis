@@ -1,0 +1,16 @@
+Explanation:
+The failing assertion p1.len() == p2.len() needs to be justified by computing the lengths of the serialized usize length-prefixes. By definition, usize::ghost_serialize casts to u64 and uses LE serialization, which yields 8 bytes. We assert that each prefix has length 8 (using by(compute)) and then conclude equality from both being 8.
+
+Note: We replace the single equality assertion with two computation assertions p1.len() == 8 and p2.len() == 8 followed by the equality.
+
+```rust
+<<<<<<< SEARCH
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == p2.len()); // VERUS_ERROR_HERE
+=======
+                // Both length prefixes have the same (fixed) length
+                assert(p1.len() == 8) by (compute);
+                assert(p2.len() == 8) by (compute);
+                assert(p1.len() == p2.len());
+>>>>>>> REPLACE
+```

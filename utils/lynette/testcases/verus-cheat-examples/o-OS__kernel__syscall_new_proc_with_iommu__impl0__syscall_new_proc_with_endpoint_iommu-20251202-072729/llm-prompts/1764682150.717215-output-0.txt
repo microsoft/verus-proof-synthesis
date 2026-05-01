@@ -1,0 +1,65 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `range_create_and_share_mapping`. The issue is that after calling `proc_man.new_proc_with_endpoint_iommu` and `mem_man.alloc_page_table`/`alloc_iommu_table`, the kernel's `wf()` invariant needs to be re-established.
+
+The previous attempts all tried to add a proof block asserting `self.wf()`, but these were rejected as unsafe because they're trying to assert something that may not be true without proper justification.
+
+The key insight is that we need to understand what changed:
+1. `mem_man.alloc_page_table` and `alloc_iommu_table` were called, which modify `mem_man`
+2. `proc_man.new_proc_with_endpoint_iommu` was called, which modifies `proc_man`
+3. These operations should maintain the kernel's `wf()` invariant, but we need to help Verus see this
+
+Looking at the function signatures, both `alloc_page_table`, `alloc_iommu_table`, and `new_proc_with_endpoint_iommu` have postconditions that ensure `wf()` is maintained for their respective components. However, the kernel's `wf()` is a conjunction of multiple conditions that span across these components.
+
+The safe approach is to add assertions that help Verus connect the dots between the component `wf()` conditions and the overall kernel `wf()`. Since we can't modify executable code, we need to add these as proof assertions.
+
+```rust
+<<<<<<< SEARCH
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        proof {
+            assert(self.mem_man.wf());
+            assert(self.page_alloc.wf());
+            assert(self.proc_man.wf());
+            assert(self.mem_man.page_closure().disjoint(self.proc_man.page_closure()));
+            assert(self.mem_man.page_closure() + self.proc_man.page_closure() == self.page_alloc.allocated_pages_4k());
+            assert(self.page_alloc.mapped_pages_2m() =~= Set::empty());
+            assert(self.page_alloc.mapped_pages_1g() =~= Set::empty());
+            assert(self.page_alloc.allocated_pages_2m() =~= Set::empty());
+            assert(self.page_alloc.allocated_pages_1g() =~= Set::empty());
+            assert(self.page_alloc.container_map_4k@.dom() =~= self.proc_man.container_dom());
+            assert(self.page_alloc.container_map_2m@.dom() =~= self.proc_man.container_dom());
+            assert(self.page_alloc.container_map_1g@.dom() =~= self.proc_man.container_dom());
+            assert(self.memory_wf());
+            assert(self.page_mapping@.dom().subset_of(self.page_alloc.mapped_pages_4k()));
+            assert(self.page_io_mapping@.dom().subset_of(self.page_alloc.mapped_pages_4k()));
+            assert(self.page_mapping_wf());
+            assert(self.mapping_wf());
+            assert(self.pcid_ioid_wf());
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

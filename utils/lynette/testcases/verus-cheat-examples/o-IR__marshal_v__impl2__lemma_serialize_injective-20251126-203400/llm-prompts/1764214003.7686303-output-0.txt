@@ -1,0 +1,12 @@
+Explanation:
+The failed assertions check that spec_u64_to_le_bytes(...) produces a sequence of length 8. This is a fixed property of the u64 LE serialization and can be computed from the definition. Applying by (compute) to these assertions instructs Verus to evaluate the spec function and len at proof time, unfolding the recursive/definition as needed. Following the guidance, I added by (compute) directly to both assertions.
+
+```rust
+<<<<<<< SEARCH
+                assert(spec_u64_to_le_bytes(x1).len() == 8); // VERUS_ERROR_HERE
+                assert(spec_u64_to_le_bytes(x2).len() == 8);
+=======
+                assert(spec_u64_to_le_bytes(x1).len() == 8) by (compute); // VERUS_ERROR_HERE
+                assert(spec_u64_to_le_bytes(x2).len() == 8) by (compute);
+>>>>>>> REPLACE
+```

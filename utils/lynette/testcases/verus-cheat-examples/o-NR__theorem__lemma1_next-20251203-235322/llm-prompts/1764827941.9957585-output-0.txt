@@ -1,0 +1,13 @@
+Looking at the error and the previous successful attempts, I can see that the issue is with the function call `os_next_refines_hl_next(c, pre, post, lbl);` not being found in scope. The successful attempt shows that prefixing with `crate::` resolves this issue.
+
+The error occurs because the function `os_next_refines_hl_next` is defined in a different module (`impl_u::os_refinement`) and needs to be properly qualified to be found in the current scope.
+
+```rust
+<<<<<<< SEARCH
+    os_next_refines_hl_next(c, pre, post, lbl);
+    next_preserves_inv(c, pre, post, lbl);
+=======
+    crate::os_next_refines_hl_next(c, pre, post, lbl);
+    crate::next_preserves_inv(c, pre, post, lbl);
+>>>>>>> REPLACE
+```

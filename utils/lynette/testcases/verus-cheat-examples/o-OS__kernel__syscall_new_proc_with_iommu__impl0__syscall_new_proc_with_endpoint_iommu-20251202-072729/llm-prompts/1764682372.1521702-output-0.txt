@@ -1,0 +1,54 @@
+Looking at the error, the precondition `old(self).wf()` is not satisfied when calling `range_create_and_share_mapping`. The issue is that after calling `proc_man.new_proc_with_endpoint_iommu` and `mem_man.alloc_page_table`/`alloc_iommu_table`, we need to establish that `self.wf()` still holds.
+
+The previous attempts were rejected because they tried to add assertions in executable code without `proof` blocks. Since this is an executable function (not a `proof fn`), we need to wrap assertions in `proof {...}` blocks.
+
+However, looking more carefully at the code flow:
+1. We call `mem_man.alloc_page_table` and `mem_man.alloc_iommu_table`
+2. We call `proc_man.new_proc_with_endpoint_iommu`
+3. We need to call `range_create_and_share_mapping` which requires `old(self).wf()`
+
+The key insight is that `range_create_and_share_mapping` requires `old(self).wf()`, which means `self.wf()` at the point of the call. After the previous operations, we need to establish that `self` still satisfies `wf()`.
+
+Let me add the necessary proof block with assertions to establish the precondition:
+
+```rust
+<<<<<<< SEARCH
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+=======
+        self.proc_man.new_proc_with_endpoint_iommu(
+            thread_ptr,
+            endpoint_index,
+            pt_regs,
+            page_ptr_2,
+            page_perm_2,
+            page_ptr_3,
+            page_perm_3,
+            new_pcid,
+            new_ioid,
+        );
+
+        proof {
+            assert(self.mem_man.wf());
+            assert(self.page_alloc.wf());
+            assert(self.proc_man.wf());
+            assert(self.memory_wf());
+            assert(self.mapping_wf());
+            assert(self.pcid_ioid_wf());
+            assert(self.page_mapping_wf());
+            assert(self.wf());
+        }
+        self.range_create_and_share_mapping(proc_ptr, &va_range, page_ptr_2, &va_range);
+>>>>>>> REPLACE
+```

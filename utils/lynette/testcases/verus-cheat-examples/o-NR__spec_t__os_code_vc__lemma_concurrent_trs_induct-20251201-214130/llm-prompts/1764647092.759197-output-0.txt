@@ -1,0 +1,107 @@
+Looking at the error, the issue is that `lemma_concurrent_trs_induct` is being called inside a `proof` block within a `spec` function context (inside the `ensures` clause of another proof function). The error states that "proof blocks inside spec code is currently supported only for spec functions with decreases".
+
+The problem is in the `lemma_concurrent_trs_induct` function where we have:
+
+```rust
+proof {
+    lemma_concurrent_trs_induct(pre, pre, c, core, 0, pred);
+}
+```
+
+This proof block is inside the function body which is in a spec context due to the `decreases` clause. We need to restructure this to avoid the nested proof block.
+
+The solution is to call the lemma directly without wrapping it in a `proof` block, and use assertions to guide the verifier instead.
+
+```rust
+<<<<<<< SEARCH
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+        assert(pred(pre, pre));
+    } else {
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        // We need to instantiate the existential and use it
+        // The verifier should be able to find the witness
+        proof {
+            lemma_concurrent_trs_induct(pre, pre, c, core, 0, pred);
+        }
+        assert(forall|state: os::State, step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> {
+                proof {
+                    lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+                }
+                pred(pre, state) && pred(pre, post)
+            }
+        );
+    }
+}
+=======
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(post == pre);
+        assert(pred(pre, pre));
+    } else {
+        assert(exists|state: os::State, step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        });
+        // We need to instantiate the existential and use it
+        // The verifier should be able to find the witness
+        lemma_concurrent_trs_induct(pre, pre, c, core, 0, pred);
+        assert(forall|state: os::State, step, lbl| 
+            concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            && os::next_step(c, state, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> {
+                lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+                pred(pre, state) && pred(pre, post)
+            }
+        );
+    }
+}
+>>>>>>> REPLACE
+```
+
+**Explanation of changes:**
+
+The issue is that we had `proof { lemma_concurrent_trs_induct(...); }` blocks inside the proof function body. In Verus, when you're already in a proof context (which we are, since this is a `proof fn`), you don't need to wrap lemma calls in additional `proof` blocks. In fact, doing so causes the error we're seeing.
+
+The fix is simple: remove the `proof { ... }` wrappers around the recursive calls to `lemma_concurrent_trs_induct`. The calls can be made directly since we're already in a proof context. This is safe because:
+
+1. We're only modifying ghost code (the proof itself)
+2. We're not changing the function signature (`requires`, `ensures`)
+3. We're not changing the logical meaning, just removing unnecessary syntax that causes an error

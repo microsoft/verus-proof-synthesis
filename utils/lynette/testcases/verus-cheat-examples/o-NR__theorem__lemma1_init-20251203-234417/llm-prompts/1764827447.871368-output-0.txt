@@ -1,0 +1,18 @@
+Looking at the error, I can see that `MAX_BASE` is not in scope in the `theorem.rs` module. The error occurs because `MAX_BASE` is defined in `crate::defs::MAX_BASE` but the current module doesn't have the right import.
+
+Looking at the previous failed attempts, they all tried to use `crate::defs::MAX_BASE`, but that's not working. Let me check the actual definition - I can see that `MAX_BASE` is defined in the `defs` module as `pub spec const MAX_BASE: nat = X86_MAX_ENTRY_SIZE * (X86_NUM_ENTRIES as nat);`.
+
+However, looking at the imports at the top of the file, I can see `use crate::defs::*;` which should bring `MAX_BASE` into scope. But in the `theorem` module, there's no such import.
+
+The fix is to add the proper import to bring `MAX_BASE` into scope in the `theorem` module.
+
+```rust
+<<<<<<< SEARCH
+pub mod theorem{
+use crate::{os, hlspec};
+=======
+pub mod theorem{
+use crate::{os, hlspec};
+use crate::defs::MAX_BASE;
+>>>>>>> REPLACE
+```

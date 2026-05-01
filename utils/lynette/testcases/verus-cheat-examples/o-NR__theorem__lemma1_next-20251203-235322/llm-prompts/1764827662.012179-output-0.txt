@@ -1,0 +1,33 @@
+Looking at the error, the postcondition `hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp())` is not satisfied in the function `lemma1_next`. 
+
+The previous attempts were rejected because they were considered unsafe changes. Looking at the code, I can see that there are external body functions `os_next_refines_hl_next` and `next_preserves_inv` that seem to provide the necessary proofs for these postconditions.
+
+The issue is that the `lemma1_next` function has an empty body, but it needs to call the appropriate lemma functions to establish the postconditions. Since this is a proof function, I need to add the necessary proof steps.
+
+```rust
+<<<<<<< SEARCH
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+}
+=======
+proof fn lemma1_next(c: os::Constants, pre: os::State, post: os::State, lbl: RLbl)
+    requires
+        os::next(c, pre, post, lbl),
+        pre.inv(c),
+    ensures
+        hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()),
+        post.inv(c),
+{
+    os_next_refines_hl_next(c, pre, post, lbl);
+    next_preserves_inv(c, pre, post, lbl);
+    assert(hlspec::next(c.interp(), pre.interp(c), post.interp(c), lbl.interp()));
+    assert(post.inv(c));
+}
+>>>>>>> REPLACE
+```

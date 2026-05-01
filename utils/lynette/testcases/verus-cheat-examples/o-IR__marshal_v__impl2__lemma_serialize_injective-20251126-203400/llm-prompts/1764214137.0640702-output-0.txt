@@ -1,0 +1,21 @@
+Explanation:
+The assertion asserting spec_u64_to_le_bytes(x).len() == 8 needs an instantiation of a library quantified fact that has a trigger on the expression spec_u64_to_le_bytes(x).len(). To ensure the quantifier is instantiated for the concrete values x1 and x2, we add self-equality assertions on the trigger expressions spec_u64_to_le_bytes(x1).len() and spec_u64_to_le_bytes(x2).len() immediately before the failing assertion. This matches the trigger and allows the solver to learn that the length is 8.
+
+```rust
+<<<<<<< SEARCH
+                assert(x1.ghost_serialize() == spec_u64_to_le_bytes(x1));
+                assert(x2.ghost_serialize() == spec_u64_to_le_bytes(x2));
+                // Directly assert the fixed-length property for these concrete values
+                assert(spec_u64_to_le_bytes(x1).len() == 8); // VERUS_ERROR_HERE
+                assert(spec_u64_to_le_bytes(x2).len() == 8);
+=======
+                assert(x1.ghost_serialize() == spec_u64_to_le_bytes(x1));
+                assert(x2.ghost_serialize() == spec_u64_to_le_bytes(x2));
+                // Directly assert the fixed-length property for these concrete values
+                // Trigger instantiation: match the #[trigger] pattern spec_u64_to_le_bytes(x).len()
+                assert(spec_u64_to_le_bytes(x1).len() == spec_u64_to_le_bytes(x1).len());
+                assert(spec_u64_to_le_bytes(x2).len() == spec_u64_to_le_bytes(x2).len());
+                assert(spec_u64_to_le_bytes(x1).len() == 8); // VERUS_ERROR_HERE
+                assert(spec_u64_to_le_bytes(x2).len() == 8);
+>>>>>>> REPLACE
+```

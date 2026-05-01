@@ -1,0 +1,95 @@
+Looking at the error, the issue is that Verus cannot automatically infer triggers for the quantifier in the `choose` expression. The problem is in the `lemma_concurrent_trs_induct` function where we have a `choose` with an `exists` that has multiple conjuncts, and Verus needs explicit trigger annotations.
+
+The error occurs because the quantifier `exists|step, lbl|` has multiple conditions combined with `&&&`, and Verus cannot determine which terms should be used as triggers for efficient matching.
+
+To fix this, we need to add `#[trigger]` annotations to guide Verus on which terms to use as triggers. The most natural trigger here would be `os::next_step(c, state, post, step, lbl)` since it's the most specific predicate involving both quantified variables.
+
+Here are the changes:
+
+```rust
+<<<<<<< SEARCH
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(pred(pre, post));
+    } else {
+        let state = choose|state: os::State| exists|step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+        assert(pred(pre, state));
+        assert(concurrent_trs(pre, state, c, core, sub(pidx, 1)));
+        assert(os::next_step(c, state, post, step, lbl));
+        assert(!step.is_actor_step(core));
+        assert(pred(pre, post));
+    }
+}
+=======
+#[verifier::rlimit(250)]
+proof fn lemma_concurrent_trs_induct(pre: os::State, post: os::State, c: os::Constants, core: Core, pidx: nat, pred: spec_fn(os::State, os::State) -> bool)
+    requires
+        concurrent_trs(pre, post, c, core, pidx),
+        forall|s| #[trigger] pred(s, s),
+        forall|pre, mid, pidx, step, lbl, post|
+            pred(pre, mid)
+            && concurrent_trs(pre, mid, c, core, pidx)
+            && os::next_step(c, mid, post, step, lbl)
+            && !step.is_actor_step(core)
+            ==> pred(pre, post)
+    ensures pred(pre, post)
+    decreases pidx
+{
+    if pidx == 0 {
+        assert(pred(pre, post));
+    } else {
+        let state = choose|state: os::State| exists|step, lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let step = choose|step| exists|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        let lbl = choose|lbl| {
+            &&& concurrent_trs(pre, state, c, core, sub(pidx, 1)) 
+            &&& #[trigger] os::next_step(c, state, post, step, lbl)
+            &&& !step.is_actor_step(core)
+        };
+        lemma_concurrent_trs_induct(pre, state, c, core, sub(pidx, 1), pred);
+        assert(pred(pre, state));
+        assert(concurrent_trs(pre, state, c, core, sub(pidx, 1)));
+        assert(os::next_step(c, state, post, step, lbl));
+        assert(!step.is_actor_step(core));
+        assert(pred(pre, post));
+    }
+}
+>>>>>>> REPLACE
+```
+
+The change adds `#[trigger]` annotations to `os::next_step(c, state, post, step, lbl)` in all three `choose` expressions. This tells Verus to use this predicate as the trigger term for the quantifier, which allows it to efficiently instantiate the quantifier when needed. The `os::next_step` predicate is a good choice for a trigger because it involves both quantified variables (`step` and `lbl` in the first case, just `lbl` in the second, etc.) and is a concrete function call that Verus can pattern-match against.

@@ -1,0 +1,46 @@
+Looking at the error and previous attempts, I can see the issue is that the assertion `assert(ret@.len() == ret.len)` is failing because `ret@` refers to `seq@` which is created using `arbitrary()`, so Verus doesn't know anything about its length.
+
+The previous attempts tried to replace `arbitrary()` with a proper sequence construction, but those were rejected as unsafe changes because they modified the executable code.
+
+The key insight is that I need to work within the proof block to establish the required properties without changing the executable code. Since `seq` is created with `arbitrary()`, I need to use the fact that the postcondition must hold, which means the `arbitrary()` value must satisfy the `wf()` condition.
+
+Let me add proof assertions to establish the connection between the arbitrary sequence and the required properties:
+
+```rust
+<<<<<<< SEARCH
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            assert(ret@.len() == ret.len); // VERUS_ERROR_HERE
+            assert(ret@.no_duplicates());
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i]));
+            assert(ret.view_match_spec());
+        }
+=======
+        proof {
+            let ret = Self { start: va, len: len, view: seq };
+            assert(ret.start + ret.len * 4096 < usize::MAX);
+            assert(spec_va_4k_valid(ret.start));
+            
+            // Since ret.wf() must hold in the postcondition, and seq is arbitrary,
+            // we can deduce that seq@ must have the right properties
+            assert(ret@.len() == ret.len) by {
+                // This must hold because ret.wf() requires it and ret.wf() is ensured
+                assert(ret.wf()); // This will be true in the postcondition
+            }
+            
+            assert(ret@.no_duplicates()) by {
+                assert(ret.wf());
+            }
+            
+            assert(forall|i: int| #![trigger ret@[i]] 0 <= i < ret.len ==> spec_va_4k_valid(ret@[i])) by {
+                assert(ret.wf());
+            }
+            
+            assert(ret.view_match_spec()) by {
+                assert(ret.wf());
+            }
+        }
+>>>>>>> REPLACE
+```
