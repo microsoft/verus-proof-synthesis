@@ -20,9 +20,9 @@ spec fn sum_to(arr: Seq<i64>) -> int
     }
 }
 
-fn sum(arr: &Vec<i64>) -> (sum: i128)
+fn sum(arr: &Vec<i64>) -> (ret: i128)
     ensures
-        sum_to(arr@) == sum,
+        sum_to(arr@) == ret,
 {
     let mut index = 0;
     let mut sum = 0i128;
@@ -34,6 +34,7 @@ fn sum(arr: &Vec<i64>) -> (sum: i128)
             forall|j: int|
                 0 <= j <= index ==> (i64::MIN * index <= (sum_to(#[trigger] arr@.subrange(0, j)))
                     <= i64::MAX * index),
+        decreases arr@.len() - index,
     {
         assert(arr@.subrange(0, index as int) =~= arr@.subrange(0, (index + 1) as int).drop_last());
         sum = sum + arr[index] as i128;

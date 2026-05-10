@@ -27,6 +27,7 @@ fn contains(str: &[u8], key: u8) -> (result: bool)
     while i < str.len()
         invariant
             forall|m: int| 0 <= m < i ==> (str[m] != key),
+        decreases str@.len() - i,
     {
         if (str[i] == key) {
             return true;
@@ -60,6 +61,7 @@ fn remove_chars(str1: &[u8], str2: &[u8]) -> (result: Vec<u8>)
                 0 <= k < index ==> (str2@.contains(#[trigger] str1[k]) || output_str@.contains(
                     #[trigger] str1[k],
                 )),
+        decreases str1@.len() - index,
     {
         if (!contains(str2, str1[index])) {
             proof {

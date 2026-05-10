@@ -32,6 +32,7 @@ fn replace_chars(str1: &[u8], old_char: u8, new_char: u8) -> (result: Vec<u8>)
                 } else {
                     str1[k]
                 }),
+        decreases str1@.len() - index,
     {
         if str1[index] == old_char {
             result_str.push(new_char);
