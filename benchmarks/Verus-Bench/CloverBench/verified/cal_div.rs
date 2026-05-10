@@ -13,6 +13,7 @@ fn cal_div() -> (r: (u32, u32))
         invariant
             0 <= y,
             7u32 * x + y == 191u32,
+        decreases y,
     {
         x = x + 1;
         y = 191 - 7 * x;

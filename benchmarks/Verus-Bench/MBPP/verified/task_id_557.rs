@@ -50,6 +50,7 @@ fn to_toggle_case(str1: &[u8]) -> (toggle_case: Vec<u8>)
             toggle_case.len() == index,
             forall|i: int|
                 0 <= i < index ==> toggle_case[i] == to_toggle_case_spec(#[trigger] str1[i]),
+        decreases str1@.len() - index,
     {
         if (str1[index] >= 97 && str1[index] <= 122) {
             toggle_case.push((str1[index] - 32) as u8);

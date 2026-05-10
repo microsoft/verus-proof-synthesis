@@ -36,6 +36,7 @@ fn compute_arith_sum(n: u64) -> (sum: u64)
             i <= n,
             sum == arith_sum_int(i as nat),
             arith_sum_int(n as nat) < 10000,
+        decreases n - i,
     {
         i = i + 1;
 

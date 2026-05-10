@@ -22,6 +22,7 @@ fn product(a: &Vec<u32>, b: &Vec<u32>) -> (c: Vec<u32>)
             a.len() <= 100 && a.len() == b.len(),
             forall|i: int| (0 <= i && i < a.len()) ==> (a[i] * b[i] < 1000),
             forall|i: int| (0 <= i && i < n) ==> c[i] == #[trigger] a[i] * #[trigger] b[i],
+        decreases len - n,
     {
         let product: u32 = a[n] * b[n];
         c.push(product);

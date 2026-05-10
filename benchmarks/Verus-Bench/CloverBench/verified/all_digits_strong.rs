@@ -26,15 +26,17 @@ fn all_digits(s: String) -> (result: bool)
     ensures
         all_digits_spec(s@) == result,
 {
-    let mut result = true;
     let mut i = 0;
     while i < s.as_str().unicode_len()
         invariant
-            all_digits_spec(s@.subrange(0, i as int)),
+            0 <= i <= s@.len(),
+            forall|j: nat| j < i ==> is_ascii_digit_spec(#[trigger] s@[j as int]),
+        decreases s@.len() - i,
     {
         if !is_ascii_digit(s.as_str().get_char(i)) {
             return false;
         }
+        i = i + 1;
     }
     true
 }

@@ -14,6 +14,7 @@ fn choose_odd()
         idx<=10,
         gap<100,
         gap==res-idx,
+    decreases 10 - idx,
     {
         res = res + 1;
         idx = idx + 1;
@@ -27,6 +28,7 @@ fn choose_odd()
         idx<=10,
         gap<100,
         gap==res-idx,
+    decreases 10 - idx,
     {
         
         res = res + 1;

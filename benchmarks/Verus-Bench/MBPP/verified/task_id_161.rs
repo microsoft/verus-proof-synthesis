@@ -36,6 +36,7 @@ fn contains(str: &Vec<i32>, key: i32) -> (result: bool)
     while i < str.len()
         invariant
             forall|m: int| 0 <= m < i ==> (str[m] != key),
+        decreases str@.len() - i,
     {
         if (str[i] == key) {
             return true;
@@ -69,6 +70,7 @@ fn remove_elements(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
                 0 <= k < index ==> (arr2@.contains(#[trigger] arr1[k]) || output_str@.contains(
                     #[trigger] arr1[k],
                 )),
+        decreases arr1@.len() - index,
     {
         if (!contains(arr2, arr1[index])) {
             proof {

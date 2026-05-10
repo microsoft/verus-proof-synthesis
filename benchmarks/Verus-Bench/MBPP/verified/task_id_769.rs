@@ -33,6 +33,7 @@ fn contains(arr: &Vec<i32>, key: i32) -> (result: bool)
     while index < arr.len()
         invariant
             forall|m: int| 0 <= m < index ==> (arr[m] != key),
+        decreases arr@.len() - index,
     {
         if (arr[index] == key) {
             return true;
@@ -67,6 +68,7 @@ fn difference(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
                 )),
             forall|m: int, n: int|
                 0 <= m < n < result.len() ==> #[trigger] result[m] != #[trigger] result[n],
+        decreases arr1@.len() - index,
     {
         if (!contains(arr2, arr1[index]) && !contains(&result, arr1[index])) {
             proof {
@@ -90,6 +92,7 @@ fn difference(arr1: &Vec<i32>, arr2: &Vec<i32>) -> (result: Vec<i32>)
                 )),
             forall|m: int, n: int|
                 0 <= m < n < result.len() ==> #[trigger] result[m] != #[trigger] result[n],
+        decreases arr2@.len() - index,
     {
         if (!contains(arr1, arr2[index]) && !contains(&result, arr2[index])) {
             proof {

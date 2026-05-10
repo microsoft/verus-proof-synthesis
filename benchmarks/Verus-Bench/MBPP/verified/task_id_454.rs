@@ -19,6 +19,7 @@ fn contains_z(text: &[u8]) -> (result: bool)
         invariant
             0 <= index <= text.len(),
             forall|k: int| 0 <= k < index ==> (text[k] != 90 && text[k] != 122),
+        decreases text@.len() - index,
     {
         if text[index] == 90 || text[index] == 122 {
             return true;

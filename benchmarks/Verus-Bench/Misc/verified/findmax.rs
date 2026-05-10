@@ -16,6 +16,7 @@ ensures
     invariant
         forall |k: int| 0 <= k < i ==> nums@[k] <= max,
         exists |k: int| 0 <= k < i && nums@[k] == max,
+    decreases nums@.len() - i,
     {
         if nums[i] > max {
             max = nums[i];

@@ -21,6 +21,7 @@ fn concat(a: &Vec<u64>, b: &Vec<u64>) -> (c: Vec<u64>)
             len == a@.len() + b@.len(),
             forall|i: int| (0 <= i && i < a.len() && i < n) ==> c[i] == a[i],
             forall|i: int| (a.len() <= i && i < c.len() && i < n) ==> c[i] == b[i - a.len()],
+        decreases len - n,
     {
         c.push(
             if 0 <= n && n < a.len() {

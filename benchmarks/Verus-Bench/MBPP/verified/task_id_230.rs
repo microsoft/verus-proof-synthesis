@@ -41,6 +41,7 @@ fn replace_blanks_with_chars(str1: &[u8], ch: u8) -> (result: Vec<u8>)
                 } else {
                     str1[k]
                 }),
+        decreases str1@.len() - index,
     {
         if (str1[index] == 32) {  // 32 is ASCII Space as u8
             out_str.push(ch);

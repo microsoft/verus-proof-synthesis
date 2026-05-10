@@ -45,6 +45,7 @@ fn replace_with_colon(str1: &[u8]) -> (result: Vec<u8>)
                 } else {
                     str1[k]
                 }),
+        decreases str1@.len() - index,
     {
         if ((str1[index] == 32) || (str1[index] == 44) || (str1[index] == 46)) {
             result.push(58);  //ASCII -> colon=58

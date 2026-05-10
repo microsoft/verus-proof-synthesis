@@ -40,6 +40,7 @@ fn to_lowercase(str1: &[u8]) -> (result: Vec<u8>)
                 } else {
                     str1[i]
                 }),
+        decreases str1@.len() - index,
     {
         if (str1[index] >= 65 && str1[index] <= 90) {
             lower_case.push((str1[index] + 32) as u8);

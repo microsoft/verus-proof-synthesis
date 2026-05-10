@@ -42,6 +42,7 @@ fn count_digits(text: &[u8]) -> (count: usize)
             0 <= index <= text.len(),
             0 <= count <= index,
             count == count_digits_recursively(text@.subrange(0, index as int)),
+        decreases text@.len() - index,
     {
         if (text[index] >= 48 && text[index] <= 57) {
             count += 1;

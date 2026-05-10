@@ -17,6 +17,7 @@ pub fn linear_search(a: &Vec<i32>, e: i32) -> (n: usize)
         invariant
             n <= a.len(),
             forall|i: int| (0 <= i < n as int) ==> e != a[i],
+        decreases a.len() - n,
     {
         if a[n] == e {
             return n;

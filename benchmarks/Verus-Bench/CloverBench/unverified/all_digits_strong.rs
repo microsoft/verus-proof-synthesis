@@ -26,12 +26,12 @@ fn all_digits(s: String) -> (result: bool)
     ensures
         all_digits_spec(s@) == result,
 {
-    let mut result = true;
     let mut i = 0;
     while i < s.as_str().unicode_len() {
         if !is_ascii_digit(s.as_str().get_char(i)) {
             return false;
         }
+        i = i + 1;
     }
     true
 }
