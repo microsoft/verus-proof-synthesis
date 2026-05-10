@@ -13,18 +13,19 @@ proof fn lemma_vec_push<T>(vec: Seq<T>, i: T, l: usize)
 
 pub fn remove_all_greater(v: Vec<i32>, e: i32) -> (result: Vec<i32>)
     requires 
-        forall |k1:int,k2:int| 0 <= k1 < k2 < v.len() ==> v[k1] != v[k2]
+        forall |k1:int,k2:int| 0 <= k1 < k2 < v.len() ==> #[trigger] v[k1] != #[trigger] v[k2]
     ensures
-        forall |k:int| 0 <= k < result.len() ==> result[k] <= e && v@.contains(result[k]),
-        forall |k:int| 0 <= k < v.len() && v[k] <= e ==> result@.contains(v[k]),
+        forall |k:int| 0 <= k < result.len() ==> result[k] <= e && v@.contains(#[trigger] result[k]),
+        forall |k:int| 0 <= k < v.len() && v[k] <= e ==> result@.contains(#[trigger] v[k]),
 {  
     let mut i: usize = 0;
     let vlen = v.len();
     let mut result: Vec<i32> = vec![];
     while (i < v.len()) 
         invariant
-            forall |k:int| 0 <= k < result.len() ==> result[k] <= e && v@.contains(result[k]),
-            forall |k:int| 0 <= k < i && v[k] <= e ==> result@.contains(v[k]),
+            forall |k:int| 0 <= k < result.len() ==> result[k] <= e && v@.contains(#[trigger] result[k]),
+            forall |k:int| 0 <= k < i && v[k] <= e ==> result@.contains(#[trigger] v[k]),
+        decreases v@.len() - i,
     {  
         if (v[i] <= e) { 
             proof{
