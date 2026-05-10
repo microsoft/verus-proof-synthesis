@@ -20,6 +20,7 @@ fn append(v: &Vec<u64>, elem: u64) -> (c: Vec<u64>)
             n == c@.len(),
             len == v@.len(),
             forall|i: int| 0 <= i < n ==> c[i] == v[i],
+        decreases len - n,
     {
         c.push(v[n]);
         n = n + 1;

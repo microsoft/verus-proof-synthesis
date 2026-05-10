@@ -31,6 +31,7 @@ fn two_sum(nums: &Vec<u32>, target: u32) -> (r: (usize, usize))
                     < 256,
             forall|ii: int, jj: int|
                 (0 <= ii && ii < i && ii < jj && jj < n) ==> nums[ii] + nums[jj] != target,
+        decreases n - i,
     {
         j = i + 1;
         while j < n
@@ -43,6 +44,7 @@ fn two_sum(nums: &Vec<u32>, target: u32) -> (r: (usize, usize))
                 forall|ii: int, jj: int|
                     (0 <= ii && ii < i && ii < jj && jj < n) ==> nums[ii] + nums[jj] != target,
                 forall|jj: int| (i < jj && jj < j) ==> nums[i as int] + nums[jj] != target,
+            decreases n - j,
         {
             if nums[i] + nums[j] == target {
                 return (i, j);

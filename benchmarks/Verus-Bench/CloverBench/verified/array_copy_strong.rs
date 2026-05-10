@@ -19,6 +19,7 @@ fn copy(a: &Vec<u64>) -> (b: Vec<u64>)
             n == b@.len(),
             len == a@.len(),
             forall|i: int| (0 <= i && i < n) ==> b[i] == a[i],
+        decreases len - n,
     {
         b.push(a[n]);
         n = n + 1;

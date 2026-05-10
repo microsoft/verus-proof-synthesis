@@ -24,6 +24,7 @@ fn test_prime(candidate: u64) -> (result: bool)
             1 < factor <= candidate,
             forall|smallerfactor: nat|
                 1 < smallerfactor < factor ==> !divides(smallerfactor, candidate as nat),
+        decreases candidate - factor,
     {
         if candidate % factor == 0 {
             assert(divides(factor as nat, candidate as nat));
