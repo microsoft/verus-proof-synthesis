@@ -1,0 +1,13 @@
+Benchmarks in this folder are extracted from the Open Source project Gale
+https://github.com/pulseengine/gale
+
+Many thanks to the owner of the Gale project, Ralf (@avrabe).
+
+We extracted every executable/proof functions in the Rust/Verus-verified
+portaion of gale (i.e., in its src folder).
+We skipped the ones that do not require any proof annotations.
+
+|
+--benchmarks (verified version of each task; original proof from Ralf contained)
+--unverified (all proof annotations removed)
+--unverified_nolemma (one task used helper lemma in the original proof; we removed that helper lemma)
