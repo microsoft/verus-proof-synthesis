@@ -24,7 +24,7 @@
     },
     "benchmark": {
       "type": "string",
-      "enum": ["Verus-Bench", "VeruSAGE-Bench", "VeruSAGE-Bench-Sampled"],
+      "enum": ["Verus-Bench", "VeruSAGE-Bench", "VeruSAGE-Bench-Sampled", "VeruSAGE-Bench-NoLemma"],
       "description": "Which benchmark was evaluated"
     },
     "results": {

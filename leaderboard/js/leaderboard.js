@@ -6,8 +6,10 @@
 // State management
 const state = {
     currentBenchmark: 'verusage-bench',
+    verusageVariant: 'with-lemma', // 'with-lemma' | 'no-lemma', only applies to verusage-bench
     verusBenchData: null,
     verusageBenchData: null,
+    verusageBenchNoLemmaData: null,
     sortColumn: 'percent_solved',
     sortDirection: 'desc'
 };
@@ -20,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     cacheElements();
     await loadData();
     setupEventListeners();
+    updateVariantToggleVisibility();
     render();
 });
 
@@ -35,18 +38,22 @@ function cacheElements() {
     elements.statBestScore = document.getElementById('stat-best-score');
     elements.statLastUpdate = document.getElementById('stat-last-update');
     elements.tableHeaders = document.querySelectorAll('.leaderboard-table th.sortable');
+    elements.variantToggle = document.getElementById('variant-toggle');
+    elements.variantButtons = document.querySelectorAll('.variant-button');
 }
 
 // Load data from JSON files
 async function loadData() {
     try {
-        const [verusBench, verusageBench] = await Promise.all([
+        const [verusBench, verusageBench, verusageBenchNoLemma] = await Promise.all([
             fetch('data/verus-bench-results.json').then(r => r.json()),
-            fetch('data/verusage-bench-results.json').then(r => r.json())
+            fetch('data/verusage-bench-results.json').then(r => r.json()),
+            fetch('data/verusage-bench-nolemma-results.json').then(r => r.json())
         ]);
 
         state.verusBenchData = verusBench;
         state.verusageBenchData = verusageBench;
+        state.verusageBenchNoLemmaData = verusageBenchNoLemma;
     } catch (error) {
         console.error('Error loading data:', error);
         showError('Failed to load leaderboard data');
@@ -70,6 +77,13 @@ function setupEventListeners() {
             sortTable(column);
         });
     });
+
+    // VeruSAGE-Bench variant toggle (with-lemma / no-lemma)
+    elements.variantButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            switchVariant(button.dataset.variant);
+        });
+    });
 }
 
 // Switch between benchmarks
@@ -83,7 +97,28 @@ function switchBenchmark(benchmark) {
         btn.classList.toggle('active', btn.dataset.benchmark === benchmark);
     });
 
+    updateVariantToggleVisibility();
     render();
+}
+
+// Switch between the VeruSAGE-Bench with-lemma / no-lemma variants
+function switchVariant(variant) {
+    state.verusageVariant = variant;
+    state.sortColumn = 'percent_solved';
+    state.sortDirection = 'desc';
+
+    elements.variantButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.variant === variant);
+    });
+
+    render();
+}
+
+// Show the variant toggle only for VeruSAGE-Bench
+function updateVariantToggleVisibility() {
+    if (!elements.variantToggle) return;
+    elements.variantToggle.style.display =
+        state.currentBenchmark === 'verusage-bench' ? '' : 'none';
 }
 
 // Sort table by column
@@ -122,8 +157,11 @@ function render() {
 
 // Get current benchmark data
 function getCurrentData() {
-    return state.currentBenchmark === 'verus-bench'
-        ? state.verusBenchData
+    if (state.currentBenchmark === 'verus-bench') {
+        return state.verusBenchData;
+    }
+    return state.verusageVariant === 'no-lemma'
+        ? state.verusageBenchNoLemmaData
         : state.verusageBenchData;
 }
 

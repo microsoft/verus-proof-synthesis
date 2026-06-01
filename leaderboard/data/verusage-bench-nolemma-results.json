@@ -1,0 +1,192 @@
+{
+    "benchmark": "VeruSAGE-Bench (No-Lemma)",
+    "description": "460 no-lemma variant tasks: helper-lemma stubs removed from the 460 of 849 tasks whose human proof used at least one helper lemma",
+    "total_tasks": 460,
+    "projects": [
+        {
+            "code": "AL",
+            "name": "Anvil",
+            "tasks": 83,
+            "domain": "Distributed Systems"
+        },
+        {
+            "code": "AC",
+            "name": "Anvil Advanced",
+            "tasks": 58,
+            "domain": "Distributed Systems"
+        },
+        {
+            "code": "IR",
+            "name": "IronKV",
+            "tasks": 30,
+            "domain": "Distributed Systems"
+        },
+        {
+            "code": "MA",
+            "name": "Memory Allocator",
+            "tasks": 47,
+            "domain": "Systems"
+        },
+        {
+            "code": "NO",
+            "name": "Node Replication",
+            "tasks": 5,
+            "domain": "Distributed Systems"
+        },
+        {
+            "code": "NR",
+            "name": "NRKernel",
+            "tasks": 133,
+            "domain": "OS Kernel"
+        },
+        {
+            "code": "OS",
+            "name": "ATMO",
+            "tasks": 71,
+            "domain": "OS Kernel"
+        },
+        {
+            "code": "ST",
+            "name": "Storage",
+            "tasks": 29,
+            "domain": "Systems"
+        },
+        {
+            "code": "VE",
+            "name": "Vest",
+            "tasks": 4,
+            "domain": "Serialization"
+        }
+    ],
+    "last_updated": "2026-05-06",
+    "submissions": [
+        {
+            "submission_id": "verusage-nolemma-handsoff-opus45-2026",
+            "system_name": "VeruSAGE (Hands-off)",
+            "model": "Opus 4.5",
+            "date": "2026-05-06",
+            "results": {
+                "solved": 399,
+                "total": 460,
+                "percent_solved": 86.7,
+                "avg_time_minutes": 30.8,
+                "avg_cost_usd": 51.96
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 83,
+                    "total": 83
+                },
+                {
+                    "category": "AC",
+                    "solved": 24,
+                    "total": 58
+                },
+                {
+                    "category": "IR",
+                    "solved": 29,
+                    "total": 30
+                },
+                {
+                    "category": "MA",
+                    "solved": 47,
+                    "total": 47
+                },
+                {
+                    "category": "NO",
+                    "solved": 5,
+                    "total": 5
+                },
+                {
+                    "category": "NR",
+                    "solved": 112,
+                    "total": 133
+                },
+                {
+                    "category": "OS",
+                    "solved": 68,
+                    "total": 71
+                },
+                {
+                    "category": "ST",
+                    "solved": 27,
+                    "total": 29
+                },
+                {
+                    "category": "VE",
+                    "solved": 4,
+                    "total": 4
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 9: Hands-off no-lemma variant (86.7%)"
+        },
+        {
+            "submission_id": "verusage-nolemma-handsoff-sonnet45-2026",
+            "system_name": "VeruSAGE (Hands-off)",
+            "model": "Sonnet 4.5",
+            "date": "2026-05-06",
+            "results": {
+                "solved": 264,
+                "total": 460,
+                "percent_solved": 57.4,
+                "avg_time_minutes": 10.9,
+                "avg_cost_usd": 10.75
+            },
+            "breakdown": [
+                {
+                    "category": "AL",
+                    "solved": 79,
+                    "total": 83
+                },
+                {
+                    "category": "AC",
+                    "solved": 11,
+                    "total": 58
+                },
+                {
+                    "category": "IR",
+                    "solved": 15,
+                    "total": 30
+                },
+                {
+                    "category": "MA",
+                    "solved": 34,
+                    "total": 47
+                },
+                {
+                    "category": "NO",
+                    "solved": 5,
+                    "total": 5
+                },
+                {
+                    "category": "NR",
+                    "solved": 59,
+                    "total": 133
+                },
+                {
+                    "category": "OS",
+                    "solved": 41,
+                    "total": 71
+                },
+                {
+                    "category": "ST",
+                    "solved": 16,
+                    "total": 29
+                },
+                {
+                    "category": "VE",
+                    "solved": 4,
+                    "total": 4
+                }
+            ],
+            "paper_url": "https://arxiv.org/abs/2512.18436",
+            "code_url": "https://github.com/microsoft/verus-proof-synthesis",
+            "verified": true,
+            "notes": "Table 9: Hands-off no-lemma variant (57.4%)"
+        }
+    ]
+}
