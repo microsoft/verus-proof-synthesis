@@ -1,0 +1,11 @@
+code,project,domain,tasks
+AL,Anvil (Library),Distributed Systems,83
+AC,Anvil (Advanced),Distributed Systems,58
+IR,IronKV,Distributed Systems / Key-Value Store,30
+MA,Memory Allocator,Systems,47
+NO,Node Replication,Distributed Systems,5
+NR,NRKernel,OS Kernel,133
+OS,ATMO,OS Kernel,71
+ST,Storage,Storage Systems,29
+VE,Vest,Verification (Serialization),4
+TOTAL,,,460
