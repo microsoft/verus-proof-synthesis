@@ -50,7 +50,9 @@ VeruSAGE-Bench contains **849 verification tasks** extracted from 8 real-world V
 VeruSAGE-Bench/
 ├── README.md                           # This file
 ├── tasks.jsonl                         # All tasks in JSONL format (for ML pipelines)
+├── tasks-no-lemma.jsonl                # No-lemma variant tasks in JSONL format (460 tasks)
 ├── benchmark-stats.csv                 # Summary statistics
+├── benchmark-stats-no-lemma.csv        # Summary statistics for the no-lemma variant
 ├── source-projects/                    # Original verified projects (9 directories)
 │   ├── anvil-library/                  # AL - Anvil library proofs
 │   ├── anvil-controller/               # AC - Anvil controller proofs  
@@ -61,7 +63,7 @@ VeruSAGE-Bench/
 │   ├── atmosphere/                     # OS - ATMO microkernel verification
 │   ├── storage/                        # ST - Storage system verification
 │   └── vest/                           # VE - Vest serialization library
-├── tasks/                              # All 849 verification tasks
+├── tasks/                              # All 849 verification tasks (with-lemma)
 │   ├── AL__*.rs
 │   ├── AC__*.rs
 │   ├── IR__*.rs
@@ -71,6 +73,8 @@ VeruSAGE-Bench/
 │   ├── OS__*.rs
 │   ├── ST__*.rs
 │   └── VE__*.rs
+├── tasks-no-lemma/                     # No-lemma variant: 460 tasks (helper lemmas stripped)
+│   └── <PREFIX>__*.rs                  # Same filenames as tasks/; a strict subset of them
 ├── tasks-sampled-100/                  # Sampled subset of 100 tasks for quick evaluation
 └── tasks-batches/                      # Tasks organized into batches
     ├── batch_001/                      # 100 tasks
@@ -113,7 +117,7 @@ These mapping files ensure consistency between `tasks.jsonl` and the files in so
 
 ## Data Format (JSONL)
 
-For programmatic access and ML pipelines, we provide `tasks.jsonl` containing all 849 tasks. This format aligns with other Verus benchmarks like Verus-Bench.
+For programmatic access and ML pipelines, we provide `tasks.jsonl` containing all 849 tasks. This format aligns with other Verus benchmarks like Verus-Bench. The no-lemma variant is provided separately in `tasks-no-lemma.jsonl` (460 records, same schema **without** the `ground_truth` field — see [No-Lemma Variant](#no-lemma-variant)).
 
 ```python
 import json
@@ -148,7 +152,7 @@ print(f"NRKernel tasks: {len(nr_tasks)}")
 | `module` | string | Module path within the project |
 | `target_function` | string | The proof function to be synthesized |
 | `task` | string | The unverified Rust/Verus code (INPUT). The body of the target function is stripped. |
-| `ground_truth` | string | The fully verified Rust/Verus code (REFERENCE). |
+| `ground_truth` | string | The fully verified Rust/Verus code (REFERENCE). *(with-lemma only; absent in `tasks-no-lemma.jsonl`)* |
 | `file_path` | string | Relative path to the .rs file |
 
 ## Task Format
@@ -196,6 +200,45 @@ Example: `NR__spec_t__mmu__rl2__lemma_step_writenonneg_path_addrs_match.rs`
 - Project: NR (NRKernel)
 - Module path: `spec_t::mmu::rl2`
 - Function: `lemma_step_writenonneg_path_addrs_match`
+
+## No-Lemma Variant
+
+VeruSAGE-Bench ships in two variants:
+
+- **With-lemma** (`tasks/`, the default 849 tasks): each task file includes the
+  human-written helper lemmas as `#[verifier::external_body]` stubs. Their bodies are
+  removed, but their signatures and `requires`/`ensures` remain, so the agent can *call*
+  them as scaffolding when proving the target function.
+- **No-lemma** (`tasks-no-lemma/`, 460 tasks): the helper-lemma stubs are **removed
+  entirely**, leaving only the top-level proof obligation, its specification, and the
+  necessary type/function signatures. The agent must invent the helper lemmas, choose the
+  induction/decomposition strategy, and discover the intermediate facts on its own. This is
+  strictly harder and more representative of proving on a fresh codebase.
+
+The no-lemma variant covers the **460 of 849** tasks whose original human-written proof used
+at least one helper lemma (a task with no helper lemmas would be identical in both variants,
+so it is excluded). Filenames and `task_id`s match the with-lemma counterpart exactly, so a
+no-lemma task maps 1:1 onto its `tasks/` sibling.
+
+| Code | Project | Tasks (no-lemma) |
+|------|---------|-----------------:|
+| AL | Anvil (Library)    | 83 |
+| AC | Anvil (Advanced)   | 58 |
+| IR | IronKV             | 30 |
+| MA | Memory Allocator   | 47 |
+| NO | Node Replication   | 5  |
+| NR | NRKernel           | 133 |
+| OS | ATMO               | 71 |
+| ST | Storage            | 29 |
+| VE | Vest               | 4  |
+| **Total** | | **460** |
+
+> **Note on ground truth:** unlike the with-lemma variant, `tasks-no-lemma.jsonl` has **no
+> `ground_truth` field**. The original verified solution calls the removed helper lemmas, so
+> it does not verify standalone in a no-lemma file; there is no single canonical no-lemma
+> solution. A no-lemma task is scored purely by whether a synthesized proof makes Verus verify
+> the file (without cheating — no added axioms, `assume`, `external_body` proof functions, or
+> spec/signature changes).
 
 ## Usage
 

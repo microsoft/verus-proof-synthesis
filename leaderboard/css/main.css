@@ -295,6 +295,45 @@ body::before {
   border-radius: var(--radius-sm);
 }
 
+/* VeruSAGE-Bench variant toggle (with-lemma / no-lemma) */
+.variant-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+}
+
+.variant-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.variant-button {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.variant-button:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.variant-button.active {
+  color: white;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-sm);
+}
+
 /* Leaderboard Table */
 .leaderboard-section {
   margin-bottom: var(--spacing-2xl);
