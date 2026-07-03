@@ -2,11 +2,12 @@
 name: Deploy Leaderboard to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on every push to the default branch. Deliberately no `paths:` filter:
+  # GitHub only inspects the first 300 changed files of a push when evaluating
+  # path filters, so a large push (e.g. adding hundreds of benchmark tasks
+  # alongside a leaderboard change) can silently skip the deploy.
   push:
     branches: ["main", "leaderboard"]
-    paths:
-      - 'leaderboard/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
