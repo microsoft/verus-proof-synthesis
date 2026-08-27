@@ -8,7 +8,7 @@ requires
     nums.len() > 0,
 ensures
     forall |i: int| 0 <= i < nums@.len() ==> nums@[i] <= ret,
-    exists |i: int| 0 <= i < nums@.len() ==> nums@[i] == ret,
+    exists |i: int| 0 <= i < nums@.len() && nums@[i] == ret,
 {
     let mut max = nums[0];
     let mut i = 1;
