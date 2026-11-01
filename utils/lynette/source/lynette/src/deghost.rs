@@ -169,27 +169,24 @@ fn remove_ghost_expr(expr: &syn_verus::Expr, mode: &DeghostMode) -> Option<syn_v
             }
         }
         syn_verus::Expr::If(i) => {
-            remove_ghost_block(&i.then_branch, mode).and_then(|new_then_branch| {
-                if let Some((else_token, else_expr)) = i.else_branch.as_ref() {
-                    remove_ghost_expr(&*else_expr, mode).map(|new_else_branch| {
-                        syn_verus::Expr::If(syn_verus::ExprIf {
-                            attrs: i.attrs.clone(),
-                            if_token: i.if_token.clone(),
-                            cond: i.cond.clone(),
-                            then_branch: new_then_branch,
-                            else_branch: Some((else_token.clone(), Box::new(new_else_branch))),
-                        })
-                    })
-                } else {
-                    Some(syn_verus::Expr::If(syn_verus::ExprIf {
-                        attrs: i.attrs.clone(),
-                        if_token: i.if_token.clone(),
-                        cond: i.cond.clone(),
-                        then_branch: new_then_branch,
-                        else_branch: None,
-                    }))
-                }
-            })
+            let new_then_branch = remove_ghost_block(&i.then_branch, mode);
+            let new_else_branch = i.else_branch.as_ref().and_then(|(else_token, else_expr)| {
+                remove_ghost_expr(&*else_expr, mode).map(|e| (else_token.clone(), Box::new(e)))
+            });
+
+            // Only an `if` with no executable branch left is ghost code. A ghost-only else is
+            // dropped and a ghost-only then is emptied, so the other branch is still compared.
+            if new_then_branch.is_none() && new_else_branch.is_none() {
+                return None;
+            }
+
+            Some(syn_verus::Expr::If(syn_verus::ExprIf {
+                attrs: i.attrs.clone(),
+                if_token: i.if_token.clone(),
+                cond: i.cond.clone(),
+                then_branch: new_then_branch.unwrap_or_else(|| parse_quote! { {} }),
+                else_branch: new_else_branch,
+            }))
         }
         syn_verus::Expr::Match(m) => {
             let new_arms: Vec<syn_verus::Arm> = m
